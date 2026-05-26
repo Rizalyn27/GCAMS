@@ -48,7 +48,7 @@ namespace GCAMS.Models
         [DataType(DataType.Date)]
         [Display(Name = "Date of Birth")]
         [DisplayFormat(DataFormatString = "{0:MM/dd/yyyy}", ApplyFormatInEditMode = true)]
-        public DateTime Birthday { get; set; }
+        public DateTime? Birthday { get; set; }
 
         [Required(ErrorMessage = "Age is required.")]
         [Range(1, 100, ErrorMessage = "Age must be between 1 and 100.")]

@@ -153,5 +153,124 @@ namespace GCAMS.Controllers
         {
             return _context.Students.Any(e => e.Id == id);
         }
+
+
+        //Import Students from Excel
+        //public IActionResult Import()
+        //{
+        //    return View();
+        //}
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Import(IFormFile file)
+        {
+            if (file == null || file.Length == 0)
+            {
+                TempData["Error"] = "Please select an Excel file.";
+                return RedirectToAction(nameof(Index));
+            }
+
+            if (!Path.GetExtension(file.FileName).Equals(".xlsx", StringComparison.OrdinalIgnoreCase))
+            {
+                TempData["Error"] = "Invalid file format. Please upload an .xlsx file.";
+                return RedirectToAction(nameof(Index));
+            }
+
+            OfficeOpenXml.ExcelPackage.License.SetNonCommercialOrganization("GCAMS Thesis Project");
+
+            var students = new List<Students>();
+
+            using var stream = new MemoryStream();
+            await file.CopyToAsync(stream);
+
+            using var package = new OfficeOpenXml.ExcelPackage(stream);
+            var worksheet = package.Workbook.Worksheets[0];
+            int rowCount = worksheet.Dimension?.Rows ?? 0;
+
+            for (int row = 2; row <= rowCount; row++)
+            {
+                string? Get(int col)
+                {
+                    var val = worksheet.Cells[row, col].Text?.Trim();
+                    return string.IsNullOrWhiteSpace(val) ? null : val;
+                }
+
+                var student = new Students
+                {
+                    FName = Get(1) ?? "",
+                    LName = Get(2) ?? "",
+                    MName = Get(3) ?? "",
+                    GradeLevel = Get(4) ?? "",
+                    Section = Get(5) ?? "",
+                    School = Get(6) ?? "Don Sergio Osmeña Senior Memorial National High School",
+                    Birthday = DateTime.TryParse(Get(7), out var bday) ? bday : DateTime.MinValue,
+                    Age = int.TryParse(Get(8), out int age) ? age : 0,
+                    Address = Get(10) ?? "",
+
+                    BirthOrder = Get(9),
+                    ContactNumber = Get(11),
+                    Email = Get(12),
+                    Gender = Get(13),
+                    Nationality = Get(14),
+                    Religion = Get(15),
+                    StayingWith = Get(16),
+
+                    FatherName = Get(17),
+                    FatherAge = int.TryParse(Get(18), out int fAge) ? fAge : (int?)null,
+                    FatherEducationalAttainment = Get(19),
+                    FatherOccupation = Get(20),
+                    FatherContactNumber = Get(21),
+                    MotherName = Get(22),
+                    MotherAge = int.TryParse(Get(23), out int mAge) ? mAge : (int?)null,
+                    MotherEducationalAttainment = Get(24),
+                    MotherOccupation = Get(25),
+                    MotherContactNumber = Get(26),
+                    MonthlyFamilyIncome = Get(27),
+                    ParentsRelationshipStatus = Get(28),
+
+                    EmergencyContactPerson = Get(29),
+                    EmergencyContactAge = int.TryParse(Get(30), out int ecAge) ? ecAge : (int?)null,
+                    EmergencyContactOccupation = Get(31),
+                    EmergencyContactNumber = Get(32),
+                    EmergencyContactAddress = Get(33),
+
+                    ElementarySchool = Get(34),
+                    ElementaryYear = Get(35),
+                    ElementaryHonors = Get(36),
+                    SecondarySchool = Get(37),
+                    SecondaryYear = Get(38),
+                    SecondaryHonors = Get(39),
+
+                    Height = null,
+                    Weight = null,
+                    BloodType = null,
+                    Ailments = null,
+                    Medication = null,
+                    SuicidalAttempts = null,
+                    VictimOfAbuse = null,
+                    InvolvedWithDrugs = null,
+                    MentallyChallengedRelative = null,
+                    VisitedPsychiatrist = null,
+                    VisitedPsychiatristReason = null,
+                };
+
+                if (!string.IsNullOrWhiteSpace(student.FName) && student.Age > 0)
+                    students.Add(student);
+            }
+
+            try
+            {
+                await _context.Students.AddRangeAsync(students);
+                await _context.SaveChangesAsync();
+                TempData["Success"] = $"{students.Count} student(s) imported successfully.";
+            }
+            catch (Exception ex)
+            {
+                TempData["Error"] = $"Import failed: {ex.Message}";
+            }
+
+            return RedirectToAction(nameof(Index));
+        }
     }
 }

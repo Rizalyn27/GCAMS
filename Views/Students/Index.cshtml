@@ -6,9 +6,24 @@
 
 <h1>Index</h1>
 
+
 <p>
-    <a asp-action="Create">Create New</a>
+    <a asp-action="Create" class="btn btn-primary">Create New</a>
+    <button type="button" class="btn btn-success ms-2" data-bs-toggle="modal" data-bs-target="#importModal">
+        <i class="bi bi-file-earmark-excel"></i> Import from Excel
+    </button>
 </p>
+
+    @if (TempData["Success"] != null)
+    {
+        <div class="alert alert-success">@TempData["Success"]</div>
+    }
+    @if (TempData["Error"] != null)
+    {
+        <div class="alert alert-danger">@TempData["Error"]</div>
+    }   
+
+
 <table class="table">
     <thead>
         <tr>
@@ -327,3 +342,27 @@
 }
     </tbody>
 </table>
+
+<div class="modal fade" id="importModal" tabindex="-1" aria-labelledby="importModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="importModalLabel">Import Students from Excel</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <form asp-action="Import" method="post" enctype="multipart/form-data">
+                @Html.AntiForgeryToken()
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label class="form-label">Select Excel File (.xlsx)</label>
+                        <input type="file" name="file" accept=".xlsx" class="form-control" required />
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <input type="submit" value="Upload & Import" class="btn btn-success" />
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
