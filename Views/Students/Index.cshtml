@@ -1,0 +1,329 @@
+﻿@model IEnumerable<GCAMS.Models.Students>
+
+@{
+    ViewData["Title"] = "Index";
+}
+
+<h1>Index</h1>
+
+<p>
+    <a asp-action="Create">Create New</a>
+</p>
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.FName)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.LName)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.MName)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.GradeLevel)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Section)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.School)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Birthday)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Age)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.BirthOrder)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Address)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.ContactNumber)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Email)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Gender)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Nationality)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Religion)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.StayingWith)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.FatherName)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.FatherAge)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.FatherEducationalAttainment)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.FatherOccupation)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.FatherContactNumber)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.MotherName)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.MotherAge)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.MotherEducationalAttainment)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.MotherOccupation)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.MotherContactNumber)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.MonthlyFamilyIncome)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.ParentsRelationshipStatus)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.EmergencyContactPerson)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.EmergencyContactAge)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.EmergencyContactOccupation)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.EmergencyContactNumber)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.EmergencyContactAddress)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.ElementarySchool)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.ElementaryYear)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.ElementaryHonors)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.SecondarySchool)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.SecondaryYear)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.SecondaryHonors)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Height)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Weight)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.BloodType)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Ailments)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Medication)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.SuicidalAttempts)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.VictimOfAbuse)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.InvolvedWithDrugs)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.MentallyChallengedRelative)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.VisitedPsychiatrist)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.VisitedPsychiatristReason)
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+@foreach (var item in Model) {
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.FName)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.LName)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.MName)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.GradeLevel)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Section)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.School)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Birthday)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Age)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.BirthOrder)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Address)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.ContactNumber)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Email)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Gender)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Nationality)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Religion)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.StayingWith)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.FatherName)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.FatherAge)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.FatherEducationalAttainment)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.FatherOccupation)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.FatherContactNumber)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.MotherName)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.MotherAge)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.MotherEducationalAttainment)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.MotherOccupation)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.MotherContactNumber)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.MonthlyFamilyIncome)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.ParentsRelationshipStatus)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.EmergencyContactPerson)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.EmergencyContactAge)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.EmergencyContactOccupation)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.EmergencyContactNumber)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.EmergencyContactAddress)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.ElementarySchool)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.ElementaryYear)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.ElementaryHonors)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.SecondarySchool)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.SecondaryYear)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.SecondaryHonors)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Height)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Weight)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.BloodType)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Ailments)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Medication)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.SuicidalAttempts)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.VictimOfAbuse)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.InvolvedWithDrugs)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.MentallyChallengedRelative)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.VisitedPsychiatrist)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.VisitedPsychiatristReason)
+            </td>
+            <td>
+                <a asp-action="Edit" asp-route-id="@item.Id">Edit</a> |
+                <a asp-action="Details" asp-route-id="@item.Id">Details</a> |
+                <a asp-action="Delete" asp-route-id="@item.Id">Delete</a>
+            </td>
+        </tr>
+}
+    </tbody>
+</table>
