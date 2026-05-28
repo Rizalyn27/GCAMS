@@ -11,24 +11,21 @@
     <h4>Students</h4>
     <hr />
     <dl class="row">
+
         <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.FName)
+            @Html.DisplayNameFor(model => model.StudentId)
         </dt>
         <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.FName)
+            @Html.DisplayFor(model => model.StudentId)
         </dd>
+        
         <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.LName)
+            @Html.DisplayNameFor(model => model.StuName)
         </dt>
         <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.LName)
+            @Html.DisplayFor(model => model.StuName)
         </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.MName)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.MName)
-        </dd>
+        
         <dt class = "col-sm-2">
             @Html.DisplayNameFor(model => model.GradeLevel)
         </dt>
@@ -306,16 +303,16 @@
             @Html.DisplayFor(model => model.VisitedPsychiatrist)
         </dd>
         <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.VisitedPsychiatristReason)
+            @Html.DisplayNameFor(model => model.AdditionalNotes)
         </dt>
         <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.VisitedPsychiatristReason)
+            @Html.DisplayFor(model => model.AdditionalNotes)
         </dd>
     </dl>
     
-    <form asp-action="Delete">
+    <form asp-action="SoftDelete">
         <input type="hidden" asp-for="Id" />
-        <input type="submit" value="Delete" class="btn btn-danger" /> |
+        <input type="submit" value="Archive" class="btn btn-danger" /> |
         <a asp-action="Index">Back to List</a>
     </form>
 </div>

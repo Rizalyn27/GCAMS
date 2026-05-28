@@ -58,6 +58,7 @@ namespace GCAMS.Controllers
         {
             if (ModelState.IsValid)
             {
+                students.IsActive = true;
                 _context.Add(students);
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
@@ -154,12 +155,33 @@ namespace GCAMS.Controllers
             return _context.Students.Any(e => e.Id == id);
         }
 
+        //Soft Delete
+        public async Task<IActionResult> SoftDelete(int id)
+        {
+            var student = await _context.Students.FindAsync(id);
+            if (student == null)
+            {
+                return NotFound();
+            }
+            student.IsActive = false;
+            _context.Update(student);
+            await _context.SaveChangesAsync();
+            return RedirectToAction(nameof(Index));
+        }
 
-        //Import Students from Excel
-        //public IActionResult Import()
-        //{
-        //    return View();
-        //}
+        //Restore Soft Deleted Student
+        public async Task<IActionResult> Restore(int id)
+        {
+            var student = await _context.Students.FindAsync(id);
+            if (student == null)
+            {
+                return NotFound();
+            }
+            student.IsActive = true;
+            _context.Update(student);
+            await _context.SaveChangesAsync();
+            return RedirectToAction(nameof(Index));
+        }
 
         [HttpPost]
         [ValidateAntiForgeryToken]
@@ -198,52 +220,49 @@ namespace GCAMS.Controllers
 
                 var student = new Students
                 {
-                    FName = Get(1) ?? "",
-                    LName = Get(2) ?? "",
-                    MName = Get(3) ?? "",
-                    GradeLevel = Get(4) ?? "",
-                    Section = Get(5) ?? "",
-                    School = Get(6) ?? "Don Sergio Osmeña Senior Memorial National High School",
-                    Birthday = DateTime.TryParse(Get(7), out var bday) ? bday : DateTime.MinValue,
-                    Age = int.TryParse(Get(8), out int age) ? age : 0,
-                    Address = Get(10) ?? "",
+                    StudentId = Get(1) ?? "",
+                    StuName = Get(2) ?? "",
+                    GradeLevel = Get(3) ?? "",
+                    Section = Get(4) ?? "",
+                    School = Get(5) ?? "Don Sergio Osmeña Senior Memorial National High School",
+                    Birthday = DateTime.TryParse(Get(6), out var bday) ? bday : DateTime.MinValue,
+                    Age = int.TryParse(Get(7), out int age) ? age : 0,
+                    BirthOrder = Get(8),
+                    Address = Get(9) ?? "",
+                    ContactNumber = Get(10),
+                    Email = Get(11),
+                    Gender = Get(12),
+                    Nationality = Get(13),
+                    Religion = Get(14),
+                    StayingWith = Get(15),
 
-                    BirthOrder = Get(9),
-                    ContactNumber = Get(11),
-                    Email = Get(12),
-                    Gender = Get(13),
-                    Nationality = Get(14),
-                    Religion = Get(15),
-                    StayingWith = Get(16),
+                    FatherName = Get(16),
+                    FatherAge = int.TryParse(Get(17), out int fAge) ? fAge : (int?)null,
+                    FatherEducationalAttainment = Get(18),
+                    FatherOccupation = Get(19),
+                    FatherContactNumber = Get(20),
+                    MotherName = Get(21),
+                    MotherAge = int.TryParse(Get(22), out int mAge) ? mAge : (int?)null,
+                    MotherEducationalAttainment = Get(23),
+                    MotherOccupation = Get(24),
+                    MotherContactNumber = Get(25),
+                    MonthlyFamilyIncome = Get(26),
+                    ParentsRelationshipStatus = Get(27),
 
-                    FatherName = Get(17),
-                    FatherAge = int.TryParse(Get(18), out int fAge) ? fAge : (int?)null,
-                    FatherEducationalAttainment = Get(19),
-                    FatherOccupation = Get(20),
-                    FatherContactNumber = Get(21),
-                    MotherName = Get(22),
-                    MotherAge = int.TryParse(Get(23), out int mAge) ? mAge : (int?)null,
-                    MotherEducationalAttainment = Get(24),
-                    MotherOccupation = Get(25),
-                    MotherContactNumber = Get(26),
-                    MonthlyFamilyIncome = Get(27),
-                    ParentsRelationshipStatus = Get(28),
+                    EmergencyContactPerson = Get(28),
+                    EmergencyContactAge = int.TryParse(Get(29), out int ecAge) ? ecAge : (int?)null,
+                    EmergencyContactOccupation = Get(30),
+                    EmergencyContactNumber = Get(31),
+                    EmergencyContactAddress = Get(32),
+                    ElementarySchool = Get(33),
+                    ElementaryYear = Get(34),
+                    ElementaryHonors = Get(35),
+                    SecondarySchool = Get(36),
+                    SecondaryYear = Get(37),
+                    SecondaryHonors = Get(38),
 
-                    EmergencyContactPerson = Get(29),
-                    EmergencyContactAge = int.TryParse(Get(30), out int ecAge) ? ecAge : (int?)null,
-                    EmergencyContactOccupation = Get(31),
-                    EmergencyContactNumber = Get(32),
-                    EmergencyContactAddress = Get(33),
-
-                    ElementarySchool = Get(34),
-                    ElementaryYear = Get(35),
-                    ElementaryHonors = Get(36),
-                    SecondarySchool = Get(37),
-                    SecondaryYear = Get(38),
-                    SecondaryHonors = Get(39),
-
-                    Height = null,
-                    Weight = null,
+                    Weight = Get(39),
+                    Height = Get(40),
                     BloodType = null,
                     Ailments = null,
                     Medication = null,
@@ -252,10 +271,10 @@ namespace GCAMS.Controllers
                     InvolvedWithDrugs = null,
                     MentallyChallengedRelative = null,
                     VisitedPsychiatrist = null,
-                    VisitedPsychiatristReason = null,
+                    AdditionalNotes = null,
                 };
 
-                if (!string.IsNullOrWhiteSpace(student.FName) && student.Age > 0)
+                if (!string.IsNullOrWhiteSpace(student.StuName) && student.Age > 0)
                     students.Add(student);
             }
 
