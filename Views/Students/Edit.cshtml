@@ -1,4 +1,4 @@
-﻿@model GCAMS.Models.Students
+﻿@model GCAMS.ViewModels.StudentFormViewModel
 
 @{
     ViewData["Title"] = "Edit";
@@ -272,336 +272,348 @@
 
     <!-- Form Content -->
     <div class="form-content">
-        <form asp-action="Edit">
-    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-    <input type="hidden" asp-for="Id" />
+        <form asp-action="Edit" asp-route-id="@Model.Student.StudentsID" method="post">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
 
-        <!-- Personal Information -->
-        <div class="form-section" id="personal">
-            <div class="form-section-title">
-                <i class="bi bi-person-badge"></i> Student Information
-            </div>
-            <div class="form-grid">
-                <div>
-                    <label class="field-label">Student ID</label>
-                    <input asp-for="StudentId" class="form-control" />
-                    <span asp-validation-for="StudentId" class="text-danger" style="font-size:12px;"></span>
-                </div>
-                <div>
-                    <label class="field-label">Full Name</label>
-                    <input asp-for="StuName" class="form-control" />
-                    <span asp-validation-for="StuName" class="text-danger" style="font-size:12px;"></span>
-                </div>
-                <div>
-                    <label class="field-label">Gender</label>
-                    <select asp-for="Gender" class="form-control">
-                        <option value="">Select</option>
-                        <option>Male</option>
-                        <option>Female</option>
-                    </select>
-                </div>
-                <div>
-                    <label class="field-label">Age</label>
-                    <input asp-for="Age" class="form-control" />
-                    <span asp-validation-for="Age" class="text-danger" style="font-size:12px;"></span>
-                </div>
-                <div>
-                    <label class="field-label">Birthday</label>
-                    <input asp-for="Birthday" type="date" class="form-control" />
-                    <span asp-validation-for="Birthday" class="text-danger" style="font-size:12px;"></span>
-                </div>
-                <div>
-                    <label class="field-label">Birth Order</label>
-                    <input asp-for="BirthOrder" placeholder="e.g. 1st of 3" class="form-control" />
-                </div>
-                <div>
-                    <label class="field-label">Email Address</label>
-                    <input asp-for="Email" class="form-control" />
-                    <span asp-validation-for="Email" class="text-danger" style="font-size:12px;"></span>
-                </div>
-                <div>
-                    <label class="field-label">Contact Number</label>
-                    <input asp-for="ContactNumber" class="form-control" />
-                </div>
-                <div>
-                    <label class="field-label">Nationality</label>
-                    <input asp-for="Nationality" class="form-control" />
-                </div>
-                <div>
-                    <label class="field-label">Religion</label>
-                    <input asp-for="Religion" class="form-control" />
-                </div>
-                <div class="full-width">
-                    <label class="field-label">Home Address</label>
-                    <input asp-for="Address" class="form-control" />
-                    <span asp-validation-for="Address" class="text-danger" style="font-size:12px;"></span>
-                </div>
-                <div>
-                    <label class="field-label">Grade Level</label>
-                    <input asp-for="GradeLevel" class="form-control" />
-                    <span asp-validation-for="GradeLevel" class="text-danger" style="font-size:12px;"></span>
-                </div>
-                <div>
-                    <label class="field-label">Section</label>
-                    <input asp-for="Section" class="form-control" />
-                    <span asp-validation-for="Section" class="text-danger" style="font-size:12px;"></span>
-                </div>
-                <div>
-                    <label class="field-label">Living Arrangement</label>
-                    <select asp-for="StayingWith" class="form-control">
-                        <option value="">Select</option>
-                        <option value="Parents">With Parents</option>
-                        <option value="Relatives">Relatives</option>
-                        <option value="Own Family">Own Family</option>
-                        <option value="Alone">Alone</option>
-                    </select>
-                </div>
-                <div>
-                    <label class="field-label">School</label>
-                    <input asp-for="School" class="form-control" />
-                </div>
-            </div>
-        </div>
+            <input type="hidden" asp-for="Student.StudentsID" />
+            <input type="hidden" asp-for="Family.FamilyBackgroundID" />
+            <input type="hidden" asp-for="Family.StudentsID" />
 
-        <!-- Family Background -->
-        <div class="form-section" id="family">
-            <div class="form-section-title">
-                <i class="bi bi-people-fill"></i> Family Information
-            </div>
-            <div class="form-grid">
-                <div>
-                    <label class="field-label">Father's Full Name</label>
-                    <input asp-for="FatherName" class="form-control" />
-                </div>
-                <div>
-                    <label class="field-label">Father's Age</label>
-                    <input asp-for="FatherAge" class="form-control" />
-                </div>
-                <div class="full-width">
-                    <label class="field-label">Father's Occupation</label>
-                    <input asp-for="FatherOccupation" class="form-control" />
-                </div>
-                <div class="full-width">
-                    <label class="field-label">Father's Educational Attainment</label>
-                    <input asp-for="FatherEducationalAttainment" class="form-control" />
-                </div>
-                <div>
-                    <label class="field-label">Father's Contact Number</label>
-                    <input asp-for="FatherContactNumber" class="form-control" />
-                </div>
-                <div></div>
-                <div>
-                    <label class="field-label">Mother's Full Name</label>
-                    <input asp-for="MotherName" class="form-control" />
-                </div>
-                <div>
-                    <label class="field-label">Mother's Age</label>
-                    <input asp-for="MotherAge" class="form-control" />
-                </div>
-                <div class="full-width">
-                    <label class="field-label">Mother's Occupation</label>
-                    <input asp-for="MotherOccupation" class="form-control" />
-                </div>
-                <div class="full-width">
-                    <label class="field-label">Mother's Educational Attainment</label>
-                    <input asp-for="MotherEducationalAttainment" class="form-control" />
-                </div>
-                <div>
-                    <label class="field-label">Mother's Contact Number</label>
-                    <input asp-for="MotherContactNumber" class="form-control" />
-                </div>
-                <div></div>
-                <div>
-                    <label class="field-label">Parents' Status</label>
-                    <select asp-for="ParentsRelationshipStatus" class="form-control">
-                        <option value="">Select</option>
-                        <option>Married and Living Together</option>
-                        <option>Married but Separated</option>
-                        <option>Both with other partners</option>
-                        <option>Not Married</option>
-                        <option>Father/Mother with another partner</option>
-                        <option>Both without parents</option>
-                        <option>Deceased</option>
-                    </select>
-                </div>
-                <div>
-                    <label class="field-label">Monthly Household Income</label>
-                    <select asp-for="MonthlyFamilyIncome" class="form-control">
-                        <option value="">Select</option>
-                        <option>Below 10,000</option>
-                        <option>10,000 - 20,000</option>
-                        <option>20,001 - 30,000</option>
-                        <option>Above 30,000</option>
-                    </select>
-                </div>
-            </div>
-        </div>
+            <input type="hidden" asp-for="Emergency.EmergencyContactID" />
+            <input type="hidden" asp-for="Emergency.StudentsID" />
 
-        <!-- Educational History -->
-        <div class="form-section" id="education">
-            <div class="form-section-title">
-                <i class="bi bi-mortarboard-fill"></i> Education History
-            </div>
-            <table class="edu-table">
-                <thead>
-                    <tr>
-                        <th>Previous School Name</th>
-                        <th>Level / Year</th>
-                        <th>Honors/Awards</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr>
-                        <td><input asp-for="ElementarySchool" placeholder="Elementary school" /></td>
-                        <td><input asp-for="ElementaryYear" placeholder="Year graduated" /></td>
-                        <td><input asp-for="ElementaryHonors" placeholder="Honors, if any" /></td>
-                    </tr>
-                    <tr>
-                        <td><input asp-for="SecondarySchool" placeholder="Secondary school" /></td>
-                        <td><input asp-for="SecondaryYear" placeholder="Year graduated" /></td>
-                        <td><input asp-for="SecondaryHonors" placeholder="Honors, if any" /></td>
-                    </tr>
-                </tbody>
-            </table>
-        </div>
+            <input type="hidden" asp-for="Education.EducationalBackgroundID" />
+            <input type="hidden" asp-for="Education.StudentsID" />
 
-        <!-- Health & Wellness -->
-        <div class="form-section" id="health">
-            <div class="form-section-title">
-                <i class="bi bi-heart-pulse-fill"></i> Health & Wellness
-            </div>
-            <div class="health-note">
-                ⚠️ This section contains sensitive health information. Please handle with care and ensure confidentiality.
-            </div>
-            <div class="form-grid">
-                <div class="form-grid-3 full-width">
+            <input type="hidden" asp-for="Health.HealthInformationID" />
+            <input type="hidden" asp-for="Health.StudentsID" />
+
+            <!-- Personal Information -->
+            <div class="form-section" id="personal">
+                <div class="form-section-title">
+                    <i class="bi bi-person-badge"></i> Student Information
+                </div>
+                <div class="form-grid">
                     <div>
-                        <label class="field-label">Blood Type</label>
-                        <select asp-for="BloodType" class="form-control">
+                        <label class="field-label">Student ID</label>
+                        <input asp-for="Student.StuID" class="form-control" />
+                        <span asp-validation-for="Student.StuID" class="text-danger" style="font-size:12px;"></span>
+                    </div>
+                    <div>
+                        <label class="field-label">Full Name</label>
+                        <input asp-for="Student.StuName" class="form-control" />
+                        <span asp-validation-for="Student.StuName" class="text-danger" style="font-size:12px;"></span>
+                    </div>
+                    <div>
+                        <label class="field-label">Gender</label>
+                        <select asp-for="Student.Gender" class="form-control">
                             <option value="">Select</option>
-                            <option>A+</option>
-                            <option>A-</option>
-                            <option>B+</option>
-                            <option>B-</option>
-                            <option>AB+</option>
-                            <option>AB-</option>
-                            <option>O+</option>
-                            <option>O-</option>
+                            <option>Male</option>
+                            <option>Female</option>
                         </select>
                     </div>
-
                     <div>
-                        <label class="field-label">Height (cm)</label>
-                        <input asp-for="Height" class="form-control" />
+                        <label class="field-label">Age</label>
+                        <input asp-for="Student.Age" class="form-control" />
+                        <span asp-validation-for="Student.Age" class="text-danger" style="font-size:12px;"></span>
+                    </div>
+                    <div>
+                        <label class="field-label">Birthday</label>
+                        <input asp-for="Student.Birthday" type="date" class="form-control" />
+                        <span asp-validation-for="Student.Birthday" class="text-danger" style="font-size:12px;"></span>
+                    </div>
+                    <div>
+                        <label class="field-label">Birth Order</label>
+                        <input asp-for="Student.BirthOrder" placeholder="e.g. 1st of 3" class="form-control" />
+                    </div>
+                    <div>
+                        <label class="field-label">Email Address</label>
+                        <input asp-for="Student.Email" class="form-control" />
+                        <span asp-validation-for="Student.Email" class="text-danger" style="font-size:12px;"></span>
+                    </div>
+                    <div>
+                        <label class="field-label">Contact Number</label>
+                        <input asp-for="Student.ContactNumber" class="form-control" />
+                    </div>
+                    <div>
+                        <label class="field-label">Nationality</label>
+                        <input asp-for="Student.Nationality" class="form-control" />
+                    </div>
+                    <div>
+                        <label class="field-label">Religion</label>
+                        <input asp-for="Student.Religion" class="form-control" />
+                    </div>
+                    <div class="full-width">
+                        <label class="field-label">Home Address</label>
+                        <input asp-for="Student.Address" class="form-control" />
+                        <span asp-validation-for="Student.Address" class="text-danger" style="font-size:12px;"></span>
+                    </div>
+                    <div>
+                        <label class="field-label">Grade Level</label>
+                        <input asp-for="Student.GradeLevel" class="form-control" />
+                        <span asp-validation-for="Student.GradeLevel" class="text-danger" style="font-size:12px;"></span>
+                    </div>
+                    <div>
+                        <label class="field-label">Section</label>
+                        <input asp-for="Student.Section" class="form-control" />
+                        <span asp-validation-for="Student.Section" class="text-danger" style="font-size:12px;"></span>
+                    </div>
+                    <div>
+                        <label class="field-label">Living Arrangement</label>
+                        <select asp-for="Student.StayingWith" class="form-control">
+                            <option value="">Select</option>
+                            <option value="Parents">With Parents</option>
+                            <option value="Relatives">Relatives</option>
+                            <option value="Own Family">Own Family</option>
+                            <option value="Alone">Alone</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="field-label">School</label>
+                        <input asp-for="Student.School" class="form-control" />
+                    </div>
+                </div>
+            </div>
+
+            <!-- Family Background -->
+            <div class="form-section" id="family">
+                <div class="form-section-title">
+                    <i class="bi bi-people-fill"></i> Family Information
+                </div>
+                <div class="form-grid">
+                    <div>
+                        <label class="field-label">Father's Full Name</label>
+                        <input asp-for="Family.FatherName" class="form-control" />
+                    </div>
+                    <div>
+                        <label class="field-label">Father's Age</label>
+                        <input asp-for="Family.FatherAge" class="form-control" />
+                    </div>
+                    <div class="full-width">
+                        <label class="field-label">Father's Occupation</label>
+                        <input asp-for="Family.FatherOccupation" class="form-control" />
+                    </div>
+                    <div class="full-width">
+                        <label class="field-label">Father's Educational Attainment</label>
+                        <input asp-for="Family.FatherEducationalAttainment" class="form-control" />
+                    </div>
+                    <div>
+                        <label class="field-label">Father's Contact Number</label>
+                        <input asp-for="Family.FatherContactNumber" class="form-control" />
+                    </div>
+                    <div></div>
+                    <div>
+                        <label class="field-label">Mother's Full Name</label>
+                        <input asp-for="Family.MotherName" class="form-control" />
+                    </div>
+                    <div>
+                        <label class="field-label">Mother's Age</label>
+                        <input asp-for="Family.MotherAge" class="form-control" />
+                    </div>
+                    <div class="full-width">
+                        <label class="field-label">Mother's Occupation</label>
+                        <input asp-for="Family.MotherOccupation" class="form-control" />
+                    </div>
+                    <div class="full-width">
+                        <label class="field-label">Mother's Educational Attainment</label>
+                        <input asp-for="Family.MotherEducationalAttainment" class="form-control" />
+                    </div>
+                    <div>
+                        <label class="field-label">Mother's Contact Number</label>
+                        <input asp-for="Family.MotherContactNumber" class="form-control" />
+                    </div>
+                    <div></div>
+                    <div>
+                        <label class="field-label">Parents' Status</label>
+                        <select asp-for="Family.ParentsRelationshipStatus" class="form-control">
+                            <option value="">Select</option>
+                            <option>Married and Living Together</option>
+                            <option>Married but Separated</option>
+                            <option>Both with other partners</option>
+                            <option>Not Married</option>
+                            <option>Father/Mother with another partner</option>
+                            <option>Both without parents</option>
+                            <option>Deceased</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="field-label">Monthly Household Income</label>
+                        <select asp-for="Family.MonthlyFamilyIncome" class="form-control">
+                            <option value="">Select</option>
+                            <option>Below 10,000</option>
+                            <option>10,000 - 20,000</option>
+                            <option>20,001 - 30,000</option>
+                            <option>Above 30,000</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Educational History -->
+            <div class="form-section" id="education">
+                <div class="form-section-title">
+                    <i class="bi bi-mortarboard-fill"></i> Education History
+                </div>
+                <table class="edu-table">
+                    <thead>
+                        <tr>
+                            <th>Previous School Name</th>
+                            <th>Level / Year</th>
+                            <th>Honors/Awards</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><input asp-for="Education.ElementarySchool" placeholder="Elementary school" /></td>
+                            <td><input asp-for="Education.ElementaryYear" placeholder="Year graduated" /></td>
+                            <td><input asp-for="Education.ElementaryHonors" placeholder="Honors, if any" /></td>
+                        </tr>
+                        <tr>
+                            <td><input asp-for="Education.SecondarySchool" placeholder="Secondary school" /></td>
+                            <td><input asp-for="Education.SecondaryYear" placeholder="Year graduated" /></td>
+                            <td><input asp-for="Education.SecondaryHonors" placeholder="Honors, if any" /></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Health & Wellness -->
+            <div class="form-section" id="health">
+                <div class="form-section-title">
+                    <i class="bi bi-heart-pulse-fill"></i> Health & Wellness
+                </div>
+                <div class="health-note">
+                    ⚠️ This section contains sensitive health information. Please handle with care and ensure confidentiality.
+                </div>
+                <div class="form-grid">
+                    <div class="form-grid-3 full-width">
+                        <div>
+                            <label class="field-label">Blood Type</label>
+                            <select asp-for="Health.BloodType" class="form-control">
+                                <option value="">Select</option>
+                                <option>A+</option>
+                                <option>A-</option>
+                                <option>B+</option>
+                                <option>B-</option>
+                                <option>AB+</option>
+                                <option>AB-</option>
+                                <option>O+</option>
+                                <option>O-</option>
+                            </select>
+                        </div>
+
+                        <div>
+                            <label class="field-label">Height (cm)</label>
+                            <input asp-for="Health.Height" class="form-control" />
+                        </div>
+
+                        <div>
+                            <label class="field-label">Weight (kg)</label>
+                            <input asp-for="Health.Weight" class="form-control" />
+                        </div>
+                    </div>
+
+                    <div class="full-width">
+                        <label class="field-label">Family Medical History</label>
+                        <textarea asp-for="Health.Ailments" placeholder="Specify condition(s), if any" class="form-control" rows="2"></textarea>
+                    </div>
+                    <div class="full-width">
+                        <label class="field-label">Under Medication</label>
+                        <textarea asp-for="Health.Medication" placeholder="List medication name and dosage, if applicable" class="form-control" rows="2"></textarea>
+                    </div>
+                    <div class="full-width">
+                        <label asp-for="Health.SuicideRiskHistory" class="field-label"></label>
+                        <textarea asp-for="Health.SuicideRiskHistory"
+                                  class="form-control"
+                                  rows="2"></textarea>
+                        <span asp-validation-for="Health.SuicideRiskHistory" class="text-danger"></span>
+                    </div>
+
+                    <div class="full-width">
+                        <label asp-for="Health.AbuseHistory" class="field-label"></label>
+                        <textarea asp-for="Health.AbuseHistory"
+                                  class="form-control"
+                                  rows="2"></textarea>
+                        <span asp-validation-for="Health.AbuseHistory" class="text-danger"></span>
+                    </div>
+
+                    <div class="full-width">
+                        <label asp-for="Health.DrugHistory" class="field-label"></label>
+                        <textarea asp-for="Health.DrugHistory"
+                                  placeholder="If yes, indicate type and approximate time period"
+                                  class="form-control"
+                                  rows="2"></textarea>
+                        <span asp-validation-for="Health.DrugHistory" class="text-danger"></span>
+                    </div>
+
+                    <div class="full-width">
+                        <label asp-for="Health.FamilyMentalHealthHistory" class="field-label"></label>
+                        <textarea asp-for="Health.FamilyMentalHealthHistory"
+                                  placeholder="Specify condition and relationship to the family member"
+                                  class="form-control"
+                                  rows="2"></textarea>
+                        <span asp-validation-for="Health.FamilyMentalHealthHistory" class="text-danger"></span>
+                    </div>
+
+                    <div class="full-width">
+                        <label asp-for="Health.PsychiatricConsultation" class="field-label"></label>
+                        <textarea asp-for="Health.PsychiatricConsultation"
+                                  placeholder="State reason and approximate date of consultation(s)"
+                                  class="form-control"
+                                  rows="2"></textarea>
+                        <span asp-validation-for="Health.PsychiatricConsultation" class="text-danger"></span>
+                    </div>
+
+                    <div class="full-width">
+                        <label asp-for="Health.AdditionalNotes" class="field-label"></label>
+                        <textarea asp-for="Health.AdditionalNotes"
+                                  placeholder="Enter any additional notes or comments"
+                                  class="form-control"
+                                  rows="2"></textarea>
+                        <span asp-validation-for="Health.AdditionalNotes" class="text-danger"></span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Emergency Contact -->
+            <div class="form-section" id="emergency">
+                <div class="form-section-title">
+                    <i class="bi bi-telephone-fill"></i> Emergency Contact
+                </div>
+                <div class="form-grid">
+                    <div>
+                        <label class="field-label">Emergency Contact Name</label>
+                        <input asp-for="Emergency.EmergencyContactPerson" class="form-control" />
                     </div>
 
                     <div>
-                        <label class="field-label">Weight (kg)</label>
-                        <input asp-for="Weight" class="form-control" />
+                        <label class="field-label">Contact Number</label>
+                        <input asp-for="Emergency.EmergencyContactNumber" class="form-control" />
                     </div>
-                </div>
-
-                <div class="full-width">
-                    <label class="field-label">Family Medical History</label>
-                    <textarea asp-for="Ailments" placeholder="Specify condition(s), if any" class="form-control" rows="2"></textarea>
-                </div>
-                <div class="full-width">
-                    <label class="field-label">Under Medication</label>
-                    <textarea asp-for="Medication" placeholder="List medication name and dosage, if applicable" class="form-control" rows="2"></textarea>
-                </div>
-                <div class="full-width">
-                    <label asp-for="SuicidalAttempts" class="field-label"></label>
-                    <textarea asp-for="SuicidalAttempts"
-                              class="form-control"
-                              rows="2"></textarea>
-                    <span asp-validation-for="SuicidalAttempts" class="text-danger"></span>
-                </div>
-
-                <div class="full-width">
-                    <label asp-for="VictimOfAbuse" class="field-label"></label>
-                    <textarea asp-for="VictimOfAbuse"
-                              class="form-control"
-                              rows="2"></textarea>
-                    <span asp-validation-for="VictimOfAbuse" class="text-danger"></span>
-                </div>
-
-                <div class="full-width">
-                    <label asp-for="InvolvedWithDrugs" class="field-label"></label>
-                    <textarea asp-for="InvolvedWithDrugs"
-                              placeholder="If yes, indicate type and approximate time period"
-                              class="form-control"
-                              rows="2"></textarea>
-                    <span asp-validation-for="InvolvedWithDrugs" class="text-danger"></span>
-                </div>
-
-                <div class="full-width">
-                    <label asp-for="MentallyChallengedRelative" class="field-label"></label>
-                    <textarea asp-for="MentallyChallengedRelative"
-                              placeholder="Specify condition and relationship to the family member"
-                              class="form-control"
-                              rows="2"></textarea>
-                    <span asp-validation-for="MentallyChallengedRelative" class="text-danger"></span>
-                </div>
-
-                <div class="full-width">
-                    <label asp-for="VisitedPsychiatrist" class="field-label"></label>
-                    <textarea asp-for="VisitedPsychiatrist"
-                              placeholder="State reason and approximate date of consultation(s)"
-                              class="form-control"
-                              rows="2"></textarea>
-                    <span asp-validation-for="VisitedPsychiatrist" class="text-danger"></span>
-                </div>
-
-                <div class="full-width">
-                    <label asp-for="AdditionalNotes" class="field-label"></label>
-                    <textarea asp-for="AdditionalNotes"
-                              placeholder="Enter any additional notes or comments"
-                              class="form-control"
-                              rows="2"></textarea>
-                    <span asp-validation-for="AdditionalNotes" class="text-danger"></span>
-                </div>
-            </div>
-        </div>
-
-        <!-- Emergency Contact -->
-        <div class="form-section" id="emergency">
-            <div class="form-section-title">
-                <i class="bi bi-telephone-fill"></i> Emergency Contact
-            </div>
-            <div class="form-grid">
-                <div>
-                    <label class="field-label">Emergency Contact Name</label>
-                    <input asp-for="EmergencyContactPerson" class="form-control" />
-                </div>
-                
-                <div>
-                    <label class="field-label">Contact Number</label>
-                    <input asp-for="EmergencyContactNumber" class="form-control" />
-                </div>
                     <div>
                         <label class="field-label">Occupation</label>
-                        <input asp-for="EmergencyContactOccupation" class="form-control" />
+                        <input asp-for="Emergency.EmergencyContactOccupation" class="form-control" />
                     </div>
-                <div>
-                    <label class="field-label">Age</label>
-                    <input asp-for="EmergencyContactAge" class="form-control" />
-                </div>
-                <div></div>
-                <div class="full-width">
-                    <label class="field-label">Address</label>
-                    <textarea asp-for="EmergencyContactAddress" class="form-control" rows="2"></textarea>
+                    <div>
+                        <label class="field-label">Age</label>
+                        <input asp-for="Emergency.EmergencyContactAge" class="form-control" />
+                    </div>
+                    <div></div>
+                    <div class="full-width">
+                        <label class="field-label">Address</label>
+                        <textarea asp-for="Emergency.EmergencyContactAddress" class="form-control" rows="2"></textarea>
+                    </div>
                 </div>
             </div>
-        </div>
 
-        <!-- Footer -->
-        <div class="form-footer">
-            <small class="text-muted">🔒 Privacy Protected • Sys.Logged</small>
-            <div style="display:flex; gap:10px;">
-                <a asp-action="Index" class="btn-save-draft">Cancel</a>
-                <input type="submit" value="Save Changes" class="btn-save-changes" />
+            <!-- Footer -->
+            <div class="form-footer">
+                <small class="text-muted">🔒 Privacy Protected • Sys.Logged</small>
+                <div style="display:flex; gap:10px;">
+                    <a asp-action="Index" class="btn-save-draft">Cancel</a>
+                    <input type="submit" value="Save Changes" class="btn-save-changes" />
+                </div>
             </div>
-        </div>
         </form>
     </div>
 </div>
@@ -632,5 +644,7 @@
 </script>
 
 @section Scripts {
-    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
 }

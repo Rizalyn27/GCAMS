@@ -4,6 +4,7 @@ using GCAMS.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace GCAMS.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260601032406_NormalizedModels")]
+    partial class NormalizedModels
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -179,10 +182,6 @@ namespace GCAMS.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("HealthInformationID"));
 
-                    b.Property<string>("AbuseHistory")
-                        .HasMaxLength(300)
-                        .HasColumnType("nvarchar(300)");
-
                     b.Property<string>("AdditionalNotes")
                         .HasMaxLength(1000)
                         .HasColumnType("nvarchar(1000)");
@@ -195,32 +194,36 @@ namespace GCAMS.Migrations
                         .HasMaxLength(10)
                         .HasColumnType("nvarchar(10)");
 
-                    b.Property<string>("DrugHistory")
-                        .HasMaxLength(300)
-                        .HasColumnType("nvarchar(300)");
-
-                    b.Property<string>("FamilyMentalHealthHistory")
-                        .HasMaxLength(300)
-                        .HasColumnType("nvarchar(300)");
-
                     b.Property<string>("Height")
                         .HasMaxLength(20)
                         .HasColumnType("nvarchar(20)");
+
+                    b.Property<string>("InvolvedWithDrugs")
+                        .HasMaxLength(300)
+                        .HasColumnType("nvarchar(300)");
 
                     b.Property<string>("Medication")
                         .HasMaxLength(500)
                         .HasColumnType("nvarchar(500)");
 
-                    b.Property<string>("PsychiatricConsultation")
-                        .HasMaxLength(500)
-                        .HasColumnType("nvarchar(500)");
+                    b.Property<string>("MentallyChallengedRelative")
+                        .HasMaxLength(300)
+                        .HasColumnType("nvarchar(300)");
 
                     b.Property<int?>("StudentsID")
                         .HasColumnType("int");
 
-                    b.Property<string>("SuicideRiskHistory")
+                    b.Property<string>("SuicidalAttempts")
                         .HasMaxLength(300)
                         .HasColumnType("nvarchar(300)");
+
+                    b.Property<string>("VictimOfAbuse")
+                        .HasMaxLength(300)
+                        .HasColumnType("nvarchar(300)");
+
+                    b.Property<string>("VisitedPsychiatrist")
+                        .HasMaxLength(500)
+                        .HasColumnType("nvarchar(500)");
 
                     b.Property<string>("Weight")
                         .HasMaxLength(20)

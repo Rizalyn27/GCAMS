@@ -1,4 +1,4 @@
-﻿@model IEnumerable<GCAMS.Models.Students>
+﻿@model IEnumerable<GCAMS.Models.Students.Students>
 
 @{
     ViewData["Title"] = "Student Management";
@@ -452,22 +452,22 @@
             @foreach (var item in Model)
             {
                 <tr data-active="@item.IsActive.ToString().ToLower()">
-                    <td><span class="student-id">@item.StudentId</span></td>
+                    <td><span class="student-id">@item.StuID</span></td>
                     <td><span class="student-name">@item.StuName</span></td>
                     <td><span class="student-email">@item.Email</span></td>
                     <td><span class="grade-pill">@item.GradeLevel</span></td>
                     <td>@item.Section</td>
                     <td>
                         <div class="action-icons">
-                            <a asp-action="Details" asp-route-id="@item.Id" class="action-icon" title="View Details">
+                            <a asp-action="Details" asp-route-id="@item.StudentsID" class="action-icon" title="View Details">
                                 <span class="material-symbols-outlined">👁</span>
                             </a>
-                            <a asp-action="Edit" asp-route-id="@item.Id" class="action-icon" title="Edit">
+                            <a asp-action="Edit" asp-route-id="@item.StudentsID" class="action-icon" title="Edit">
                                 <span class="material-symbols-outlined">✏️</span>
                             </a>
                             @if (item.IsActive)
                             {
-                                <form asp-action="Archive" asp-route-id="@item.Id" method="post" class="archive-form">
+                                <form asp-action="SoftDelete" asp-route-id="@item.StudentsID" method="post" class="archive-form">
                                     @Html.AntiForgeryToken()
                                     <button type="submit" class="action-icon danger" title="Archive Student">
                                         <span class="material-symbols-outlined" style="font-size:18px;">🗑</span>
@@ -476,9 +476,12 @@
                             }
                             else
                             {
-                                <a asp-action="Details" asp-route-id="@item.Id" class="action-icon" title="View & Restore Student" style="color:#1b6d24;">
-                                    <span class="material-symbols-outlined" style="font-size:18px;">↺</span>
-                                </a>
+                                <form asp-action="Restore" asp-route-id="@item.StudentsID" method="post" class="archive-form">
+]                                    @Html.AntiForgeryToken()
+                                    <button type="submit" class="action-icon" title="Restore Student" style="color:#1b6d24;">
+                                        <span class="material-symbols-outlined" style="font-size:18px;">↺</span>
+                                    </button>
+                                </form>
                             }
                         </div>
                     </td>
