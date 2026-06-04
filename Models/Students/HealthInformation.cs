@@ -7,7 +7,7 @@ namespace GCAMS.Models.Students
         //Primary Key
         [Key]
         public int HealthInformationID { get; set; }
-
+        
         //Foreign Key Student ID
         public int? StudentsID { get; set; }
 

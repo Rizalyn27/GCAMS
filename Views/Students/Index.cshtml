@@ -393,7 +393,7 @@
     @if (TempData["Success"] != null)
     {
         <div class="alert-success">
-            <span class="material-symbols-outlined" style="font-size:16px; vertical-align:middle; margin-right:6px;">check_circle</span>
+            <span class="material-symbols-outlined" style="font-size:16px; vertical-align:middle; margin-right:6px;"></span>
             @TempData["Success"]
         </div>
     }
@@ -412,14 +412,17 @@
             <input type="text" id="studentSearch" placeholder="Search students by name or ID" />
         </div>
 
+        <!--Grade Level Filter-->
         <select id="gradeFilter" class="filter-select">
             <option value="">All Grades</option>
+
             @foreach (var gradeLevel in Model.Select(s => s.GradeLevel).Distinct().OrderBy(s => s))
             {
                 <option value="@gradeLevel?.ToLower()">@gradeLevel</option>
             }
         </select>
 
+        <!--Section Filter-->
         <select id="sectionFilter" class="filter-select">
             <option value="">All Sections</option>
             @foreach (var sec in Model.Select(s => s.Section).Distinct().OrderBy(s => s))
@@ -428,6 +431,7 @@
             }
         </select>
 
+        <!--Status Filter-->
         <select id="statusFilter" class="filter-select">
             <option value="">All Status</option>
             <option value="true">Active</option>
@@ -477,7 +481,7 @@
                             else
                             {
                                 <form asp-action="Restore" asp-route-id="@item.StudentsID" method="post" class="archive-form">
-]                                    @Html.AntiForgeryToken()
+                                     @Html.AntiForgeryToken()
                                     <button type="submit" class="action-icon" title="Restore Student" style="color:#1b6d24;">
                                         <span class="material-symbols-outlined" style="font-size:18px;">↺</span>
                                     </button>
@@ -527,9 +531,8 @@
     const pageSize = 10;
     let currentPage = 1;
     let visibleRows = [];
-
-    function applyFilters() {
-        const query           = document.getElementById('studentSearch').value.toLowerCase();
+        function applyFilters() {
+        const query           = document.getElementById('studentSearch').value.toLowerCase().trim();
         const grade           = document.getElementById('gradeFilter').value.toLowerCase();
         const selectedSection = document.getElementById('sectionFilter').value.toLowerCase();
         const status          = document.getElementById('statusFilter').value;
@@ -541,12 +544,12 @@
             const name      = row.cells[1]?.textContent.trim().toLowerCase() || '';
             const rowGrade  = row.cells[3]?.textContent.trim().toLowerCase() || '';
             const rowSec    = row.cells[4]?.textContent.trim().toLowerCase() || '';
-            const rowActive = row.dataset.active || '';
+            const rowActive = (row.getAttribute('data-active') || '').trim();
 
             const matchesSearch  = !query           || name.includes(query) || stuId.includes(query);
             const matchesGrade   = !grade           || rowGrade === grade;
             const matchesSection = !selectedSection || rowSec === selectedSection;
-            const matchesStatus  = !status          || rowActive === status;
+            const matchesStatus  = !status          || rowActive === status; 
 
             if (matchesSearch && matchesGrade && matchesSection && matchesStatus) {
                 visibleRows.push(row);

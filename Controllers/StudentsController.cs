@@ -20,10 +20,15 @@ namespace GCAMS.Controllers
         // GET: Students
         public async Task<IActionResult> Index()
         {
-            var students = await _context.Students
-                .Where(s => s.IsActive)
-                .ToListAsync();
-            return View(students);
+            try
+            {
+                var students = await _context.Students.ToListAsync();
+                return View(students);
+            }
+            catch (Exception ex)
+            {
+                return Content(ex.ToString());
+            }
         }
 
         // GET: Students/Details/5
@@ -40,6 +45,7 @@ namespace GCAMS.Controllers
 
             if (student == null) return NotFound();
 
+
             var vm = new StudentFormViewModel
             {
                 Student = student,
@@ -53,6 +59,7 @@ namespace GCAMS.Controllers
         }
 
         // GET: Students/Create
+
         public IActionResult Create()
         {
             return View(new StudentFormViewModel());
@@ -70,7 +77,7 @@ namespace GCAMS.Controllers
             }
             if (ModelState.IsValid)
             {
-                // 1. Save student first to get StudentsID
+                // 1. Save student first to get StudentsID (PK)
                 vm.Student.IsActive = true;
                 _context.Students.Add(vm.Student);
                 await _context.SaveChangesAsync();
@@ -142,6 +149,9 @@ namespace GCAMS.Controllers
                 {
                     _context.Update(vm.Student);
 
+                    //update related entities
+                    //if entites still have nothing add new content
+
                     if (vm.Family.FamilyBackgroundID == 0) { vm.Family.StudentsID = id; _context.FamilyBackgrounds.Add(vm.Family); }
                     else _context.FamilyBackgrounds.Update(vm.Family);
 
@@ -159,6 +169,7 @@ namespace GCAMS.Controllers
                 }
                 catch (DbUpdateConcurrencyException)
                 {
+                    //if student doesnt exits, return not found error
                     if (!StudentsExists(vm.Student.StudentsID)) return NotFound();
                     else throw;
                 }
@@ -199,6 +210,8 @@ namespace GCAMS.Controllers
         }
 
         // Soft Delete
+        [HttpPost]
+        [ValidateAntiForgeryToken]
         public async Task<IActionResult> SoftDelete(int id)
         {
             var student = await _context.Students.FindAsync(id);
@@ -210,7 +223,9 @@ namespace GCAMS.Controllers
             return RedirectToAction(nameof(Index));
         }
 
-        // Restore
+        // Restore/Activate
+        [HttpPost]
+        [ValidateAntiForgeryToken]
         public async Task<IActionResult> Restore(int id)
         {
             var student = await _context.Students.FindAsync(id);
@@ -227,115 +242,138 @@ namespace GCAMS.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Import(IFormFile file)
         {
-            if (file == null || file.Length == 0)
+            
+
+            try
             {
-                TempData["Error"] = "Please select an Excel file.";
-                return RedirectToAction(nameof(Index));
-            }
-
-            if (!Path.GetExtension(file.FileName).Equals(".xlsx", StringComparison.OrdinalIgnoreCase))
-            {
-                TempData["Error"] = "Invalid file format. Please upload an .xlsx file.";
-                return RedirectToAction(nameof(Index));
-            }
-
-            OfficeOpenXml.ExcelPackage.License.SetNonCommercialOrganization("GCAMS Thesis Project");
-
-            using var stream = new MemoryStream();
-            await file.CopyToAsync(stream);
-
-            using var package = new OfficeOpenXml.ExcelPackage(stream);
-            var worksheet = package.Workbook.Worksheets[0];
-            int rowCount = worksheet.Dimension?.Rows ?? 0;
-            int successCount = 0;
-
-            for (int row = 2; row <= rowCount; row++)
-            {
-                string? Get(int col)
+                if (file == null || file.Length == 0)
                 {
-                    var val = worksheet.Cells[row, col].Text?.Trim();
-                    return string.IsNullOrWhiteSpace(val) ? null : val;
+                    TempData["Error"] = "Please select an Excel file.";
+                    return RedirectToAction(nameof(Index));
                 }
 
-                var student = new Students
+                if (!Path.GetExtension(file.FileName).Equals(".xlsx", StringComparison.OrdinalIgnoreCase))
                 {
-                    StuID = Get(1) ?? "",
-                    StuName = Get(2) ?? "",
-                    GradeLevel = Get(3) ?? "",
-                    Section = Get(4) ?? "",
-                    School = Get(5) ?? "Don Sergio Osmeña Senior Memorial National High School",
-                    Birthday = DateTime.TryParse(Get(6), out var bday) ? bday : null,
-                    Age = int.TryParse(Get(7), out int age) ? age : 0,
-                    BirthOrder = Get(8),
-                    Address = Get(9) ?? "",
-                    ContactNumber = Get(10),
-                    Email = Get(11),
-                    Gender = Get(12),
-                    Nationality = Get(13),
-                    Religion = Get(14),
-                    StayingWith = Get(15),
-                    IsActive = true
-                };
+                    TempData["Error"] = "Invalid file format. Please upload an .xlsx file.";
+                    return RedirectToAction(nameof(Index));
+                }
 
-                if (string.IsNullOrWhiteSpace(student.StuName) || string.IsNullOrWhiteSpace(student.StuID))
-                    continue;
 
-                // Save student first to get StudentsID
-                _context.Students.Add(student);
-                await _context.SaveChangesAsync();
+                //save excel file to stream temporarilly
+                using var stream = new MemoryStream();
+                await file.CopyToAsync(stream);
+                stream.Position = 0;
 
-                // Save related entities linked to the student
-                _context.FamilyBackgrounds.Add(new FamilyBackground
+                //open excel file, sheet 0
+                using var package = new OfficeOpenXml.ExcelPackage(stream);
+                if (package.Workbook.Worksheets.Count == 0)
                 {
-                    StudentsID = student.StudentsID,
-                    FatherName = Get(16),
-                    FatherAge = int.TryParse(Get(17), out int fAge) ? fAge : null,
-                    FatherEducationalAttainment = Get(18),
-                    FatherOccupation = Get(19),
-                    FatherContactNumber = Get(20),
-                    MotherName = Get(21),
-                    MotherAge = int.TryParse(Get(22), out int mAge) ? mAge : null,
-                    MotherEducationalAttainment = Get(23),
-                    MotherOccupation = Get(24),
-                    MotherContactNumber = Get(25),
-                    MonthlyFamilyIncome = Get(26),
-                    ParentsRelationshipStatus = Get(27),
-                });
+                    TempData["Error"] = "The Excel file has no worksheets.";
+                    return RedirectToAction(nameof(Index));
+                }
 
-                _context.EmergencyContacts.Add(new EmergencyContact
+                var worksheet = package.Workbook.Worksheets[0];
+                int rowCount = worksheet.Dimension?.Rows ?? 0;
+                int successCount = 0;
+
+
+                for (int row = 2; row <= rowCount; row++)
                 {
-                    StudentsID = student.StudentsID,
-                    EmergencyContactPerson = Get(28),
-                    EmergencyContactAge = int.TryParse(Get(29), out int ecAge) ? ecAge : null,
-                    EmergencyContactOccupation = Get(30),
-                    EmergencyContactNumber = Get(31),
-                    EmergencyContactAddress = Get(32),
-                });
+                    string? Get(int col)
+                    {
+                        var val = worksheet.Cells[row, col].Text?.Trim();
+                        return string.IsNullOrWhiteSpace(val) ? null : val;
+                    }
 
-                _context.EducationalBackgrounds.Add(new EducationalBackground
-                {
-                    StudentsID = student.StudentsID,
-                    ElementarySchool = Get(33),
-                    ElementaryYear = Get(34),
-                    ElementaryHonors = Get(35),
-                    SecondarySchool = Get(36),
-                    SecondaryYear = Get(37),
-                    SecondaryHonors = Get(38),
-                });
+                    var student = new Students
+                    {
+                        StuID = Get(1) ?? "",
+                        StuName = Get(2) ?? "",
+                        GradeLevel = Get(3) ?? "",
+                        Section = Get(4) ?? "",
+                        School = Get(5) ?? "Don Sergio Osmeña Senior Memorial National High School",
+                        Birthday = DateTime.TryParse(Get(6), out var bday) ? bday : null,
+                        Age = int.TryParse(Get(7), out int age) ? age : 0,
+                        BirthOrder = Get(8),
+                        Address = Get(9) ?? "",
+                        ContactNumber = Get(10),
+                        Email = Get(11),
+                        Gender = Get(12),
+                        Nationality = Get(13),
+                        Religion = Get(14),
+                        StayingWith = Get(15),
+                        IsActive = true
+                    };
 
-                _context.HealthInformations.Add(new HealthInformation
-                {
-                    StudentsID = student.StudentsID,
-                    Weight = Get(39),
-                    Height = Get(40),
-                });
+                    if (string.IsNullOrWhiteSpace(student.StuName) || string.IsNullOrWhiteSpace(student.StuID))
+                        continue;
 
-                await _context.SaveChangesAsync();
-                successCount++;
+                    // Save student first to get StudentsID
+                    _context.Students.Add(student);
+                    await _context.SaveChangesAsync();
+
+                    // Save related entities linked to the student
+                    _context.FamilyBackgrounds.Add(new FamilyBackground
+                    {
+                        StudentsID = student.StudentsID,
+                        FatherName = Get(16),
+                        FatherAge = int.TryParse(Get(17), out int fAge) ? fAge : null,
+                        FatherEducationalAttainment = Get(18),
+                        FatherOccupation = Get(19),
+                        FatherContactNumber = Get(20),
+                        MotherName = Get(21),
+                        MotherAge = int.TryParse(Get(22), out int mAge) ? mAge : null,
+                        MotherEducationalAttainment = Get(23),
+                        MotherOccupation = Get(24),
+                        MotherContactNumber = Get(25),
+                        MonthlyFamilyIncome = Get(26),
+                        ParentsRelationshipStatus = Get(27),
+                    });
+
+                    _context.EmergencyContacts.Add(new EmergencyContact
+                    {
+                        StudentsID = student.StudentsID,
+                        EmergencyContactPerson = Get(28),
+                        EmergencyContactAge = int.TryParse(Get(29), out int ecAge) ? ecAge : null,
+                        EmergencyContactOccupation = Get(30),
+                        EmergencyContactNumber = Get(31),
+                        EmergencyContactAddress = Get(32),
+                    });
+
+                    _context.EducationalBackgrounds.Add(new EducationalBackground
+                    {
+                        StudentsID = student.StudentsID,
+                        ElementarySchool = Get(33),
+                        ElementaryYear = Get(34),
+                        ElementaryHonors = Get(35),
+                        SecondarySchool = Get(36),
+                        SecondaryYear = Get(37),
+                        SecondaryHonors = Get(38),
+                    });
+
+                    _context.HealthInformations.Add(new HealthInformation
+                    {
+                        StudentsID = student.StudentsID,
+                        Weight = Get(39),
+                        Height = Get(40),
+                    });
+
+                    await _context.SaveChangesAsync();
+                    successCount++;
+                }
+
+                TempData["Success"] = $"{successCount} student(s) imported successfully.";
+                return RedirectToAction(nameof(Index));
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.ToString());
+
+                TempData["Error"] = ex.Message;
+
+                return RedirectToAction(nameof(Index));
             }
 
-            TempData["Success"] = $"{successCount} student(s) imported successfully.";
-            return RedirectToAction(nameof(Index));
         }
     }
 }
