@@ -29,10 +29,8 @@ namespace GCAMS.Models.Students
         public string? EmergencyContactOccupation { get; set; }
 
         //Emergency Contact Number
-        [Display(Name = "Emergency Contact Number")]
-        [Phone(ErrorMessage = "Invalid contact number.")]
-        [StringLength(20)]
-        public string? EmergencyContactNumber { get; set; }
+        public ICollection<EmergencyContactNumber> ContactNumbers { get; set; } = new List<EmergencyContactNumber>();
+
 
         //Emergency Contact Address
         [Display(Name = "Emergency Contact Address")]

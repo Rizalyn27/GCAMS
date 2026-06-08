@@ -18,9 +18,16 @@ namespace GCAMS.Data
         public DbSet<EmergencyContact> EmergencyContacts { get; set; }
         public DbSet<EducationalBackground> EducationalBackgrounds { get; set; }
 
+        //Student Contact Numbers
+        public DbSet<StudentContactNumber> StudentContactNumbers { get; set; }
+        public DbSet<FamilyContactNumber> FamilyContactNumbers { get; set; }
+        public DbSet<EmergencyContactNumber> EmergencyContactNumbers { get; set; }
+
 
         //Counselor
         public DbSet<Counselor> Counselors { get; set; }
+        public DbSet<CounselorContactNumber> CounselorContactNumbers { get; set; }
+
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -66,6 +73,12 @@ namespace GCAMS.Data
                 .IsRequired(false)
                 .OnDelete(DeleteBehavior.Cascade);
 
+            //CounselorContactNumber
+            modelBuilder.Entity<CounselorContactNumber>()
+                .HasOne(c => c.Counselor)
+                .WithMany(c => c.ContactNumbers)
+                .HasForeignKey(c => c.CounselorID)
+                .OnDelete(DeleteBehavior.Cascade);
         }
     }
 }

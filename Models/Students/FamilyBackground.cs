@@ -34,12 +34,6 @@
             [StringLength(150)]
             public string? FatherOccupation { get; set; }
 
-            //Father's Contact Number
-            [Display(Name = "Father's Contact Number")]
-            [Phone(ErrorMessage = "Invalid contact number.")]
-            [StringLength(20)]
-            public string? FatherContactNumber { get; set; }
-
             //Mother's Name
             [Display(Name = "Mother's Name")]
             [StringLength(200)]
@@ -60,12 +54,6 @@
             [StringLength(150)]
             public string? MotherOccupation { get; set; }
 
-            //Mother's Contact Number
-            [Display(Name = "Mother's Contact Number")]
-            [Phone(ErrorMessage = "Invalid contact number.")]
-            [StringLength(20)]
-            public string? MotherContactNumber { get; set; }
-
             // Monthly Family Income
             [Display(Name = "Monthly Family Income")]
             [StringLength(50)]
@@ -75,5 +63,10 @@
             [Display(Name = "Parents' Relationship Status")]
             [StringLength(100)]
             public string? ParentsRelationshipStatus { get; set; }
-        }
+
+            
+            //Contact Number - This is for the multi-value contact numbers
+            public ICollection<FamilyContactNumber> ContactNumbers { get; set; } = new List<FamilyContactNumber>();
+
     }
+}

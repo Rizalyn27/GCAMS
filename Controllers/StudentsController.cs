@@ -45,6 +45,8 @@ namespace GCAMS.Controllers
 
             if (student == null) return NotFound();
 
+            var familyId = student.FamilyBackground?.FamilyBackgroundID ?? 0;
+            var emergencyId = student.EmergencyContact?.EmergencyContactID ?? 0;
 
             var vm = new StudentFormViewModel
             {
@@ -52,7 +54,27 @@ namespace GCAMS.Controllers
                 Family = student.FamilyBackground ?? new FamilyBackground(),
                 Emergency = student.EmergencyContact ?? new EmergencyContact(),
                 Education = student.EducationalBackground ?? new EducationalBackground(),
-                Health = student.HealthInformation ?? new HealthInformation()
+                Health = student.HealthInformation ?? new HealthInformation(),
+
+                StudentContacts = await _context.StudentContactNumbers
+                    .Where(x => x.StudentsID == id)
+                    .Select(x => new ContactEntry { Number = x.Number, Label = x.Label })
+                    .ToListAsync(),
+
+                FatherContacts = await _context.FamilyContactNumbers
+                    .Where(x => x.FamilyBackgroundID == familyId && x.Label == "Father")
+                    .Select(x => new ContactEntry { Number = x.Number, Label = x.Label })
+                    .ToListAsync(),
+
+                MotherContacts = await _context.FamilyContactNumbers
+                    .Where(x => x.FamilyBackgroundID == familyId && x.Label == "Mother")
+                    .Select(x => new ContactEntry { Number = x.Number, Label = x.Label })
+                    .ToListAsync(),
+
+                EmergencyContacts = await _context.EmergencyContactNumbers
+                    .Where(x => x.EmergencyContactID == emergencyId)
+                    .Select(x => new ContactEntry { Number = x.Number, Label = x.Label })
+                    .ToListAsync()
             };
 
             return View(vm);
@@ -70,17 +92,12 @@ namespace GCAMS.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create(StudentFormViewModel vm)
         {
-            foreach (var error in ModelState)
-            {
-                var key = error.Key;
-                var errors = error.Value.Errors;
-            }
             if (ModelState.IsValid)
             {
-                // 1. Save student first to get StudentsID (PK)
+                // 1. Save student first
                 vm.Student.IsActive = true;
                 _context.Students.Add(vm.Student);
-                await _context.SaveChangesAsync();
+                await _context.SaveChangesAsync(); // get StudentsID
 
                 // 2. Link and save related entities
                 vm.Family.StudentsID = vm.Student.StudentsID;
@@ -93,6 +110,43 @@ namespace GCAMS.Controllers
                 _context.EducationalBackgrounds.Add(vm.Education);
                 _context.HealthInformations.Add(vm.Health);
 
+                await _context.SaveChangesAsync(); // get FamilyBackgroundID, EmergencyContactID
+
+                // 3. Save student contacts
+                foreach (var c in vm.StudentContacts.Where(x => !string.IsNullOrWhiteSpace(x.Number)))
+                    _context.StudentContactNumbers.Add(new StudentContactNumber
+                    {
+                        StudentsID = vm.Student.StudentsID,  // fixed: was "student.StudentsID"
+                        Number = c.Number,
+                        Label = c.Label
+                    });
+
+                // 4. Save father contacts
+                foreach (var c in vm.FatherContacts.Where(x => !string.IsNullOrWhiteSpace(x.Number)))
+                    _context.FamilyContactNumbers.Add(new FamilyContactNumber
+                    {
+                        FamilyBackgroundID = vm.Family.FamilyBackgroundID,  // fixed: was "family.FamilyBackgroundID"
+                        Number = c.Number,
+                        Label = c.Label ?? "Father"
+                    });
+
+                // 5. Save mother contacts
+                foreach (var c in vm.MotherContacts.Where(x => !string.IsNullOrWhiteSpace(x.Number)))
+                    _context.FamilyContactNumbers.Add(new FamilyContactNumber
+                    {
+                        FamilyBackgroundID = vm.Family.FamilyBackgroundID,
+                        Number = c.Number,
+                        Label = c.Label ?? "Mother"
+                    });
+
+                // 6. Save emergency contacts
+                foreach (var c in vm.EmergencyContacts.Where(x => !string.IsNullOrWhiteSpace(x.Number)))
+                    _context.EmergencyContactNumbers.Add(new EmergencyContactNumber
+                    {
+                        EmergencyContactID = vm.Emergency.EmergencyContactID,  // fixed: was "emergency.EmergencyContactID"
+                        Number = c.Number,
+                        Label = c.Label
+                    });
 
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
@@ -115,13 +169,37 @@ namespace GCAMS.Controllers
 
             if (student == null) return NotFound();
 
+            var familyId = student.FamilyBackground?.FamilyBackgroundID ?? 0;
+            var emergencyId = student.EmergencyContact?.EmergencyContactID ?? 0;
+
             var vm = new StudentFormViewModel
             {
                 Student = student,
                 Family = student.FamilyBackground ?? new FamilyBackground { StudentsID = student.StudentsID },
                 Emergency = student.EmergencyContact ?? new EmergencyContact { StudentsID = student.StudentsID },
                 Education = student.EducationalBackground ?? new EducationalBackground { StudentsID = student.StudentsID },
-                Health = student.HealthInformation ?? new HealthInformation { StudentsID = student.StudentsID }
+                Health = student.HealthInformation ?? new HealthInformation { StudentsID = student.StudentsID },
+
+                // Load existing contact numbers into the VM lists
+                StudentContacts = await _context.StudentContactNumbers
+                    .Where(x => x.StudentsID == id)
+                    .Select(x => new ContactEntry { Number = x.Number, Label = x.Label })
+                    .ToListAsync(),
+
+                FatherContacts = await _context.FamilyContactNumbers
+                    .Where(x => x.FamilyBackgroundID == familyId && x.Label == "Father")
+                    .Select(x => new ContactEntry { Number = x.Number, Label = x.Label })
+                    .ToListAsync(),
+
+                MotherContacts = await _context.FamilyContactNumbers
+                    .Where(x => x.FamilyBackgroundID == familyId && x.Label == "Mother")
+                    .Select(x => new ContactEntry { Number = x.Number, Label = x.Label })
+                    .ToListAsync(),
+
+                EmergencyContacts = await _context.EmergencyContactNumbers
+                    .Where(x => x.EmergencyContactID == emergencyId)
+                    .Select(x => new ContactEntry { Number = x.Number, Label = x.Label })
+                    .ToListAsync()
             };
 
             return View(vm);
@@ -134,23 +212,11 @@ namespace GCAMS.Controllers
         {
             if (id != vm.Student.StudentsID) return NotFound();
 
-            if (!ModelState.IsValid)
-            {
-                var errors = ModelState.Values
-                    .SelectMany(v => v.Errors)
-                    .Select(e => e.ErrorMessage)
-                    .ToList();
-
-                return BadRequest(errors);
-            }
             if (ModelState.IsValid)
             {
                 try
                 {
                     _context.Update(vm.Student);
-
-                    //update related entities
-                    //if entites still have nothing add new content
 
                     if (vm.Family.FamilyBackgroundID == 0) { vm.Family.StudentsID = id; _context.FamilyBackgrounds.Add(vm.Family); }
                     else _context.FamilyBackgrounds.Update(vm.Family);
@@ -164,17 +230,73 @@ namespace GCAMS.Controllers
                     if (vm.Health.HealthInformationID == 0) { vm.Health.StudentsID = id; _context.HealthInformations.Add(vm.Health); }
                     else _context.HealthInformations.Update(vm.Health);
 
+                    await _context.SaveChangesAsync(); // ensure FamilyBackgroundID and EmergencyContactID are set
+
+                    // --- Replace contact numbers (delete old, insert new) ---
+
+                    // Student contacts
+                    var oldStudentContacts = _context.StudentContactNumbers.Where(x => x.StudentsID == id);
+                    _context.StudentContactNumbers.RemoveRange(oldStudentContacts);
+
+                    // Family contacts
+                    var oldFamilyContacts = _context.FamilyContactNumbers
+                        .Where(x => x.FamilyBackgroundID == vm.Family.FamilyBackgroundID);
+                    _context.FamilyContactNumbers.RemoveRange(oldFamilyContacts);
+
+                    // Emergency contacts
+                    var oldEmergencyContacts = _context.EmergencyContactNumbers
+                        .Where(x => x.EmergencyContactID == vm.Emergency.EmergencyContactID);
+                    _context.EmergencyContactNumbers.RemoveRange(oldEmergencyContacts);
+
+                    await _context.SaveChangesAsync(); // clear old ones first
+
+                    // Insert new student contacts
+                    foreach (var c in vm.StudentContacts.Where(x => !string.IsNullOrWhiteSpace(x.Number)))
+                        _context.StudentContactNumbers.Add(new StudentContactNumber
+                        {
+                            StudentsID = id,
+                            Number = c.Number,
+                            Label = c.Label
+                        });
+
+                    // Insert new father contacts
+                    foreach (var c in vm.FatherContacts.Where(x => !string.IsNullOrWhiteSpace(x.Number)))
+                        _context.FamilyContactNumbers.Add(new FamilyContactNumber
+                        {
+                            FamilyBackgroundID = vm.Family.FamilyBackgroundID,
+                            Number = c.Number,
+                            Label = c.Label ?? "Father"
+                        });
+
+                    // Insert new mother contacts
+                    foreach (var c in vm.MotherContacts.Where(x => !string.IsNullOrWhiteSpace(x.Number)))
+                        _context.FamilyContactNumbers.Add(new FamilyContactNumber
+                        {
+                            FamilyBackgroundID = vm.Family.FamilyBackgroundID,
+                            Number = c.Number,
+                            Label = c.Label ?? "Mother"
+                        });
+
+                    // Insert new emergency contacts
+                    foreach (var c in vm.EmergencyContacts.Where(x => !string.IsNullOrWhiteSpace(x.Number)))
+                        _context.EmergencyContactNumbers.Add(new EmergencyContactNumber
+                        {
+                            EmergencyContactID = vm.Emergency.EmergencyContactID,
+                            Number = c.Number,
+                            Label = c.Label
+                        });
 
                     await _context.SaveChangesAsync();
                 }
                 catch (DbUpdateConcurrencyException)
                 {
-                    //if student doesnt exits, return not found error
                     if (!StudentsExists(vm.Student.StudentsID)) return NotFound();
                     else throw;
                 }
+
                 return RedirectToAction(nameof(Index));
             }
+
             return View(vm);
         }
 
@@ -242,8 +364,6 @@ namespace GCAMS.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Import(IFormFile file)
         {
-            
-
             try
             {
                 if (file == null || file.Length == 0)
@@ -258,13 +378,10 @@ namespace GCAMS.Controllers
                     return RedirectToAction(nameof(Index));
                 }
 
-
-                //save excel file to stream temporarilly
                 using var stream = new MemoryStream();
                 await file.CopyToAsync(stream);
                 stream.Position = 0;
 
-                //open excel file, sheet 0
                 using var package = new OfficeOpenXml.ExcelPackage(stream);
                 if (package.Workbook.Worksheets.Count == 0)
                 {
@@ -275,7 +392,6 @@ namespace GCAMS.Controllers
                 var worksheet = package.Workbook.Worksheets[0];
                 int rowCount = worksheet.Dimension?.Rows ?? 0;
                 int successCount = 0;
-
 
                 for (int row = 2; row <= rowCount; row++)
                 {
@@ -293,15 +409,13 @@ namespace GCAMS.Controllers
                         Section = Get(4) ?? "",
                         School = Get(5) ?? "Don Sergio Osmeña Senior Memorial National High School",
                         Birthday = DateTime.TryParse(Get(6), out var bday) ? bday : null,
-                        Age = int.TryParse(Get(7), out int age) ? age : 0,
-                        BirthOrder = Get(8),
-                        Address = Get(9) ?? "",
-                        ContactNumber = Get(10),
-                        Email = Get(11),
-                        Gender = Get(12),
-                        Nationality = Get(13),
-                        Religion = Get(14),
-                        StayingWith = Get(15),
+                        BirthOrder = Get(7),
+                        Address = Get(8) ?? "",
+                        Email = Get(10),
+                        Gender = Get(11),
+                        Nationality = Get(12),
+                        Religion = Get(13),
+                        StayingWith = Get(14),
                         IsActive = true
                     };
 
@@ -312,50 +426,88 @@ namespace GCAMS.Controllers
                     _context.Students.Add(student);
                     await _context.SaveChangesAsync();
 
-                    // Save related entities linked to the student
-                    _context.FamilyBackgrounds.Add(new FamilyBackground
-                    {
-                        StudentsID = student.StudentsID,
-                        FatherName = Get(16),
-                        FatherAge = int.TryParse(Get(17), out int fAge) ? fAge : null,
-                        FatherEducationalAttainment = Get(18),
-                        FatherOccupation = Get(19),
-                        FatherContactNumber = Get(20),
-                        MotherName = Get(21),
-                        MotherAge = int.TryParse(Get(22), out int mAge) ? mAge : null,
-                        MotherEducationalAttainment = Get(23),
-                        MotherOccupation = Get(24),
-                        MotherContactNumber = Get(25),
-                        MonthlyFamilyIncome = Get(26),
-                        ParentsRelationshipStatus = Get(27),
-                    });
+                    // Student contact number (col 9)
+                    if (Get(9) is string stuContact)
+                        _context.StudentContactNumbers.Add(new StudentContactNumber
+                        {
+                            StudentsID = student.StudentsID,
+                            Number = stuContact,
+                            Label = "Mobile"
+                        });
 
-                    _context.EmergencyContacts.Add(new EmergencyContact
+                    // Family background
+                    var family = new FamilyBackground
                     {
                         StudentsID = student.StudentsID,
-                        EmergencyContactPerson = Get(28),
-                        EmergencyContactAge = int.TryParse(Get(29), out int ecAge) ? ecAge : null,
-                        EmergencyContactOccupation = Get(30),
-                        EmergencyContactNumber = Get(31),
-                        EmergencyContactAddress = Get(32),
-                    });
+                        FatherName = Get(15),
+                        FatherAge = int.TryParse(Get(16), out int fAge) ? fAge : null,
+                        FatherEducationalAttainment = Get(17),
+                        FatherOccupation = Get(18),
+                        MotherName = Get(20),
+                        MotherAge = int.TryParse(Get(21), out int mAge) ? mAge : null,
+                        MotherEducationalAttainment = Get(22),
+                        MotherOccupation = Get(23),
+                        MonthlyFamilyIncome = Get(25),
+                        ParentsRelationshipStatus = Get(26),
+                    };
+                    _context.FamilyBackgrounds.Add(family);
+                    await _context.SaveChangesAsync(); // get FamilyBackgroundID
+
+                    // Father contact number (col 19)
+                    if (Get(19) is string fatherContact)
+                        _context.FamilyContactNumbers.Add(new FamilyContactNumber
+                        {
+                            FamilyBackgroundID = family.FamilyBackgroundID,
+                            Number = fatherContact,
+                            Label = "Father"
+                        });
+
+                    // Mother contact number (col 24)
+                    if (Get(24) is string motherContact)
+                        _context.FamilyContactNumbers.Add(new FamilyContactNumber
+                        {
+                            FamilyBackgroundID = family.FamilyBackgroundID,
+                            Number = motherContact,
+                            Label = "Mother"
+                        });
+
+                    // Emergency contact
+                    var emergency = new EmergencyContact
+                    {
+                        StudentsID = student.StudentsID,
+                        EmergencyContactPerson = Get(27),
+                        EmergencyContactAge = int.TryParse(Get(28), out int ecAge) ? ecAge : null,
+                        EmergencyContactOccupation = Get(29),
+                        EmergencyContactAddress = Get(31),
+                    };
+                    _context.EmergencyContacts.Add(emergency);
+                    await _context.SaveChangesAsync(); // get EmergencyContactID
+
+                    // Emergency contact number (col 30)
+                    if (Get(30) is string emergencyContact)
+                        _context.EmergencyContactNumbers.Add(new EmergencyContactNumber
+                        {
+                            EmergencyContactID = emergency.EmergencyContactID,
+                            Number = emergencyContact,
+                            Label = "Mobile"
+                        });
 
                     _context.EducationalBackgrounds.Add(new EducationalBackground
                     {
                         StudentsID = student.StudentsID,
-                        ElementarySchool = Get(33),
-                        ElementaryYear = Get(34),
-                        ElementaryHonors = Get(35),
-                        SecondarySchool = Get(36),
-                        SecondaryYear = Get(37),
-                        SecondaryHonors = Get(38),
+                        ElementarySchool = Get(32),
+                        ElementaryYear = Get(33),
+                        ElementaryHonors = Get(34),
+                        SecondarySchool = Get(35),
+                        SecondaryYear = Get(36),
+                        SecondaryHonors = Get(37),
                     });
 
                     _context.HealthInformations.Add(new HealthInformation
                     {
                         StudentsID = student.StudentsID,
-                        Weight = Get(39),
-                        Height = Get(40),
+                        Weight = Get(38),
+                        Height = Get(39),
                     });
 
                     await _context.SaveChangesAsync();
@@ -368,12 +520,9 @@ namespace GCAMS.Controllers
             catch (Exception ex)
             {
                 Console.WriteLine(ex.ToString());
-
                 TempData["Error"] = ex.Message;
-
                 return RedirectToAction(nameof(Index));
             }
-
         }
     }
 }

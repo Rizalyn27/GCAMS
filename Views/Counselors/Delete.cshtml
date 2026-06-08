@@ -47,11 +47,21 @@
         <dd class = "col-sm-10">
             @Html.DisplayFor(model => model.BirthDate)
         </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.ContactNumber)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.ContactNumber)
+        <dt class="col-sm-2">Contact Numbers</dt>
+        <dd class="col-sm-10">
+            @if (!Model.ContactNumbers.Any())
+            {
+                <span class="text-muted">Not specified</span>
+            }
+            else
+            {
+                @foreach (var c in Model.ContactNumbers)
+                {
+                    <div style="font-family:monospace;">
+                        @c.Number @(!string.IsNullOrEmpty(c.Label) ? $"({c.Label})" : "")
+                    </div>
+                }
+            }
         </dd>
         <dt class = "col-sm-2">
             @Html.DisplayNameFor(model => model.EmailAddress)

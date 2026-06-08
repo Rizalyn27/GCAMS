@@ -31,7 +31,7 @@
                 @Html.DisplayNameFor(model => model.BirthDate)
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.ContactNumber)
+                Contact Number
             </th>
             <th>
                 @Html.DisplayNameFor(model => model.EmailAddress)
@@ -81,9 +81,9 @@
             <td>
                 @Html.DisplayFor(modelItem => item.BirthDate)
             </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.ContactNumber)
-            </td>
+                <td>
+                    @string.Join(", ", item.ContactNumbers.Select(c => c.Number))
+                </td>
             <td>
                 @Html.DisplayFor(modelItem => item.EmailAddress)
             </td>

@@ -28,18 +28,13 @@ namespace GCAMS.Controllers
         // GET: Counselors/Details/5
         public async Task<IActionResult> Details(int? id)
         {
-            if (id == null)
-            {
-                return NotFound();
-            }
+            if (id == null) return NotFound();
 
             var counselor = await _context.Counselors
+                .Include(c => c.ContactNumbers)
                 .FirstOrDefaultAsync(m => m.CounselorID == id);
-            if (counselor == null)
-            {
-                return NotFound();
-            }
 
+            if (counselor == null) return NotFound();
             return View(counselor);
         }
 
@@ -54,11 +49,21 @@ namespace GCAMS.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("CounselorID,EmployeeNumber,FirstName,MiddleName,LastName,Gender,BirthDate,ContactNumber,EmailAddress,Address,EducationalAttainment,LicenseNumber,YearsOfExperience,Position,DateHired,EmploymentStatus")] Counselor counselor)
+        public async Task<IActionResult> Create(Counselor counselor)
         {
             if (ModelState.IsValid)
             {
-                _context.Add(counselor);
+                _context.Counselors.Add(counselor);
+                await _context.SaveChangesAsync();
+
+                foreach (var c in counselor.ContactNumbers.Where(x => !string.IsNullOrWhiteSpace(x.Number)))
+                    _context.CounselorContactNumbers.Add(new CounselorContactNumber
+                    {
+                        CounselorID = counselor.CounselorID,
+                        Number = c.Number,
+                        Label = c.Label
+                    });
+
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
@@ -68,16 +73,13 @@ namespace GCAMS.Controllers
         // GET: Counselors/Edit/5
         public async Task<IActionResult> Edit(int? id)
         {
-            if (id == null)
-            {
-                return NotFound();
-            }
+            if (id == null) return NotFound();
 
-            var counselor = await _context.Counselors.FindAsync(id);
-            if (counselor == null)
-            {
-                return NotFound();
-            }
+            var counselor = await _context.Counselors
+                .Include(c => c.ContactNumbers)
+                .FirstOrDefaultAsync(c => c.CounselorID == id);
+
+            if (counselor == null) return NotFound();
             return View(counselor);
         }
 
@@ -86,30 +88,35 @@ namespace GCAMS.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("CounselorID,EmployeeNumber,FirstName,MiddleName,LastName,Gender,BirthDate,ContactNumber,EmailAddress,Address,EducationalAttainment,LicenseNumber,YearsOfExperience,Position,DateHired,EmploymentStatus")] Counselor counselor)
+        public async Task<IActionResult> Edit(int id, Counselor counselor)
         {
-            if (id != counselor.CounselorID)
-            {
-                return NotFound();
-            }
+            if (id != counselor.CounselorID) return NotFound();
 
             if (ModelState.IsValid)
             {
                 try
                 {
                     _context.Update(counselor);
+
+                    // Replace contact numbers
+                    var old = _context.CounselorContactNumbers.Where(x => x.CounselorID == id);
+                    _context.CounselorContactNumbers.RemoveRange(old);
+                    await _context.SaveChangesAsync();
+
+                    foreach (var c in counselor.ContactNumbers.Where(x => !string.IsNullOrWhiteSpace(x.Number)))
+                        _context.CounselorContactNumbers.Add(new CounselorContactNumber
+                        {
+                            CounselorID = id,
+                            Number = c.Number,
+                            Label = c.Label
+                        });
+
                     await _context.SaveChangesAsync();
                 }
                 catch (DbUpdateConcurrencyException)
                 {
-                    if (!CounselorExists(counselor.CounselorID))
-                    {
-                        return NotFound();
-                    }
-                    else
-                    {
-                        throw;
-                    }
+                    if (!_context.Counselors.Any(e => e.CounselorID == id)) return NotFound();
+                    else throw;
                 }
                 return RedirectToAction(nameof(Index));
             }

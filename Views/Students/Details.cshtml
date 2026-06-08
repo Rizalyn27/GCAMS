@@ -452,10 +452,20 @@
             </div>
             <div class="section-body">
                 <div>
-                    <div class="field-label">Contact Number</div>
-                    <div class="field-value @(string.IsNullOrEmpty(Model.Student.ContactNumber) ? "empty" : "")" style="@(string.IsNullOrEmpty(Model.Student.ContactNumber) ? "" : "font-family:monospace;")">
-                        @(string.IsNullOrEmpty(Model.Student.ContactNumber) ? "Not specified" : Model.Student.ContactNumber)
-                    </div>
+                    <div class="field-label">Contact Numbers</div>
+                    @if (!Model.StudentContacts.Any())
+                    {
+                        <div class="field-value empty">Not specified</div>
+                    }
+                    else
+                    {
+                        @foreach (var c in Model.StudentContacts)
+                        {
+                            <div class="field-value" style="font-family:monospace;">
+                                @c.Number @(!string.IsNullOrEmpty(c.Label) ? $"({c.Label})" : "")
+                            </div>
+                        }
+                    }
                 </div>
                 <div>
                     <div class="field-label">Email Address</div>
@@ -511,10 +521,20 @@
                     </div>
                 </div>
                 <div>
-                    <div class="field-label">Contact Number</div>
-                    <div class="field-value @(string.IsNullOrEmpty(Model.Family.FatherContactNumber) ? "empty" : "")" style="font-family:monospace;">
-                        @(string.IsNullOrEmpty(Model.Family.FatherContactNumber) ? "Not specified" : Model.Family.FatherContactNumber)
-                    </div>
+                    <div class="field-label">Contact Numbers</div>
+                    @if (!Model.FatherContacts.Any())
+                    {
+                        <div class="field-value empty">Not specified</div>
+                    }
+                    else
+                    {
+                        @foreach (var c in Model.FatherContacts)
+                        {
+                            <div class="field-value" style="font-family:monospace;">
+                                @c.Number @(!string.IsNullOrEmpty(c.Label) ? $"({c.Label})" : "")
+                            </div>
+                        }
+                    }
                 </div>
                 <div>
                     <div class="field-label">Occupation</div>
@@ -550,10 +570,20 @@
                     </div>
                 </div>
                 <div>
-                    <div class="field-label">Contact Number</div>
-                    <div class="field-value @(string.IsNullOrEmpty(Model.Family.MotherContactNumber) ? "empty" : "")" style="font-family:monospace;">
-                        @(string.IsNullOrEmpty(Model.Family.MotherContactNumber) ? "Not specified" : Model.Family.MotherContactNumber)
-                    </div>
+                    <div class="field-label">Contact Numbers</div>
+                    @if (!Model.MotherContacts.Any())
+                    {
+                        <div class="field-value empty">Not specified</div>
+                    }
+                    else
+                    {
+                        @foreach (var c in Model.MotherContacts)
+                        {
+                            <div class="field-value" style="font-family:monospace;">
+                                @c.Number @(!string.IsNullOrEmpty(c.Label) ? $"({c.Label})" : "")
+                            </div>
+                        }
+                    }
                 </div>
                 <div>
                     <div class="field-label">Occupation</div>
@@ -610,10 +640,20 @@
                     </div>
                 </div>
                 <div>
-                    <div class="field-label">Contact Number</div>
-                    <div class="field-value @(string.IsNullOrEmpty(Model.Emergency.EmergencyContactNumber) ? "empty" : "")" style="font-family:monospace;">
-                        @(string.IsNullOrEmpty(Model.Emergency.EmergencyContactNumber) ? "Not specified" : Model.Emergency.EmergencyContactNumber)
-                    </div>
+                    <div class="field-label">Contact Numbers</div>
+                    @if (!Model.EmergencyContacts.Any())
+                    {
+                        <div class="field-value empty">Not specified</div>
+                    }
+                    else
+                    {
+                        @foreach (var c in Model.EmergencyContacts)
+                        {
+                            <div class="field-value" style="font-family:monospace;">
+                                @c.Number @(!string.IsNullOrEmpty(c.Label) ? $"({c.Label})" : "")
+                            </div>
+                        }
+                    }
                 </div>
                 <div>
                     <div class="field-label">Occupation</div>

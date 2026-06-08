@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace GCAMS.Models.Students
 {
@@ -48,10 +49,11 @@ namespace GCAMS.Models.Students
         [Display(Name = "Date of Birth")]
         [DisplayFormat(DataFormatString = "{0:yyyy-MM-dd}", ApplyFormatInEditMode = true)]
         public DateTime? Birthday { get; set; }
+
         //Age
-        [Required(ErrorMessage = "Age is required.")]
-        [Range(1, 100, ErrorMessage = "Age must be between 1 and 100.")]
-        public int? Age { get; set; }
+        [NotMapped]
+        public int Age => Birthday.HasValue
+        ? (int)((DateTime.Today - Birthday.Value).TotalDays / 365.25) : 0;
 
         //Birth Order
         [Display(Name = "Birth Order")]
@@ -65,10 +67,8 @@ namespace GCAMS.Models.Students
         public string Address { get; set; } = string.Empty;
 
         //Contact Number
-        [Display(Name = "Contact Number")]
-        [Phone(ErrorMessage = "Invalid contact number.")]
-        [StringLength(20)]
-        public string? ContactNumber { get; set; }
+        public ICollection<StudentContactNumber> ContactNumbers { get; set; } = new List<StudentContactNumber>();
+
 
         //Email Address
         [EmailAddress(ErrorMessage = "Invalid email address.")]
@@ -106,4 +106,6 @@ namespace GCAMS.Models.Students
         public HealthInformation? HealthInformation { get; set; }
 
     }
+
+
 }
