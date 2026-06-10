@@ -1,102 +1,345 @@
 ﻿@model GCAMS.Models.Counselor.Counselor
 
 @{
-    ViewData["Title"] = "Create";
+    ViewData["Title"] = "Add New Counselor";
 }
 
-<h1>Create</h1>
+<style>
+    @@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Manrope:wght@600;700&display=swap');
 
-<h4>Counselor</h4>
-<hr />
-<div class="row">
-    <div class="col-md-4">
-        <form asp-action="Create">
-            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-            <div class="form-group">
-                <label asp-for="EmployeeNumber" class="control-label"></label>
-                <input asp-for="EmployeeNumber" class="form-control" />
-                <span asp-validation-for="EmployeeNumber" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="FirstName" class="control-label"></label>
-                <input asp-for="FirstName" class="form-control" />
-                <span asp-validation-for="FirstName" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="MiddleName" class="control-label"></label>
-                <input asp-for="MiddleName" class="form-control" />
-                <span asp-validation-for="MiddleName" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="LastName" class="control-label"></label>
-                <input asp-for="LastName" class="form-control" />
-                <span asp-validation-for="LastName" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="Gender" class="control-label"></label>
-                <input asp-for="Gender" class="form-control" />
-                <span asp-validation-for="Gender" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="BirthDate" class="control-label"></label>
-                <input asp-for="BirthDate" class="form-control" />
-                <span asp-validation-for="BirthDate" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label class="control-label">Contact Numbers</label>
-                <div id="counselor-contacts"></div>
-                <button type="button" class="btn btn-sm btn-outline-secondary mt-1"
-                        onclick="addContact('counselor-contacts', 'ContactNumbers')">
-                    + Add Number
-                </button>
-            </div>
-            <div class="form-group">
-                <label asp-for="EmailAddress" class="control-label"></label>
-                <input asp-for="EmailAddress" class="form-control" />
-                <span asp-validation-for="EmailAddress" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="Address" class="control-label"></label>
-                <textarea asp-for="Address" class="form-control"></textarea>
-                <span asp-validation-for="Address" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="EducationalAttainment" class="control-label"></label>
-                <input asp-for="EducationalAttainment" class="form-control" />
-                <span asp-validation-for="EducationalAttainment" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="LicenseNumber" class="control-label"></label>
-                <input asp-for="LicenseNumber" class="form-control" />
-                <span asp-validation-for="LicenseNumber" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="YearsOfExperience" class="control-label"></label>
-                <input asp-for="YearsOfExperience" class="form-control" />
-                <span asp-validation-for="YearsOfExperience" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="Position" class="control-label"></label>
-                <input asp-for="Position" class="form-control" />
-                <span asp-validation-for="Position" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="DateHired" class="control-label"></label>
-                <input asp-for="DateHired" class="form-control" />
-                <span asp-validation-for="DateHired" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <input type="submit" value="Create" class="btn btn-primary" />
-            </div>
-        </form>
+    .form-wrapper {
+        display: flex;
+        gap: 1.5rem;
+        align-items: flex-start;
+    }
+
+    .form-sidebar {
+        width: 200px;
+        flex-shrink: 0;
+        position: sticky;
+        top: 1rem;
+    }
+
+        .form-sidebar .nav-link {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 10px 14px;
+            border-radius: 8px;
+            font-size: 14px;
+            font-family: Inter;
+            color: #555;
+            text-decoration: none;
+            margin-bottom: 4px;
+            transition: background 0.15s;
+        }
+
+            .form-sidebar .nav-link:hover {
+                background: #f0f0f0;
+                color: #222;
+            }
+
+            .form-sidebar .nav-link.active {
+                background: #e8f5e9;
+                color: #1b6d24;
+                font-weight: 500;
+            }
+
+            .form-sidebar .nav-link i {
+                font-size: 16px;
+            }
+
+    .form-content {
+        flex: 1;
+        min-width: 0;
+    }
+
+    .form-section {
+        background: #fff;
+        border: 1px solid #e5e7eb;
+        border-radius: 12px;
+        padding: 1.5rem;
+        margin-bottom: 1.5rem;
+    }
+
+    .form-section-title {
+        font-size: 18px;
+        font-weight: 700;
+        font-family: 'Manrope', sans-serif;
+        color: #111;
+        margin-bottom: 1.25rem;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+
+        .form-section-title i {
+            font-size: 18px;
+            color: #1b6d24;
+        }
+
+    .form-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 1rem;
+    }
+
+        .form-grid .full-width {
+            grid-column: 1 / -1;
+        }
+
+    .form-grid-3 {
+        display: grid;
+        grid-template-columns: 1fr 1fr 1fr;
+        gap: 1rem;
+    }
+
+    .field-label {
+        font-size: 13px;
+        font-family: 'Inter', sans-serif;
+        font-weight: 500;
+        color: #6b7280;
+        margin-bottom: 4px;
+        display: block;
+    }
+
+    .form-control, .form-select {
+        font-size: 14px;
+        font-family: 'Inter', sans-serif;
+        border-radius: 8px;
+        border: 1px solid #d1d5db;
+        padding: 8px 12px;
+        width: 100%;
+        color: #111;
+    }
+
+        .form-control:focus, .form-select:focus {
+            border-color: #1b6d24;
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(27, 109, 36, 0.1);
+        }
+
+    .form-footer {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 1rem 0;
+        border-top: 1px solid #e5e7eb;
+        margin-top: 1rem;
+    }
+
+    .btn-cancel {
+        background: #fff;
+        border: 1px solid #d1d5db;
+        border-radius: 8px;
+        padding: 9px 20px;
+        font-size: 14px;
+        color: #374151;
+        cursor: pointer;
+        text-decoration: none;
+    }
+
+        .btn-cancel:hover {
+            background: #f9fafb;
+            color: #374151;
+        }
+
+    .btn-save {
+        background: #1b6d24;
+        border: none;
+        border-radius: 8px;
+        padding: 9px 20px;
+        font-size: 14px;
+        color: #fff;
+        cursor: pointer;
+    }
+
+        .btn-save:hover {
+            background: #155a1e;
+        }
+
+    @@media (max-width: 768px) {
+        .form-wrapper {
+            flex-direction: column;
+        }
+
+        .form-sidebar {
+            width: 100%;
+            position: static;
+        }
+
+        .form-grid, .form-grid-3 {
+            grid-template-columns: 1fr;
+        }
+    }
+
+    body {
+        font-family: 'Inter', sans-serif;
+    }
+
+    h1, h2, h3, h4, h5, h6 {
+        font-family: 'Manrope', sans-serif;
+    }
+</style>
+
+<div class="form-wrapper">
+
+    <!-- Sidebar -->
+    <div class="form-sidebar">
+        <a href="#personal" class="nav-link active">
+            <i class="bi bi-person-badge"></i> Personal Info
+        </a>
+        <a href="#professional" class="nav-link">
+            <i class="bi bi-briefcase"></i> Professional
+        </a>
+        <a href="#employment" class="nav-link">
+            <i class="bi bi-building"></i> Employment
+        </a>
     </div>
-</div>
 
-<div>
-    <a asp-action="Index">Back to List</a>
+    <!-- Form Content -->
+    <form asp-action="Create" method="post" class="form-content">
+        <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
+
+        <!-- Personal Information -->
+        <div class="form-section" id="personal">
+            <div class="form-section-title">
+                <i class="bi bi-person-badge"></i> Personal Information
+            </div>
+            <div class="form-grid">
+                <div>
+                    <label class="field-label">Employee Number</label>
+                    <input asp-for="EmployeeNumber" class="form-control" />
+                    <span asp-validation-for="EmployeeNumber" class="text-danger" style="font-size:12px;"></span>
+                </div>
+                <div>
+                    <label class="field-label">Gender</label>
+                    <select asp-for="Gender" class="form-control">
+                        <option value="">Select</option>
+                        <option>Male</option>
+                        <option>Female</option>
+                    </select>
+                    <span asp-validation-for="Gender" class="text-danger" style="font-size:12px;"></span>
+                </div>
+                <div>
+                    <label class="field-label">First Name</label>
+                    <input asp-for="FirstName" class="form-control" />
+                    <span asp-validation-for="FirstName" class="text-danger" style="font-size:12px;"></span>
+                </div>
+                <div>
+                    <label class="field-label">Middle Name</label>
+                    <input asp-for="MiddleName" class="form-control" />
+                    <span asp-validation-for="MiddleName" class="text-danger" style="font-size:12px;"></span>
+                </div>
+                <div>
+                    <label class="field-label">Last Name</label>
+                    <input asp-for="LastName" class="form-control" />
+                    <span asp-validation-for="LastName" class="text-danger" style="font-size:12px;"></span>
+                </div>
+                <div>
+                    <label class="field-label">Birth Date</label>
+                    <input asp-for="BirthDate" type="date" class="form-control" />
+                    <span asp-validation-for="BirthDate" class="text-danger" style="font-size:12px;"></span>
+                </div>
+                <div>
+                    <label class="field-label">Email Address</label>
+                    <input asp-for="EmailAddress" class="form-control" />
+                    <span asp-validation-for="EmailAddress" class="text-danger" style="font-size:12px;"></span>
+                </div>
+                <div class="full-width">
+                    <label class="field-label">Address</label>
+                    <textarea asp-for="Address" class="form-control" rows="2"></textarea>
+                    <span asp-validation-for="Address" class="text-danger" style="font-size:12px;"></span>
+                </div>
+                <div class="full-width">
+                    <label class="field-label">Contact Numbers</label>
+                    <div id="counselor-contacts"></div>
+                    <button type="button" class="btn btn-sm btn-outline-secondary mt-1"
+                            onclick="addContact('counselor-contacts', 'ContactNumbers')">
+                        + Add Number
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Professional Background -->
+        <div class="form-section" id="professional">
+            <div class="form-section-title">
+                <i class="bi bi-briefcase-fill"></i> Professional Background
+            </div>
+            <div class="form-grid">
+                <div class="full-width">
+                    <label class="field-label">Educational Attainment</label>
+                    <input asp-for="EducationalAttainment" class="form-control" />
+                    <span asp-validation-for="EducationalAttainment" class="text-danger" style="font-size:12px;"></span>
+                </div>
+                <div>
+                    <label class="field-label">License Number</label>
+                    <input asp-for="LicenseNumber" class="form-control" />
+                    <span asp-validation-for="LicenseNumber" class="text-danger" style="font-size:12px;"></span>
+                </div>
+                <div>
+                    <label class="field-label">Years of Experience</label>
+                    <input asp-for="YearsOfExperience" type="number" min="0" max="50" class="form-control" />
+                    <span asp-validation-for="YearsOfExperience" class="text-danger" style="font-size:12px;"></span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Employment Details -->
+        <div class="form-section" id="employment">
+            <div class="form-section-title">
+                <i class="bi bi-building"></i> Employment Details
+            </div>
+            <div class="form-grid">
+                <div>
+                    <label class="field-label">Position</label>
+                    <input asp-for="Position" class="form-control" />
+                    <span asp-validation-for="Position" class="text-danger" style="font-size:12px;"></span>
+                </div>
+                <div>
+                    <label class="field-label">Date Hired</label>
+                    <input asp-for="DateHired" type="date" class="form-control" />
+                    <span asp-validation-for="DateHired" class="text-danger" style="font-size:12px;"></span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Footer -->
+        <div class="form-footer">
+            <small class="text-muted">🔒 Privacy Protected • Sys.Logged</small>
+            <div style="display:flex; gap:10px;">
+                <a asp-action="Index" class="btn-cancel">Cancel</a>
+                <input type="submit" value="Add Counselor" class="btn-save" />
+            </div>
+        </div>
+
+    </form>
 </div>
 
 <script>
+    const links = document.querySelectorAll('.form-sidebar .nav-link');
+    const sections = document.querySelectorAll('.form-section');
+
+    const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                links.forEach(l => l.classList.remove('active'));
+                const active = document.querySelector(`.nav-link[href="#${entry.target.id}"]`);
+                if (active) active.classList.add('active');
+            }
+        });
+    }, { threshold: 0.3 });
+
+    sections.forEach(s => observer.observe(s));
+
+    links.forEach(link => {
+        link.addEventListener('click', e => {
+            e.preventDefault();
+            document.querySelector(link.getAttribute('href')).scrollIntoView({ behavior: 'smooth' });
+        });
+    });
+
     function addContact(containerId, prefix) {
         const container = document.getElementById(containerId);
         const index = container.querySelectorAll('.contact-row').length;
@@ -116,12 +359,14 @@
         container.appendChild(row);
     }
 
-    document.addEventListener('click', e => {
-        if (e.target.classList.contains('remove-contact'))
-            e.target.closest('.contact-row').remove();
+       document.addEventListener('click', e => {
+        const btn = e.target.closest('.remove-contact');
+        if (btn) btn.closest('.contact-row').remove();
     });
 </script>
 
 @section Scripts {
-    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
 }

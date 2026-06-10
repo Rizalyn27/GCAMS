@@ -347,6 +347,19 @@
                     <label class="field-label">School</label>
                     <input asp-for="Student.School" class="form-control" />
                 </div>
+                    <div>
+                        <label class="field-label">Academic Year</label>
+                        <select asp-for="Student.AcademicYear" class="form-control">
+                            <option value="">Select</option>
+                            @{
+                                var currentYear = DateTime.Now.Year;
+                                var yearRange = $"{currentYear}-{currentYear + 1}";
+                            }
+                            <option value="@yearRange">@yearRange</option>
+                            <option value="First Semester A.Y. @yearRange">First Semester A.Y. @yearRange</option>
+                            <option value="Second Semester A.Y. @yearRange">Second Semester A.Y. @yearRange</option>
+                        </select>
+                    </div>
             </div>
         </div>
 

@@ -44,6 +44,11 @@ namespace GCAMS.Models.Students
         [StringLength(200)]
         public string? School { get; set; } = "Don Sergio Osmeña Sr. Memorial National High School";
 
+        //Academic Year
+        [Required(ErrorMessage = "Academic year is required.")]
+        [StringLength(200)]
+        public string? AcademicYear { get; set; }
+
         //Birthday
         [DataType(DataType.Date)]
         [Display(Name = "Date of Birth")]

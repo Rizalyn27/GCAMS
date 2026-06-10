@@ -409,13 +409,14 @@ namespace GCAMS.Controllers
                         Section = Get(4) ?? "",
                         School = Get(5) ?? "Don Sergio Osmeña Senior Memorial National High School",
                         Birthday = DateTime.TryParse(Get(6), out var bday) ? bday : null,
-                        BirthOrder = Get(7),
-                        Address = Get(8) ?? "",
-                        Email = Get(10),
-                        Gender = Get(11),
-                        Nationality = Get(12),
-                        Religion = Get(13),
-                        StayingWith = Get(14),
+                        AcademicYear = Get(7) ?? "",
+                        BirthOrder = Get(8),
+                        Address = Get(9) ?? "",
+                        Email = Get(11),
+                        Gender = Get(12),
+                        Nationality = Get(13),
+                        Religion = Get(14),
+                        StayingWith = Get(15),
                         IsActive = true
                     };
 
@@ -426,8 +427,8 @@ namespace GCAMS.Controllers
                     _context.Students.Add(student);
                     await _context.SaveChangesAsync();
 
-                    // Student contact number (col 9)
-                    if (Get(9) is string stuContact)
+                    // Student contact number (col 10)
+                    if (Get(10) is string stuContact)
                         _context.StudentContactNumbers.Add(new StudentContactNumber
                         {
                             StudentsID = student.StudentsID,
@@ -439,22 +440,22 @@ namespace GCAMS.Controllers
                     var family = new FamilyBackground
                     {
                         StudentsID = student.StudentsID,
-                        FatherName = Get(15),
-                        FatherAge = int.TryParse(Get(16), out int fAge) ? fAge : null,
-                        FatherEducationalAttainment = Get(17),
-                        FatherOccupation = Get(18),
-                        MotherName = Get(20),
-                        MotherAge = int.TryParse(Get(21), out int mAge) ? mAge : null,
-                        MotherEducationalAttainment = Get(22),
-                        MotherOccupation = Get(23),
-                        MonthlyFamilyIncome = Get(25),
-                        ParentsRelationshipStatus = Get(26),
+                        FatherName = Get(16),
+                        FatherAge = int.TryParse(Get(17), out int fAge) ? fAge : null,
+                        FatherEducationalAttainment = Get(18),
+                        FatherOccupation = Get(19),
+                        MotherName = Get(21),
+                        MotherAge = int.TryParse(Get(22), out int mAge) ? mAge : null,
+                        MotherEducationalAttainment = Get(23),
+                        MotherOccupation = Get(24),
+                        MonthlyFamilyIncome = Get(26),
+                        ParentsRelationshipStatus = Get(27),
                     };
                     _context.FamilyBackgrounds.Add(family);
                     await _context.SaveChangesAsync(); // get FamilyBackgroundID
 
-                    // Father contact number (col 19)
-                    if (Get(19) is string fatherContact)
+                    // Father contact number (col 20)
+                    if (Get(20) is string fatherContact)
                         _context.FamilyContactNumbers.Add(new FamilyContactNumber
                         {
                             FamilyBackgroundID = family.FamilyBackgroundID,
@@ -462,8 +463,8 @@ namespace GCAMS.Controllers
                             Label = "Father"
                         });
 
-                    // Mother contact number (col 24)
-                    if (Get(24) is string motherContact)
+                    // Mother contact number (col 25)
+                    if (Get(25) is string motherContact)
                         _context.FamilyContactNumbers.Add(new FamilyContactNumber
                         {
                             FamilyBackgroundID = family.FamilyBackgroundID,
@@ -475,16 +476,16 @@ namespace GCAMS.Controllers
                     var emergency = new EmergencyContact
                     {
                         StudentsID = student.StudentsID,
-                        EmergencyContactPerson = Get(27),
-                        EmergencyContactAge = int.TryParse(Get(28), out int ecAge) ? ecAge : null,
-                        EmergencyContactOccupation = Get(29),
-                        EmergencyContactAddress = Get(31),
+                        EmergencyContactPerson = Get(28),
+                        EmergencyContactAge = int.TryParse(Get(29), out int ecAge) ? ecAge : null,
+                        EmergencyContactOccupation = Get(30),
+                        EmergencyContactAddress = Get(32),
                     };
                     _context.EmergencyContacts.Add(emergency);
                     await _context.SaveChangesAsync(); // get EmergencyContactID
 
-                    // Emergency contact number (col 30)
-                    if (Get(30) is string emergencyContact)
+                    // Emergency contact number (col 31)
+                    if (Get(31) is string emergencyContact)
                         _context.EmergencyContactNumbers.Add(new EmergencyContactNumber
                         {
                             EmergencyContactID = emergency.EmergencyContactID,
@@ -495,19 +496,19 @@ namespace GCAMS.Controllers
                     _context.EducationalBackgrounds.Add(new EducationalBackground
                     {
                         StudentsID = student.StudentsID,
-                        ElementarySchool = Get(32),
-                        ElementaryYear = Get(33),
-                        ElementaryHonors = Get(34),
-                        SecondarySchool = Get(35),
-                        SecondaryYear = Get(36),
-                        SecondaryHonors = Get(37),
+                        ElementarySchool = Get(33),
+                        ElementaryYear = Get(34),
+                        ElementaryHonors = Get(35),
+                        SecondarySchool = Get(36),
+                        SecondaryYear = Get(37),
+                        SecondaryHonors = Get(38),
                     });
 
                     _context.HealthInformations.Add(new HealthInformation
                     {
                         StudentsID = student.StudentsID,
-                        Weight = Get(38),
-                        Height = Get(39),
+                        Weight = Get(39),
+                        Height = Get(40),
                     });
 
                     await _context.SaveChangesAsync();

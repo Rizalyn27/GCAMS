@@ -53,16 +53,26 @@ namespace GCAMS.Controllers
         {
             if (ModelState.IsValid)
             {
+                // Grab numbers before Add() touches them
+                var incoming = counselor.ContactNumbers
+                    .Where(x => !string.IsNullOrWhiteSpace(x.Number))
+                    .ToList();
+
+                // Clear so Add() doesn't insert them
+                counselor.ContactNumbers.Clear();
+
                 _context.Counselors.Add(counselor);
                 await _context.SaveChangesAsync();
 
-                foreach (var c in counselor.ContactNumbers.Where(x => !string.IsNullOrWhiteSpace(x.Number)))
+                foreach (var c in incoming)
+                {
                     _context.CounselorContactNumbers.Add(new CounselorContactNumber
                     {
                         CounselorID = counselor.CounselorID,
                         Number = c.Number,
                         Label = c.Label
                     });
+                }
 
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
@@ -96,20 +106,35 @@ namespace GCAMS.Controllers
             {
                 try
                 {
+                    var incoming = counselor.ContactNumbers
+                        .Where(x => !string.IsNullOrWhiteSpace(x.Number))
+                        .ToList();
+
+                    counselor.ContactNumbers.Clear();
+
+                    // Preserve the existing EmploymentStatus
+                    var existing = await _context.Counselors
+                        .AsNoTracking()
+                        .FirstOrDefaultAsync(c => c.CounselorID == id);
+
+                    if (existing == null) return NotFound();
+                    counselor.EmploymentStatus = existing.EmploymentStatus;
+
                     _context.Update(counselor);
 
-                    // Replace contact numbers
                     var old = _context.CounselorContactNumbers.Where(x => x.CounselorID == id);
                     _context.CounselorContactNumbers.RemoveRange(old);
                     await _context.SaveChangesAsync();
 
-                    foreach (var c in counselor.ContactNumbers.Where(x => !string.IsNullOrWhiteSpace(x.Number)))
+                    foreach (var c in incoming)
+                    {
                         _context.CounselorContactNumbers.Add(new CounselorContactNumber
                         {
                             CounselorID = id,
                             Number = c.Number,
                             Label = c.Label
                         });
+                    }
 
                     await _context.SaveChangesAsync();
                 }
@@ -126,35 +151,44 @@ namespace GCAMS.Controllers
         // GET: Counselors/Delete/5
         public async Task<IActionResult> Delete(int? id)
         {
-            if (id == null)
-            {
-                return NotFound();
-            }
+            if (id == null) return NotFound();
 
             var counselor = await _context.Counselors
                 .FirstOrDefaultAsync(m => m.CounselorID == id);
-            if (counselor == null)
-            {
-                return NotFound();
-            }
 
+            if (counselor == null) return NotFound();
             return View(counselor);
         }
 
-        // POST: Counselors/Delete/5
-        [HttpPost, ActionName("Delete")]
+        [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> DeleteConfirmed(int id)
+        public async Task<IActionResult> SoftDelete(int id)
         {
             var counselor = await _context.Counselors.FindAsync(id);
-            if (counselor != null)
-            {
-                _context.Counselors.Remove(counselor);
-            }
+            if (counselor == null) return NotFound();
 
+            counselor.EmploymentStatus = false;
             await _context.SaveChangesAsync();
+
+            TempData["Success"] = "Counselor has been set to inactive.";
             return RedirectToAction(nameof(Index));
         }
+
+        // POST: Counselors/Restore/5
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Restore(int id)
+        {
+            var counselor = await _context.Counselors.FindAsync(id);
+            if (counselor == null) return NotFound();
+
+            counselor.EmploymentStatus = true;
+            await _context.SaveChangesAsync();
+
+            TempData["Success"] = "Counselor has been set to active.";
+            return RedirectToAction(nameof(Index));
+        }
+
 
         private bool CounselorExists(int id)
         {
