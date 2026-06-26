@@ -1,0 +1,86 @@
+@model IEnumerable<GCAMS.Models.Appointment.Appointments>
+@{
+    ViewData["Title"] = "Appointments";
+}
+
+<h1>Appointments</h1>
+<p>
+    <a asp-action="Create">Create New</a>
+</p>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>@Html.DisplayNameFor(model => model.FullName)</th>
+            <th>@Html.DisplayNameFor(model => model.Email)</th>
+            <th>@Html.DisplayNameFor(model => model.AppointmentDate)</th>
+            <th>@Html.DisplayNameFor(model => model.AppointmentType)</th>
+            <th>Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>@Html.DisplayFor(model => item.FullName)</td>
+                <td>@Html.DisplayFor(model => item.Email)</td>
+                <td>@Html.DisplayFor(model => item.AppointmentDate)</td>
+                <td>@Html.DisplayFor(model => item.AppointmentType)</td>
+
+                <td>
+                    <select class="form-select form-select-sm status-dropdown"
+                            data-id="@item.AppointmentID"
+                            data-current="@item.Status">
+                        @foreach (var status in new[] { "Pending", "Confirmed", "Cancelled", "Completed", "Missed" })
+                        {
+                            <option value="@status" selected="@(item.Status == status ? "selected" : null)">
+                                @status
+                            </option>
+                        }
+                    </select>
+                </td>
+
+                <td>
+                    <a asp-action="Edit"    asp-route-appointmentid="@item.AppointmentID">Edit</a> |
+                    <a asp-action="Details" asp-route-appointmentid="@item.AppointmentID">Details</a> |
+                    <a asp-action="Delete"  asp-route-appointmentid="@item.AppointmentID">Delete</a>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+@section Scripts {
+    <script>
+        document.querySelectorAll('.status-dropdown').forEach(function (dropdown) {
+            dropdown.addEventListener('change', async function () {
+                const appointmentId = this.dataset.id;
+                const newStatus     = this.value;
+                const previousStatus = this.dataset.current;
+
+                try {
+                    // POST to AppointmentsController.UpdateStatus
+                    const response = await fetch('/Appointments/UpdateStatus', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ appointmentId, newStatus })
+                    });
+
+                    if (response.ok) {
+                        // Update stored current value so reverting works correctly
+                        this.dataset.current = newStatus;
+                    } else {
+                        // Revert to previous status if the server rejected the update
+                        alert('Failed to update status. Please try again.');
+                        this.value = previousStatus;
+                    }
+
+                } catch (err) {
+                    console.error('Status update failed:', err);
+                    alert('Could not reach the server. Please try again.');
+                    this.value = previousStatus;
+                }
+            });
+        });
+    </script>
+}

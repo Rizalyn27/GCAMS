@@ -1,6 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using GCAMS.Models.Students;
 using GCAMS.Models.Counselor;
+using GCAMS.Models.Appointment;
 
 
 namespace GCAMS.Data
@@ -28,6 +29,8 @@ namespace GCAMS.Data
         public DbSet<Counselor> Counselors { get; set; }
         public DbSet<CounselorContactNumber> CounselorContactNumbers { get; set; }
 
+        //Appointment
+        public DbSet<Appointments> Appointments { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {

@@ -1,0 +1,216 @@
+﻿@model GCAMS.Models.Appointment.Appointments
+@{
+    ViewData["Title"] = "Create Appointment";
+}
+
+<h1>Create Appointment</h1>
+<hr />
+
+<div class="row">
+    <div class="col-md-6">
+        <form asp-action="Create" id="appointmentForm">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+            @* {{!-- ─────────────────────────────────────────────────────────────
+            STUDENT LOOKUP
+            Students can search for themselves by their school-issued ID. 
+            If found, fields below are filled in automatically.
+            If not found, the student can fill in their details manually.
+            ────────────────────────────────────────────────────────────── --}} *@
+            <div class="form-group mb-2">
+                <label for="stuIdLookup" class="control-label fw-semibold">
+                    Student ID (School-Issued)
+                </label>
+                <div class="input-group">
+                    <input type="text"
+                           id="stuIdLookup"
+                           class="form-control"
+                           placeholder="e.g. 2024-0001"
+                           autocomplete="off" />
+                    <button type="button"
+                            class="btn btn-outline-secondary"
+                            id="btnLookup">
+                        Search
+                    </button>
+                </div>
+
+                <small id="lookupStatus" class="form-text"></small>
+            </div>
+
+            <fieldset id="studentFields">
+
+                <input type="hidden" asp-for="StudentsID" id="studentsIdHidden" />
+
+                <div class="form-group mb-3">
+                    <label asp-for="FullName" class="control-label"></label>
+                    <input asp-for="FullName"
+                           id="fieldFullName"
+                           class="form-control" />
+                    <span asp-validation-for="FullName" class="text-danger"></span>
+                </div>
+
+                <div class="row mb-3" id="gradeSection">
+                    <div class="col">
+                        <label class="control-label">Grade Level</label>
+                        <input type="text"
+                               id="fieldGradeLevel"
+                               class="form-control"
+                               readonly
+                               tabindex="-1" />
+                    </div>
+                    <div class="col">
+                        <label class="control-label">Section</label>
+                        <input type="text"
+                               id="fieldSection"
+                               class="form-control"
+                               readonly
+                               tabindex="-1" />
+                    </div>
+                </div>
+
+                <div class="form-group mb-3">
+                    <label asp-for="Email" class="control-label"></label>
+                    <input asp-for="Email"
+                           id="fieldEmail"
+                           class="form-control" />
+                    <span asp-validation-for="Email" class="text-danger"></span>
+                </div>
+
+            </fieldset>
+
+            <fieldset id="appointmentFields">
+
+                <div class="form-group mb-3">
+                    <label asp-for="AppointmentDate" class="control-label"></label>
+                    <input asp-for="AppointmentDate" class="form-control" type="datetime-local" />
+                    <span asp-validation-for="AppointmentDate" class="text-danger"></span>
+                </div>
+
+                <div class="form-group mb-3">
+                    <label asp-for="AppointmentType" class="control-label"></label>
+                    <input asp-for="AppointmentType" class="form-control" />
+                    <span asp-validation-for="AppointmentType" class="text-danger"></span>
+                </div>
+
+                <div class="form-group mb-3">
+                    <label asp-for="Notes" class="control-label"></label>
+                    <textarea asp-for="Notes" class="form-control" rows="3"></textarea>
+                    <span asp-validation-for="Notes" class="text-danger"></span>
+                </div>
+
+                <input type="hidden" asp-for="Status" value="Pending" />
+
+                <div class="form-group mt-3">
+                    <input type="submit" value="Create Appointment" class="btn btn-primary" />
+                    <a asp-action="Index" class="btn btn-secondary ms-2">Cancel</a>
+                </div>
+
+            </fieldset>
+
+        </form>
+    </div>
+</div>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+
+    <script>
+        // ── DOM references ───────────────────────────────────────────────────
+        const stuIdInput       = document.getElementById('stuIdLookup');
+        const btnLookup        = document.getElementById('btnLookup');
+        const statusEl         = document.getElementById('lookupStatus');
+
+        // Individual fields filled in by the lookup
+        const hiddenStudentsID = document.getElementById('studentsIdHidden');
+        const fieldFullName    = document.getElementById('fieldFullName');
+        const fieldEmail       = document.getElementById('fieldEmail');
+        const fieldGradeLevel  = document.getElementById('fieldGradeLevel');
+        const fieldSection     = document.getElementById('fieldSection');
+
+        // ── Core lookup function ─────────────────────────────────────────────
+        async function lookupStudent() {
+            const stuId = stuIdInput.value.trim();
+
+            if (!stuId) {
+                setStatus('Please enter a Student ID first.', 'secondary');
+                return;
+            }
+
+            setStatus('Searching…', 'secondary');
+
+            try {
+                // Calls AppointmentsController.GetStudentByStuID(stuId)
+                const response = await fetch(
+                    `/Appointments/GetStudentByStuID?stuId=${encodeURIComponent(stuId)}`
+                );
+
+                if (response.ok) {
+                    // ── Found: auto-fill and lock fields so they can't be overwritten ──
+                    const student = await response.json();
+
+                    hiddenStudentsID.value = student.studentsID;
+                    fieldFullName.value    = student.fullName;
+                    fieldEmail.value       = student.email;
+                    fieldGradeLevel.value  = student.gradeLevel;
+                    fieldSection.value     = student.section;
+
+                    // Lock auto-filled fields — student should contact admin to change these
+                    [fieldFullName, fieldEmail].forEach(f => f.setAttribute('readonly', true));
+
+                    setStatus(`✓ Student found: ${student.fullName}`, 'success');
+
+                } else if (response.status === 404) {
+                    // ── Not found: clear any previous auto-fill, let them type freely ──
+                    clearStudentFields();
+                    setStatus('✗ ID not found — please fill in your details manually.', 'warning');
+
+                } else {
+                    setStatus('An error occurred. Please try again.', 'danger');
+                }
+
+            } catch (err) {
+                console.error('Student lookup failed:', err);
+                setStatus('Could not reach the server. Check your connection.', 'danger');
+            }
+        }
+
+        // ── Trigger lookup on Search button click ────────────────────────────
+        btnLookup.addEventListener('click', lookupStudent);
+
+        // ── Trigger lookup on Enter key inside the lookup field ──────────────
+        stuIdInput.addEventListener('keydown', function (e) {
+            if (e.key === 'Enter') {
+                e.preventDefault(); // prevent accidental form submission
+                lookupStudent();
+            }
+        });
+
+        // ── If the user clears the lookup field, reset auto-filled values ────
+        stuIdInput.addEventListener('input', function () {
+            if (this.value.trim() === '') {
+                clearStudentFields();
+                setStatus('', 'secondary');
+            }
+        });
+
+        // ── Helper: wipe all auto-filled values and re-enable manual editing ──
+        function clearStudentFields() {
+            hiddenStudentsID.value = '';
+            fieldFullName.value    = '';
+            fieldEmail.value       = '';
+            fieldGradeLevel.value  = '';
+            fieldSection.value     = '';
+
+            // Unlock so the student can type manually
+            [fieldFullName, fieldEmail].forEach(f => f.removeAttribute('readonly'));
+        }
+
+        // ── Helper: update the status line below the lookup field ────────────
+        function setStatus(message, color) {
+            statusEl.textContent = message;
+            statusEl.className   = `form-text text-${color}`;
+        }
+    </script>
+}

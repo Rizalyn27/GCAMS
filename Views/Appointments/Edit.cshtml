@@ -1,0 +1,84 @@
+@model GCAMS.Models.Appointment.Appointments
+@{
+    ViewData["Title"] = "Edit Appointment";
+}
+
+<h1>Edit Appointment</h1>
+<hr />
+
+<div class="row">
+    <div class="col-md-6">
+        <form asp-action="Edit">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+            @* {{!-- AppointmentID must be submitted so the controller knows which
+            record to update. Hidden because the user doesn't need to see it. --}} *@
+            <input type="hidden" asp-for="AppointmentID" />
+
+           @*  {{!-- CreatedAt is preserved as a hidden field so EF doesn't
+            overwrite it with a blank value on save. The user never sees it. --}} *@
+            <input type="hidden" asp-for="CreatedAt" />
+
+            @* {{!-- UpdatedAt is set server-side on POST, so it's hidden here. --}} *@
+            <input type="hidden" asp-for="UpdatedAt" />
+
+            @* {{!-- StudentsID links this appointment to a student record.
+            Hidden because counselors shouldn't reassign appointments
+            to a different student from the Edit page. --}} *@
+            <input type="hidden" asp-for="StudentsID" />
+
+            <div class="form-group mb-3">
+                <label asp-for="FullName" class="control-label"></label>
+                <input asp-for="FullName" class="form-control" />
+                <span asp-validation-for="FullName" class="text-danger"></span>
+            </div>
+
+            <div class="form-group mb-3">
+                <label asp-for="Email" class="control-label"></label>
+                <input asp-for="Email" class="form-control" />
+                <span asp-validation-for="Email" class="text-danger"></span>
+            </div>
+
+          
+
+            <div class="form-group mb-3">
+                <label asp-for="AppointmentDate" class="control-label"></label>
+                <input asp-for="AppointmentDate" class="form-control" type="datetime-local" />
+                <span asp-validation-for="AppointmentDate" class="text-danger"></span>
+            </div>
+
+            <div class="form-group mb-3">
+                <label asp-for="AppointmentType" class="control-label"></label>
+                <input asp-for="AppointmentType" class="form-control" />
+                <span asp-validation-for="AppointmentType" class="text-danger"></span>
+            </div>
+
+            <div class="form-group mb-3">
+                <label asp-for="Notes" class="control-label"></label>
+                <textarea asp-for="Notes" class="form-control" rows="3"></textarea>
+                <span asp-validation-for="Notes" class="text-danger"></span>
+            </div>
+
+            <div class="form-group mb-3">
+                <label asp-for="Status" class="control-label"></label>
+                <input asp-for="Status" class="form-control" />
+                <span asp-validation-for="Status" class="text-danger"></span>
+            </div>
+
+            <div class="form-group mt-3">
+                <input type="submit" value="Save Changes" class="btn btn-primary" />
+                <a asp-action="Index" class="btn btn-secondary ms-2">Cancel</a>
+            </div>
+        </form>
+    </div>
+</div>
+
+<div>
+    <a asp-action="Index">Back to List</a>
+</div>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}

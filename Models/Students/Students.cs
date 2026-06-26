@@ -13,7 +13,7 @@ namespace GCAMS.Models.Students
         // A. Personal Data
         // -------------------------
 
-        //Student ID
+        //Student ID (The one given by the school, not the database ID)
         [Required(ErrorMessage = "Student ID is required.")]
         [Display(Name = "Student ID")]
         [StringLength(100, ErrorMessage = "Student ID cannot exceed 100 characters.")]
