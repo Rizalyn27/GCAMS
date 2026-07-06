@@ -58,7 +58,7 @@ public class AppointmentsController : Controller
         // Set automatically — never from user input
         appointments.Status = "Pending";
         appointments.CreatedAt = DateTime.Now;
-        appointments.UpdatedAt = null;        // blank until first edit
+        appointments.UpdatedAt = null;
 
         if (ModelState.IsValid)
         {
@@ -90,7 +90,7 @@ public class AppointmentsController : Controller
     // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
     [HttpPost]
     [ValidateAntiForgeryToken]
-    public async Task<IActionResult> Edit(int? appointmentid, [Bind("AppointmentID,FirstName,LastName,MiddleName,Email,ContactNumber,AppointmentDate,AppointmentType,Notes,Status,CreatedAt,UpdatedAt,StudentsID,Student")] Appointments appointments)
+    public async Task<IActionResult> Edit(int? appointmentid, [Bind("AppointmentID,FullName,Email,AppointmentDate,AppointmentType,Notes,Status,CreatedAt,StudentsID")]  Appointments appointments)
     {
         if (appointmentid != appointments.AppointmentID)
         {

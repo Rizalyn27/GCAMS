@@ -6,109 +6,242 @@
 <h1>Create Appointment</h1>
 <hr />
 
-<div class="row">
-    <div class="col-md-6">
-        <form asp-action="Create" id="appointmentForm">
-            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+<style>
+    @@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Manrope:wght@600;700&display=swap');
 
-            @* {{!-- ─────────────────────────────────────────────────────────────
-            STUDENT LOOKUP
-            Students can search for themselves by their school-issued ID. 
-            If found, fields below are filled in automatically.
-            If not found, the student can fill in their details manually.
-            ────────────────────────────────────────────────────────────── --}} *@
-            <div class="form-group mb-2">
-                <label for="stuIdLookup" class="control-label fw-semibold">
-                    Student ID (School-Issued)
-                </label>
-                <div class="input-group">
+    .form-card {
+        background: #fff;
+        border: 1px solid #e5e7eb;
+        border-radius: 12px;
+        padding: 1.5rem;
+        margin-bottom: 1.25rem;
+    }
+
+    .form-section-title {
+        font-family: 'Manrope', sans-serif;
+        font-size: 15px;
+        font-weight: 700;
+        color: #111;
+        margin-bottom: 1rem;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+
+        .form-section-title i {
+            color: #1a56db;
+            font-size: 16px;
+        }
+
+    .form-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 1rem;
+    }
+
+        .form-grid .full-width {
+            grid-column: 1 / -1;
+        }
+
+    .field-label {
+        font-size: 13px;
+        font-family: 'Inter', sans-serif;
+        font-weight: 500;
+        color: #6b7280;
+        margin-bottom: 4px;
+        display: block;
+    }
+
+    .form-control, .form-select {
+        font-size: 14px;
+        font-family: 'Inter', sans-serif;
+        border-radius: 8px;
+        border: 1px solid #d1d5db;
+        padding: 8px 12px;
+        width: 100%;
+        color: #111;
+    }
+
+        .form-control:focus, .form-select:focus {
+            border-color: #1a56db;
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(26,86,219,0.1);
+        }
+
+        .form-control[readonly] {
+            background: #f9fafb;
+            color: #6b7280;
+        }
+
+    .lookup-group {
+        display: flex;
+        gap: 8px;
+    }
+
+        .lookup-group .form-control {
+            flex: 1;
+        }
+
+    .btn-lookup {
+        background: #fff;
+        border: 1px solid #d1d5db;
+        border-radius: 8px;
+        padding: 8px 16px;
+        font-size: 14px;
+        font-family: 'Inter', sans-serif;
+        color: #374151;
+        cursor: pointer;
+        white-space: nowrap;
+    }
+
+        .btn-lookup:hover {
+            background: #f3f4f6;
+        }
+
+    .lookup-status {
+        font-size: 12px;
+        font-family: 'Inter', sans-serif;
+        margin-top: 6px;
+        display: block;
+    }
+
+    .form-footer {
+        display: flex;
+        gap: 8px;
+        padding-top: 1rem;
+        border-top: 1px solid #e5e7eb;
+        margin-top: 0.5rem;
+    }
+
+    .btn-save {
+        background: #1B5E20;
+        border: none;
+        border-radius: 8px;
+        padding: 9px 20px;
+        font-size: 14px;
+        font-family: 'Inter', sans-serif;
+        color: #fff;
+        cursor: pointer;
+    }
+
+        .btn-save:hover {
+            background: #1648c0;
+        }
+
+    .btn-cancel {
+        background: #fff;
+        border: 1px solid #d1d5db;
+        border-radius: 8px;
+        padding: 9px 20px;
+        font-size: 14px;
+        font-family: 'Inter', sans-serif;
+        color: #374151;
+        text-decoration: none;
+    }
+
+        .btn-cancel:hover {
+            background: #f9fafb;
+            text-decoration: none;
+        }
+
+    .page-title {
+        font-family: 'Manrope', sans-serif;
+        font-size: 22px;
+        font-weight: 700;
+        color: #111;
+        margin-bottom: 1.5rem;
+    }
+
+    @@media (max-width: 768px) {
+        .form-grid {
+            grid-template-columns: 1fr;
+        }
+    }
+</style>
+
+<div class="container-lg py-4" style="max-width: 720px;">
+    <p class="page-title">Create Appointment</p>
+
+    <form asp-action="Create" id="appointmentForm">
+        <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
+
+        <input type="hidden" asp-for="StudentsID" id="studentsIdHidden" />
+
+        <div class="form-card">
+            <div class="form-section-title">
+                <i class="bi bi-search"></i> Student lookup
+            </div>
+            <div>
+                <label for="stuIdLookup" class="field-label">Student ID (school-issued)</label>
+                <div class="lookup-group">
                     <input type="text"
                            id="stuIdLookup"
                            class="form-control"
                            placeholder="e.g. 2024-0001"
                            autocomplete="off" />
-                    <button type="button"
-                            class="btn btn-outline-secondary"
-                            id="btnLookup">
-                        Search
-                    </button>
+                    <button type="button" class="btn-lookup" id="btnLookup">Search</button>
                 </div>
-
-                <small id="lookupStatus" class="form-text"></small>
+                <small id="lookupStatus" class="lookup-status"></small>
             </div>
+        </div>
 
-            <fieldset id="studentFields">
-
-                <input type="hidden" asp-for="StudentsID" id="studentsIdHidden" />
-
-                <div class="form-group mb-3">
-                    <label asp-for="FullName" class="control-label"></label>
-                    <input asp-for="FullName"
-                           id="fieldFullName"
-                           class="form-control" />
-                    <span asp-validation-for="FullName" class="text-danger"></span>
+        <div class="form-card">
+            <div class="form-section-title">
+                <i class="bi bi-person"></i> Client
+            </div>
+            <div class="form-grid">
+                <div class="full-width">
+                    <label asp-for="FullName" class="field-label"></label>
+                    <input asp-for="FullName" id="fieldFullName" class="form-control" />
+                    <span asp-validation-for="FullName" class="text-danger" style="font-size:12px;"></span>
                 </div>
-
-                <div class="row mb-3" id="gradeSection">
-                    <div class="col">
-                        <label class="control-label">Grade Level</label>
-                        <input type="text"
-                               id="fieldGradeLevel"
-                               class="form-control"
-                               readonly
-                               tabindex="-1" />
-                    </div>
-                    <div class="col">
-                        <label class="control-label">Section</label>
-                        <input type="text"
-                               id="fieldSection"
-                               class="form-control"
-                               readonly
-                               tabindex="-1" />
-                    </div>
+                <div>
+                    <label class="field-label">Grade level</label>
+                    <input type="text" id="fieldGradeLevel" class="form-control" readonly tabindex="-1" />
                 </div>
-
-                <div class="form-group mb-3">
-                    <label asp-for="Email" class="control-label"></label>
-                    <input asp-for="Email"
-                           id="fieldEmail"
-                           class="form-control" />
-                    <span asp-validation-for="Email" class="text-danger"></span>
+                <div>
+                    <label class="field-label">Section</label>
+                    <input type="text" id="fieldSection" class="form-control" readonly tabindex="-1" />
                 </div>
+                <div class="full-width">
+                    <label asp-for="Email" class="field-label"></label>
+                    <input asp-for="Email" id="fieldEmail" class="form-control" />
+                    <span asp-validation-for="Email" class="text-danger" style="font-size:12px;"></span>
+                </div>
+            </div>
+        </div>
 
-            </fieldset>
-
-            <fieldset id="appointmentFields">
-
-                <div class="form-group mb-3">
-                    <label asp-for="AppointmentDate" class="control-label"></label>
+        <div class="form-card">
+            <div class="form-section-title">
+                <i class="bi bi-calendar3"></i> Appointment
+            </div>
+            <div class="form-grid">
+                <div>
+                    <label asp-for="AppointmentDate" class="field-label"></label>
                     <input asp-for="AppointmentDate" class="form-control" type="datetime-local" />
-                    <span asp-validation-for="AppointmentDate" class="text-danger"></span>
+                    <span asp-validation-for="AppointmentDate" class="text-danger" style="font-size:12px;"></span>
                 </div>
-
-                <div class="form-group mb-3">
-                    <label asp-for="AppointmentType" class="control-label"></label>
+                <div>
+                    <label asp-for="AppointmentType" class="field-label"></label>
                     <input asp-for="AppointmentType" class="form-control" />
-                    <span asp-validation-for="AppointmentType" class="text-danger"></span>
+                    <span asp-validation-for="AppointmentType" class="text-danger" style="font-size:12px;"></span>
                 </div>
-
-                <div class="form-group mb-3">
-                    <label asp-for="Notes" class="control-label"></label>
+                <div class="full-width">
+                    <label asp-for="Notes" class="field-label"></label>
                     <textarea asp-for="Notes" class="form-control" rows="3"></textarea>
-                    <span asp-validation-for="Notes" class="text-danger"></span>
+                    <span asp-validation-for="Notes" class="text-danger" style="font-size:12px;"></span>
                 </div>
+            </div>
+        </div>
 
-                <input type="hidden" asp-for="Status" value="Pending" />
+        <input type="hidden" asp-for="Status" value="Pending" />
 
-                <div class="form-group mt-3">
-                    <input type="submit" value="Create Appointment" class="btn btn-primary" />
-                    <a asp-action="Index" class="btn btn-secondary ms-2">Cancel</a>
-                </div>
+        <div class="form-footer">
+            <button type="submit" class="btn-save">Create appointment</button>
+            <a asp-action="Index" class="btn-cancel">Cancel</a>
+        </div>
 
-            </fieldset>
-
-        </form>
-    </div>
+    </form>
 </div>
 
 @section Scripts {

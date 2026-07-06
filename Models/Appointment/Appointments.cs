@@ -54,7 +54,7 @@
 
             //Link to Student
             public int? StudentsID { get; set; }
-             public Students.Students? Student { get; set; } = null!;
+             public Students.Students? Student { get; set; }
         }
 
         public class FutureDateAttribute : ValidationAttribute

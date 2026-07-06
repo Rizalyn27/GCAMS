@@ -3,78 +3,195 @@
     ViewData["Title"] = "Edit Appointment";
 }
 
-<h1>Edit Appointment</h1>
-<hr />
+<style>
+    @@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Manrope:wght@600;700&display=swap');
 
-<div class="row">
-    <div class="col-md-6">
-        <form asp-action="Edit">
-            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+    .form-card {
+        background: #fff;
+        border: 1px solid #e5e7eb;
+        border-radius: 12px;
+        padding: 1.5rem;
+        margin-bottom: 1.25rem;
+    }
 
-            @* {{!-- AppointmentID must be submitted so the controller knows which
-            record to update. Hidden because the user doesn't need to see it. --}} *@
-            <input type="hidden" asp-for="AppointmentID" />
+    .form-section-title {
+        font-family: 'Manrope', sans-serif;
+        font-size: 15px;
+        font-weight: 700;
+        color: #111;
+        margin-bottom: 1rem;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
 
-           @*  {{!-- CreatedAt is preserved as a hidden field so EF doesn't
-            overwrite it with a blank value on save. The user never sees it. --}} *@
-            <input type="hidden" asp-for="CreatedAt" />
+        .form-section-title i {
+            color: #1a56db;
+            font-size: 16px;
+        }
 
-            @* {{!-- UpdatedAt is set server-side on POST, so it's hidden here. --}} *@
-            <input type="hidden" asp-for="UpdatedAt" />
+    .form-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 1rem;
+    }
 
-            @* {{!-- StudentsID links this appointment to a student record.
-            Hidden because counselors shouldn't reassign appointments
-            to a different student from the Edit page. --}} *@
-            <input type="hidden" asp-for="StudentsID" />
+        .form-grid .full-width {
+            grid-column: 1 / -1;
+        }
 
-            <div class="form-group mb-3">
-                <label asp-for="FullName" class="control-label"></label>
-                <input asp-for="FullName" class="form-control" />
-                <span asp-validation-for="FullName" class="text-danger"></span>
+    .field-label {
+        font-size: 13px;
+        font-family: 'Inter', sans-serif;
+        font-weight: 500;
+        color: #6b7280;
+        margin-bottom: 4px;
+        display: block;
+    }
+
+    .form-control, .form-select {
+        font-size: 14px;
+        font-family: 'Inter', sans-serif;
+        border-radius: 8px;
+        border: 1px solid #d1d5db;
+        padding: 8px 12px;
+        width: 100%;
+        color: #111;
+    }
+
+        .form-control:focus, .form-select:focus {
+            border-color: #1a56db;
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(26,86,219,0.1);
+        }
+
+    .form-footer {
+        display: flex;
+        gap: 8px;
+        padding-top: 1rem;
+        border-top: 1px solid #e5e7eb;
+        margin-top: 0.5rem;
+    }
+
+    .btn-save {
+        background: #1B5E20;
+        border: none;
+        border-radius: 8px;
+        padding: 9px 20px;
+        font-size: 14px;
+        font-family: 'Inter', sans-serif;
+        color: #fff;
+        cursor: pointer;
+    }
+
+        .btn-save:hover {
+            background: #1648c0;
+        }
+
+    .btn-cancel {
+        background: #fff;
+        border: 1px solid #d1d5db;
+        border-radius: 8px;
+        padding: 9px 20px;
+        font-size: 14px;
+        font-family: 'Inter', sans-serif;
+        color: #374151;
+        text-decoration: none;
+    }
+
+        .btn-cancel:hover {
+            background: #f9fafb;
+            text-decoration: none;
+        }
+
+    .page-title {
+        font-family: 'Manrope', sans-serif;
+        font-size: 22px;
+        font-weight: 700;
+        color: #111;
+        margin-bottom: 1.5rem;
+    }
+
+    @@media (max-width: 768px) {
+        .form-grid {
+            grid-template-columns: 1fr;
+        }
+    }
+</style>
+
+<div class="container-lg py-4" style="max-width: 720px;">
+    <p class="page-title">Edit Appointment</p>
+
+    <form asp-action="Edit">
+        <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
+
+        <input type="hidden" asp-for="AppointmentID" />
+        <input type="hidden" asp-for="CreatedAt" />
+        <input type="hidden" asp-for="UpdatedAt" />
+        <input type="hidden" asp-for="StudentsID" />
+
+        <div class="form-card">
+            <div class="form-section-title">
+                <i class="bi bi-person"></i> Client
             </div>
-
-            <div class="form-group mb-3">
-                <label asp-for="Email" class="control-label"></label>
-                <input asp-for="Email" class="form-control" />
-                <span asp-validation-for="Email" class="text-danger"></span>
+            <div class="form-grid">
+                <div>
+                    <label asp-for="FullName" class="field-label"></label>
+                    <input asp-for="FullName" class="form-control" />
+                    <span asp-validation-for="FullName" class="text-danger" style="font-size:12px;"></span>
+                </div>
+                <div>
+                    <label asp-for="Email" class="field-label"></label>
+                    <input asp-for="Email" class="form-control" />
+                    <span asp-validation-for="Email" class="text-danger" style="font-size:12px;"></span>
+                </div>
             </div>
+        </div>
 
-          
-
-            <div class="form-group mb-3">
-                <label asp-for="AppointmentDate" class="control-label"></label>
-                <input asp-for="AppointmentDate" class="form-control" type="datetime-local" />
-                <span asp-validation-for="AppointmentDate" class="text-danger"></span>
+        <div class="form-card">
+            <div class="form-section-title">
+                <i class="bi bi-calendar3"></i> Appointment
             </div>
-
-            <div class="form-group mb-3">
-                <label asp-for="AppointmentType" class="control-label"></label>
-                <input asp-for="AppointmentType" class="form-control" />
-                <span asp-validation-for="AppointmentType" class="text-danger"></span>
+            <div class="form-grid">
+                <div>
+                    <label asp-for="AppointmentDate" class="field-label"></label>
+                    <input asp-for="AppointmentDate" class="form-control" type="datetime-local" />
+                    <span asp-validation-for="AppointmentDate" class="text-danger" style="font-size:12px;"></span>
+                </div>
+                <div>
+                    <label asp-for="AppointmentType" class="field-label"></label>
+                    <input asp-for="AppointmentType" class="form-control" />
+                    <span asp-validation-for="AppointmentType" class="text-danger" style="font-size:12px;"></span>
+                </div>
+                <div class="full-width">
+                    <label asp-for="Notes" class="field-label"></label>
+                    <textarea asp-for="Notes" class="form-control" rows="3"></textarea>
+                    <span asp-validation-for="Notes" class="text-danger" style="font-size:12px;"></span>
+                </div>
             </div>
+        </div>
 
-            <div class="form-group mb-3">
-                <label asp-for="Notes" class="control-label"></label>
-                <textarea asp-for="Notes" class="form-control" rows="3"></textarea>
-                <span asp-validation-for="Notes" class="text-danger"></span>
+        <div class="form-card">
+            <div class="form-section-title">
+                <i class="bi bi-info-circle"></i> Status
             </div>
-
-            <div class="form-group mb-3">
-                <label asp-for="Status" class="control-label"></label>
-                <input asp-for="Status" class="form-control" />
-                <span asp-validation-for="Status" class="text-danger"></span>
+            <div style="max-width: 240px;">
+                <label asp-for="Status" class="field-label"></label>
+                <select asp-for="Status" class="form-select">
+                    @foreach (var s in new[] { "Pending", "Confirmed", "Cancelled", "Completed", "Missed" })
+                    {
+                        <option value="@s">@s</option>
+                    }
+                </select>
+                <span asp-validation-for="Status" class="text-danger" style="font-size:12px;"></span>
             </div>
+        </div>
 
-            <div class="form-group mt-3">
-                <input type="submit" value="Save Changes" class="btn btn-primary" />
-                <a asp-action="Index" class="btn btn-secondary ms-2">Cancel</a>
-            </div>
-        </form>
-    </div>
-</div>
-
-<div>
-    <a asp-action="Index">Back to List</a>
+        <div class="form-footer">
+            <button type="submit" class="btn-save">Save changes</button>
+            <a asp-action="Index" class="btn-cancel">Cancel</a>
+        </div>
+    </form>
 </div>
 
 @section Scripts {
