@@ -1,96 +1,212 @@
 @model GCAMS.Models.Appointment.Appointments
 
-@{
-    ViewData["Title"] = "Delete";
-}
-
 <h1>Delete</h1>
 
 <h3>Are you sure you want to delete this?</h3>
+
 <div>
-    <h4>Appointments</h4>
-    <hr />
-    <dl class="row">
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.FullName)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.FullName)
-        </dd>
-    </dl>
-    <dl class="row">
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Email)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Email)
-        </dd>
-    </dl>
-   
-    <dl class="row">
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.AppointmentDate)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.AppointmentDate)
-        </dd>
-    </dl>
-    <dl class="row">
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.AppointmentType)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.AppointmentType)
-        </dd>
-    </dl>
-    <dl class="row">
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Notes)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Notes)
-        </dd>
-    </dl>
-    <dl class="row">
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Status)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Status)
-        </dd>
-    </dl>
-    <dl class="row">
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.CreatedAt)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.CreatedAt)
-        </dd>
-    </dl>
-    <dl class="row">
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.UpdatedAt)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.UpdatedAt)
-        </dd>
-    </dl>
-    <dl class="row">
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.StudentsID)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.StudentsID)
-        </dd>
-    </dl>
-    <dl class="row">
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Student)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Student)
-        </dd>
-    </dl>
+    <style>
+        @@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Manrope:wght@600;700&display=swap');
+
+        .detail-card {
+            background: #fff;
+            border: 1px solid #e5e7eb;
+            border-radius: 12px;
+            padding: 1.5rem;
+            margin-bottom: 1.25rem;
+        }
+
+        .detail-section-title {
+            font-family: 'Manrope', sans-serif;
+            font-size: 15px;
+            font-weight: 700;
+            color: #111;
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+            .detail-section-title i {
+                color: #1a56db;
+                font-size: 16px;
+            }
+
+        .detail-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+        }
+
+        .detail-field label {
+            font-family: 'Inter', sans-serif;
+            font-size: 12px;
+            font-weight: 500;
+            color: #6b7280;
+            display: block;
+            margin-bottom: 3px;
+            text-transform: uppercase;
+            letter-spacing: 0.04em;
+        }
+
+        .detail-field .value {
+            font-family: 'Inter', sans-serif;
+            font-size: 14px;
+            color: #111;
+        }
+
+        .status-badge {
+            display: inline-block;
+            padding: 3px 10px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+            font-family: 'Inter', sans-serif;
+        }
+
+        .status-Pending {
+            background: #fef3c7;
+            color: #92400e;
+        }
+
+        .status-Confirmed {
+            background: #d1fae5;
+            color: #065f46;
+        }
+
+        .status-Cancelled {
+            background: #fee2e2;
+            color: #991b1b;
+        }
+
+        .status-Completed {
+            background: #e0e7ff;
+            color: #3730a3;
+        }
+
+        .status-Missed {
+            background: #f3f4f6;
+            color: #374151;
+        }
+
+        .detail-actions {
+            display: flex;
+            gap: 8px;
+            margin-top: 1.5rem;
+        }
+
+        .btn-edit {
+            background: #1B5E20;
+            color: #fff;
+            border: none;
+            border-radius: 8px;
+            padding: 9px 20px;
+            font-size: 14px;
+            font-family: 'Inter', sans-serif;
+            text-decoration: none;
+        }
+
+        .btn-back {
+            background: #fff;
+            color: #374151;
+            border: 1px solid #d1d5db;
+            border-radius: 8px;
+            padding: 9px 20px;
+            font-size: 14px;
+            font-family: 'Inter', sans-serif;
+            text-decoration: none;
+        }
+
+        .btn-edit:hover {
+            background: #1648c0;
+            color: #fff;
+            text-decoration: none;
+        }
+
+        .btn-back:hover {
+            background: #f9fafb;
+            text-decoration: none;
+        }
+
+        .page-title {
+            font-family: 'Manrope', sans-serif;
+            font-size: 22px;
+            font-weight: 700;
+            color: #111;
+            margin-bottom: 1.5rem;
+        }
+
+        @@media (max-width: 768px) {
+            .detail-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+
+    <div class="container-lg py-4" style="max-width: 720px;">
+        <p class="page-title">Appointment Details</p>
+
+        <div class="detail-card">
+            <div class="detail-section-title">
+                <i class="bi bi-person"></i> Client
+            </div>
+            <div class="detail-grid">
+                <div class="detail-field">
+                    <label>@Html.DisplayNameFor(m => m.FullName)</label>
+                    <div class="value">@Html.DisplayFor(m => m.FullName)</div>
+                </div>
+                <div class="detail-field">
+                    <label>@Html.DisplayNameFor(m => m.Email)</label>
+                    <div class="value">@Html.DisplayFor(m => m.Email)</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="detail-card">
+            <div class="detail-section-title">
+                <i class="bi bi-calendar3"></i> Appointment
+            </div>
+            <div class="detail-grid">
+                <div class="detail-field">
+                    <label>@Html.DisplayNameFor(m => m.AppointmentDate)</label>
+                    <div class="value">@Model?.AppointmentDate.ToString("MMM d, yyyy — h:mm tt")</div>
+                </div>
+                <div class="detail-field">
+                    <label>@Html.DisplayNameFor(m => m.AppointmentType)</label>
+                    <div class="value">@Html.DisplayFor(m => m.AppointmentType)</div>
+                </div>
+                <div class="detail-field" style="grid-column: 1 / -1;">
+                    <label>@Html.DisplayNameFor(m => m.Notes)</label>
+                    <div class="value">@(string.IsNullOrWhiteSpace(Model?.Notes) ? "—" : Model.Notes)</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="detail-card">
+            <div class="detail-section-title">
+                <i class="bi bi-info-circle"></i> Status & Audit
+            </div>
+            <div class="detail-grid">
+                <div class="detail-field">
+                    <label>Status</label>
+                    <div class="value">
+                        <span class="status-badge status-@Model?.Status">@Model?.Status</span>
+                    </div>
+                </div>
+                <div class="detail-field">
+                    <label>Linked Student ID</label>
+                    <div class="value">@(Model?.StudentsID?.ToString() ?? "—")</div>
+                </div>
+                <div class="detail-field">
+                    <label>@Html.DisplayNameFor(m => m.CreatedAt)</label>
+                    <div class="value">@Model?.CreatedAt.ToString("MMM d, yyyy h:mm tt")</div>
+                </div>
+                <div class="detail-field">
+                    <label>@Html.DisplayNameFor(m => m.UpdatedAt)</label>
+                    <div class="value">@(Model?.UpdatedAt?.ToString("MMM d, yyyy h:mm tt") ?? "—")</div>
+                </div>
+            </div>
+        </div>
     <form asp-action="Delete">
         <input type="hidden" asp-for="AppointmentID" />
         <input type="submit" value="Delete" class="btn btn-danger" /> |

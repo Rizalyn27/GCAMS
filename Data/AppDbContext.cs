@@ -2,6 +2,7 @@
 using GCAMS.Models.Students;
 using GCAMS.Models.Counselor;
 using GCAMS.Models.Appointment;
+using GCAMS.Models.CaseNotes;
 
 
 namespace GCAMS.Data
@@ -31,6 +32,9 @@ namespace GCAMS.Data
 
         //Appointment
         public DbSet<Appointments> Appointments { get; set; }
+
+        //CaseNotes
+        public DbSet<CaseNotes> CaseNotes { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {

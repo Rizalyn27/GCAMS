@@ -1,0 +1,99 @@
+@model GCAMS.Models.CaseNotes.CaseNotes
+
+@{
+    ViewData["Title"] = "Edit";
+}
+
+<h1>Edit</h1>
+
+<h4>CaseNotes</h4>
+<hr />
+<div class="row">
+    <div class="col-md-4">
+        <form asp-action="Edit">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <input type="hidden" asp-for="CasenoteId" />
+            <div class="form-group">
+                <label asp-for="FullName" class="control-label"></label>
+                <input asp-for="FullName" class="form-control" />
+                <span asp-validation-for="FullName" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="SessionNo" class="control-label"></label>
+                <input asp-for="SessionNo" class="form-control" />
+                <span asp-validation-for="SessionNo" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="AppointmentDate" class="control-label"></label>
+                <input asp-for="AppointmentDate" class="form-control" />
+                <span asp-validation-for="AppointmentDate" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="SessionTopics" class="control-label"></label>
+                <input asp-for="SessionTopics" class="form-control" />
+                <span asp-validation-for="SessionTopics" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="SessionRelevance" class="control-label"></label>
+                <input asp-for="SessionRelevance" class="form-control" />
+                <span asp-validation-for="SessionRelevance" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="GoalPlan" class="control-label"></label>
+                <input asp-for="GoalPlan" class="form-control" />
+                <span asp-validation-for="GoalPlan" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Interventions" class="control-label"></label>
+                <input asp-for="Interventions" class="form-control" />
+                <span asp-validation-for="Interventions" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Observations" class="control-label"></label>
+                <input asp-for="Observations" class="form-control" />
+                <span asp-validation-for="Observations" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="CounselProgess" class="control-label"></label>
+                <input asp-for="CounselProgess" class="form-control" />
+                <span asp-validation-for="CounselProgess" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="BehaviorStatus" class="control-label"></label>
+                <input asp-for="BehaviorStatus" class="form-control" />
+                <span asp-validation-for="BehaviorStatus" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Homework" class="control-label"></label>
+                <input asp-for="Homework" class="form-control" />
+                <span asp-validation-for="Homework" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="StrengthsChallenges" class="control-label"></label>
+                <input asp-for="StrengthsChallenges" class="form-control" />
+                <span asp-validation-for="StrengthsChallenges" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="SpecificGoal" class="control-label"></label>
+                <input asp-for="SpecificGoal" class="form-control" />
+                <span asp-validation-for="SpecificGoal" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="OverallGoal" class="control-label"></label>
+                <input asp-for="OverallGoal" class="form-control" />
+                <span asp-validation-for="OverallGoal" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <input type="submit" value="Save" class="btn btn-primary" />
+            </div>
+        </form>
+    </div>
+</div>
+
+<div>
+    <a asp-action="Index">Back to List</a>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

@@ -1,0 +1,113 @@
+@model IEnumerable<GCAMS.Models.CaseNotes.CaseNotes>
+
+@{
+    ViewData["Title"] = "Index";
+}
+
+<h1>Index</h1>
+
+<p>
+    <a asp-action="Create">Create New</a>
+</p>
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.FullName)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.SessionNo)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.AppointmentDate)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.SessionTopics)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.SessionRelevance)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.GoalPlan)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Interventions)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Observations)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.CounselProgess)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.BehaviorStatus)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Homework)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.StrengthsChallenges)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.SpecificGoal)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.OverallGoal)
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+@foreach (var item in Model) {
+        <tr>
+            <td>
+                @Html.DisplayFor(model => item.FullName)
+            </td>
+            <td>
+                @Html.DisplayFor(model => item.SessionNo)
+            </td>
+            <td>
+                @Html.DisplayFor(model => item.AppointmentDate)
+            </td>
+            <td>
+                @Html.DisplayFor(model => item.SessionTopics)
+            </td>
+            <td>
+                @Html.DisplayFor(model => item.SessionRelevance)
+            </td>
+            <td>
+                @Html.DisplayFor(model => item.GoalPlan)
+            </td>
+            <td>
+                @Html.DisplayFor(model => item.Interventions)
+            </td>
+            <td>
+                @Html.DisplayFor(model => item.Observations)
+            </td>
+            <td>
+                @Html.DisplayFor(model => item.CounselProgess)
+            </td>
+            <td>
+                @Html.DisplayFor(model => item.BehaviorStatus)
+            </td>
+            <td>
+                @Html.DisplayFor(model => item.Homework)
+            </td>
+            <td>
+                @Html.DisplayFor(model => item.StrengthsChallenges)
+            </td>
+            <td>
+                @Html.DisplayFor(model => item.SpecificGoal)
+            </td>
+            <td>
+                @Html.DisplayFor(model => item.OverallGoal)
+            </td>
+            <td>
+                <a asp-action="Edit" asp-route-id="@item.CasenoteId">Edit</a> |
+                <a asp-action="Details" asp-route-id="@item.CasenoteId">Details</a> |
+                <a asp-action="Delete" asp-route-id="@item.CasenoteId">Delete</a>
+            </td>
+        </tr>
+}
+    </tbody>
+</table>

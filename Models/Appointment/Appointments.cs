@@ -19,10 +19,9 @@
             [Display(Name = "Full Name")]
             public string FullName { get; set; } = string.Empty;
 
-            [Required(ErrorMessage = "Email is required")]
             [EmailAddress]
             [Display(Name = "Email Address")]
-            public string Email { get; set; } = string.Empty;
+            public string? Email { get; set; } = string.Empty;
 
             // Appointment Details
             [Required(ErrorMessage = "Appointment date is required")]
