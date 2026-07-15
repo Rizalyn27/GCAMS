@@ -27,7 +27,7 @@ namespace GCAMS.Models.CaseNotes
         [Required(ErrorMessage = "Session date is required")]
         [DataType(DataType.DateTime)]
         [Display(Name = "Date")]
-        public DateTime AppointmentDate { get; set; } = DateTime.Now;
+        public DateTime SessionDate { get; set; } = DateTime.Now;
 
         //Topics discussed during the session
         [Required]
@@ -73,10 +73,9 @@ namespace GCAMS.Models.CaseNotes
         public string BehaviorStatus { get; set; }
 
         //Homework assigned, results, and compliance (if any)
-        [Required]
         [StringLength(100)]
         [Display(Name = "Homework assigned, results, and compliance (if any)")]
-        public string Homework { get; set; }
+        public string? Homework { get; set; }
 
         //The counselee's current strengths and challenges
         [Required]
@@ -90,11 +89,10 @@ namespace GCAMS.Models.CaseNotes
         [Display(Name = "Relevance of the session to the counseling plan")]
         public string SpecificGoal { get; set; }
 
-        //Overall Goals
-        [Required]
-        [StringLength(100)]
-        [Display(Name = "Relevance of the session to the counseling plan")]
-        public string OverallGoal { get; set; }
+        ////Overall Goals
+        //[StringLength(100)]
+        //[Display(Name = "Overall Goal")]
+        //public string? OverallGoal { get; set; }
 
     }
 }

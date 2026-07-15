@@ -1,16 +1,19 @@
 ﻿@model GCAMS.Models.Counselor.Counselor
 
-@{
-    ViewData["Title"] = "Add New Counselor";
-}
-
 <style>
     @@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Manrope:wght@600;700&display=swap');
+
+    .counselor-form-page {
+        width: 100%;
+        max-width: 100%;
+        padding: 24px 16px;
+    }
 
     .form-wrapper {
         display: flex;
         gap: 1.5rem;
         align-items: flex-start;
+        width: 100%;
     }
 
     .form-sidebar {
@@ -88,7 +91,7 @@
             grid-column: 1 / -1;
         }
 
-    .form-grid-3 {
+    .name-row {
         display: grid;
         grid-template-columns: 1fr 1fr 1fr;
         gap: 1rem;
@@ -168,7 +171,11 @@
             position: static;
         }
 
-        .form-grid, .form-grid-3 {
+        .form-grid {
+            grid-template-columns: 1fr;
+        }
+
+        .name-row {
             grid-template-columns: 1fr;
         }
     }
@@ -182,139 +189,194 @@
     }
 </style>
 
-<div class="form-wrapper">
+<div class="counselor-form-page">
+    <div class="form-wrapper">
 
-    <!-- Sidebar -->
-    <div class="form-sidebar">
-        <a href="#personal" class="nav-link active">
-            <i class="bi bi-person-badge"></i> Personal Info
-        </a>
-        <a href="#professional" class="nav-link">
-            <i class="bi bi-briefcase"></i> Professional
-        </a>
-        <a href="#employment" class="nav-link">
-            <i class="bi bi-building"></i> Employment
-        </a>
+        <!-- Sidebar -->
+        <div class="form-sidebar">
+            <a href="#personal" class="nav-link active">
+                <i class="bi bi-person-badge"></i> Personal Info
+            </a>
+            <a href="#professional" class="nav-link">
+                <i class="bi bi-briefcase"></i> Professional
+            </a>
+            <a href="#employment" class="nav-link">
+                <i class="bi bi-building"></i> Employment
+            </a>
+        </div>
+
+        <!-- Form Content -->
+        <form asp-action="Create" method="post" class="form-content">
+            <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
+
+            <!-- Personal Information -->
+            <div class="form-section" id="personal">
+                <div class="form-section-title">
+                    <i class="bi bi-person-badge"></i> Personal Information
+                </div>
+                <div class="form-grid">
+                    <!-- Names lead the form: this is how counselors are identified and searched for -->
+                    <div class="full-width name-row">
+                        <div>
+                            <label class="field-label">Last Name</label>
+                            <input asp-for="LastName" class="form-control" />
+                            <span asp-validation-for="LastName" class="text-danger" style="font-size:12px;"></span>
+                        </div>
+                        <div>
+                            <label class="field-label">First Name</label>
+                            <input asp-for="FirstName" class="form-control" />
+                            <span asp-validation-for="FirstName" class="text-danger" style="font-size:12px;"></span>
+                        </div>
+                        <div>
+                            <label class="field-label">Middle Name</label>
+                            <input asp-for="MiddleName" class="form-control" />
+                            <span asp-validation-for="MiddleName" class="text-danger" style="font-size:12px;"></span>
+                        </div>
+                    </div>
+                    <div>
+                        <label class="field-label">Gender</label>
+                        <select asp-for="Gender" class="form-control">
+                            <option value="">Select</option>
+                            <option>Male</option>
+                            <option>Female</option>
+                        </select>
+                        <span asp-validation-for="Gender" class="text-danger" style="font-size:12px;"></span>
+                    </div>
+                    <div>
+                        <label class="field-label">Birth Date</label>
+                        <input asp-for="BirthDate" type="date" class="form-control" />
+                        <span asp-validation-for="BirthDate" class="text-danger" style="font-size:12px;"></span>
+                    </div>
+                    <div>
+                        <label class="field-label">Employee Number</label>
+                        <input asp-for="EmployeeNumber" class="form-control" />
+                        <span asp-validation-for="EmployeeNumber" class="text-danger" style="font-size:12px;"></span>
+                    </div>
+                    <div>
+                        <label class="field-label">Email Address</label>
+                        <input asp-for="EmailAddress" class="form-control" />
+                        <span asp-validation-for="EmailAddress" class="text-danger" style="font-size:12px;"></span>
+                    </div>
+                    <div>
+                        <label class="field-label">Marital Status</label>
+                        <select asp-for="MaritalStatus" class="form-control">
+                            <option value="">Select</option>
+                            <option>Single</option>
+                            <option>Married</option>
+                            <option>Widowed</option>
+                            <option>Separated</option>
+                        </select>
+                        <span asp-validation-for="MaritalStatus" class="text-danger" style="font-size:12px;"></span>
+                    </div>
+                    <div>
+                        <label class="field-label">No. of Children</label>
+                        <input asp-for="NumberOfChildren" type="number" min="0" max="20" class="form-control" />
+                        <span asp-validation-for="NumberOfChildren" class="text-danger" style="font-size:12px;"></span>
+                    </div>
+                    <div class="full-width">
+                        <label class="field-label">Address</label>
+                        <textarea asp-for="Address" class="form-control" rows="2"></textarea>
+                        <span asp-validation-for="Address" class="text-danger" style="font-size:12px;"></span>
+                    </div>
+                    <div class="full-width">
+                        <label class="field-label">Contact Numbers</label>
+                        <div id="counselor-contacts"></div>
+                        <button type="button" class="btn btn-sm btn-outline-secondary mt-1"
+                                onclick="addContact('counselor-contacts', 'ContactNumbers')">
+                            + Add Number
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Professional Background -->
+            <div class="form-section" id="professional">
+                <div class="form-section-title">
+                    <i class="bi bi-briefcase-fill"></i> Professional Background
+                </div>
+                <div class="form-grid">
+                    <div>
+                        <label class="field-label">College</label>
+                        <input asp-for="College" class="form-control" />
+                        <span asp-validation-for="College" class="text-danger" style="font-size:12px;"></span>
+                    </div>
+                    <div>
+                        <label class="field-label">Course</label>
+                        <input asp-for="CollegeCourse" class="form-control" />
+                        <span asp-validation-for="CollegeCourse" class="text-danger" style="font-size:12px;"></span>
+                    </div>
+                    <div>
+                        <label class="field-label">Post Graduate Studies</label>
+                        <input asp-for="PostGraduateStudies" class="form-control" />
+                        <span asp-validation-for="PostGraduateStudies" class="text-danger" style="font-size:12px;"></span>
+                    </div>
+                    <div>
+                        <label class="field-label">Post Graduate Course</label>
+                        <input asp-for="PostGraduateCourse" class="form-control" />
+                        <span asp-validation-for="PostGraduateCourse" class="text-danger" style="font-size:12px;"></span>
+                    </div>
+                    <div>
+                        <label class="field-label">PRC License</label>
+                        <input asp-for="PRCLicense" class="form-control" />
+                        <span asp-validation-for="PRCLicense" class="text-danger" style="font-size:12px;"></span>
+                    </div>
+                    <div>
+                        <label class="field-label">PRC License 2</label>
+                        <input asp-for="PRCLicense2" class="form-control" />
+                        <span asp-validation-for="PRCLicense2" class="text-danger" style="font-size:12px;"></span>
+                    </div>
+                    <div class="full-width">
+                        <label class="field-label">Work Experience</label>
+                        <textarea asp-for="WorkExperience" class="form-control" rows="2"></textarea>
+                        <span asp-validation-for="WorkExperience" class="text-danger" style="font-size:12px;"></span>
+                    </div>
+                    <div class="full-width">
+                        <label class="field-label">Work/School</label>
+                        <input asp-for="WorkSchool" class="form-control" />
+                        <span asp-validation-for="WorkSchool" class="text-danger" style="font-size:12px;"></span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Employment Details -->
+            <div class="form-section" id="employment">
+                <div class="form-section-title">
+                    <i class="bi bi-building"></i> Employment Details
+                </div>
+                <div class="form-grid">
+                    <div>
+                        <label class="field-label">Position</label>
+                        <input asp-for="Position" class="form-control" />
+                        <span asp-validation-for="Position" class="text-danger" style="font-size:12px;"></span>
+                    </div>
+                    <div>
+                        <label class="field-label">Employment Status</label>
+                        <select asp-for="EmploymentStatus" class="form-control">
+                            <option value="">Select</option>
+                            <option>Permanent</option>
+                            <option>Full-Time</option>
+                            <option>Contractual</option>
+                            <option>Part-Time</option>
+                            <option>Substitute</option>
+                            <option>Retired</option>
+                            <option>Inactive</option>
+                        </select>
+                        <span asp-validation-for="EmploymentStatus" class="text-danger" style="font-size:12px;"></span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Footer -->
+            <div class="form-footer">
+                <small class="text-muted">🔒 Privacy Protected • Sys.Logged</small>
+                <div style="display:flex; gap:10px;">
+                    <a asp-action="Index" class="btn-cancel">Cancel</a>
+                    <input type="submit" value="Add Counselor" class="btn-save" />
+                </div>
+            </div>
+
+        </form>
     </div>
-
-    <!-- Form Content -->
-    <form asp-action="Create" method="post" class="form-content">
-        <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
-
-        <!-- Personal Information -->
-        <div class="form-section" id="personal">
-            <div class="form-section-title">
-                <i class="bi bi-person-badge"></i> Personal Information
-            </div>
-            <div class="form-grid">
-                <div>
-                    <label class="field-label">Employee Number</label>
-                    <input asp-for="EmployeeNumber" class="form-control" />
-                    <span asp-validation-for="EmployeeNumber" class="text-danger" style="font-size:12px;"></span>
-                </div>
-                <div>
-                    <label class="field-label">Gender</label>
-                    <select asp-for="Gender" class="form-control">
-                        <option value="">Select</option>
-                        <option>Male</option>
-                        <option>Female</option>
-                    </select>
-                    <span asp-validation-for="Gender" class="text-danger" style="font-size:12px;"></span>
-                </div>
-                <div>
-                    <label class="field-label">First Name</label>
-                    <input asp-for="FirstName" class="form-control" />
-                    <span asp-validation-for="FirstName" class="text-danger" style="font-size:12px;"></span>
-                </div>
-                <div>
-                    <label class="field-label">Middle Name</label>
-                    <input asp-for="MiddleName" class="form-control" />
-                    <span asp-validation-for="MiddleName" class="text-danger" style="font-size:12px;"></span>
-                </div>
-                <div>
-                    <label class="field-label">Last Name</label>
-                    <input asp-for="LastName" class="form-control" />
-                    <span asp-validation-for="LastName" class="text-danger" style="font-size:12px;"></span>
-                </div>
-                <div>
-                    <label class="field-label">Birth Date</label>
-                    <input asp-for="BirthDate" type="date" class="form-control" />
-                    <span asp-validation-for="BirthDate" class="text-danger" style="font-size:12px;"></span>
-                </div>
-                <div>
-                    <label class="field-label">Email Address</label>
-                    <input asp-for="EmailAddress" class="form-control" />
-                    <span asp-validation-for="EmailAddress" class="text-danger" style="font-size:12px;"></span>
-                </div>
-                <div class="full-width">
-                    <label class="field-label">Address</label>
-                    <textarea asp-for="Address" class="form-control" rows="2"></textarea>
-                    <span asp-validation-for="Address" class="text-danger" style="font-size:12px;"></span>
-                </div>
-                <div class="full-width">
-                    <label class="field-label">Contact Numbers</label>
-                    <div id="counselor-contacts"></div>
-                    <button type="button" class="btn btn-sm btn-outline-secondary mt-1"
-                            onclick="addContact('counselor-contacts', 'ContactNumbers')">
-                        + Add Number
-                    </button>
-                </div>
-            </div>
-        </div>
-
-        <!-- Professional Background -->
-        <div class="form-section" id="professional">
-            <div class="form-section-title">
-                <i class="bi bi-briefcase-fill"></i> Professional Background
-            </div>
-            <div class="form-grid">
-                <div class="full-width">
-                    <label class="field-label">Educational Attainment</label>
-                    <input asp-for="EducationalAttainment" class="form-control" />
-                    <span asp-validation-for="EducationalAttainment" class="text-danger" style="font-size:12px;"></span>
-                </div>
-                <div>
-                    <label class="field-label">License Number</label>
-                    <input asp-for="LicenseNumber" class="form-control" />
-                    <span asp-validation-for="LicenseNumber" class="text-danger" style="font-size:12px;"></span>
-                </div>
-                <div>
-                    <label class="field-label">Years of Experience</label>
-                    <input asp-for="YearsOfExperience" type="number" min="0" max="50" class="form-control" />
-                    <span asp-validation-for="YearsOfExperience" class="text-danger" style="font-size:12px;"></span>
-                </div>
-            </div>
-        </div>
-
-        <!-- Employment Details -->
-        <div class="form-section" id="employment">
-            <div class="form-section-title">
-                <i class="bi bi-building"></i> Employment Details
-            </div>
-            <div class="form-grid">
-                <div>
-                    <label class="field-label">Position</label>
-                    <input asp-for="Position" class="form-control" />
-                    <span asp-validation-for="Position" class="text-danger" style="font-size:12px;"></span>
-                </div>
-                <div>
-                    <label class="field-label">Date Hired</label>
-                    <input asp-for="DateHired" type="date" class="form-control" />
-                    <span asp-validation-for="DateHired" class="text-danger" style="font-size:12px;"></span>
-                </div>
-            </div>
-        </div>
-
-        <!-- Footer -->
-        <div class="form-footer">
-            <small class="text-muted">🔒 Privacy Protected • Sys.Logged</small>
-            <div style="display:flex; gap:10px;">
-                <a asp-action="Index" class="btn-cancel">Cancel</a>
-                <input type="submit" value="Add Counselor" class="btn-save" />
-            </div>
-        </div>
-
-    </form>
 </div>
 
 <script>
@@ -359,7 +421,7 @@
         container.appendChild(row);
     }
 
-       document.addEventListener('click', e => {
+    document.addEventListener('click', e => {
         const btn = e.target.closest('.remove-contact');
         if (btn) btn.closest('.contact-row').remove();
     });

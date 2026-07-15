@@ -1,4 +1,3 @@
-
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using GCAMS.Models.CaseNotes;
@@ -13,79 +12,87 @@ public class CaseNotesController : Controller
         _context = context;
     }
 
-    // GET: CASENOTESS
-    public async Task<IActionResult> Index()    
+    // GET: CaseNotes
+    public async Task<IActionResult> Index()
     {
         return View(await _context.CaseNotes.ToListAsync());
     }
 
-    // GET: CASENOTESS/Details/5
-    public async Task<IActionResult> Details(int? casenoteid)
+    // GET: CaseNotes/Details/5
+    public async Task<IActionResult> Details(int? id, int? studentId)
     {
-        if (casenoteid == null)
-        {
-            return NotFound();
-        }
+        if (id == null) return NotFound();
 
-        var casenotes = await _context.CaseNotes
-            .FirstOrDefaultAsync(m => m.CasenoteId == casenoteid);
-        if (casenotes == null)
-        {
-            return NotFound();
-        }
+        var casenotes = await _context.CaseNotes.FirstOrDefaultAsync(m => m.CasenoteId == id);
+        if (casenotes == null) return NotFound();
+
+        // Fallback: resolve the student id from FullName if it wasn't passed in
+        ViewBag.StudentsID = studentId
+            ?? (await _context.Students.FirstOrDefaultAsync(s => s.StuName == casenotes.FullName))?.StudentsID;
 
         return View(casenotes);
     }
 
-    // GET: CASENOTESS/Create
-    public IActionResult Create()
+    // GET: CaseNotes/Create?fullName=Juan Dela Cruz
+    public IActionResult Create(string? fullName, int? studentId)
     {
-        return View();
+        var casenotes = new CaseNotes();
+        if (!string.IsNullOrWhiteSpace(fullName))
+            casenotes.FullName = fullName;
+
+        ViewBag.StudentsID = studentId;
+        return View(casenotes);
     }
 
-    // POST: CASENOTESS/Create
+    // POST: CaseNotes/Create
     // To protect from overposting attacks, enable the specific properties you want to bind to.
     // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
     [HttpPost]
     [ValidateAntiForgeryToken]
-    public async Task<IActionResult> Create([Bind("CasenoteId,FullName,SessionNo,AppointmentDate,SessionTopics,SessionRelevance,GoalPlan,Interventions,Observations,CounselProgess,BehaviorStatus,Homework,StrengthsChallenges,SpecificGoal,OverallGoal")] CaseNotes casenotes)
+    public async Task<IActionResult> Create(
+    [Bind("CasenoteId,FullName,SessionNo,SessionDate,SessionTopics,SessionRelevance,GoalPlan,Interventions,Observations,CounselProgess,BehaviorStatus,Homework,StrengthsChallenges,SpecificGoal,OverallGoal")] CaseNotes casenotes,
+    int? studentId)
     {
         if (ModelState.IsValid)
         {
             _context.Add(casenotes);
             await _context.SaveChangesAsync();
+
+            if (studentId.HasValue)
+                return RedirectToAction("Details", "Students", new { id = studentId });
+
             return RedirectToAction(nameof(Index));
         }
+
+        ViewBag.StudentsID = studentId;
         return View(casenotes);
     }
 
-    // GET: CASENOTESS/Edit/5
-    public async Task<IActionResult> Edit(int? casenoteid)
+    // GET: CaseNotes/Edit/5
+    public async Task<IActionResult> Edit(int? id, int? studentId)
     {
-        if (casenoteid == null)
-        {
-            return NotFound();
-        }
+        if (id == null) return NotFound();
 
-        var casenotes = await _context.CaseNotes.FindAsync(casenoteid);
-        if (casenotes == null)
-        {
-            return NotFound();
-        }
+        var casenotes = await _context.CaseNotes.FindAsync(id);
+        if (casenotes == null) return NotFound();
+
+        ViewBag.StudentsID = studentId
+            ?? (await _context.Students.FirstOrDefaultAsync(s => s.StuName == casenotes.FullName))?.StudentsID;
+
         return View(casenotes);
     }
 
-    // POST: CASENOTESS/Edit/5
+    // POST: CaseNotes/Edit/5
     // To protect from overposting attacks, enable the specific properties you want to bind to.
     // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
     [HttpPost]
     [ValidateAntiForgeryToken]
-    public async Task<IActionResult> Edit(int? casenoteid, [Bind("CasenoteId,FullName,SessionNo,AppointmentDate,SessionTopics,SessionRelevance,GoalPlan,Interventions,Observations,CounselProgess,BehaviorStatus,Homework,StrengthsChallenges,SpecificGoal,OverallGoal")] CaseNotes casenotes)
+    public async Task<IActionResult> Edit(
+     int? id,
+     [Bind("CasenoteId,FullName,SessionNo,SessionDate,SessionTopics,SessionRelevance,GoalPlan,Interventions,Observations,CounselProgess,BehaviorStatus,Homework,StrengthsChallenges,SpecificGoal,OverallGoal")] CaseNotes casenotes,
+     int? studentId)
     {
-        if (casenoteid != casenotes.CasenoteId)
-        {
-            return NotFound();
-        }
+        if (id != casenotes.CasenoteId) return NotFound();
 
         if (ModelState.IsValid)
         {
@@ -96,30 +103,30 @@ public class CaseNotesController : Controller
             }
             catch (DbUpdateConcurrencyException)
             {
-                if (!CaseNotesExists(casenotes.CasenoteId))
-                {
-                    return NotFound();
-                }
-                else
-                {
-                    throw;
-                }
+                if (!CaseNotesExists(casenotes.CasenoteId)) return NotFound();
+                throw;
             }
+
+            if (studentId.HasValue)
+                return RedirectToAction("Details", "Students", new { id = studentId });
+
             return RedirectToAction(nameof(Index));
         }
+
+        ViewBag.StudentsID = studentId;
         return View(casenotes);
     }
 
-    // GET: CASENOTESS/Delete/5
-    public async Task<IActionResult> Delete(int? casenoteid)
+    // GET: CaseNotes/Delete/5
+    public async Task<IActionResult> Delete(int? id)
     {
-        if (casenoteid == null)
+        if (id == null)
         {
             return NotFound();
         }
 
         var casenotes = await _context.CaseNotes
-            .FirstOrDefaultAsync(m => m.CasenoteId == casenoteid);
+            .FirstOrDefaultAsync(m => m.CasenoteId == id);
         if (casenotes == null)
         {
             return NotFound();
@@ -128,12 +135,12 @@ public class CaseNotesController : Controller
         return View(casenotes);
     }
 
-    // POST: CASENOTESS/Delete/5
+    // POST: CaseNotes/Delete/5
     [HttpPost, ActionName("Delete")]
     [ValidateAntiForgeryToken]
-    public async Task<IActionResult> DeleteConfirmed(int? casenoteid)
+    public async Task<IActionResult> DeleteConfirmed(int? id)
     {
-        var casenotes = await _context.CaseNotes.FindAsync(casenoteid);
+        var casenotes = await _context.CaseNotes.FindAsync(id);
         if (casenotes != null)
         {
             _context.CaseNotes.Remove(casenotes);
@@ -143,8 +150,8 @@ public class CaseNotesController : Controller
         return RedirectToAction(nameof(Index));
     }
 
-    private bool CaseNotesExists(int? casenoteid)
+    private bool CaseNotesExists(int? id)
     {
-        return _context.CaseNotes.Any(e => e.CasenoteId == casenoteid);
+        return _context.CaseNotes.Any(e => e.CasenoteId == id);
     }
 }

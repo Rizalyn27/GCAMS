@@ -28,10 +28,10 @@
     </dl>
     <dl class="row">
         <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.AppointmentDate)
+            @Html.DisplayNameFor(model => model.SessionDate)
         </dt>
         <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.AppointmentDate)
+            @Html.DisplayFor(model => model.SessionDate)
         </dd>
     </dl>
     <dl class="row">
@@ -114,14 +114,14 @@
             @Html.DisplayFor(model => model.SpecificGoal)
         </dd>
     </dl>
-    <dl class="row">
+    @* <dl class="row">
         <dt class = "col-sm-2">
             @Html.DisplayNameFor(model => model.OverallGoal)
         </dt>
         <dd class = "col-sm-10">
             @Html.DisplayFor(model => model.OverallGoal)
         </dd>
-    </dl>
+    </dl> *@
     <form asp-action="Delete">
         <input type="hidden" asp-for="CasenoteId" />
         <input type="submit" value="Delete" class="btn btn-danger" /> |

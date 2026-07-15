@@ -1,7 +1,6 @@
 ﻿@model GCAMS.ViewModels.StudentFormViewModel
 
 @{
-    ViewData["Title"] = "Student Profile";
     Layout = "_Layout";
 }
 
@@ -257,6 +256,105 @@
             font-size: 13px;
         }
 
+    .empty-state {
+        text-align: center;
+        padding: 32px 16px;
+        color: #717a6d;
+    }
+
+        .empty-state .material-symbols-outlined {
+            font-size: 36px;
+            color: #c0c9bb;
+            display: block;
+            margin-bottom: 8px;
+        }
+
+    /* Case notes table */
+    .cn-table {
+        width: 100%;
+        border-collapse: collapse;
+        background: #fff;
+        border-radius: 12px;
+        overflow: hidden;
+        border: 1px solid #e1e4db;
+    }
+
+        .cn-table thead tr {
+            background: #f8faf2;
+            border-bottom: 1px solid #e1e4db;
+        }
+
+        .cn-table thead th {
+            padding: 12px 16px;
+            font-size: 11px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.06em;
+            color: #717a6d;
+            text-align: left;
+        }
+
+        .cn-table tbody tr {
+            border-bottom: 1px solid #f2f5ec;
+            transition: background 0.15s;
+        }
+
+            .cn-table tbody tr:last-child {
+                border-bottom: none;
+            }
+
+            .cn-table tbody tr:hover {
+                background: #f8faf2;
+            }
+
+        .cn-table tbody td {
+            padding: 14px 16px;
+            font-size: 14px;
+            color: #191d18;
+            vertical-align: top;
+            max-width: 260px;
+        }
+
+    .cn-date {
+        font-weight: 600;
+        color: #191d18;
+        white-space: nowrap;
+    }
+
+    .cn-text {
+        color: #374151;
+        display: -webkit-box;
+        -webkit-line-clamp: 2;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+    }
+
+    .cn-actions {
+        display: flex;
+        align-items: center;
+        gap: 4px;
+    }
+
+    .cn-action-icon {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 32px;
+        height: 32px;
+        border-radius: 8px;
+        border: none;
+        background: transparent;
+        cursor: pointer;
+        color: #717a6d;
+        text-decoration: none;
+        transition: all 0.15s;
+    }
+
+        .cn-action-icon:hover {
+            background: #f2f5ec;
+            color: #1b6d24;
+        }
+
     @@media (max-width: 768px) {
         .section-body {
             grid-template-columns: 1fr;
@@ -304,7 +402,7 @@
                         </h2>
                         <span class="status-badge @(Model.Student.IsActive ? "status-active" : "status-inactive")">
                             <span class="material-symbols-outlined" style="font-size:13px; font-variation-settings:'FILL' 1;">
-                                @(Model.Student.IsActive ? "" : "")
+                                @(Model.Student.IsActive ? "" : "cancel")
                             </span>
                             @(Model.Student.IsActive ? "Active" : "Inactive")
                         </span>
@@ -368,9 +466,9 @@
                 <span class="material-symbols-outlined" style="font-size:15px; vertical-align:middle; margin-right:4px;"></span>
                 Family Background
             </button>
-            <button class="tab-btn" onclick="switchTab('education', this)">
+            <button class="tab-btn" onclick="switchTab('casenotes', this)">
                 <span class="material-symbols-outlined" style="font-size:15px; vertical-align:middle; margin-right:4px;"></span>
-                Educational Background
+                Case Notes
             </button>
             <button class="tab-btn" onclick="switchTab('health', this)">
                 <span class="material-symbols-outlined" style="font-size:15px; vertical-align:middle; margin-right:4px;"></span>
@@ -497,6 +595,60 @@
                 <div>
                     <div class="field-label">Academic Year</div>
                     <div class="field-value">@Model.Student.AcademicYear</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="section-card">
+            <div class="section-header">
+                <span class="material-symbols-outlined"></span>
+                Elementary
+            </div>
+            <div class="section-body cols-3">
+                <div class="full-width">
+                    <div class="field-label">School Name</div>
+                    <div class="field-value @(string.IsNullOrEmpty(Model.Education.ElementarySchool) ? "empty" : "")">
+                        @(string.IsNullOrEmpty(Model.Education.ElementarySchool) ? "Not specified" : Model.Education.ElementarySchool)
+                    </div>
+                </div>
+                <div>
+                    <div class="field-label">Year Graduated</div>
+                    <div class="field-value @(string.IsNullOrEmpty(Model.Education.ElementaryYear) ? "empty" : "")">
+                        @(string.IsNullOrEmpty(Model.Education.ElementaryYear) ? "Not specified" : Model.Education.ElementaryYear)
+                    </div>
+                </div>
+                <div class="full-width">
+                    <div class="field-label">Honors / Awards</div>
+                    <div class="field-value @(string.IsNullOrEmpty(Model.Education.ElementaryHonors) ? "empty" : "")">
+                        @(string.IsNullOrEmpty(Model.Education.ElementaryHonors) ? "None" : Model.Education.ElementaryHonors)
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="section-card">
+            <div class="section-header">
+                <span class="material-symbols-outlined"></span>
+                Secondary / Junior High
+            </div>
+            <div class="section-body cols-3">
+                <div class="full-width">
+                    <div class="field-label">School Name</div>
+                    <div class="field-value @(string.IsNullOrEmpty(Model.Education.SecondarySchool) ? "empty" : "")">
+                        @(string.IsNullOrEmpty(Model.Education.SecondarySchool) ? "Not specified" : Model.Education.SecondarySchool)
+                    </div>
+                </div>
+                <div>
+                    <div class="field-label">Year Graduated</div>
+                    <div class="field-value @(string.IsNullOrEmpty(Model.Education.SecondaryYear) ? "empty" : "")">
+                        @(string.IsNullOrEmpty(Model.Education.SecondaryYear) ? "Not specified" : Model.Education.SecondaryYear)
+                    </div>
+                </div>
+                <div class="full-width">
+                    <div class="field-label">Honors / Awards</div>
+                    <div class="field-value @(string.IsNullOrEmpty(Model.Education.SecondaryHonors) ? "empty" : "")">
+                        @(string.IsNullOrEmpty(Model.Education.SecondaryHonors) ? "None" : Model.Education.SecondaryHonors)
+                    </div>
                 </div>
             </div>
         </div>
@@ -676,60 +828,62 @@
 
     </div>
 
-    <!-- TAB: EDUCATION -->
-    <div id="tab-education" class="tab-panel">
+    <!-- TAB: CASE NOTES -->
+    <div id="tab-casenotes" class="tab-panel">
 
         <div class="section-card">
             <div class="section-header">
                 <span class="material-symbols-outlined"></span>
-                Elementary
+                Case Notes
+                <a asp-controller="CaseNotes" asp-action="Create" asp-route-fullName="@Model.Student.StuName" asp-route-studentId="@Model.Student.StudentsID"
+                   class="action-btn btn-primary-green" style="margin-left:auto; padding:6px 14px; font-size:13px;">
+                    <span class="material-symbols-outlined" style="font-size:16px;">add</span>
+                    Add New Case Note
+                </a>
             </div>
-            <div class="section-body cols-3">
-                <div class="full-width">
-                    <div class="field-label">School Name</div>
-                    <div class="field-value @(string.IsNullOrEmpty(Model.Education.ElementarySchool) ? "empty" : "")">
-                        @(string.IsNullOrEmpty(Model.Education.ElementarySchool) ? "Not specified" : Model.Education.ElementarySchool)
+            <div class="section-body cols-1">
+                @if (Model.CaseNotes == null || !Model.CaseNotes.Any())
+                {
+                    <div class="empty-state">
+                        <span class="material-symbols-outlined">description</span>
+                        No case notes have been recorded yet.
                     </div>
-                </div>
-                <div>
-                    <div class="field-label">Year Graduated</div>
-                    <div class="field-value @(string.IsNullOrEmpty(Model.Education.ElementaryYear) ? "empty" : "")">
-                        @(string.IsNullOrEmpty(Model.Education.ElementaryYear) ? "Not specified" : Model.Education.ElementaryYear)
-                    </div>
-                </div>
-                <div class="full-width">
-                    <div class="field-label">Honors / Awards</div>
-                    <div class="field-value @(string.IsNullOrEmpty(Model.Education.ElementaryHonors) ? "empty" : "")">
-                        @(string.IsNullOrEmpty(Model.Education.ElementaryHonors) ? "None" : Model.Education.ElementaryHonors)
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <div class="section-card">
-            <div class="section-header">
-                <span class="material-symbols-outlined"></span>
-                Secondary / Junior High
-            </div>
-            <div class="section-body cols-3">
-                <div class="full-width">
-                    <div class="field-label">School Name</div>
-                    <div class="field-value @(string.IsNullOrEmpty(Model.Education.SecondarySchool) ? "empty" : "")">
-                        @(string.IsNullOrEmpty(Model.Education.SecondarySchool) ? "Not specified" : Model.Education.SecondarySchool)
-                    </div>
-                </div>
-                <div>
-                    <div class="field-label">Year Graduated</div>
-                    <div class="field-value @(string.IsNullOrEmpty(Model.Education.SecondaryYear) ? "empty" : "")">
-                        @(string.IsNullOrEmpty(Model.Education.SecondaryYear) ? "Not specified" : Model.Education.SecondaryYear)
-                    </div>
-                </div>
-                <div class="full-width">
-                    <div class="field-label">Honors / Awards</div>
-                    <div class="field-value @(string.IsNullOrEmpty(Model.Education.SecondaryHonors) ? "empty" : "")">
-                        @(string.IsNullOrEmpty(Model.Education.SecondaryHonors) ? "None" : Model.Education.SecondaryHonors)
-                    </div>
-                </div>
+                }
+                else
+                {
+                    <table class="cn-table">
+                        <thead>
+                            <tr>
+                                <th>Session Date</th>
+                                <th>Specific Goal</th>
+                                <th>Intervention</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var note in Model.CaseNotes.OrderByDescending(n => n.SessionDate))
+                            {
+                                <tr>
+                                    <td><span class="cn-date">@note.SessionDate.ToString("MMM dd, yyyy - h:mm tt")</span></td>
+                                    <td><span class="cn-text" title="@note.SpecificGoal">@note.SpecificGoal</span></td>
+                                    <td><span class="cn-text" title="@note.Interventions">@note.Interventions</span></td>
+                                    <td>
+                                        <div class="cn-actions">
+                                            <a asp-controller="CaseNotes" asp-action="Details" asp-route-id="@note.CasenoteId" asp-route-studentId="@Model.Student.StudentsID"
+                                               class="cn-action-icon" title="View Details">
+                                                <span class="material-symbols-outlined" style="font-size:18px;">👁</span>
+                                            </a>
+                                            <a asp-controller="CaseNotes" asp-action="Edit" asp-route-id="@note.CasenoteId" asp-route-studentId="@Model.Student.StudentsID"
+                                               class="cn-action-icon" title="Edit">
+                                                <span class="material-symbols-outlined" style="font-size:18px;">✏️</span>
+                                            </a>
+                                        </div>
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                }
             </div>
         </div>
 

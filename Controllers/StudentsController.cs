@@ -4,6 +4,7 @@ using GCAMS.Data;
 using GCAMS.Models.Students;
 using GCAMS.ViewModels;
 using System.Globalization;
+using GCAMS.Models.CaseNotes;
 
 namespace GCAMS.Controllers
 {
@@ -74,7 +75,13 @@ namespace GCAMS.Controllers
                 EmergencyContacts = await _context.EmergencyContactNumbers
                     .Where(x => x.EmergencyContactID == emergencyId)
                     .Select(x => new ContactEntry { Number = x.Number, Label = x.Label })
+                    .ToListAsync(),
+
+                    CaseNotes = await _context.CaseNotes
+                    .Where(n => n.FullName == student.StuName)
+                    .OrderByDescending(n => n.SessionDate)
                     .ToListAsync()
+
             };
 
             return View(vm);

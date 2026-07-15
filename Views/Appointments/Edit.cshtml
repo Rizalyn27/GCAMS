@@ -160,7 +160,20 @@
                 </div>
                 <div>
                     <label asp-for="AppointmentType" class="field-label"></label>
-                    <input asp-for="AppointmentType" class="form-control" />
+                    <select asp-for="AppointmentType" class="form-control">
+                        <option value="">Select</option>
+                        <option>Academic Concern</option>
+                        <option>Behavioral Concern</option>
+                        <option>Personal/Emotional Concern</option>
+                        <option>Family-Related Concern</option>
+                        <option>Peer Relationship</option>
+                        <option>Career Guidance</option>
+                        <option>Health/Physical Concern</option>
+                        <option>Bullying Report</option>
+                        <option>Crisis/Urgent Concern</option>
+                        <option>Follow-up Session</option>
+                        <ption>Other</ption>
+                    </select>
                     <span asp-validation-for="AppointmentType" class="text-danger" style="font-size:12px;"></span>
                 </div>
                 <div class="full-width">

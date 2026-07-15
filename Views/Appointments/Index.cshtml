@@ -1,4 +1,4 @@
-@model IEnumerable<GCAMS.Models.Appointment.Appointments>
+﻿@model IEnumerable<GCAMS.Models.Appointment.Appointments>
 @{
     ViewData["Title"] = "Appointments";
 }
@@ -169,7 +169,7 @@
                             <select class="status-select status-dropdown"
                                     data-id="@item.AppointmentID"
                                     data-current="@item.Status">
-                                @foreach (var status in new[] { "Pending", "Confirmed", "Cancelled", "Completed", "Missed" })
+                                @foreach (var status in new[] { "Pending", "Confirm","Reject", "Cancel", "Complete", "Missed" })
                                 {
                                     <option value="@status" selected="@(item.Status == status ? "selected" : null)">
                                         @status
@@ -179,9 +179,9 @@
                         </td>
                         <td>
                             <div class="row-actions">
-                                <a asp-action="Edit" asp-route-appointmentid="@item.AppointmentID">Edit</a>
-                                <a asp-action="Details" asp-route-appointmentid="@item.AppointmentID">Details</a>
-                                <a asp-action="Delete" asp-route-appointmentid="@item.AppointmentID" class="del">Delete</a>
+                                <a asp-action="Details" asp-route-appointmentid="@item.AppointmentID">👁</a>
+                                <a asp-action="Edit" asp-route-appointmentid="@item.AppointmentID">✏️</a>
+                                <a asp-action="Delete" asp-route-appointmentid="@item.AppointmentID" class="del">🗑</a>
                             </div>
                         </td>
                     </tr>

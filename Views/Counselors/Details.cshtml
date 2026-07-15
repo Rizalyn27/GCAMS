@@ -257,16 +257,14 @@
                         <h2 style="font-family:'Manrope',sans-serif; font-size:24px; font-weight:700; color:#002c06; margin:0;">
                             @Model.FullName
                         </h2>
-                        <span class="status-badge @(Model.EmploymentStatus ? "status-active" : "status-inactive")">
-                            <span class="material-symbols-outlined" style="font-size:13px; font-variation-settings:'FILL' 1;">
-                                @(Model.EmploymentStatus ? "" : "")
+                        <div class="field-label">Employment Status</div>
+                        <div class="field-value">
+                            <span class="info-pill" style="
+                                background: @(Model.EmploymentStatus == "Inactive" || Model.EmploymentStatus == "Retired" ? "#e1e4db" : "#a0f499");
+                                color: @(Model.EmploymentStatus == "Inactive" || Model.EmploymentStatus == "Retired" ? "#41493e" : "#004d08");">
+                                @Model.EmploymentStatus
                             </span>
-                            @(Model.EmploymentStatus ? "Active" : "Inactive")
-                        </span>
-                        @if (!string.IsNullOrEmpty(Model.Position))
-                        {
-                            <span class="info-pill">@Model.Position</span>
-                        }
+                        </div>
                     </div>
                     <div style="display:flex; align-items:center; gap:8px; flex-wrap:wrap;">
                         <span class="info-pill id-pill">
@@ -296,26 +294,7 @@
                     <span class="material-symbols-outlined" style="font-size:18px;"></span>
                     Edit Record
                 </a>
-                @if (Model.EmploymentStatus)
-                {
-                    <form asp-action="SoftDelete" asp-route-id="@Model.CounselorID" method="post" style="display:inline;">
-                        @Html.AntiForgeryToken()
-                        <button type="submit" class="action-btn btn-danger">
-                            <span class="material-symbols-outlined" style="font-size:18px;"></span>
-                            Set Inactive
-                        </button>
-                    </form>
-                }
-                else
-                {
-                    <form asp-action="Restore" asp-route-id="@Model.CounselorID" method="post" style="display:inline;">
-                        @Html.AntiForgeryToken()
-                        <button type="submit" class="action-btn btn-primary-green">
-                            <span class="material-symbols-outlined" style="font-size:18px;">person_check</span>
-                            Restore
-                        </button>
-                    </form>
-                }
+                
             </div>
 
         </div>
@@ -324,121 +303,258 @@
     <!-- Personal Information -->
     <div class="section-card">
         <div class="section-header">
-            <span class="material-symbols-outlined"></span>
+            <span class="material-symbols-outlined">person</span>
             Personal Information
         </div>
+
         <div class="section-body cols-3">
+
             <div>
                 <div class="field-label">First Name</div>
                 <div class="field-value">@Model.FirstName</div>
             </div>
+
             <div>
                 <div class="field-label">Middle Name</div>
                 <div class="field-value @(string.IsNullOrEmpty(Model.MiddleName) ? "empty" : "")">
                     @(string.IsNullOrEmpty(Model.MiddleName) ? "Not specified" : Model.MiddleName)
                 </div>
             </div>
+
             <div>
                 <div class="field-label">Last Name</div>
                 <div class="field-value">@Model.LastName</div>
             </div>
+
             <div>
                 <div class="field-label">Gender</div>
-                <div class="field-value @(string.IsNullOrEmpty(Model.Gender) ? "empty" : "")">
-                    @(string.IsNullOrEmpty(Model.Gender) ? "Not specified" : Model.Gender)
+                <div class="field-value">@Model.Gender</div>
+            </div>
+
+            <div>
+                <div class="field-label">Birth Date</div>
+                <div class="field-value">
+                    @Model.BirthDate.ToString("MMMM dd, yyyy")
                 </div>
             </div>
+
             <div>
-                <div class="field-label">Date of Birth</div>
-                <div class="field-value">@Model.BirthDate.ToString("MMMM dd, yyyy")</div>
+                <div class="field-label">Marital Status</div>
+                <div class="field-value">
+                    @Model.MaritalStatus
+                </div>
             </div>
+
+
+            <div>
+                <div class="field-label">Number of Children</div>
+                <div class="field-value">
+                    @Model.NumberOfChildren
+                </div>
+            </div>
+
+
             <div>
                 <div class="field-label">Email Address</div>
-                <div class="field-value @(string.IsNullOrEmpty(Model.EmailAddress) ? "empty" : "")">
-                    @(string.IsNullOrEmpty(Model.EmailAddress) ? "Not specified" : Model.EmailAddress)
+                <div class="field-value">
+                    @Model.EmailAddress
                 </div>
             </div>
+
+
             <div class="full-width">
                 <div class="field-label">Address</div>
-                <div class="field-value @(string.IsNullOrEmpty(Model.Address) ? "empty" : "")">
-                    @(string.IsNullOrEmpty(Model.Address) ? "Not specified" : Model.Address)
+                <div class="field-value">
+                    @Model.Address
                 </div>
             </div>
+
+
             <div class="full-width">
                 <div class="field-label">Contact Numbers</div>
-                @if (!Model.ContactNumbers.Any())
+
+                @if (Model.ContactNumbers == null || !Model.ContactNumbers.Any())
                 {
-                    <div class="field-value empty">Not specified</div>
+                    <div class="field-value empty">
+                        Not specified
+                    </div>
                 }
                 else
                 {
-                    @foreach (var c in Model.ContactNumbers)
+                    foreach (var contact in Model.ContactNumbers)
                     {
-                        <div class="field-value" style="font-family:monospace;">
-                            @c.Number @(!string.IsNullOrEmpty(c.Label) ? $"({c.Label})" : "")
+                        <div class="field-value">
+                            @contact.Number
+
+                            @if (!string.IsNullOrEmpty(contact.Label))
+                            {
+                                <span class="info-pill">
+                                    @contact.Label
+                                </span>
+                            }
                         </div>
                     }
                 }
             </div>
+
         </div>
     </div>
+
 
     <!-- Professional Background -->
     <div class="section-card">
+
         <div class="section-header">
-            <span class="material-symbols-outlined"></span>
-            Professional Background
+            <span class="material-symbols-outlined">school</span>
+            Educational Background
         </div>
-        <div class="section-body cols-3">
-            <div class="full-width">
-                <div class="field-label">Educational Attainment</div>
-                <div class="field-value @(string.IsNullOrEmpty(Model.EducationalAttainment) ? "empty" : "")">
-                    @(string.IsNullOrEmpty(Model.EducationalAttainment) ? "Not specified" : Model.EducationalAttainment)
+
+
+        <div class="section-body cols-2">
+
+
+            <div>
+                <div class="field-label">College</div>
+                <div class="field-value">
+                    @(Model.College ?? "Not specified")
                 </div>
             </div>
+
+
             <div>
-                <div class="field-label">License Number</div>
-                <div class="field-value @(string.IsNullOrEmpty(Model.LicenseNumber) ? "empty" : "")" style="font-family:monospace;">
-                    @(string.IsNullOrEmpty(Model.LicenseNumber) ? "Not specified" : Model.LicenseNumber)
+                <div class="field-label">College Course</div>
+                <div class="field-value">
+                    @(Model.CollegeCourse ?? "Not specified")
                 </div>
             </div>
+
+
             <div>
-                <div class="field-label">Years of Experience</div>
-                <div class="field-value">@Model.YearsOfExperience year@(Model.YearsOfExperience != 1 ? "s" : "")</div>
+                <div class="field-label">Post Graduate Studies</div>
+                <div class="field-value">
+                    @(Model.PostGraduateStudies ?? "Not specified")
+                </div>
             </div>
+
+
+            <div>
+                <div class="field-label">Post Graduate Course</div>
+                <div class="field-value">
+                    @(Model.PostGraduateCourse ?? "Not specified")
+                </div>
+            </div>
+
+
         </div>
+
     </div>
+
+    <div class="section-card">
+
+        <div class="section-header">
+            <span class="material-symbols-outlined">verified</span>
+            Professional License
+        </div>
+
+
+        <div class="section-body cols-2">
+
+            <div>
+                <div class="field-label">PRC License</div>
+                <div class="field-value">
+                    @(Model.PRCLicense ?? "Not specified")
+                </div>
+            </div>
+
+
+            <div>
+                <div class="field-label">PRC License 2</div>
+                <div class="field-value">
+                    @(Model.PRCLicense2 ?? "Not specified")
+                </div>
+            </div>
+
+        </div>
+
+    </div>
+
 
     <!-- Employment Details -->
     <div class="section-card">
+
         <div class="section-header">
-            <span class="material-symbols-outlined"></span>
-            Employment Details
+            <span class="material-symbols-outlined">work</span>
+            Work Experience & Employment
         </div>
-        <div class="section-body cols-4">
+
+
+        <div class="section-body cols-3">
+
+
             <div>
-                <div class="field-label">Employee Number</div>
-                <div class="field-value" style="font-family:monospace;">@Model.EmployeeNumber</div>
-            </div>
-            <div>
-                <div class="field-label">Position</div>
-                <div class="field-value @(string.IsNullOrEmpty(Model.Position) ? "empty" : "")">
-                    @(string.IsNullOrEmpty(Model.Position) ? "Not specified" : Model.Position)
+                <div class="field-label">
+                    Employee Number
+                </div>
+
+                <div class="field-value">
+                    @Model.EmployeeNumber
                 </div>
             </div>
+
+
+
             <div>
-                <div class="field-label">Date Hired</div>
-                <div class="field-value">@Model.DateHired.ToString("MMMM dd, yyyy")</div>
-            </div>
-            <div>
-                <div class="field-label">Status</div>
+                <div class="field-label">
+                    Position / Designation
+                </div>
+
                 <div class="field-value">
-                    <span class="status-badge @(Model.EmploymentStatus ? "status-active" : "status-inactive")">
-                        @(Model.EmploymentStatus ? "Active" : "Inactive")
+                    @Model.Position
+                </div>
+            </div>
+
+
+
+            <div>
+                <div class="field-label">
+                    Employment Status
+                </div>
+
+                <div class="field-value">
+                    <span class="info-pill">
+                        @Model.EmploymentStatus
                     </span>
                 </div>
             </div>
-        </div>
-    </div>
 
+
+
+            <div>
+                <div class="field-label">
+                    Work / School
+                </div>
+
+                <div class="field-value">
+                    @(Model.WorkSchool ?? "Not specified")
+                </div>
+            </div>
+
+
+
+            <div class="full-width">
+
+                <div class="field-label">
+                    Work Experience
+                </div>
+
+                <div class="field-value">
+                    @(Model.WorkExperience ?? "Not specified")
+                </div>
+
+            </div>
+
+
+        </div>
+
+    </div>
 </div>

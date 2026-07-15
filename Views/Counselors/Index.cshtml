@@ -383,8 +383,13 @@
 
         <select id="statusFilter" class="filter-select">
             <option value="">All Status</option>
-            <option value="true">Active</option>
-            <option value="false">Inactive</option>
+            <option value="Permanent">Permanent</option>
+            <option value="Full-Time">Full-Time</option>
+            <option value="Contractual">Contractual</option>
+            <option value="Part-Time">Part-Time</option>
+            <option value="Substitute">Substitute</option>
+            <option value="Retired">Retired</option>
+            <option value="Inactive">Inactive</option>
         </select>
     </div>
 
@@ -412,14 +417,11 @@
                     <td><span class="counselor-email">@item.EmailAddress</span></td>
                     <td><span class="status-pill pill-position">@item.Position</span></td>
                     <td>
-                        @if (item.EmploymentStatus)
-                        {
-                            <span class="status-pill pill-active">Active</span>
-                        }
-                        else
-                        {
-                            <span class="status-pill pill-inactive">Inactive</span>
-                        }
+                        <span class="status-pill" style="
+                            background: @(item.EmploymentStatus == "Inactive" || item.EmploymentStatus == "Retired" ? "#e1e4db" : "#dcfce7");
+                            color: @(item.EmploymentStatus == "Inactive" || item.EmploymentStatus == "Retired" ? "#41493e" : "#166534");">
+                            @item.EmploymentStatus
+                        </span>
                     </td>
                     <td>
                         <div class="action-icons">
@@ -429,24 +431,7 @@
                             <a asp-action="Edit" asp-route-id="@item.CounselorID" class="action-icon" title="Edit">
                                 <span class="material-symbols-outlined">✏️</span>
                             </a>
-                            @if (item.EmploymentStatus)
-                            {
-                                <form asp-action="SoftDelete" asp-route-id="@item.CounselorID" method="post" style="display:inline;">
-                                    @Html.AntiForgeryToken()
-                                    <button type="submit" class="action-icon danger" title="Set Inactive">
-                                        <span class="material-symbols-outlined" style="font-size:18px;">🗑</span>
-                                    </button>
-                                </form>
-                            }
-                            else
-                            {
-                                <form asp-action="Restore" asp-route-id="@item.CounselorID" method="post" style="display:inline;">
-                                    @Html.AntiForgeryToken()
-                                    <button type="submit" class="action-icon" title="Restore Active" style="color:#1b6d24;">
-                                        <span class="material-symbols-outlined" style="font-size:18px;">↺</span>
-                                    </button>
-                                </form>
-                            }
+                           
                         </div>
                     </td>
                 </tr>

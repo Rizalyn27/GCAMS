@@ -19,7 +19,7 @@
                 @Html.DisplayNameFor(model => model.SessionNo)
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.AppointmentDate)
+                @Html.DisplayNameFor(model => model.SessionDate)
             </th>
             <th>
                 @Html.DisplayNameFor(model => model.SessionTopics)
@@ -51,9 +51,9 @@
             <th>
                 @Html.DisplayNameFor(model => model.SpecificGoal)
             </th>
-            <th>
+            @* <th>
                 @Html.DisplayNameFor(model => model.OverallGoal)
-            </th>
+            </th> *@
             <th></th>
         </tr>
     </thead>
@@ -67,7 +67,7 @@
                 @Html.DisplayFor(model => item.SessionNo)
             </td>
             <td>
-                @Html.DisplayFor(model => item.AppointmentDate)
+                    @Html.DisplayFor(model => item.SessionDate)
             </td>
             <td>
                 @Html.DisplayFor(model => item.SessionTopics)
@@ -99,9 +99,9 @@
             <td>
                 @Html.DisplayFor(model => item.SpecificGoal)
             </td>
-            <td>
+            @* <td>
                 @Html.DisplayFor(model => item.OverallGoal)
-            </td>
+            </td> *@
             <td>
                 <a asp-action="Edit" asp-route-id="@item.CasenoteId">Edit</a> |
                 <a asp-action="Details" asp-route-id="@item.CasenoteId">Details</a> |

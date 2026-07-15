@@ -50,15 +50,26 @@ public class AppointmentsController : Controller
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> Create([Bind("FullName,Email,ContactNumber,AppointmentDate,AppointmentType,Notes,StudentsID")] Appointments appointments)
     {
-        // Remove these from validation — they are set server-side, not by the form
         ModelState.Remove("Status");
         ModelState.Remove("CreatedAt");
         ModelState.Remove("UpdatedAt");
 
-        // Set automatically — never from user input
         appointments.Status = "Pending";
         appointments.CreatedAt = DateTime.Now;
         appointments.UpdatedAt = null;
+
+        // Prevent double-booking: same student, same day, not already cancelled/rejected
+        var hasConflict = await _context.Appointments.AnyAsync(a =>
+            a.StudentsID == appointments.StudentsID &&
+            a.AppointmentDate.Date == appointments.AppointmentDate.Date &&
+            a.Status != "Cancelled" &&
+            a.Status != "Rejected");
+
+        if (hasConflict)
+        {
+            ModelState.AddModelError("", "This student already has an appointment scheduled on this date.");
+            return View(appointments);
+        }
 
         if (ModelState.IsValid)
         {

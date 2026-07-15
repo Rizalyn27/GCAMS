@@ -1,99 +1,329 @@
-@model GCAMS.Models.CaseNotes.CaseNotes
+﻿@model GCAMS.Models.CaseNotes.CaseNotes
 
 @{
-    ViewData["Title"] = "Edit";
+    ViewData["Title"] = "Edit Case Note";
 }
 
-<h1>Edit</h1>
+<style>
+    @@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Manrope:wght@600;700&display=swap');
 
-<h4>CaseNotes</h4>
-<hr />
-<div class="row">
-    <div class="col-md-4">
-        <form asp-action="Edit">
-            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-            <input type="hidden" asp-for="CasenoteId" />
-            <div class="form-group">
-                <label asp-for="FullName" class="control-label"></label>
-                <input asp-for="FullName" class="form-control" />
-                <span asp-validation-for="FullName" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="SessionNo" class="control-label"></label>
-                <input asp-for="SessionNo" class="form-control" />
-                <span asp-validation-for="SessionNo" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="AppointmentDate" class="control-label"></label>
-                <input asp-for="AppointmentDate" class="form-control" />
-                <span asp-validation-for="AppointmentDate" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="SessionTopics" class="control-label"></label>
-                <input asp-for="SessionTopics" class="form-control" />
-                <span asp-validation-for="SessionTopics" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="SessionRelevance" class="control-label"></label>
-                <input asp-for="SessionRelevance" class="form-control" />
-                <span asp-validation-for="SessionRelevance" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="GoalPlan" class="control-label"></label>
-                <input asp-for="GoalPlan" class="form-control" />
-                <span asp-validation-for="GoalPlan" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="Interventions" class="control-label"></label>
-                <input asp-for="Interventions" class="form-control" />
-                <span asp-validation-for="Interventions" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="Observations" class="control-label"></label>
-                <input asp-for="Observations" class="form-control" />
-                <span asp-validation-for="Observations" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="CounselProgess" class="control-label"></label>
-                <input asp-for="CounselProgess" class="form-control" />
-                <span asp-validation-for="CounselProgess" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="BehaviorStatus" class="control-label"></label>
-                <input asp-for="BehaviorStatus" class="form-control" />
-                <span asp-validation-for="BehaviorStatus" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="Homework" class="control-label"></label>
-                <input asp-for="Homework" class="form-control" />
-                <span asp-validation-for="Homework" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="StrengthsChallenges" class="control-label"></label>
-                <input asp-for="StrengthsChallenges" class="form-control" />
-                <span asp-validation-for="StrengthsChallenges" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="SpecificGoal" class="control-label"></label>
-                <input asp-for="SpecificGoal" class="form-control" />
-                <span asp-validation-for="SpecificGoal" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="OverallGoal" class="control-label"></label>
-                <input asp-for="OverallGoal" class="form-control" />
-                <span asp-validation-for="OverallGoal" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <input type="submit" value="Save" class="btn btn-primary" />
-            </div>
-        </form>
+    .form-wrapper {
+        display: flex;
+        gap: 1.5rem;
+        align-items: flex-start;
+    }
+
+    .form-sidebar {
+        width: 200px;
+        flex-shrink: 0;
+        position: sticky;
+        top: 1rem;
+    }
+
+        .form-sidebar .nav-link {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 10px 14px;
+            border-radius: 8px;
+            font-size: 14px;
+            font-family: Inter;
+            color: #555;
+            text-decoration: none;
+            margin-bottom: 4px;
+            transition: background 0.15s;
+        }
+
+            .form-sidebar .nav-link:hover {
+                background: #f0f0f0;
+                color: #222;
+            }
+
+            .form-sidebar .nav-link.active {
+                background: #e8f5e9;
+                color: #1b6d24;
+                font-weight: 500;
+            }
+
+            .form-sidebar .nav-link i {
+                font-size: 16px;
+            }
+
+    .form-content {
+        flex: 1;
+        min-width: 0;
+    }
+
+    .form-section {
+        background: #fff;
+        border: 1px solid #e5e7eb;
+        border-radius: 12px;
+        padding: 1.5rem;
+        margin-bottom: 1.5rem;
+    }
+
+    .form-section-title {
+        font-size: 18px;
+        font-weight: 700;
+        font-family: 'Manrope', sans-serif;
+        color: #111;
+        margin-bottom: 1.25rem;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+
+        .form-section-title i {
+            font-size: 18px;
+            color: #1b6d24;
+        }
+
+    .form-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 1rem;
+    }
+
+        .form-grid .full-width {
+            grid-column: 1 / -1;
+        }
+
+    .field-label {
+        font-size: 13px;
+        font-family: 'Inter', sans-serif;
+        font-weight: 500;
+        color: #6b7280;
+        margin-bottom: 4px;
+        display: block;
+    }
+
+    .form-control, .form-select {
+        font-size: 14px;
+        font-family: 'Inter', sans-serif;
+        border-radius: 8px;
+        border: 1px solid #d1d5db;
+        padding: 8px 12px;
+        width: 100%;
+        color: #111;
+    }
+
+        .form-control:focus, .form-select:focus {
+            border-color: #1b6d24;
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(27, 109, 36, 0.1);
+        }
+
+    .form-footer {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 1rem 0;
+        border-top: 1px solid #e5e7eb;
+        margin-top: 1rem;
+    }
+
+    .btn-cancel {
+        background: #fff;
+        border: 1px solid #d1d5db;
+        border-radius: 8px;
+        padding: 9px 20px;
+        font-size: 14px;
+        color: #374151;
+        cursor: pointer;
+        text-decoration: none;
+    }
+
+        .btn-cancel:hover {
+            background: #f9fafb;
+            color: #374151;
+        }
+
+    .btn-save {
+        background: #1b6d24;
+        border: none;
+        border-radius: 8px;
+        padding: 9px 20px;
+        font-size: 14px;
+        color: #fff;
+        cursor: pointer;
+    }
+
+        .btn-save:hover {
+            background: #155a1e;
+        }
+
+    @@media (max-width: 768px) {
+        .form-wrapper {
+            flex-direction: column;
+        }
+
+        .form-sidebar {
+            width: 100%;
+            position: static;
+        }
+
+        .form-grid {
+            grid-template-columns: 1fr;
+        }
+    }
+
+    body {
+        font-family: 'Inter', sans-serif;
+    }
+
+    h1, h2, h3, h4, h5, h6 {
+        font-family: 'Manrope', sans-serif;
+    }
+</style>
+
+<h1>Edit Case Note</h1>
+
+<div class="form-wrapper">
+
+    <div class="form-sidebar">
+        <a href="#session" class="nav-link active">
+            <i class="bi bi-calendar-event"></i> Session Info
+        </a>
+        <a href="#counseling" class="nav-link">
+            <i class="bi bi-clipboard2-pulse"></i> Counseling Details
+        </a>
+        <a href="#followup" class="nav-link">
+            <i class="bi bi-flag"></i> Follow-Up & Goals
+        </a>
     </div>
+
+    <form asp-action="Edit" method="post" class="form-content">
+        <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
+        <input type="hidden" asp-for="CasenoteId" />
+        <input type="hidden" name="studentId" value="@ViewBag.StudentsID" />
+
+        <div class="form-section" id="session">
+            <div class="form-section-title">
+                <i class="bi bi-calendar-event"></i> Session Info
+            </div>
+            <div class="form-grid">
+                <div class="full-width">
+                    <label class="field-label">Full Name</label>
+                    <input asp-for="FullName" class="form-control" />
+                    <span asp-validation-for="FullName" class="text-danger" style="font-size:12px;"></span>
+                </div>
+                <div>
+                    <label class="field-label">Session No.</label>
+                    <input asp-for="SessionNo" class="form-control" />
+                    <span asp-validation-for="SessionNo" class="text-danger" style="font-size:12px;"></span>
+                </div>
+                <div>
+                    <label class="field-label">Session Date</label>
+                    <input asp-for="SessionDate" class="form-control" />
+                    <span asp-validation-for="SessionDate" class="text-danger" style="font-size:12px;"></span>
+                </div>
+                <div class="full-width">
+                    <label class="field-label">Session Topics</label>
+                    <input asp-for="SessionTopics" class="form-control" />
+                    <span asp-validation-for="SessionTopics" class="text-danger" style="font-size:12px;"></span>
+                </div>
+                <div class="full-width">
+                    <label class="field-label">Session Relevance</label>
+                    <input asp-for="SessionRelevance" class="form-control" />
+                    <span asp-validation-for="SessionRelevance" class="text-danger" style="font-size:12px;"></span>
+                </div>
+            </div>
+        </div>
+
+        <div class="form-section" id="counseling">
+            <div class="form-section-title">
+                <i class="bi bi-clipboard2-pulse"></i> Counseling Details
+            </div>
+            <div class="form-grid">
+                <div class="full-width">
+                    <label class="field-label">Goal Plan</label>
+                    <input asp-for="GoalPlan" class="form-control" />
+                    <span asp-validation-for="GoalPlan" class="text-danger" style="font-size:12px;"></span>
+                </div>
+                <div class="full-width">
+                    <label class="field-label">Interventions</label>
+                    <input asp-for="Interventions" class="form-control" />
+                    <span asp-validation-for="Interventions" class="text-danger" style="font-size:12px;"></span>
+                </div>
+                <div class="full-width">
+                    <label class="field-label">Observations</label>
+                    <input asp-for="Observations" class="form-control" />
+                    <span asp-validation-for="Observations" class="text-danger" style="font-size:12px;"></span>
+                </div>
+                <div>
+                    <label class="field-label">Counsel Progress</label>
+                    <input asp-for="CounselProgess" class="form-control" />
+                    <span asp-validation-for="CounselProgess" class="text-danger" style="font-size:12px;"></span>
+                </div>
+                <div>
+                    <label class="field-label">Behavior Status</label>
+                    <input asp-for="BehaviorStatus" class="form-control" />
+                    <span asp-validation-for="BehaviorStatus" class="text-danger" style="font-size:12px;"></span>
+                </div>
+            </div>
+        </div>
+
+        <div class="form-section" id="followup">
+            <div class="form-section-title">
+                <i class="bi bi-flag"></i> Follow-Up & Goals
+            </div>
+            <div class="form-grid">
+                <div class="full-width">
+                    <label class="field-label">Homework</label>
+                    <input asp-for="Homework" class="form-control" />
+                    <span asp-validation-for="Homework" class="text-danger" style="font-size:12px;"></span>
+                </div>
+                <div class="full-width">
+                    <label class="field-label">Strengths / Challenges</label>
+                    <input asp-for="StrengthsChallenges" class="form-control" />
+                    <span asp-validation-for="StrengthsChallenges" class="text-danger" style="font-size:12px;"></span>
+                </div>
+                <div>
+                    <label class="field-label">Specific Goal</label>
+                    <input asp-for="SpecificGoal" class="form-control" />
+                    <span asp-validation-for="SpecificGoal" class="text-danger" style="font-size:12px;"></span>
+                </div>
+               
+            </div>
+        </div>
+
+        <div class="form-footer">
+            <small class="text-muted">🔒 Privacy Protected • Sys.Logged</small>
+            <div style="display:flex; gap:10px;">
+                <a asp-controller="Students" asp-action="Details" asp-route-id="@ViewBag.StudentsID" class="btn-cancel">Cancel</a>
+                <input type="submit" value="Save Changes" class="btn-save" />
+            </div>
+        </div>
+
+    </form>
 </div>
 
-<div>
-    <a asp-action="Index">Back to List</a>
-</div>
+<script>
+    const links = document.querySelectorAll('.form-sidebar .nav-link');
+    const sections = document.querySelectorAll('.form-section');
+
+    const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                links.forEach(l => l.classList.remove('active'));
+                const active = document.querySelector(`.nav-link[href="#${entry.target.id}"]`);
+                if (active) active.classList.add('active');
+            }
+        });
+    }, { threshold: 0.3 });
+
+    sections.forEach(s => observer.observe(s));
+
+    links.forEach(link => {
+        link.addEventListener('click', e => {
+            e.preventDefault();
+            document.querySelector(link.getAttribute('href')).scrollIntoView({ behavior: 'smooth' });
+        });
+    });
+</script>
 
 @section Scripts {
-    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
 }

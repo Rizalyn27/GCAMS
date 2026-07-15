@@ -112,14 +112,6 @@ namespace GCAMS.Controllers
 
                     counselor.ContactNumbers.Clear();
 
-                    // Preserve the existing EmploymentStatus
-                    var existing = await _context.Counselors
-                        .AsNoTracking()
-                        .FirstOrDefaultAsync(c => c.CounselorID == id);
-
-                    if (existing == null) return NotFound();
-                    counselor.EmploymentStatus = existing.EmploymentStatus;
-
                     _context.Update(counselor);
 
                     var old = _context.CounselorContactNumbers.Where(x => x.CounselorID == id);
@@ -149,45 +141,45 @@ namespace GCAMS.Controllers
         }
 
         // GET: Counselors/Delete/5
-        public async Task<IActionResult> Delete(int? id)
-        {
-            if (id == null) return NotFound();
+        //public async Task<IActionResult> Delete(int? id)
+        //{
+        //    if (id == null) return NotFound();
 
-            var counselor = await _context.Counselors
-                .FirstOrDefaultAsync(m => m.CounselorID == id);
+        //    var counselor = await _context.Counselors
+        //        .FirstOrDefaultAsync(m => m.CounselorID == id);
 
-            if (counselor == null) return NotFound();
-            return View(counselor);
-        }
+        //    if (counselor == null) return NotFound();
+        //    return View(counselor);
+        //}
 
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> SoftDelete(int id)
-        {
-            var counselor = await _context.Counselors.FindAsync(id);
-            if (counselor == null) return NotFound();
+        //[HttpPost]
+        //[ValidateAntiForgeryToken]
+        //public async Task<IActionResult> SoftDelete(int id)
+        //{
+        //    var counselor = await _context.Counselors.FindAsync(id);
+        //    if (counselor == null) return NotFound();
 
-            counselor.EmploymentStatus = false;
-            await _context.SaveChangesAsync();
+        //    counselor.EmploymentStatus = "Permanent";
+        //    await _context.SaveChangesAsync();
 
-            TempData["Success"] = "Counselor has been set to inactive.";
-            return RedirectToAction(nameof(Index));
-        }
+        //    TempData["Success"] = "Counselor has been set to inactive.";
+        //    return RedirectToAction(nameof(Index));
+        //}
 
-        // POST: Counselors/Restore/5
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Restore(int id)
-        {
-            var counselor = await _context.Counselors.FindAsync(id);
-            if (counselor == null) return NotFound();
+        //// POST: Counselors/Restore/5
+        //[HttpPost]
+        //[ValidateAntiForgeryToken]
+        //public async Task<IActionResult> Restore(int id)
+        //{
+        //    var counselor = await _context.Counselors.FindAsync(id);
+        //    if (counselor == null) return NotFound();
 
-            counselor.EmploymentStatus = true;
-            await _context.SaveChangesAsync();
+        //    counselor.EmploymentStatus = "Permanent";
+        //    await _context.SaveChangesAsync();
 
-            TempData["Success"] = "Counselor has been set to active.";
-            return RedirectToAction(nameof(Index));
-        }
+        //    TempData["Success"] = "Counselor has been set to active.";
+        //    return RedirectToAction(nameof(Index));
+        //}
 
 
         private bool CounselorExists(int id)
