@@ -6,6 +6,10 @@
 <style>
     @@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Manrope:wght@600;700&display=swap');
 
+    .action-disabled {
+        opacity: 0.35;
+        cursor: not-allowed;
+    }
     .page-header {
         display: flex;
         align-items: center;
@@ -169,7 +173,7 @@
                             <select class="status-select status-dropdown"
                                     data-id="@item.AppointmentID"
                                     data-current="@item.Status">
-                                @foreach (var status in new[] { "Pending", "Confirm","Reject", "Cancel", "Complete", "Missed" })
+                                @foreach (var status in new[] { "Pending", "Confirmed", "Cancelled", "Completed", "Missed" })
                                 {
                                     <option value="@status" selected="@(item.Status == status ? "selected" : null)">
                                         @status
@@ -180,7 +184,14 @@
                         <td>
                             <div class="row-actions">
                                 <a asp-action="Details" asp-route-appointmentid="@item.AppointmentID">👁</a>
-                                <a asp-action="Edit" asp-route-appointmentid="@item.AppointmentID">✏️</a>
+                                @if (item.Status == "Pending")
+                                {
+                                    <a asp-action="Edit" asp-route-appointmentid="@item.AppointmentID">✏️</a>
+                                }
+                                else
+                                {
+                                    <span class="action-disabled" title="Only pending appointments can be edited">✏️</span>
+                                }
                                 <a asp-action="Delete" asp-route-appointmentid="@item.AppointmentID" class="del">🗑</a>
                             </div>
                         </td>
@@ -205,6 +216,7 @@
                         body: JSON.stringify({ appointmentId, newStatus })
                     });
                     if (response.ok) {
+                        location.reload();
                         this.dataset.current = newStatus;
                     } else {
                         alert('Failed to update status. Please try again.');

@@ -302,28 +302,60 @@
                     </div>
                     <div>
                         <label class="field-label">Course</label>
-                        <input asp-for="CollegeCourse" class="form-control" />
-                        <span asp-validation-for="CollegeCourse" class="text-danger" style="font-size:12px;"></span>
+                        <input asp-for="CollegeCourse" class="form-control" list="courseList" />
+                        <datalist id="courseList">
+                            <option value="AB Psychology"></option>
+                            <option value="BA Psychology"></option>
+                            <option value="BS Psychology"></option>
+                            <option value="BS Guidance and Counseling"></option>
+                            <option value="Bachelor of Secondary Education"></option>
+                            <option value="Bachelor of Elementary Education"></option>
+                        </datalist>
+                        <span asp-validation-for="CollegeCourse" class="text-danger"></span>
                     </div>
                     <div>
                         <label class="field-label">Post Graduate Studies</label>
-                        <input asp-for="PostGraduateStudies" class="form-control" />
-                        <span asp-validation-for="PostGraduateStudies" class="text-danger" style="font-size:12px;"></span>
+                        <input asp-for="PostGraduateStudies" class="form-control" list="postGradList" />
+                        <datalist id="postGradList">
+                            <option value="Master's Degree"></option>
+                            <option value="Doctorate Degree"></option>
+                            <option value="Graduate Diploma"></option>
+                            <option value="Certificate Program"></option>
+                        </datalist>
+                        <span asp-validation-for="PostGraduateStudies" class="text-danger"></span>
                     </div>
                     <div>
                         <label class="field-label">Post Graduate Course</label>
-                        <input asp-for="PostGraduateCourse" class="form-control" />
-                        <span asp-validation-for="PostGraduateCourse" class="text-danger" style="font-size:12px;"></span>
+                        <input asp-for="PostGraduateCourse" class="form-control" list="postGradCourseList" />
+                        <datalist id="postGradCourseList">
+                            <option value="Master of Arts in Education major in Guidance and Counseling"></option>
+                            <option value="Master of Arts in Psychology"></option>
+                            <option value="Master of Science in Psychology"></option>
+                            <option value="Doctor of Philosophy in Psychology"></option>
+                        </datalist>
+                        <span asp-validation-for="PostGraduateCourse" class="text-danger"></span>
                     </div>
                     <div>
                         <label class="field-label">PRC License</label>
-                        <input asp-for="PRCLicense" class="form-control" />
-                        <span asp-validation-for="PRCLicense" class="text-danger" style="font-size:12px;"></span>
+                        <input asp-for="PRCLicense" class="form-control" list="prcList" />
+                        <datalist id="prcList">
+                            <option value="Psychometrician"></option>
+                            <option value="Guidance Counselor"></option>
+                            <option value="Psychologist"></option>
+                            <option value="Professional Teacher"></option>
+                        </datalist>
+                        <span asp-validation-for="PRCLicense" class="text-danger"></span>
                     </div>
                     <div>
-                        <label class="field-label">PRC License 2</label>
-                        <input asp-for="PRCLicense2" class="form-control" />
-                        <span asp-validation-for="PRCLicense2" class="text-danger" style="font-size:12px;"></span>
+                        <label class="field-label">PRC License</label>
+                        <input asp-for="PRCLicense" class="form-control" list="prcList" />
+                        <datalist id="prcList">
+                            <option value="Psychometrician"></option>
+                            <option value="Guidance Counselor"></option>
+                            <option value="Psychologist"></option>
+                            <option value="Professional Teacher"></option>
+                        </datalist>
+                        <span asp-validation-for="PRCLicense" class="text-danger"></span>
                     </div>
                     <div class="full-width">
                         <label class="field-label">Work Experience</label>
@@ -333,7 +365,9 @@
                     <div class="full-width">
                         <label class="field-label">Work/School</label>
                         <input asp-for="WorkSchool" class="form-control" />
-                        <span asp-validation-for="WorkSchool" class="text-danger" style="font-size:12px;"></span>
+                        <span asp-validation-for="WorkSchool" class="text-danger" style="font-size:12px;">
+                            Don Sergio Osmeña Sr. Memorial National High School
+                        </span>
                     </div>
                 </div>
             </div>

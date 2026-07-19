@@ -138,15 +138,18 @@ public class CaseNotesController : Controller
     // POST: CaseNotes/Delete/5
     [HttpPost, ActionName("Delete")]
     [ValidateAntiForgeryToken]
-    public async Task<IActionResult> DeleteConfirmed(int? id)
+    public async Task<IActionResult> DeleteConfirmed(int? id, int? studentId)
     {
         var casenotes = await _context.CaseNotes.FindAsync(id);
         if (casenotes != null)
         {
             _context.CaseNotes.Remove(casenotes);
+            await _context.SaveChangesAsync();
         }
 
-        await _context.SaveChangesAsync();
+        if (studentId.HasValue)
+            return RedirectToAction("Details", "Students", new { id = studentId });
+
         return RedirectToAction(nameof(Index));
     }
 

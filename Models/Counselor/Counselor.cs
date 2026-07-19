@@ -60,7 +60,7 @@ namespace GCAMS.Models.Counselor
         // Educational Background
 
         [StringLength(150)]
-        [Display(Name = "College")]
+        [Display(Name = "College/University Attended")]
         public string? College { get; set; }
 
         [StringLength(150)]
@@ -95,7 +95,7 @@ namespace GCAMS.Models.Counselor
 
         [StringLength(255)]
         [Display(Name = "Work/School")]
-        public string? WorkSchool { get; set; }
+        public string? WorkSchool { get; set; } = "Don Sergio Osmeña Sr. Memorial National High School";
 
 
         // Position / Designation
