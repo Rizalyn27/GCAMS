@@ -171,6 +171,62 @@
     h1, h2, h3, h4, h5, h6 {
         font-family: 'Manrope', sans-serif;
     }
+
+    .checkbox-grid {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+        margin-top: 6px;
+    }
+
+    .checkbox-item {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        padding: 7px 14px;
+        border-radius: 999px;
+        border: 1px solid #d1d5db;
+        background: #fff;
+        font-size: 13px;
+        font-family: 'Inter', sans-serif;
+        font-weight: 500;
+        color: #374151;
+        cursor: pointer;
+        transition: all 0.15s ease;
+        user-select: none;
+    }
+
+        .checkbox-item:hover {
+            border-color: #1b6d24;
+            color: #1b6d24;
+        }
+
+        /* Hide the native checkbox visually but keep it accessible */
+        .checkbox-item input[type="checkbox"] {
+            position: absolute;
+            opacity: 0;
+            width: 0;
+            height: 0;
+            pointer-events: none;
+        }
+
+        /* Pill turns green/filled when its checkbox is checked */
+        .checkbox-item:has(input[type="checkbox"]:checked) {
+            background: #1b6d24;
+            border-color: #1b6d24;
+            color: #fff;
+        }
+
+        .checkbox-item:has(input[type="checkbox"]:focus-visible) {
+            outline: 2px solid #1b6d24;
+            outline-offset: 2px;
+        }
+
+    @@media (max-width: 768px) {
+        .checkbox-grid {
+            gap: 6px;
+        }
+    }
 </style>
 
 <h1>Create Case Note</h1>
@@ -203,7 +259,7 @@
             <div class="form-grid">
                 <div class="full-width">
                     <label class="field-label">Full Name</label>
-                    <input asp-for="FullName" class="form-control" disabled />
+                    <input asp-for="FullName" class="form-control" />
                     <span asp-validation-for="FullName" class="text-danger" style="font-size:12px;"></span>
                 </div>
                 <div>
@@ -218,8 +274,21 @@
                 </div>
                 <div class="full-width">
                     <label class="field-label">Session Topics</label>
-                    <input asp-for="SessionTopics" class="form-control" />
-                    <span asp-validation-for="SessionTopics" class="text-danger" style="font-size:12px;"></span>
+                    <div class="=checkbox-grid">
+                        @{
+                            var topics = new[]{
+                                "Academic Concerns","Behavioral COncern","Personal Concern", "Emotional Concern", "Family-Related Concern","Peer Relationship",
+                        "Career Guidance", "Health/Physical Concerns", "Bullying Report","Crisis/Urgent Concern"
+                            };
+                         }
+                        @foreach (var topic in topics)
+                        {
+                            <label class="checkbox-item">
+                                <input type="checkbox" name="SelectedSessionTopics" value="@topic" />
+                                @topic
+                            </label>
+                        }
+                    </div>
                 </div>
                 <div class="full-width">
                     <label class="field-label">Session Relevance</label>
@@ -242,8 +311,20 @@
                 </div>
                 <div class="full-width">
                     <label class="field-label">Interventions</label>
-                    <input asp-for="Interventions" class="form-control" />
-                    <span asp-validation-for="Interventions" class="text-danger" style="font-size:12px;"></span>
+                    <div class="checkbox-grid">
+                        @{
+                            var interventionOption = new[]{
+                                                "Active Listening", "These still need more options"
+                                                };
+                        }
+                        @foreach (var intervention in interventionOption)
+                        {
+                            <label class="checkbox-item">
+                                <input type="checkbox" name="SelectedInterventions" value="@intervention" />
+                                @intervention
+                            </label>
+                        }
+                    </div>
                 </div>
                 <div class="full-width">
                     <label class="field-label">Observations</label>
@@ -252,12 +333,24 @@
                 </div>
                 <div>
                     <label class="field-label">Counsel Progress</label>
-                    <input asp-for="CounselProgess" class="form-control" />
+                    <select asp-for="CounselProgess" class="form-control">
+                        <option value="">-- Select Progress --</option>
+                        <option value="Improving">Improving</option>
+                        <option value="No Change">Stable/No Change</option>
+                        <option value="Declining">Declining</option>
+                        <option value="Resolved">Resolved</option>
+                    </select>
                     <span asp-validation-for="CounselProgess" class="text-danger" style="font-size:12px;"></span>
                 </div>
                 <div>
                     <label class="field-label">Behavior Status</label>
-                    <input asp-for="BehaviorStatus" class="form-control" />
+                    <select asp-for="BehaviorStatus" class="form-control">
+                        <option value="">-- Select Status --</option>
+                        <option value="Improved">Improved</option>
+                        <option value="The Same">The Same</option>
+                        <option value="Worsened">Worsened</option>
+                        <option value="New Concern Identified">New Concern Identified</option>
+                    </select>
                     <span asp-validation-for="BehaviorStatus" class="text-danger" style="font-size:12px;"></span>
                 </div>
             </div>
