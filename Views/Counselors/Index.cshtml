@@ -1,13 +1,10 @@
-﻿@model IEnumerable<GCAMS.Models.Students.Students>
+﻿@model IEnumerable<GCAMS.Models.Counselor.Counselor>
 
 @{
-    ViewData["Title"] = "Student Management";
-    var pagedList = Model.ToList();
-    int pageSize = 10;
-    int totalStudents = pagedList.Count;
+    ViewData["Title"] = "Counselor Management";
 }
 
-<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
 <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet">
 
 <style>
@@ -16,7 +13,7 @@
         vertical-align: middle;
     }
 
-    .student-page * {
+    .counselor-page * {
         font-family: 'Inter', sans-serif;
     }
 
@@ -68,27 +65,6 @@
             box-shadow: 0 2px 8px rgba(27,109,36,0.3);
         }
 
-    .btn-import {
-        display: inline-flex;
-        align-items: center;
-        gap: 8px;
-        background: #fff;
-        color: #1b6d24;
-        padding: 10px 20px;
-        border-radius: 10px;
-        font-size: 14px;
-        font-weight: 600;
-        text-decoration: none;
-        border: 1.5px solid #1b6d24;
-        cursor: pointer;
-        transition: all 0.2s;
-        margin-right: 10px;
-    }
-
-        .btn-import:hover {
-            background: #f2f5ec;
-        }
-
     .filter-bar {
         display: flex;
         align-items: center;
@@ -111,6 +87,15 @@
         transition: border-color 0.2s;
     }
 
+    .pill-active {
+        background: #dcfce7;
+        color: #166534;
+    }
+
+    .pill-inactive {
+        background: #fef3c7;
+        color: #92400e;
+    }
         .search-box:focus-within {
             border-color: #1b6d24;
         }
@@ -134,13 +119,10 @@
         }
 
     .filter-select {
-        display: flex;
-        align-items: center;
-        gap: 6px;
         background: #fff;
         border: 1.5px solid #e1e4db;
         border-radius: 10px;
-        padding: 9px 14px;
+        padding: 9px 32px 9px 14px;
         font-size: 14px;
         font-weight: 500;
         color: #191d18;
@@ -150,7 +132,6 @@
         background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%23717a6d' stroke-width='2'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");
         background-repeat: no-repeat;
         background-position: right 10px center;
-        padding-right: 32px;
         transition: border-color 0.2s;
     }
 
@@ -159,27 +140,7 @@
             border-color: #1b6d24;
         }
 
-    .filter-icon-btn {
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        width: 40px;
-        height: 40px;
-        background: #fff;
-        border: 1.5px solid #e1e4db;
-        border-radius: 10px;
-        cursor: pointer;
-        color: #717a6d;
-        transition: all 0.2s;
-        margin-left: auto;
-    }
-
-        .filter-icon-btn:hover {
-            border-color: #1b6d24;
-            color: #1b6d24;
-        }
-
-    .student-table {
+    .counselor-table {
         width: 100%;
         border-collapse: collapse;
         background: #fff;
@@ -188,12 +149,12 @@
         border: 1px solid #e1e4db;
     }
 
-        .student-table thead tr {
+        .counselor-table thead tr {
             background: #f8faf2;
             border-bottom: 1px solid #e1e4db;
         }
 
-        .student-table thead th {
+        .counselor-table thead th {
             padding: 12px 16px;
             font-size: 11px;
             font-weight: 700;
@@ -203,51 +164,59 @@
             text-align: left;
         }
 
-        .student-table tbody tr {
+        .counselor-table tbody tr {
             border-bottom: 1px solid #f2f5ec;
             transition: background 0.15s;
         }
 
-            .student-table tbody tr:last-child {
+            .counselor-table tbody tr:last-child {
                 border-bottom: none;
             }
 
-            .student-table tbody tr:hover {
+            .counselor-table tbody tr:hover {
                 background: #f8faf2;
             }
 
-        .student-table tbody td {
+        .counselor-table tbody td {
             padding: 14px 16px;
             font-size: 14px;
             color: #191d18;
             vertical-align: middle;
         }
 
-    .student-id {
+    .emp-id {
         font-family: monospace;
         font-size: 12px;
         color: #717a6d;
         font-weight: 600;
     }
 
-    .student-name {
+    .counselor-name {
         font-weight: 600;
         color: #191d18;
     }
 
-    .student-email {
+    .counselor-email {
         color: #717a6d;
         font-size: 13px;
     }
 
-    .grade-pill {
+    .status-pill {
         display: inline-block;
-        background: #dbeafe;
-        color: #1e40af;
         padding: 3px 10px;
         border-radius: 999px;
         font-size: 12px;
         font-weight: 600;
+    }
+
+    .pill-position {
+        background: #dbeafe;
+        color: #1e40af;
+    }
+
+    .pill-employment {
+        background: #dcfce7;
+        color: #166534;
     }
 
     .action-icons {
@@ -363,30 +332,22 @@
         margin-bottom: 16px;
         font-size: 14px;
     }
-
-    .archive-form {
-        display: inline;
-    }
 </style>
 
-<div class="student-page" style="max-width: 1100px; margin: 0 auto; padding: 24px 16px;">
+<div class="counselor-page" style="max-width: 1100px; margin: 0 auto; padding: 24px 16px;">
 
     <!-- Breadcrumb -->
     <div class="page-breadcrumb">
-        <span>Students</span>
-        <span class="material-symbols-outlined" style="font-size:14px;">></span>
-        <span class="current">Student Management</span>
+        <span>Counselors</span>
+        <span class="material-symbols-outlined" style="font-size:14px;"></span>
+        <span class="current">Counselor Management</span>
     </div>
 
     <!-- Header -->
     <div class="page-header">
-        <button type="button" class="btn-import" data-bs-toggle="modal" data-bs-target="#importModal">
-            <span class="material-symbols-outlined" style="font-size:18px;"></span>
-            Import Excel
-        </button>
         <a asp-action="Create" class="btn-add">
             <span class="material-symbols-outlined" style="font-size:18px;"></span>
-            Add New Student
+            Add New Counselor
         </a>
     </div>
 
@@ -400,7 +361,7 @@
     @if (TempData["Error"] != null)
     {
         <div class="alert-danger">
-            <span class="material-symbols-outlined" style="font-size:16px; vertical-align:middle; margin-right:6px;">error</span>
+            <span class="material-symbols-outlined" style="font-size:16px; vertical-align:middle; margin-right:6px;">   </span>
             @TempData["Error"]
         </div>
     }
@@ -409,84 +370,68 @@
     <div class="filter-bar">
         <div class="search-box">
             <span class="material-symbols-outlined"></span>
-            <input type="text" id="studentSearch" placeholder="Search students by name or ID" />
+            <input type="text" id="counselorSearch" placeholder="Search by name or employee number" />
         </div>
 
-        <!--Grade Level Filter-->
-        <select id="gradeFilter" class="filter-select">
-            <option value="">All Grades</option>
-
-            @foreach (var gradeLevel in Model.Select(s => s.GradeLevel).Distinct().OrderBy(s => s))
+        <select id="positionFilter" class="filter-select">
+            <option value="">All Positions</option>
+            @foreach (var pos in Model.Select(c => c.Position).Distinct().OrderBy(p => p))
             {
-                <option value="@gradeLevel?.ToLower()">@gradeLevel</option>
+                <option value="@pos?.ToLower()">@pos</option>
             }
         </select>
 
-        <!--Section Filter-->
-        <select id="sectionFilter" class="filter-select">
-            <option value="">All Sections</option>
-            @foreach (var sec in Model.Select(s => s.Section).Distinct().OrderBy(s => s))
-            {
-                <option value="@sec?.ToLower()">@sec</option>
-            }
-        </select>
-
-        <!--Status Filter-->
         <select id="statusFilter" class="filter-select">
             <option value="">All Status</option>
-            <option value="true">Active</option>
-            <option value="false">Inactive</option>
+            <option value="Permanent">Permanent</option>
+            <option value="Full-Time">Full-Time</option>
+            <option value="Contractual">Contractual</option>
+            <option value="Part-Time">Part-Time</option>
+            <option value="Substitute">Substitute</option>
+            <option value="Retired">Retired</option>
+            <option value="Inactive">Inactive</option>
         </select>
-
     </div>
 
     <!-- Table -->
-    <table class="student-table" id="studentTable">
+    <table class="counselor-table" id="counselorTable">
         <thead>
             <tr>
-                <th>Student ID</th>
+                <th>Employee No.</th>
                 <th>Full Name</th>
+                <th>Contact</th>
                 <th>Email</th>
-                <th>Grade</th>
-                <th>Section</th>
+                <th>Position</th>
+                <th>Status</th>
                 <th>Actions</th>
             </tr>
         </thead>
         <tbody>
             @foreach (var item in Model)
             {
-                <tr data-active="@item.IsActive.ToString().ToLower()">
-                    <td><span class="student-id">@item.StuID</span></td>
-                    <td><span class="student-name">@item.StuName</span></td>
-                    <td><span class="student-email">@item.Email</span></td>
-                    <td><span class="grade-pill">@item.GradeLevel</span></td>
-                    <td>@item.Section</td>
+                <tr data-position="@item.Position?.ToLower()"
+                    data-active="@item.EmploymentStatus.ToString().ToLower()">
+                    <td><span class="emp-id">@item.EmployeeNumber</span></td>
+                    <td><span class="counselor-name">@item.LastName, @item.FirstName @item.MiddleName</span></td>
+                    <td><span style="font-size:13px; color:#717a6d;">@string.Join(", ", item.ContactNumbers.Select(c => c.Number))</span></td>
+                    <td><span class="counselor-email">@item.EmailAddress</span></td>
+                    <td><span class="status-pill pill-position">@item.Position</span></td>
+                    <td>
+                        <span class="status-pill" style="
+                            background: @(item.EmploymentStatus == "Inactive" || item.EmploymentStatus == "Retired" ? "#e1e4db" : "#dcfce7");
+                            color: @(item.EmploymentStatus == "Inactive" || item.EmploymentStatus == "Retired" ? "#41493e" : "#166534");">
+                            @item.EmploymentStatus
+                        </span>
+                    </td>
                     <td>
                         <div class="action-icons">
-                            <a asp-action="Details" asp-route-id="@item.StudentsID" class="action-icon" title="View Details">
+                            <a asp-action="Details" asp-route-id="@item.CounselorID" class="action-icon" title="View Details">
                                 <span class="material-symbols-outlined">👁</span>
                             </a>
-                            <a asp-action="Edit" asp-route-id="@item.StudentsID" class="action-icon" title="Edit">
+                            <a asp-action="Edit" asp-route-id="@item.CounselorID" class="action-icon" title="Edit">
                                 <span class="material-symbols-outlined">✏️</span>
                             </a>
-                            @if (item.IsActive)
-                            {
-                                <form asp-action="SoftDelete" asp-route-id="@item.StudentsID" method="post" class="archive-form">
-                                    @Html.AntiForgeryToken()
-                                    <button type="submit" class="action-icon danger" title="Archive Student">
-                                        <span class="material-symbols-outlined" style="font-size:18px;">🗑</span>
-                                    </button>
-                                </form>
-                            }
-                            else
-                            {
-                                <form asp-action="Restore" asp-route-id="@item.StudentsID" method="post" class="archive-form">
-                                     @Html.AntiForgeryToken()
-                                    <button type="submit" class="action-icon" title="Restore Student" style="color:#1b6d24;">
-                                        <span class="material-symbols-outlined" style="font-size:18px;">↺</span>
-                                    </button>
-                                </form>
-                            }
+                           
                         </div>
                     </td>
                 </tr>
@@ -502,56 +447,29 @@
 
 </div>
 
-<!-- Import Modal -->
-<div class="modal fade" id="importModal" tabindex="-1" aria-labelledby="importModalLabel" aria-hidden="true">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="importModalLabel">Import Students from Excel</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <form asp-action="Import" method="post" enctype="multipart/form-data">
-                @Html.AntiForgeryToken()
-                <div class="modal-body">
-                    <div class="mb-3">
-                        <label class="form-label">Select Excel File (.xlsx)</label>
-                        <input type="file" name="file" accept=".xlsx" class="form-control" required />
-                    </div>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                    <input type="submit" value="Upload & Import" class="btn btn-success" />
-                </div>
-            </form>
-        </div>
-    </div>
-</div>
-
 <script>
     const pageSize = 10;
     let currentPage = 1;
     let visibleRows = [];
-        function applyFilters() {
-        const query           = document.getElementById('studentSearch').value.toLowerCase().trim();
-        const grade           = document.getElementById('gradeFilter').value.toLowerCase();
-        const selectedSection = document.getElementById('sectionFilter').value.toLowerCase();
-        const status          = document.getElementById('statusFilter').value;
+
+    function applyFilters() {
+        const query    = document.getElementById('counselorSearch').value.toLowerCase().trim();
+        const position = document.getElementById('positionFilter').value.toLowerCase();
+        const status   = document.getElementById('statusFilter').value.toLowerCase();
 
         visibleRows = [];
 
-        document.querySelectorAll('#studentTable tbody tr').forEach(function (row) {
-            const stuId     = row.cells[0]?.textContent.trim().toLowerCase() || '';
-            const name      = row.cells[1]?.textContent.trim().toLowerCase() || '';
-            const rowGrade  = row.cells[3]?.textContent.trim().toLowerCase() || '';
-            const rowSec    = row.cells[4]?.textContent.trim().toLowerCase() || '';
-            const rowActive = (row.getAttribute('data-active') || '').trim();
+        document.querySelectorAll('#counselorTable tbody tr').forEach(function (row) {
+            const empNo   = row.cells[0]?.textContent.trim().toLowerCase() || '';
+            const name    = row.cells[1]?.textContent.trim().toLowerCase() || '';
+            const rowPos  = (row.getAttribute('data-position') || '').trim();
+            const rowStat = (row.getAttribute('data-active') || '').trim();
 
-            const matchesSearch  = !query           || name.includes(query) || stuId.includes(query);
-            const matchesGrade   = !grade           || rowGrade === grade;
-            const matchesSection = !selectedSection || rowSec === selectedSection;
-            const matchesStatus  = !status          || rowActive === status; 
+            const matchesSearch   = !query    || name.includes(query) || empNo.includes(query);
+            const matchesPosition = !position || rowPos === position;
+            const matchesStatus   = !status   || rowStat === status;
 
-            if (matchesSearch && matchesGrade && matchesSection && matchesStatus) {
+            if (matchesSearch && matchesPosition && matchesStatus) {
                 visibleRows.push(row);
             }
             row.style.display = 'none';
@@ -565,14 +483,14 @@
         const start = (currentPage - 1) * pageSize;
         const end   = start + pageSize;
 
-        document.querySelectorAll('#studentTable tbody tr').forEach(r => r.style.display = 'none');
+        document.querySelectorAll('#counselorTable tbody tr').forEach(r => r.style.display = 'none');
         visibleRows.slice(start, end).forEach(r => r.style.display = '');
 
-        const total = visibleRows.length;
+        const total   = visibleRows.length;
         const showing = Math.min(end, total);
         document.getElementById('showingText').textContent =
-            total === 0 ? 'No students found' :
-            `Showing ${start + 1} - ${showing} of ${total} student${total !== 1 ? 's' : ''}`;
+            total === 0 ? 'No counselors found' :
+            `Showing ${start + 1} - ${showing} of ${total} counselor${total !== 1 ? 's' : ''}`;
 
         renderPagination(total);
     }
@@ -620,9 +538,8 @@
         pg.appendChild(btn('<span class="material-symbols-outlined" style="font-size:16px;">></span>', currentPage + 1, false, currentPage === totalPages || totalPages === 0, true));
     }
 
-    document.getElementById('studentSearch').addEventListener('input', applyFilters);
-    document.getElementById('gradeFilter').addEventListener('change', applyFilters);
-    document.getElementById('sectionFilter').addEventListener('change', applyFilters);
+    document.getElementById('counselorSearch').addEventListener('input', applyFilters);
+    document.getElementById('positionFilter').addEventListener('change', applyFilters);
     document.getElementById('statusFilter').addEventListener('change', applyFilters);
 
     applyFilters();

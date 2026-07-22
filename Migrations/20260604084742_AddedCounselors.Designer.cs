@@ -4,6 +4,7 @@ using GCAMS.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,143 +12,18 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace GCAMS.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260604084742_AddedCounselors")]
+    partial class AddedCounselors
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "9.0.17")
+                .HasAnnotation("ProductVersion", "9.0.16")
                 .HasAnnotation("Relational:MaxIdentifierLength", 128);
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
-
-            modelBuilder.Entity("GCAMS.Models.Appointment.Appointments", b =>
-                {
-                    b.Property<int>("AppointmentID")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("AppointmentID"));
-
-                    b.Property<DateTime>("AppointmentDate")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("AppointmentType")
-                        .IsRequired()
-                        .HasMaxLength(100)
-                        .HasColumnType("nvarchar(100)");
-
-                    b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("Email")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("FullName")
-                        .IsRequired()
-                        .HasMaxLength(100)
-                        .HasColumnType("nvarchar(100)");
-
-                    b.Property<string>("Notes")
-                        .HasMaxLength(500)
-                        .HasColumnType("nvarchar(500)");
-
-                    b.Property<string>("Status")
-                        .IsRequired()
-                        .HasMaxLength(50)
-                        .HasColumnType("nvarchar(50)");
-
-                    b.Property<int?>("StudentsID")
-                        .HasColumnType("int");
-
-                    b.Property<DateTime?>("UpdatedAt")
-                        .HasColumnType("datetime2");
-
-                    b.HasKey("AppointmentID");
-
-                    b.HasIndex("StudentsID");
-
-                    b.ToTable("Appointments");
-                });
-
-            modelBuilder.Entity("GCAMS.Models.CaseNotes.CaseNotes", b =>
-                {
-                    b.Property<int>("CasenoteId")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("CasenoteId"));
-
-                    b.Property<string>("BehaviorStatus")
-                        .IsRequired()
-                        .HasMaxLength(100)
-                        .HasColumnType("nvarchar(100)");
-
-                    b.Property<string>("CounselProgess")
-                        .IsRequired()
-                        .HasMaxLength(100)
-                        .HasColumnType("nvarchar(100)");
-
-                    b.Property<string>("FullName")
-                        .IsRequired()
-                        .HasMaxLength(100)
-                        .HasColumnType("nvarchar(100)");
-
-                    b.Property<string>("GoalPlan")
-                        .IsRequired()
-                        .HasMaxLength(100)
-                        .HasColumnType("nvarchar(100)");
-
-                    b.Property<string>("Homework")
-                        .HasMaxLength(100)
-                        .HasColumnType("nvarchar(100)");
-
-                    b.Property<string>("Interventions")
-                        .IsRequired()
-                        .HasMaxLength(100)
-                        .HasColumnType("nvarchar(100)");
-
-                    b.Property<string>("Observations")
-                        .IsRequired()
-                        .HasMaxLength(100)
-                        .HasColumnType("nvarchar(100)");
-
-                    b.Property<string>("OverallGoal")
-                        .IsRequired()
-                        .HasMaxLength(100)
-                        .HasColumnType("nvarchar(100)");
-
-                    b.Property<DateTime>("SessionDate")
-                        .HasColumnType("datetime2");
-
-                    b.Property<int>("SessionNo")
-                        .HasColumnType("int");
-
-                    b.Property<string>("SessionRelevance")
-                        .IsRequired()
-                        .HasMaxLength(100)
-                        .HasColumnType("nvarchar(100)");
-
-                    b.Property<string>("SessionTopics")
-                        .IsRequired()
-                        .HasMaxLength(100)
-                        .HasColumnType("nvarchar(100)");
-
-                    b.Property<string>("SpecificGoal")
-                        .IsRequired()
-                        .HasMaxLength(100)
-                        .HasColumnType("nvarchar(100)");
-
-                    b.Property<string>("StrengthsChallenges")
-                        .IsRequired()
-                        .HasMaxLength(100)
-                        .HasColumnType("nvarchar(100)");
-
-                    b.HasKey("CasenoteId");
-
-                    b.ToTable("CaseNotes");
-                });
 
             modelBuilder.Entity("GCAMS.Models.Counselor.Counselor", b =>
                 {
@@ -165,13 +41,18 @@ namespace GCAMS.Migrations
                     b.Property<DateTime>("BirthDate")
                         .HasColumnType("datetime2");
 
-                    b.Property<string>("College")
-                        .HasMaxLength(150)
-                        .HasColumnType("nvarchar(150)");
+                    b.Property<string>("ContactNumber")
+                        .IsRequired()
+                        .HasMaxLength(15)
+                        .HasColumnType("nvarchar(15)");
 
-                    b.Property<string>("CollegeCourse")
-                        .HasMaxLength(150)
-                        .HasColumnType("nvarchar(150)");
+                    b.Property<DateTime>("DateHired")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("EducationalAttainment")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
 
                     b.Property<string>("EmailAddress")
                         .IsRequired()
@@ -185,8 +66,8 @@ namespace GCAMS.Migrations
 
                     b.Property<string>("EmploymentStatus")
                         .IsRequired()
-                        .HasMaxLength(50)
-                        .HasColumnType("nvarchar(50)");
+                        .HasMaxLength(20)
+                        .HasColumnType("nvarchar(20)");
 
                     b.Property<string>("FirstName")
                         .IsRequired()
@@ -203,77 +84,25 @@ namespace GCAMS.Migrations
                         .HasMaxLength(50)
                         .HasColumnType("nvarchar(50)");
 
-                    b.Property<string>("MaritalStatus")
-                        .IsRequired()
-                        .HasMaxLength(20)
-                        .HasColumnType("nvarchar(20)");
+                    b.Property<string>("LicenseNumber")
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
 
                     b.Property<string>("MiddleName")
                         .HasMaxLength(50)
                         .HasColumnType("nvarchar(50)");
-
-                    b.Property<int>("NumberOfChildren")
-                        .HasColumnType("int");
-
-                    b.Property<string>("PRCLicense")
-                        .HasMaxLength(100)
-                        .HasColumnType("nvarchar(100)");
-
-                    b.Property<string>("PRCLicense2")
-                        .HasMaxLength(100)
-                        .HasColumnType("nvarchar(100)");
 
                     b.Property<string>("Position")
                         .IsRequired()
                         .HasMaxLength(100)
                         .HasColumnType("nvarchar(100)");
 
-                    b.Property<string>("PostGraduateCourse")
-                        .HasMaxLength(150)
-                        .HasColumnType("nvarchar(150)");
-
-                    b.Property<string>("PostGraduateStudies")
-                        .HasMaxLength(150)
-                        .HasColumnType("nvarchar(150)");
-
-                    b.Property<string>("WorkExperience")
-                        .HasMaxLength(255)
-                        .HasColumnType("nvarchar(255)");
-
-                    b.Property<string>("WorkSchool")
-                        .HasMaxLength(255)
-                        .HasColumnType("nvarchar(255)");
+                    b.Property<int>("YearsOfExperience")
+                        .HasColumnType("int");
 
                     b.HasKey("CounselorID");
 
                     b.ToTable("Counselors");
-                });
-
-            modelBuilder.Entity("GCAMS.Models.Counselor.CounselorContactNumber", b =>
-                {
-                    b.Property<int>("CounselorContactNumberID")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("CounselorContactNumberID"));
-
-                    b.Property<int>("CounselorID")
-                        .HasColumnType("int");
-
-                    b.Property<string>("Label")
-                        .HasMaxLength(50)
-                        .HasColumnType("nvarchar(50)");
-
-                    b.Property<string>("Number")
-                        .IsRequired()
-                        .HasMaxLength(20)
-                        .HasColumnType("nvarchar(20)");
-
-                    b.HasKey("CounselorContactNumberID");
-
-                    b.HasIndex("CounselorID");
-
-                    b.ToTable("CounselorContactNumbers");
                 });
 
             modelBuilder.Entity("GCAMS.Models.Students.EducationalBackground", b =>
@@ -335,6 +164,10 @@ namespace GCAMS.Migrations
                     b.Property<int?>("EmergencyContactAge")
                         .HasColumnType("int");
 
+                    b.Property<string>("EmergencyContactNumber")
+                        .HasMaxLength(20)
+                        .HasColumnType("nvarchar(20)");
+
                     b.Property<string>("EmergencyContactOccupation")
                         .HasMaxLength(150)
                         .HasColumnType("nvarchar(150)");
@@ -355,33 +188,6 @@ namespace GCAMS.Migrations
                     b.ToTable("EmergencyContacts");
                 });
 
-            modelBuilder.Entity("GCAMS.Models.Students.EmergencyContactNumber", b =>
-                {
-                    b.Property<int>("EmergencyContactNumberID")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("EmergencyContactNumberID"));
-
-                    b.Property<int>("EmergencyContactID")
-                        .HasColumnType("int");
-
-                    b.Property<string>("Label")
-                        .HasMaxLength(50)
-                        .HasColumnType("nvarchar(50)");
-
-                    b.Property<string>("Number")
-                        .IsRequired()
-                        .HasMaxLength(20)
-                        .HasColumnType("nvarchar(20)");
-
-                    b.HasKey("EmergencyContactNumberID");
-
-                    b.HasIndex("EmergencyContactID");
-
-                    b.ToTable("EmergencyContactNumbers");
-                });
-
             modelBuilder.Entity("GCAMS.Models.Students.FamilyBackground", b =>
                 {
                     b.Property<int>("FamilyBackgroundID")
@@ -392,6 +198,10 @@ namespace GCAMS.Migrations
 
                     b.Property<int?>("FatherAge")
                         .HasColumnType("int");
+
+                    b.Property<string>("FatherContactNumber")
+                        .HasMaxLength(20)
+                        .HasColumnType("nvarchar(20)");
 
                     b.Property<string>("FatherEducationalAttainment")
                         .HasMaxLength(150)
@@ -411,6 +221,10 @@ namespace GCAMS.Migrations
 
                     b.Property<int?>("MotherAge")
                         .HasColumnType("int");
+
+                    b.Property<string>("MotherContactNumber")
+                        .HasMaxLength(20)
+                        .HasColumnType("nvarchar(20)");
 
                     b.Property<string>("MotherEducationalAttainment")
                         .HasMaxLength(150)
@@ -438,33 +252,6 @@ namespace GCAMS.Migrations
                         .HasFilter("[StudentsID] IS NOT NULL");
 
                     b.ToTable("FamilyBackgrounds");
-                });
-
-            modelBuilder.Entity("GCAMS.Models.Students.FamilyContactNumber", b =>
-                {
-                    b.Property<int>("FamilyContactNumberID")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("FamilyContactNumberID"));
-
-                    b.Property<int>("FamilyBackgroundID")
-                        .HasColumnType("int");
-
-                    b.Property<string>("Label")
-                        .HasMaxLength(50)
-                        .HasColumnType("nvarchar(50)");
-
-                    b.Property<string>("Number")
-                        .IsRequired()
-                        .HasMaxLength(20)
-                        .HasColumnType("nvarchar(20)");
-
-                    b.HasKey("FamilyContactNumberID");
-
-                    b.HasIndex("FamilyBackgroundID");
-
-                    b.ToTable("FamilyContactNumbers");
                 });
 
             modelBuilder.Entity("GCAMS.Models.Students.HealthInformation", b =>
@@ -531,33 +318,6 @@ namespace GCAMS.Migrations
                     b.ToTable("HealthInformations");
                 });
 
-            modelBuilder.Entity("GCAMS.Models.Students.StudentContactNumber", b =>
-                {
-                    b.Property<int>("StudentContactNumberID")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("StudentContactNumberID"));
-
-                    b.Property<string>("Label")
-                        .HasMaxLength(50)
-                        .HasColumnType("nvarchar(50)");
-
-                    b.Property<string>("Number")
-                        .IsRequired()
-                        .HasMaxLength(20)
-                        .HasColumnType("nvarchar(20)");
-
-                    b.Property<int>("StudentsID")
-                        .HasColumnType("int");
-
-                    b.HasKey("StudentContactNumberID");
-
-                    b.HasIndex("StudentsID");
-
-                    b.ToTable("StudentContactNumbers");
-                });
-
             modelBuilder.Entity("GCAMS.Models.Students.Students", b =>
                 {
                     b.Property<int>("StudentsID")
@@ -566,15 +326,13 @@ namespace GCAMS.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("StudentsID"));
 
-                    b.Property<string>("AcademicYear")
-                        .IsRequired()
-                        .HasMaxLength(200)
-                        .HasColumnType("nvarchar(200)");
-
                     b.Property<string>("Address")
                         .IsRequired()
                         .HasMaxLength(300)
                         .HasColumnType("nvarchar(300)");
+
+                    b.Property<int>("Age")
+                        .HasColumnType("int");
 
                     b.Property<string>("BirthOrder")
                         .HasMaxLength(50)
@@ -582,6 +340,10 @@ namespace GCAMS.Migrations
 
                     b.Property<DateTime?>("Birthday")
                         .HasColumnType("datetime2");
+
+                    b.Property<string>("ContactNumber")
+                        .HasMaxLength(20)
+                        .HasColumnType("nvarchar(20)");
 
                     b.Property<string>("Email")
                         .HasMaxLength(200)
@@ -636,26 +398,6 @@ namespace GCAMS.Migrations
                     b.ToTable("Students");
                 });
 
-            modelBuilder.Entity("GCAMS.Models.Appointment.Appointments", b =>
-                {
-                    b.HasOne("GCAMS.Models.Students.Students", "Student")
-                        .WithMany()
-                        .HasForeignKey("StudentsID");
-
-                    b.Navigation("Student");
-                });
-
-            modelBuilder.Entity("GCAMS.Models.Counselor.CounselorContactNumber", b =>
-                {
-                    b.HasOne("GCAMS.Models.Counselor.Counselor", "Counselor")
-                        .WithMany("ContactNumbers")
-                        .HasForeignKey("CounselorID")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Counselor");
-                });
-
             modelBuilder.Entity("GCAMS.Models.Students.EducationalBackground", b =>
                 {
                     b.HasOne("GCAMS.Models.Students.Students", "Student")
@@ -676,17 +418,6 @@ namespace GCAMS.Migrations
                     b.Navigation("Student");
                 });
 
-            modelBuilder.Entity("GCAMS.Models.Students.EmergencyContactNumber", b =>
-                {
-                    b.HasOne("GCAMS.Models.Students.EmergencyContact", "EmergencyContact")
-                        .WithMany("ContactNumbers")
-                        .HasForeignKey("EmergencyContactID")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("EmergencyContact");
-                });
-
             modelBuilder.Entity("GCAMS.Models.Students.FamilyBackground", b =>
                 {
                     b.HasOne("GCAMS.Models.Students.Students", "Student")
@@ -695,17 +426,6 @@ namespace GCAMS.Migrations
                         .OnDelete(DeleteBehavior.Cascade);
 
                     b.Navigation("Student");
-                });
-
-            modelBuilder.Entity("GCAMS.Models.Students.FamilyContactNumber", b =>
-                {
-                    b.HasOne("GCAMS.Models.Students.FamilyBackground", "FamilyBackground")
-                        .WithMany("ContactNumbers")
-                        .HasForeignKey("FamilyBackgroundID")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("FamilyBackground");
                 });
 
             modelBuilder.Entity("GCAMS.Models.Students.HealthInformation", b =>
@@ -718,36 +438,8 @@ namespace GCAMS.Migrations
                     b.Navigation("Student");
                 });
 
-            modelBuilder.Entity("GCAMS.Models.Students.StudentContactNumber", b =>
-                {
-                    b.HasOne("GCAMS.Models.Students.Students", "Student")
-                        .WithMany("ContactNumbers")
-                        .HasForeignKey("StudentsID")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Student");
-                });
-
-            modelBuilder.Entity("GCAMS.Models.Counselor.Counselor", b =>
-                {
-                    b.Navigation("ContactNumbers");
-                });
-
-            modelBuilder.Entity("GCAMS.Models.Students.EmergencyContact", b =>
-                {
-                    b.Navigation("ContactNumbers");
-                });
-
-            modelBuilder.Entity("GCAMS.Models.Students.FamilyBackground", b =>
-                {
-                    b.Navigation("ContactNumbers");
-                });
-
             modelBuilder.Entity("GCAMS.Models.Students.Students", b =>
                 {
-                    b.Navigation("ContactNumbers");
-
                     b.Navigation("EducationalBackground");
 
                     b.Navigation("EmergencyContact");
