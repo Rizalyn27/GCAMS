@@ -89,10 +89,6 @@ namespace GCAMS.Models.CaseNotes
         [Display(Name = "Relevance of the session to the counseling plan")]
         public string SpecificGoal { get; set; }
 
-        ////Overall Goals
-        //[StringLength(100)]
-        //[Display(Name = "Overall Goal")]
-        //public string? OverallGoal { get; set; }
 
     }
 }

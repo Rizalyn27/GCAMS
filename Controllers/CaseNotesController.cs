@@ -50,16 +50,11 @@ public class CaseNotesController : Controller
     [HttpPost]
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> Create(
-    [Bind("CasenoteId,FullName,SessionNo,SessionDate,SessionRelevance,GoalPlan,Observations,CounselProgess,BehaviorStatus,Homework,StrengthsChallenges,SpecificGoal,OverallGoal")] CaseNotes casenotes,
+     [Bind("CasenoteId,FullName,SessionNo,SessionDate,SessionTopics,SessionRelevance,GoalPlan,Interventions,Observations,CounselProgess,BehaviorStatus,Homework,StrengthsChallenges,SpecificGoal,OverallGoal")] CaseNotes casenotes,
     string[]? selectedSessionTopics,
     string[]? selectedInterventions,
     int? studentId)
     {
-        casenotes.SessionTopics = selectedSessionTopics != null ? string.Join(", ", selectedSessionTopics) : null;
-        casenotes.Interventions = selectedInterventions != null ? string.Join(", ", selectedInterventions) : null;
-
-        ModelState.Remove("SessionTopics");
-        ModelState.Remove("Interventions");
 
         if (ModelState.IsValid)
         {
@@ -97,16 +92,11 @@ public class CaseNotesController : Controller
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> Edit(
      int? id,
-     [Bind("CasenoteId,FullName,SessionNo,SessionDate,SessionRelevance,GoalPlan,Observations,CounselProgess,BehaviorStatus,Homework,StrengthsChallenges,SpecificGoal,OverallGoal")] CaseNotes casenotes,
+     [Bind("CasenoteId,FullName,SessionNo,SessionDate,SessionTopics,SessionRelevance,GoalPlan,Interventions,Observations,CounselProgess,BehaviorStatus,Homework,StrengthsChallenges,SpecificGoal,OverallGoal")] CaseNotes casenotes,
      string[]? sessionTopics,
     string[]? interventions, 
     int? studentId)
     {
-        casenotes.SessionTopics = sessionTopics != null ? string.Join(", ", sessionTopics) : null;
-        casenotes.Interventions = interventions != null ? string.Join(", ", interventions) : null;
-
-        ModelState.Remove("SessionTopics");
-        ModelState.Remove("Interventions");
         if (id != casenotes.CasenoteId) return NotFound();
 
         if (ModelState.IsValid)
