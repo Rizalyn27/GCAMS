@@ -4,6 +4,7 @@ using GCAMS.Models.Counselor;
 using GCAMS.Models.Appointment;
 using GCAMS.Models.CaseNotes;
 using GCAMS.Models.Users;
+using GCAMS.Models.AnecRecs;
 
 
 namespace GCAMS.Data
@@ -38,8 +39,11 @@ namespace GCAMS.Data
         public DbSet<CaseNotes> CaseNotes { get; set; }
 
         //Account
-       
         public DbSet<Users> Users { get; set; }
+
+        //Anecdotal Records
+        public DbSet<AnecRecs> AnecRecs { get; set; }
+
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {

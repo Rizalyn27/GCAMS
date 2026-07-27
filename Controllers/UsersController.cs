@@ -130,16 +130,6 @@ namespace GCAMS.Controllers
         }
 
 
-
-        //A salt is a random value added to every password before hashing.
-        public static byte[] createsalt()
-        {
-            var buffer = new byte[16];
-            RandomNumberGenerator.Fill(buffer);
-            return buffer;
-        }
-
-
         public static byte[] HashPassword(string password, byte[] salt)
         {
             // Use Argon2id for hashing the password

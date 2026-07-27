@@ -171,7 +171,7 @@ namespace GCAMS.Controllers
             bool exists = await _context.Users.AnyAsync(u => u.Username == email);
             if (exists) return;
 
-            byte[] salt = UsersController.createsalt();
+            byte[] salt = UsersController.CreateSalt();
             byte[] hash = UsersController.HashPassword(employeeNumber, salt);
 
             var account = new Users

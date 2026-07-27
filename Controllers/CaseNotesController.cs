@@ -56,10 +56,7 @@ public class CaseNotesController : Controller
     [HttpPost]
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> Create(
-        [Bind("CasenoteId,StudentsID,FullName,SessionNo,SessionDate,SessionTopics,SessionRelevance,GoalPlan,Interventions,Observations,CounselProgess,BehaviorStatus,Homework,StrengthsChallenges,SpecificGoal")] CaseNotes casenotes,
-        string[]? selectedSessionTopics,
-        string[]? selectedInterventions,
-        int? studentId)
+        [Bind("CasenoteId,StudentsID,FullName,SessionNo,SessionDate,SessionTopics,SessionRelevance,GoalPlan,Interventions,Observations,CounselProgess,BehaviorStatus,Homework,StrengthsChallenges,SpecificGoal")] CaseNotes casenotes, int? studentId)
     {
         if (studentId.HasValue) casenotes.StudentsID = studentId.Value;
 
@@ -76,6 +73,7 @@ public class CaseNotesController : Controller
 
         ViewBag.StudentsID = studentId;
         return View(casenotes);
+
     }
 
     // GET: CaseNotes/Edit/5
@@ -95,10 +93,7 @@ public class CaseNotesController : Controller
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> Edit(
         int? id,
-        [Bind("CasenoteId,StudentsID,FullName,SessionNo,SessionDate,SessionTopics,SessionRelevance,GoalPlan,Interventions,Observations,CounselProgess,BehaviorStatus,Homework,StrengthsChallenges,SpecificGoal")] CaseNotes casenotes,
-        string[]? sessionTopics,
-        string[]? interventions,
-        int? studentId)
+        [Bind("CasenoteId,StudentsID,FullName,SessionNo,SessionDate,SessionTopics,SessionRelevance,GoalPlan,Interventions,Observations,CounselProgess,BehaviorStatus,Homework,StrengthsChallenges,SpecificGoal")] CaseNotes casenotes, int? studentId)
     {
         if (id != casenotes.CasenoteId) return NotFound();
 

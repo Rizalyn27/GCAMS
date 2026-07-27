@@ -1,4 +1,5 @@
 ﻿using GCAMS.Models.Appointment;
+using Microsoft.AspNetCore.Mvc.ModelBinding.Validation;
 using System.ComponentModel.DataAnnotations;
 using System.Globalization;
 using GCAMS.Models.Students;
@@ -7,24 +8,21 @@ namespace GCAMS.Models.CaseNotes
 {
     public class CaseNotes
     {
-
         //Primary Key
-
         [Key]
         public int CasenoteId { get; set; }
 
         //Foreign Key to Students table
         public int StudentsID { get; set; }
-        public Students.Students Student { get; set; }
 
+        [ValidateNever]
+        public Students.Students Student { get; set; }
 
         //Name of Counselee
         [Required(ErrorMessage = "Full name is required")]
         [StringLength(100)]
         [Display(Name = "Name of Counselee")]
         public string FullName { get; set; } = string.Empty;
-
-
 
         //Session Number
         [Required(ErrorMessage = "Session No. is required")]
@@ -48,7 +46,6 @@ namespace GCAMS.Models.CaseNotes
         [StringLength(100)]
         [Display(Name = "Relevance of the session to the counseling plan")]
         public string SessionRelevance { get; set; }
-
 
         //Means of achieving the counseling plan goals and objectives
         [Required]
@@ -91,12 +88,10 @@ namespace GCAMS.Models.CaseNotes
         [Display(Name = "The counselee's current strengths and challenges")]
         public string StrengthsChallenges { get; set; }
 
-        //Spefific Goal
+        //Specific Goal
         [Required]
         [StringLength(100)]
         [Display(Name = "Relevance of the session to the counseling plan")]
         public string SpecificGoal { get; set; }
-
-
     }
 }

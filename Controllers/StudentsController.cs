@@ -129,6 +129,11 @@ namespace GCAMS.Controllers
                 CaseNotes = await _context.CaseNotes
                         .Where(n => n.StudentsID == student.StudentsID)
                         .OrderByDescending(n => n.SessionDate)
+                        .ToListAsync(),
+
+                AnecRecs = await _context.AnecRecs
+                        .Where(n => n.StudentsID == student.StudentsID)
+                        .OrderByDescending(n => n.AnecRecNo)
                         .ToListAsync()
 
             };
@@ -291,7 +296,9 @@ namespace GCAMS.Controllers
                 EmergencyContacts = await _context.EmergencyContactNumbers
                     .Where(x => x.EmergencyContactID == emergencyId)
                     .Select(x => new ContactEntry { Number = x.Number, Label = x.Label })
-                    .ToListAsync()
+                    .ToListAsync(),
+
+                     
             };
 
             return View(vm);
@@ -737,7 +744,7 @@ namespace GCAMS.Controllers
 
                 //Generate Salt
 
-                byte[] salt = UsersController.createsalt();
+                byte[] salt = UsersController.CreateSalt();
                 byte[] hash = UsersController.HashPassword(stuID, salt);
 
 

@@ -1,5 +1,6 @@
 ﻿using GCAMS.Models.CaseNotes;
 using GCAMS.Models.Students;
+using GCAMS.Models.AnecRecs;
 
 namespace GCAMS.ViewModels
 {
@@ -19,6 +20,9 @@ namespace GCAMS.ViewModels
 
         // Case Notes for this student
         public List<CaseNotes> CaseNotes { get; set; } = new();
+
+        //Anecdotal Records for this student
+        public List<AnecRecs> AnecRecs { get; set; } = new();
     }
 
     public class ContactEntry

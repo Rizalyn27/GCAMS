@@ -572,7 +572,7 @@
             </button>
             <button class="tab-btn" onclick="switchTab('health', this)">
                 <span class="material-symbols-outlined" style="font-size:15px; vertical-align:middle; margin-right:4px;"></span>
-                Health Information
+                Anecdotal Records
             </button>
         </div>
     </div>
@@ -748,6 +748,91 @@
                     <div class="field-label">Honors / Awards</div>
                     <div class="field-value @(string.IsNullOrEmpty(Model.Education.SecondaryHonors) ? "empty" : "")">
                         @(string.IsNullOrEmpty(Model.Education.SecondaryHonors) ? "None" : Model.Education.SecondaryHonors)
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="section-card">
+            <div class="section-header">
+                <span class="material-symbols-outlined"></span>
+                Physical Health
+            </div>
+            <div class="section-body cols-3">
+                <div>
+                    <div class="field-label">Height</div>
+                    <div class="field-value @(string.IsNullOrEmpty(Model.Health.Height) ? "empty" : "")">
+                        @(string.IsNullOrEmpty(Model.Health.Height) ? "Not specified" : Model.Health.Height)
+                    </div>
+                </div>
+                <div>
+                    <div class="field-label">Weight</div>
+                    <div class="field-value @(string.IsNullOrEmpty(Model.Health.Weight) ? "empty" : "")">
+                        @(string.IsNullOrEmpty(Model.Health.Weight) ? "Not specified" : Model.Health.Weight)
+                    </div>
+                </div>
+                <div>
+                    <div class="field-label">Blood Type</div>
+                    <div class="field-value @(string.IsNullOrEmpty(Model.Health.BloodType) ? "empty" : "")">
+                        @(string.IsNullOrEmpty(Model.Health.BloodType) ? "Not specified" : Model.Health.BloodType)
+                    </div>
+                </div>
+                <div class="full-width">
+                    <div class="field-label">History of Medical Conditions or Physical Disabilities</div>
+                    <div class="field-value @(string.IsNullOrEmpty(Model.Health.Ailments) ? "empty" : "")">
+                        @(string.IsNullOrEmpty(Model.Health.Ailments) ? "None reported" : Model.Health.Ailments)
+                    </div>
+                </div>
+                <div class="full-width">
+                    <div class="field-label">Current Medications</div>
+                    <div class="field-value @(string.IsNullOrEmpty(Model.Health.Medication) ? "empty" : "")">
+                        @(string.IsNullOrEmpty(Model.Health.Medication) ? "None reported" : Model.Health.Medication)
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="section-card">
+            <div class="section-header">
+                <span class="material-symbols-outlined" style="color:#93000a;"></span>
+                Mental Health &amp; Sensitive Information
+                <span style="margin-left:auto; font-size:11px; font-weight:700; background:#ffdad6; color:#93000a; padding:2px 8px; border-radius:4px;">Confidential</span>
+            </div>
+            <div class="section-body cols-1">
+                <div>
+                    <div class="field-label">History of Suicidal Thoughts or Attempts</div>
+                    <div class="field-value @(string.IsNullOrEmpty(Model.Health.SuicideRiskHistory) ? "empty" : "")">
+                        @(string.IsNullOrEmpty(Model.Health.SuicideRiskHistory) ? "None reported" : Model.Health.SuicideRiskHistory)
+                    </div>
+                </div>
+                <div>
+                    <div class="field-label">History of Abuse or Maltreatment</div>
+                    <div class="field-value @(string.IsNullOrEmpty(Model.Health.AbuseHistory) ? "empty" : "")">
+                        @(string.IsNullOrEmpty(Model.Health.AbuseHistory) ? "None reported" : Model.Health.AbuseHistory)
+                    </div>
+                </div>
+                <div>
+                    <div class="field-label">History of Illegal Drug Use</div>
+                    <div class="field-value @(string.IsNullOrEmpty(Model.Health.DrugHistory) ? "empty" : "")">
+                        @(string.IsNullOrEmpty(Model.Health.DrugHistory) ? "None reported" : Model.Health.DrugHistory)
+                    </div>
+                </div>
+                <div>
+                    <div class="field-label">Family History of Mental or Developmental Conditions</div>
+                    <div class="field-value @(string.IsNullOrEmpty(Model.Health.FamilyMentalHealthHistory) ? "empty" : "")">
+                        @(string.IsNullOrEmpty(Model.Health.FamilyMentalHealthHistory) ? "None reported" : Model.Health.FamilyMentalHealthHistory)
+                    </div>
+                </div>
+                <div>
+                    <div class="field-label">Previous Psychiatric or Psychological Consultation</div>
+                    <div class="field-value @(string.IsNullOrEmpty(Model.Health.PsychiatricConsultation) ? "empty" : "")">
+                        @(string.IsNullOrEmpty(Model.Health.PsychiatricConsultation) ? "None reported" : Model.Health.PsychiatricConsultation)
+                    </div>
+                </div>
+                <div>
+                    <div class="field-label">Additional Relevant Information / Remarks</div>
+                    <div class="field-value @(string.IsNullOrEmpty(Model.Health.AdditionalNotes) ? "empty" : "")">
+                        @(string.IsNullOrEmpty(Model.Health.AdditionalNotes) ? "None" : Model.Health.AdditionalNotes)
                     </div>
                 </div>
             </div>
@@ -990,93 +1075,65 @@
 
     </div>
 
-    <!-- TAB: HEALTH -->
+    <!-- TAB: ANECDOTAL RECORDS -->
     <div id="tab-health" class="tab-panel">
 
         <div class="section-card">
             <div class="section-header">
                 <span class="material-symbols-outlined"></span>
-                Physical Health
+                Case Notes
+                <a asp-controller="AnecRecs" asp-action="Create" asp-route-fullName="@Model.Student.StuName" asp-route-studentId="@Model.Student.StudentsID"
+                   class="action-btn btn-primary-green" style="margin-left:auto; padding:6px 14px; font-size:13px;">
+                    <span class="material-symbols-outlined" style="font-size:16px;"></span>Add New Anecdotal Record
+                </a>
             </div>
-            <div class="section-body cols-3">
-                <div>
-                    <div class="field-label">Height</div>
-                    <div class="field-value @(string.IsNullOrEmpty(Model.Health.Height) ? "empty" : "")">
-                        @(string.IsNullOrEmpty(Model.Health.Height) ? "Not specified" : Model.Health.Height)
+            <div class="section-body cols-1">
+                @if (Model.AnecRecs == null || !Model.AnecRecs.Any())
+                {
+                    <div class="empty-state">
+                        <span class="material-symbols-outlined"></span>
+                        No Anecdotal Records have been recorded yet.
                     </div>
-                </div>
-                <div>
-                    <div class="field-label">Weight</div>
-                    <div class="field-value @(string.IsNullOrEmpty(Model.Health.Weight) ? "empty" : "")">
-                        @(string.IsNullOrEmpty(Model.Health.Weight) ? "Not specified" : Model.Health.Weight)
-                    </div>
-                </div>
-                <div>
-                    <div class="field-label">Blood Type</div>
-                    <div class="field-value @(string.IsNullOrEmpty(Model.Health.BloodType) ? "empty" : "")">
-                        @(string.IsNullOrEmpty(Model.Health.BloodType) ? "Not specified" : Model.Health.BloodType)
-                    </div>
-                </div>
-                <div class="full-width">
-                    <div class="field-label">History of Medical Conditions or Physical Disabilities</div>
-                    <div class="field-value @(string.IsNullOrEmpty(Model.Health.Ailments) ? "empty" : "")">
-                        @(string.IsNullOrEmpty(Model.Health.Ailments) ? "None reported" : Model.Health.Ailments)
-                    </div>
-                </div>
-                <div class="full-width">
-                    <div class="field-label">Current Medications</div>
-                    <div class="field-value @(string.IsNullOrEmpty(Model.Health.Medication) ? "empty" : "")">
-                        @(string.IsNullOrEmpty(Model.Health.Medication) ? "None reported" : Model.Health.Medication)
-                    </div>
-                </div>
+                }
+                else
+                {
+                    <table class="cn-table">
+                        <thead>
+                            <tr>
+                                <th>Observer/Evaluator</th>
+                                <th>Date of Observation</th>
+                                <th>Time of Observation</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var note in Model.AnecRecs.OrderByDescending(n => n.AnecRecNo))
+                            {
+                                <tr>
+                                    <td><span class="cn-text" title="@note.ObservedBy">@note.ObservedBy</span></td>
+                                    <td><span class="cn-date">@note.DateOfObserv.ToString("MMM dd, yyyy")</span></td>
+                                    <td><span class="cn-date">@note.DateOfObserv.ToString("h:mm tt")</span></td>
+                                    <td>
+                                        <div class="cn-actions">
+                                            <a asp-controller="AnecRecs" asp-action="Details" asp-route-id="@note.AnecRecsId" asp-route-studentId="@Model.Student.StudentsID"
+                                               class="cn-action-icon" title="View Details">
+                                                <span class="material-symbols-outlined" style="font-size:18px;">👁</span>
+                                            </a>
+                                            <a asp-controller="AnecRecs" asp-action="Edit" asp-route-id="@note.AnecRecsId" asp-route-studentId="@Model.Student.StudentsID"
+                                               class="cn-action-icon" title="Edit">
+                                                <span class="material-symbols-outlined" style="font-size:18px;">✏️</span>
+                                            </a>
+                                        </div>
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+
+                }
             </div>
         </div>
 
-        <div class="section-card">
-            <div class="section-header">
-                <span class="material-symbols-outlined" style="color:#93000a;"></span>
-                Mental Health &amp; Sensitive Information
-                <span style="margin-left:auto; font-size:11px; font-weight:700; background:#ffdad6; color:#93000a; padding:2px 8px; border-radius:4px;">Confidential</span>
-            </div>
-            <div class="section-body cols-1">
-                <div>
-                    <div class="field-label">History of Suicidal Thoughts or Attempts</div>
-                    <div class="field-value @(string.IsNullOrEmpty(Model.Health.SuicideRiskHistory) ? "empty" : "")">
-                        @(string.IsNullOrEmpty(Model.Health.SuicideRiskHistory) ? "None reported" : Model.Health.SuicideRiskHistory)
-                    </div>
-                </div>
-                <div>
-                    <div class="field-label">History of Abuse or Maltreatment</div>
-                    <div class="field-value @(string.IsNullOrEmpty(Model.Health.AbuseHistory) ? "empty" : "")">
-                        @(string.IsNullOrEmpty(Model.Health.AbuseHistory) ? "None reported" : Model.Health.AbuseHistory)
-                    </div>
-                </div>
-                <div>
-                    <div class="field-label">History of Illegal Drug Use</div>
-                    <div class="field-value @(string.IsNullOrEmpty(Model.Health.DrugHistory) ? "empty" : "")">
-                        @(string.IsNullOrEmpty(Model.Health.DrugHistory) ? "None reported" : Model.Health.DrugHistory)
-                    </div>
-                </div>
-                <div>
-                    <div class="field-label">Family History of Mental or Developmental Conditions</div>
-                    <div class="field-value @(string.IsNullOrEmpty(Model.Health.FamilyMentalHealthHistory) ? "empty" : "")">
-                        @(string.IsNullOrEmpty(Model.Health.FamilyMentalHealthHistory) ? "None reported" : Model.Health.FamilyMentalHealthHistory)
-                    </div>
-                </div>
-                <div>
-                    <div class="field-label">Previous Psychiatric or Psychological Consultation</div>
-                    <div class="field-value @(string.IsNullOrEmpty(Model.Health.PsychiatricConsultation) ? "empty" : "")">
-                        @(string.IsNullOrEmpty(Model.Health.PsychiatricConsultation) ? "None reported" : Model.Health.PsychiatricConsultation)
-                    </div>
-                </div>
-                <div>
-                    <div class="field-label">Additional Relevant Information / Remarks</div>
-                    <div class="field-value @(string.IsNullOrEmpty(Model.Health.AdditionalNotes) ? "empty" : "")">
-                        @(string.IsNullOrEmpty(Model.Health.AdditionalNotes) ? "None" : Model.Health.AdditionalNotes)
-                    </div>
-                </div>
-            </div>
-        </div>
 
     </div>
 

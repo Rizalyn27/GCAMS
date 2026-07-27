@@ -1,0 +1,77 @@
+﻿@model IEnumerable<GCAMS.Models.AnecRecs.AnecRecs>
+
+@{
+    ViewData["Title"] = "Index";
+}
+
+<h1>Index</h1>
+
+<p>
+    <a asp-action="Create">Create New</a>
+</p>
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.StuName)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.DateOfObserv)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.ObservedBy)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Place)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.PeopleInvolved)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.SceneMood)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.StudentBehavior)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.ObserverRecs)
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+@foreach (var item in Model) {
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.StuName)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.DateOfObserv)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.ObservedBy)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Place)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.PeopleInvolved)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.SceneMood)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.StudentBehavior)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.ObserverRecs)
+            </td>
+            <td>
+                <a asp-action="Edit" asp-route-id="@item.AnecRecsId">Edit</a> |
+                <a asp-action="Details" asp-route-id="@item.AnecRecsId">Details</a> |
+                <a asp-action="Delete" asp-route-id="@item.AnecRecsId">Delete</a>
+            </td>
+        </tr>
+}
+    </tbody>
+</table>

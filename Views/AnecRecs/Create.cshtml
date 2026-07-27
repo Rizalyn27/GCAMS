@@ -1,0 +1,69 @@
+﻿@model GCAMS.Models.AnecRecs.AnecRecs
+
+@{
+    ViewData["Title"] = "Create";
+}
+
+<h1>Create</h1>
+
+<h4>AnecRecs</h4>
+<hr />
+<div class="row">
+    <div class="col-md-4">
+        <form asp-action="Create">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <input type="hidden" asp-for="StudentsID" />
+            <div class="form-group">
+                <label asp-for="StuName" class="control-label"></label>
+                <input asp-for="StuName" class="form-control" />
+                <span asp-validation-for="StuName" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="DateOfObserv" class="control-label"></label>
+                <input asp-for="DateOfObserv" class="form-control" />
+                <span asp-validation-for="DateOfObserv" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="ObservedBy" class="control-label"></label>
+                <input asp-for="ObservedBy" class="form-control" />
+                <span asp-validation-for="ObservedBy" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Place" class="control-label"></label>
+                <input asp-for="Place" class="form-control" />
+                <span asp-validation-for="Place" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="PeopleInvolved" class="control-label"></label>
+                <input asp-for="PeopleInvolved" class="form-control" />
+                <span asp-validation-for="PeopleInvolved" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="SceneMood" class="control-label"></label>
+                <input asp-for="SceneMood" class="form-control" />
+                <span asp-validation-for="SceneMood" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="StudentBehavior" class="control-label"></label>
+                <input asp-for="StudentBehavior" class="form-control" />
+                <span asp-validation-for="StudentBehavior" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="ObserverRecs" class="control-label"></label>
+                <input asp-for="ObserverRecs" class="form-control" />
+                <span asp-validation-for="ObserverRecs" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <input type="submit" value="Create" class="btn btn-primary" />
+            </div>
+        </form>
+    </div>
+</div>
+
+<div>
+    <a asp-action="Index">Back to List</a>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}
