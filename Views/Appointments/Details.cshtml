@@ -3,6 +3,7 @@
     ViewData["Title"] = "Appointment Details";
 }
 
+
 <style>
     @@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Manrope:wght@600;700&display=swap');
 
@@ -141,73 +142,101 @@
     }
 </style>
 
-<div class="container-lg py-4" style="max-width: 720px;">
-    <p class="page-title">Appointment Details</p>
-
-    <div class="detail-card">
-        <div class="detail-section-title">
-            <i class="bi bi-person"></i> Client
-        </div>
-        <div class="detail-grid">
-            <div class="detail-field">
-                <label>@Html.DisplayNameFor(m => m.FullName)</label>
-                <div class="value">@Html.DisplayFor(m => m.FullName)</div>
-            </div>
-            <div class="detail-field">
-                <label>@Html.DisplayNameFor(m => m.Email)</label>
-                <div class="value">@Html.DisplayFor(m => m.Email)</div>
-            </div>
-        </div>
+@if (TempData["Info"] != null)
+{
+    <div style="background:#e7f1ff; border:1px solid #b6d4fe; padding:10px; border-radius:8px; margin-bottom:12px;">
+        @TempData["Info"]
     </div>
+}
+else
+{
+    <div class="container-lg py-4" style="max-width: 720px;">
+        <p class="page-title">Appointment Details</p>
 
-    <div class="detail-card">
-        <div class="detail-section-title">
-            <i class="bi bi-calendar3"></i> Appointment
-        </div>
-        <div class="detail-grid">
-            <div class="detail-field">
-                <label>@Html.DisplayNameFor(m => m.AppointmentDate)</label>
-                <div class="value">@Model?.AppointmentDate.ToString("MMM d, yyyy — h:mm tt")</div>
+        <div class="detail-card">
+            <div class="detail-section-title">
+                <i class="bi bi-person"></i> Client
             </div>
-            <div class="detail-field">
-                <label>@Html.DisplayNameFor(m => m.AppointmentType)</label>
-                <div class="value">@Html.DisplayFor(m => m.AppointmentType)</div>
-            </div>
-            <div class="detail-field" style="grid-column: 1 / -1;">
-                <label>@Html.DisplayNameFor(m => m.Notes)</label>
-                <div class="value">@(string.IsNullOrWhiteSpace(Model?.Notes) ? "—" : Model.Notes)</div>
-            </div>
-        </div>
-    </div>
-
-    <div class="detail-card">
-        <div class="detail-section-title">
-            <i class="bi bi-info-circle"></i> Status & Audit
-        </div>
-        <div class="detail-grid">
-            <div class="detail-field">
-                <label>Status</label>
-                <div class="value">
-                    <span class="status-badge status-@Model?.Status">@Model?.Status</span>
+            <div class="detail-grid">
+                <div class="detail-field">
+                    <label>@Html.DisplayNameFor(m => m.FullName)</label>
+                    <div class="value">@Html.DisplayFor(m => m.FullName)</div>
+                </div>
+                <div class="detail-field">
+                    <label>@Html.DisplayNameFor(m => m.Email)</label>
+                    <div class="value">@Html.DisplayFor(m => m.Email)</div>
                 </div>
             </div>
-            <div class="detail-field">
-                <label>Linked Student ID</label>
-                <div class="value">@(Model?.StudentsID?.ToString() ?? "—")</div>
+        </div>
+
+        <div class="detail-card">
+            <div class="detail-section-title">
+                <i class="bi bi-calendar3"></i> Appointment
             </div>
-            <div class="detail-field">
-                <label>@Html.DisplayNameFor(m => m.CreatedAt)</label>
-                <div class="value">@Model?.CreatedAt.ToString("MMM d, yyyy h:mm tt")</div>
+            <div class="detail-grid">
+                <div class="detail-field">
+                    <label>@Html.DisplayNameFor(m => m.AppointmentDate)</label>
+                    <div class="value">@Model?.AppointmentDate.ToString("MMM d, yyyy — h:mm tt")</div>
+                </div>
+                <div class="detail-field">
+                    <label>@Html.DisplayNameFor(m => m.AppointmentType)</label>
+                    <div class="value">@Html.DisplayFor(m => m.AppointmentType)</div>
+                </div>
+                <div class="detail-field" style="grid-column: 1 / -1;">
+                    <label>@Html.DisplayNameFor(m => m.Notes)</label>
+                    <div class="value">@(string.IsNullOrWhiteSpace(Model?.Notes) ? "—" : Model.Notes)</div>
+                </div>
             </div>
-            <div class="detail-field">
-                <label>@Html.DisplayNameFor(m => m.UpdatedAt)</label>
-                <div class="value">@(Model?.UpdatedAt?.ToString("MMM d, yyyy h:mm tt") ?? "—")</div>
+        </div>
+
+        <div class="detail-card">
+            <div class="detail-section-title">
+                <i class="bi bi-info-circle"></i> Status & Audit
             </div>
+            <div class="detail-grid">
+                <div class="detail-field">
+                    <label>Status</label>
+                    <div class="value">
+                        <span class="status-badge status-@Model?.Status">@Model?.Status</span>
+                    </div>
+                </div>
+                <div class="detail-field">
+                    <label>Linked Student ID</label>
+                    <div class="value">@(Model?.StudentsID?.ToString() ?? "—")</div>
+                </div>
+                <div class="detail-field">
+                    <label>@Html.DisplayNameFor(m => m.CreatedAt)</label>
+                    <div class="value">@Model?.CreatedAt.ToString("MMM d, yyyy h:mm tt")</div>
+                </div>
+                <div class="detail-field">
+                    <label>@Html.DisplayNameFor(m => m.UpdatedAt)</label>
+                    <div class="value">@(Model?.UpdatedAt?.ToString("MMM d, yyyy h:mm tt") ?? "—")</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="detail-actions">
+            @if (!User.IsInRole("Student"))
+            {
+                <a asp-action="Edit" asp-route-appointmentid="@Model?.AppointmentID" class="btn-edit">Edit</a>
+            }
+
+            @if (User.IsInRole("Student"))
+            {
+                <a asp-action="MyAppointments" class="btn-back">Back to list</a>
+            }
+            else
+            {
+                <a asp-action="Index" class="btn-back">Back to list</a>
+            }
         </div>
     </div>
 
-    <div class="detail-actions">
-        <a asp-action="Edit" asp-route-appointmentid="@Model?.AppointmentID" class="btn-edit">Edit</a>
-        <a asp-action="Index" class="btn-back">Back to list</a>
-    </div>
-</div>
+}
+
+@if (User.IsInRole("Student") && Model.Status == "Pending")
+{
+    <a asp-controller="Appointments" asp-action="Create" asp-route-force="true" class="btn-lookup">
+        Book Another Appointment
+    </a>
+}

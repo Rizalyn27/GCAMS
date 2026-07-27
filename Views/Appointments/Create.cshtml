@@ -251,7 +251,14 @@
 
         <div class="form-footer">
             <button type="submit" class="btn-save">Create appointment</button>
-            <a asp-action="Index" class="btn-cancel">Cancel</a>
+            @if (User.IsInRole("Student"))
+            {
+                <a asp-action="MyAppointments" class="btn-cancel">Cancel</a>
+            }
+            else
+            {
+                <a asp-action="Index" class="btn-cancel">Cancel</a>
+            }
         </div>
 
     </form>

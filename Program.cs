@@ -1,10 +1,13 @@
 using GCAMS.Data;
+using GCAMS.Services;
+using GCAMS.Services;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
+builder.Services.AddHostedService<AppointmentStatusService>();
 builder.Services.AddControllersWithViews();
 
 //Database Connection

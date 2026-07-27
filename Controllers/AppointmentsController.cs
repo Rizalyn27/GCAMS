@@ -43,31 +43,47 @@ public class AppointmentsController : Controller
     }
 
     // Anyone logged in can book — Student, Counselor, or Admin
-    public async Task<IActionResult> Create()
+    // Anyone logged in can book — Student, Counselor, or Admin
+    public async Task<IActionResult> Create(bool force = false)
     {
         if (User.IsInRole("Student"))
         {
             var student = await _context.Students
                 .FirstOrDefaultAsync(s => s.StuID == User.Identity!.Name);
 
-            if (student != null)
-            {
-                ViewBag.IsStudentBooking = true;
-                ViewBag.GradeLevel = student.GradeLevel;
-                ViewBag.Section = student.Section;
+            if (student == null) return Forbid();
 
-                return View(new Appointments
+            // Unless they explicitly want to book another one, check for an existing pending appointment first
+            if (!force)
+            {
+                var pending = await _context.Appointments
+                    .Where(a => a.StudentsID == student.StudentsID && a.Status == "Pending")
+                    .OrderByDescending(a => a.AppointmentDate)
+                    .FirstOrDefaultAsync();
+
+                if (pending != null)
                 {
-                    StudentsID = student.StudentsID,
-                    FullName = student.StuName,
-                    Email = student.Email ?? ""
-                });
+                    TempData["Info"] = "You already have a pending appointment. You can view it below, or book another one if needed.";
+                    return RedirectToAction(nameof(Details), new { appointmentid = pending.AppointmentID });
+                }
             }
+
+            ViewBag.IsStudentBooking = true;
+            ViewBag.GradeLevel = student.GradeLevel;
+            ViewBag.Section = student.Section;
+
+            return View(new Appointments
+            {
+                StudentsID = student.StudentsID,
+                FullName = student.StuName,
+                Email = student.Email ?? ""
+            });
         }
 
         ViewBag.IsStudentBooking = false;
         return View();
     }
+
 
     [HttpPost]
     [ValidateAntiForgeryToken]
@@ -98,7 +114,7 @@ public class AppointmentsController : Controller
             a.StudentsID == appointments.StudentsID &&
             a.AppointmentDate.Date == appointments.AppointmentDate.Date &&
             a.Status != "Cancelled" &&
-            a.Status != "Rejected");
+            a.Status != "Missed");
 
         if (hasConflict)
         {
