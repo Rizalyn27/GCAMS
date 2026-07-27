@@ -275,28 +275,12 @@
                 </div>
                 <div class="full-width">
                     <label class="field-label">Session Topics</label>
-                    <div class="=checkbox-grid">
-                        @{
-                            var topics = new[]{
-                                                "Academic Concerns","Behavioral COncern","Personal Concern", "Emotional COncern", "Family-Related Concern","Peer Relationship",
-                                                "Career Guidance", "Health/Physical Concerns", "Bullying Report","Crisis/Urgent Concern"
-                                                };
-                        }
-                        @{
-                            var savedtopics = Model.SessionTopics?.Split(',').Select(t => t.Trim()).ToList() ?? new List<string>();
-                        }
-                        @foreach (var topic in topics)
-                        {
-                            <label class="checkbox-item">
-                                <input type="checkbox" name="SessionTopics" value="@topic" @(savedtopics.Contains(topic) ? "checked" : "") />
-                                @topic
-                            </label>
-                        }
-                    </div>
+                    <input type="text" asp-for="SessionTopics" class="form-control" />
+                    <span asp-validation-for="SessionTopics" class="text-danger" style="font-size:12px;"></span>
                 </div>
                 <div class="full-width">
                     <label class="field-label">Session Relevance</label>
-                    <input asp-for="SessionRelevance" class="form-control" />
+                    <input type="text" asp-for="SessionRelevance" class="form-control" />
                     <span asp-validation-for="SessionRelevance" class="text-danger" style="font-size:12px;"></span>
                 </div>
             </div>
@@ -314,20 +298,8 @@
                 </div>
                 <div class="full-width">
                     <label class="field-label">Interventions</label>
-                    <div class="checkbox-grid">
-                        @{
-                            var interventionOptions = new[] {
-                                                "Active Listening", "These still need more options"
-                                                };
-                        }
-                        @foreach (var intervention in interventionOptions)
-                        {
-                            <label class="checkbox-item">
-                                <input type="checkbox" name="SelectedInterventions" value="@intervention" />
-                                @intervention
-                            </label>
-                        }
-                    </div>
+                    <input asp-for="Interventions" class="form-control" />
+                    <span asp-validation-for="Interventions" class="text-danger" style="font-size:12px;"></span>
                 </div>
                 <div class="full-width">
                     <label class="field-label">Observations</label>
@@ -336,24 +308,12 @@
                 </div>
                 <div>
                     <label class="field-label">Counsel Progress</label>
-                    <select asp-for="CounselProgess" class="form-control">
-                        <option value="">-- Select Progress --</option>
-                        <option value="Improving">Improving</option>
-                        <option value="No Change">Stable/No Change</option>
-                        <option value="Declining">Declining</option>
-                        <option value="Resolved">Resolved</option>
-                    </select>
+                    <input type="text" asp-for="CounselProgess" class="form-control"/>
                     <span asp-validation-for="CounselProgess" class="text-danger" style="font-size:12px;"></span>
                 </div>
                 <div>
                     <label class="field-label">Behavior Status</label>
-                    <select asp-for="BehaviorStatus" class="form-control">
-                        <option value="">-- Select Status --</option>
-                        <option value="Improved">Improved</option>
-                        <option value="The Same">The Same</option>
-                        <option value="Worsened">Worsened</option>
-                        <option value="New Concern Identified">New Concern Identified</option>
-                    </select>
+                    <input type="text" asp-for="BehaviorStatus" class="form-control"/>
                     <span asp-validation-for="BehaviorStatus" class="text-danger" style="font-size:12px;"></span>
                 </div>
             </div>

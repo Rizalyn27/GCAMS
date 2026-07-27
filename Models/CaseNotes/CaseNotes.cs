@@ -1,6 +1,7 @@
 ﻿using GCAMS.Models.Appointment;
 using System.ComponentModel.DataAnnotations;
 using System.Globalization;
+using GCAMS.Models.Students;
 
 namespace GCAMS.Models.CaseNotes
 {
@@ -12,11 +13,18 @@ namespace GCAMS.Models.CaseNotes
         [Key]
         public int CasenoteId { get; set; }
 
+        //Foreign Key to Students table
+        public int StudentsID { get; set; }
+        public Students.Students Student { get; set; }
+
+
         //Name of Counselee
         [Required(ErrorMessage = "Full name is required")]
         [StringLength(100)]
         [Display(Name = "Name of Counselee")]
         public string FullName { get; set; } = string.Empty;
+
+
 
         //Session Number
         [Required(ErrorMessage = "Session No. is required")]

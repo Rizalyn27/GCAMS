@@ -4,6 +4,7 @@ using GCAMS.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace GCAMS.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260722061650_removedoverallgoal")]
+    partial class removedoverallgoal
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -139,12 +142,7 @@ namespace GCAMS.Migrations
                         .HasMaxLength(100)
                         .HasColumnType("nvarchar(100)");
 
-                    b.Property<int>("StudentsID")
-                        .HasColumnType("int");
-
                     b.HasKey("CasenoteId");
-
-                    b.HasIndex("StudentsID");
 
                     b.ToTable("CaseNotes");
                 });
@@ -631,52 +629,9 @@ namespace GCAMS.Migrations
                         .HasMaxLength(100)
                         .HasColumnType("nvarchar(100)");
 
-                    b.Property<int?>("UserId")
-                        .HasColumnType("int");
-
                     b.HasKey("StudentsID");
 
-                    b.HasIndex("UserId");
-
                     b.ToTable("Students");
-                });
-
-            modelBuilder.Entity("GCAMS.Models.Users.Users", b =>
-                {
-                    b.Property<int>("UserId")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("UserId"));
-
-                    b.Property<bool>("IsActive")
-                        .HasColumnType("bit");
-
-                    b.Property<string>("Password")
-                        .IsRequired()
-                        .HasMaxLength(100)
-                        .HasColumnType("nvarchar(100)");
-
-                    b.Property<bool>("PasswordChange")
-                        .HasColumnType("bit");
-
-                    b.Property<string>("Role")
-                        .IsRequired()
-                        .HasMaxLength(20)
-                        .HasColumnType("nvarchar(20)");
-
-                    b.Property<string>("Salt")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Username")
-                        .IsRequired()
-                        .HasMaxLength(30)
-                        .HasColumnType("nvarchar(30)");
-
-                    b.HasKey("UserId");
-
-                    b.ToTable("Users");
                 });
 
             modelBuilder.Entity("GCAMS.Models.Appointment.Appointments", b =>
@@ -684,17 +639,6 @@ namespace GCAMS.Migrations
                     b.HasOne("GCAMS.Models.Students.Students", "Student")
                         .WithMany()
                         .HasForeignKey("StudentsID");
-
-                    b.Navigation("Student");
-                });
-
-            modelBuilder.Entity("GCAMS.Models.CaseNotes.CaseNotes", b =>
-                {
-                    b.HasOne("GCAMS.Models.Students.Students", "Student")
-                        .WithMany()
-                        .HasForeignKey("StudentsID")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
 
                     b.Navigation("Student");
                 });
@@ -781,15 +725,6 @@ namespace GCAMS.Migrations
                         .IsRequired();
 
                     b.Navigation("Student");
-                });
-
-            modelBuilder.Entity("GCAMS.Models.Students.Students", b =>
-                {
-                    b.HasOne("GCAMS.Models.Users.Users", "User")
-                        .WithMany()
-                        .HasForeignKey("UserId");
-
-                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("GCAMS.Models.Counselor.Counselor", b =>

@@ -164,23 +164,22 @@
 
         <input type="hidden" asp-for="StudentsID" id="studentsIdHidden" />
 
-        <div class="form-card">
-            <div class="form-section-title">
-                <i class="bi bi-search"></i> Student lookup
-            </div>
-            <div>
-                <label for="stuIdLookup" class="field-label">Student ID (school-issued)</label>
-                <div class="lookup-group">
-                    <input type="text"
-                           id="stuIdLookup"
-                           class="form-control"
-                           placeholder="e.g. 2024-0001"
-                           autocomplete="off" />
-                    <button type="button" class="btn-lookup" id="btnLookup">Search</button>
+        @if (!(ViewBag.IsStudentBooking ?? false))
+        {
+            <div class="form-card">
+                <div class="form-section-title">
+                    <i class="bi bi-search"></i> Student lookup
                 </div>
-                <small id="lookupStatus" class="lookup-status"></small>
+                <div>
+                    <label for="stuIdLookup" class="field-label">Student ID (school-issued)</label>
+                    <div class="lookup-group">
+                        <input type="text" id="stuIdLookup" class="form-control" placeholder="e.g. 2024-0001" autocomplete="off" />
+                        <button type="button" class="btn-lookup" id="btnLookup">Search</button>
+                    </div>
+                    <small id="lookupStatus" class="lookup-status"></small>
+                </div>
             </div>
-        </div>
+        }
 
         <div class="form-card">
             <div class="form-section-title">
@@ -189,20 +188,24 @@
             <div class="form-grid">
                 <div class="full-width">
                     <label asp-for="FullName" class="field-label"></label>
-                    <input asp-for="FullName" id="fieldFullName" class="form-control" />
+                    <input asp-for="FullName" id="fieldFullName" class="form-control"
+                           readonly="@(ViewBag.IsStudentBooking == true)" />
                     <span asp-validation-for="FullName" class="text-danger" style="font-size:12px;"></span>
                 </div>
                 <div>
                     <label class="field-label">Grade level</label>
-                    <input type="text" id="fieldGradeLevel" class="form-control" readonly tabindex="-1" />
+                    <input type="text" id="fieldGradeLevel" class="form-control" readonly tabindex="-1"
+                           value="@(ViewBag.GradeLevel ?? "")" />
                 </div>
                 <div>
                     <label class="field-label">Section</label>
-                    <input type="text" id="fieldSection" class="form-control" readonly tabindex="-1" />
+                    <input type="text" id="fieldSection" class="form-control" readonly tabindex="-1"
+                           value="@(ViewBag.Section ?? "")" />
                 </div>
                 <div class="full-width">
                     <label asp-for="Email" class="field-label"></label>
-                    <input asp-for="Email" id="fieldEmail" class="form-control" />
+                    <input asp-for="Email" id="fieldEmail" class="form-control"
+                           readonly="@(ViewBag.IsStudentBooking == true)" />
                     <span asp-validation-for="Email" class="text-danger" style="font-size:12px;"></span>
                 </div>
             </div>
@@ -272,88 +275,94 @@
         const fieldGradeLevel  = document.getElementById('fieldGradeLevel');
         const fieldSection     = document.getElementById('fieldSection');
 
-        // ── Core lookup function ─────────────────────────────────────────────
-        async function lookupStudent() {
-            const stuId = stuIdInput.value.trim();
+        // The lookup card only renders for non-student bookings (admin/counselor).
+        // When a student is booking, stuIdInput etc. won't exist in the DOM —
+        // skip wiring up all this JS entirely to avoid null-reference errors.
+        if (stuIdInput) {
 
-            if (!stuId) {
-                setStatus('Please enter a Student ID first.', 'secondary');
-                return;
-            }
+            // ── Core lookup function ─────────────────────────────────────────────
+            async function lookupStudent() {
+                const stuId = stuIdInput.value.trim();
 
-            setStatus('Searching…', 'secondary');
-
-            try {
-                // Calls AppointmentsController.GetStudentByStuID(stuId)
-                const response = await fetch(
-                    `/Appointments/GetStudentByStuID?stuId=${encodeURIComponent(stuId)}`
-                );
-
-                if (response.ok) {
-                    // ── Found: auto-fill and lock fields so they can't be overwritten ──
-                    const student = await response.json();
-
-                    hiddenStudentsID.value = student.studentsID;
-                    fieldFullName.value    = student.fullName;
-                    fieldEmail.value       = student.email;
-                    fieldGradeLevel.value  = student.gradeLevel;
-                    fieldSection.value     = student.section;
-
-                    // Lock auto-filled fields — student should contact admin to change these
-                    [fieldFullName, fieldEmail].forEach(f => f.setAttribute('readonly', true));
-
-                    setStatus(`✓ Student found: ${student.fullName}`, 'success');
-
-                } else if (response.status === 404) {
-                    // ── Not found: clear any previous auto-fill, let them type freely ──
-                    clearStudentFields();
-                    setStatus('✗ ID not found — please fill in your details manually.', 'warning');
-
-                } else {
-                    setStatus('An error occurred. Please try again.', 'danger');
+                if (!stuId) {
+                    setStatus('Please enter a Student ID first.', 'secondary');
+                    return;
                 }
 
-            } catch (err) {
-                console.error('Student lookup failed:', err);
-                setStatus('Could not reach the server. Check your connection.', 'danger');
+                setStatus('Searching…', 'secondary');
+
+                try {
+                    // Calls AppointmentsController.GetStudentByStuID(stuId)
+                    const response = await fetch(
+                        `/Appointments/GetStudentByStuID?stuId=${encodeURIComponent(stuId)}`
+                    );
+
+                    if (response.ok) {
+                        // ── Found: auto-fill and lock fields so they can't be overwritten ──
+                        const student = await response.json();
+
+                        hiddenStudentsID.value = student.studentsID;
+                        fieldFullName.value    = student.fullName;
+                        fieldEmail.value       = student.email;
+                        fieldGradeLevel.value  = student.gradeLevel;
+                        fieldSection.value     = student.section;
+
+                        // Lock auto-filled fields — student should contact admin to change these
+                        [fieldFullName, fieldEmail].forEach(f => f.setAttribute('readonly', true));
+
+                        setStatus(`✓ Student found: ${student.fullName}`, 'success');
+
+                    } else if (response.status === 404) {
+                        // ── Not found: clear any previous auto-fill, let them type freely ──
+                        clearStudentFields();
+                        setStatus('✗ ID not found — please fill in your details manually.', 'warning');
+
+                    } else {
+                        setStatus('An error occurred. Please try again.', 'danger');
+                    }
+
+                } catch (err) {
+                    console.error('Student lookup failed:', err);
+                    setStatus('Could not reach the server. Check your connection.', 'danger');
+                }
             }
-        }
 
-        // ── Trigger lookup on Search button click ────────────────────────────
-        btnLookup.addEventListener('click', lookupStudent);
+            // ── Trigger lookup on Search button click ────────────────────────────
+            btnLookup.addEventListener('click', lookupStudent);
 
-        // ── Trigger lookup on Enter key inside the lookup field ──────────────
-        stuIdInput.addEventListener('keydown', function (e) {
-            if (e.key === 'Enter') {
-                e.preventDefault(); // prevent accidental form submission
-                lookupStudent();
+            // ── Trigger lookup on Enter key inside the lookup field ──────────────
+            stuIdInput.addEventListener('keydown', function (e) {
+                if (e.key === 'Enter') {
+                    e.preventDefault(); // prevent accidental form submission
+                    lookupStudent();
+                }
+            });
+
+            // ── If the user clears the lookup field, reset auto-filled values ────
+            stuIdInput.addEventListener('input', function () {
+                if (this.value.trim() === '') {
+                    clearStudentFields();
+                    setStatus('', 'secondary');
+                }
+            });
+
+            // ── Helper: wipe all auto-filled values and re-enable manual editing ──
+            function clearStudentFields() {
+                hiddenStudentsID.value = '';
+                fieldFullName.value    = '';
+                fieldEmail.value       = '';
+                fieldGradeLevel.value  = '';
+                fieldSection.value     = '';
+
+                // Unlock so the student can type manually
+                [fieldFullName, fieldEmail].forEach(f => f.removeAttribute('readonly'));
             }
-        });
 
-        // ── If the user clears the lookup field, reset auto-filled values ────
-        stuIdInput.addEventListener('input', function () {
-            if (this.value.trim() === '') {
-                clearStudentFields();
-                setStatus('', 'secondary');
+            // ── Helper: update the status line below the lookup field ────────────
+            function setStatus(message, color) {
+                statusEl.textContent = message;
+                statusEl.className   = `form-text text-${color}`;
             }
-        });
-
-        // ── Helper: wipe all auto-filled values and re-enable manual editing ──
-        function clearStudentFields() {
-            hiddenStudentsID.value = '';
-            fieldFullName.value    = '';
-            fieldEmail.value       = '';
-            fieldGradeLevel.value  = '';
-            fieldSection.value     = '';
-
-            // Unlock so the student can type manually
-            [fieldFullName, fieldEmail].forEach(f => f.removeAttribute('readonly'));
-        }
-
-        // ── Helper: update the status line below the lookup field ────────────
-        function setStatus(message, color) {
-            statusEl.textContent = message;
-            statusEl.className   = `form-text text-${color}`;
         }
     </script>
 }

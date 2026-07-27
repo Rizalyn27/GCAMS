@@ -7,11 +7,14 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using GCAMS.Data;
 using GCAMS.Models.Counselor;
+using System.Security.Cryptography;
+using GCAMS.Models.Users;
 
 namespace GCAMS.Controllers
 {
     public class CounselorsController : Controller
     {
+        // Our connection to the database (Entity Framework Core).
         private readonly AppDbContext _context;
 
         public CounselorsController(AppDbContext context)
@@ -19,13 +22,19 @@ namespace GCAMS.Controllers
             _context = context;
         }
 
+        // ===================================================================
         // GET: Counselors
+        // Shows the list of all counselors.
+        // ===================================================================
         public async Task<IActionResult> Index()
         {
             return View(await _context.Counselors.ToListAsync());
         }
 
+        // ===================================================================
         // GET: Counselors/Details/5
+        // Shows the full profile of ONE counselor (5 = their ID from the URL).
+        // ===================================================================
         public async Task<IActionResult> Details(int? id)
         {
             if (id == null) return NotFound();
@@ -38,31 +47,35 @@ namespace GCAMS.Controllers
             return View(counselor);
         }
 
+        // ===================================================================
         // GET: Counselors/Create
+        // Shows a blank form for adding a new counselor.
+        // ===================================================================
         public IActionResult Create()
         {
             return View();
         }
 
+        // ===================================================================
         // POST: Counselors/Create
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
+        // Runs when the user submits the "Create" form.
+        // ===================================================================
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create(Counselor counselor)
         {
             if (ModelState.IsValid)
             {
-                // Grab numbers before Add() touches them
                 var incoming = counselor.ContactNumbers
                     .Where(x => !string.IsNullOrWhiteSpace(x.Number))
                     .ToList();
 
-                // Clear so Add() doesn't insert them
                 counselor.ContactNumbers.Clear();
 
                 _context.Counselors.Add(counselor);
                 await _context.SaveChangesAsync();
+
+                await EnsureCounselorAccountAsync(counselor.EmailAddress, counselor.EmployeeNumber);
 
                 foreach (var c in incoming)
                 {
@@ -77,10 +90,14 @@ namespace GCAMS.Controllers
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
+
             return View(counselor);
         }
 
+        // ===================================================================
         // GET: Counselors/Edit/5
+        // Shows the edit form for an existing counselor, pre-filled with their data.
+        // ===================================================================
         public async Task<IActionResult> Edit(int? id)
         {
             if (id == null) return NotFound();
@@ -93,9 +110,10 @@ namespace GCAMS.Controllers
             return View(counselor);
         }
 
+        // ===================================================================
         // POST: Counselors/Edit/5
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
+        // Runs when the user submits changes on the Edit form.
+        // ===================================================================
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(int id, Counselor counselor)
@@ -118,6 +136,7 @@ namespace GCAMS.Controllers
                     _context.CounselorContactNumbers.RemoveRange(old);
                     await _context.SaveChangesAsync();
 
+                    // Re-insert the contact numbers currently in the form.
                     foreach (var c in incoming)
                     {
                         _context.CounselorContactNumbers.Add(new CounselorContactNumber
@@ -132,13 +151,42 @@ namespace GCAMS.Controllers
                 }
                 catch (DbUpdateConcurrencyException)
                 {
+
                     if (!_context.Counselors.Any(e => e.CounselorID == id)) return NotFound();
+                   
                     else throw;
                 }
                 return RedirectToAction(nameof(Index));
             }
+
+            // Validation failed — re-show the form with error messages.
             return View(counselor);
         }
+
+
+        private async Task EnsureCounselorAccountAsync(string email, string employeeNumber)
+        {
+            if (string.IsNullOrWhiteSpace(email)) return;
+
+            bool exists = await _context.Users.AnyAsync(u => u.Username == email);
+            if (exists) return;
+
+            byte[] salt = UsersController.createsalt();
+            byte[] hash = UsersController.HashPassword(employeeNumber, salt);
+
+            var account = new Users
+            {
+                Username = email,
+                Password = Convert.ToBase64String(hash),
+                Salt = Convert.ToBase64String(salt),
+                Role = "Counselor",
+                PasswordChange = false, // forces the change-password flow on first login
+            };
+
+            _context.Users.Add(account);
+            await _context.SaveChangesAsync();
+        }
+
 
         // GET: Counselors/Delete/5
         //public async Task<IActionResult> Delete(int? id)
@@ -181,7 +229,9 @@ namespace GCAMS.Controllers
         //    return RedirectToAction(nameof(Index));
         //}
 
-
+        // Small helper that checks whether a counselor with this ID still
+        // exists in the database. (Currently unused now that Delete is
+        // commented out, but kept around in case it's needed again.)
         private bool CounselorExists(int id)
         {
             return _context.Counselors.Any(e => e.CounselorID == id);

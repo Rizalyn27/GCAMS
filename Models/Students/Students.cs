@@ -1,5 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using GCAMS.Models.Users;
 
 namespace GCAMS.Models.Students
 {
@@ -8,6 +9,12 @@ namespace GCAMS.Models.Students
         //Primary Key
         [Key]
         public int StudentsID { get; set; }
+
+        //Foreign Key to Users
+        public int? UserId { get; set; }
+
+        [ForeignKey("UserId")]
+        public Users.Users? User { get; set; }
 
         // -------------------------
         // A. Personal Data

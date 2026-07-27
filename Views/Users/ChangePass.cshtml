@@ -1,0 +1,22 @@
+﻿@{
+    Layout = null;
+}
+@if (ViewBag.Forced == true)
+{
+    <p>You must set a new password before continuing.</p>
+}
+<form method="post">
+    @Html.AntiForgeryToken()
+    <input type="password" name="currentPassword" placeholder="Current Password" />
+    <input type="password" name="newPassword" placeholder="New Password" />
+    <input type="password" name="confirmPassword" placeholder="Confirm New Password" />
+    <button type="submit">Change Password</button>
+</form>
+@if (ViewBag.ErrorMessage != null)
+{
+    <p style="color:red">@ViewBag.ErrorMessage</p>
+}
+@if (ViewBag.SuccessMessage != null)
+{
+    <p style="color:green">@ViewBag.SuccessMessage</p>
+}

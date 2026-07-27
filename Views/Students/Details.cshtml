@@ -976,67 +976,14 @@
                                                class="cn-action-icon" title="Edit">
                                                 <span class="material-symbols-outlined" style="font-size:18px;">✏️</span>
                                             </a>
-                                            <button type="button" class="cn-action-icon" title="Delete"
-                                                    onclick="openDeleteModal(this)"
-                                                    data-id="@note.CasenoteId"
-                                                    data-date="@note.SessionDate.ToString("MMM dd, yyyy - h:mm tt")"
-                                                    data-sessionno="@note.SessionNo"
-                                                    data-goal="@note.SpecificGoal"
-                                                    data-topics="@note.SessionTopics"
-                                                    data-interventions="@note.Interventions"
-                                                    data-observations="@note.Observations"
-                                                    data-progress="@note.CounselProgess"
-                                                    data-behavior="@note.BehaviorStatus"
-                                                    data-homework="@note.Homework"
-                                                    data-strengths="@note.StrengthsChallenges">
-                                                <span class="material-symbols-outlined" style="font-size:18px;">🗑️</span>
-                                            </button>
+                                            
                                         </div>
                                     </td>
                                 </tr>
                             }
                         </tbody>
                     </table>
-                    <div id="deleteNoteModal" class="modal-overlay">
-                        <div class="modal-box">
-                            <div class="modal-header">
-                                <h3>Delete Case Note</h3>
-                                <button type="button" class="modal-close" onclick="closeDeleteModal()">&times;</button>
-                            </div>
-
-                            <div class="modal-warning">
-                                <span class="material-symbols-outlined" style="font-size:18px;"></span>
-                                This action cannot be undone.
-                            </div>
-
-                            <div class="modal-details" id="deleteNoteDetails">
-                                <div class="modal-row"><span class="modal-label">Session Date</span><span class="modal-value" id="dn-date"></span></div>
-                                <div class="modal-row"><span class="modal-label">Session No.</span><span class="modal-value" id="dn-sessionno"></span></div>
-                                <div class="modal-row"><span class="modal-label">Specific Goal</span><span class="modal-value" id="dn-goal"></span></div>
-                                <div class="modal-row"><span class="modal-label">Overall Goal</span><span class="modal-value" id="dn-overallgoal"></span></div>
-                                <div class="modal-row"><span class="modal-label">Session Topics</span><span class="modal-value" id="dn-topics"></span></div>
-                                <div class="modal-row"><span class="modal-label">Interventions</span><span class="modal-value" id="dn-interventions"></span></div>
-                                <div class="modal-row"><span class="modal-label">Observations</span><span class="modal-value" id="dn-observations"></span></div>
-                                <div class="modal-row"><span class="modal-label">Progress</span><span class="modal-value" id="dn-progress"></span></div>
-                                <div class="modal-row"><span class="modal-label">Behavior Status</span><span class="modal-value" id="dn-behavior"></span></div>
-                                <div class="modal-row"><span class="modal-label">Homework</span><span class="modal-value" id="dn-homework"></span></div>
-                                <div class="modal-row"><span class="modal-label">Strengths / Challenges</span><span class="modal-value" id="dn-strengths"></span></div>
-                            </div>
-
-                            <form id="deleteNoteForm" asp-controller="CaseNotes" asp-action="Delete" method="post">
-                                @Html.AntiForgeryToken()
-                                <input type="hidden" name="id" id="deleteNoteId" />
-                                <input type="hidden" name="studentId" value="@Model.Student.StudentsID" />
-                                <div class="modal-actions">
-                                    <button type="button" class="action-btn btn-outline" onclick="closeDeleteModal()">Cancel</button>
-                                    <button type="submit" class="action-btn btn-danger">
-                                        <span class="material-symbols-outlined" style="font-size:16px;"></span>
-                                        Delete Case Note
-                                    </button>
-                                </div>
-                            </form>
-                        </div>
-                    </div>
+                    
                 }
             </div>
         </div>
@@ -1149,7 +1096,6 @@
         document.getElementById('dn-date').textContent = btn.dataset.date || '—';
         document.getElementById('dn-sessionno').textContent = btn.dataset.sessionno || '—';
         document.getElementById('dn-goal').textContent = btn.dataset.goal || '—';
-        document.getElementById('dn-overallgoal').textContent = btn.dataset.overallgoal || '—';
         document.getElementById('dn-topics').textContent = btn.dataset.topics || '—';
         document.getElementById('dn-interventions').textContent = btn.dataset.interventions || '—';
         document.getElementById('dn-observations').textContent = btn.dataset.observations || '—';

@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using GCAMS.Models.CaseNotes;
 using GCAMS.Data;
+using System.Threading.Tasks;
 
 public class CaseNotesController : Controller
 {
@@ -26,35 +27,41 @@ public class CaseNotesController : Controller
         var casenotes = await _context.CaseNotes.FirstOrDefaultAsync(m => m.CasenoteId == id);
         if (casenotes == null) return NotFound();
 
-        // Fallback: resolve the student id from FullName if it wasn't passed in
-        ViewBag.StudentsID = studentId
-            ?? (await _context.Students.FirstOrDefaultAsync(s => s.StuName == casenotes.FullName))?.StudentsID;
-
+        ViewBag.StudentsID = studentId ?? casenotes.StudentsID;
         return View(casenotes);
     }
 
-    // GET: CaseNotes/Create?fullName=Juan Dela Cruz
-    public IActionResult Create(string? fullName, int? studentId)
+    // GET: CaseNotes/Create?studentId=5
+    public async Task<IActionResult> Create(int? studentId)
     {
         var casenotes = new CaseNotes();
-        if (!string.IsNullOrWhiteSpace(fullName))
-            casenotes.FullName = fullName;
 
+        if (studentId.HasValue)
+        {
+            casenotes.StudentsID = studentId.Value;
+
+            var student = await _context.Students.FindAsync(studentId.Value);
+            if (student != null) casenotes.FullName = student.StuName;
+
+            casenotes.SessionNo = await _context.CaseNotes
+                .CountAsync(n => n.StudentsID == studentId.Value) + 1;
+        }
+
+        ModelState.Remove("SessionNo");
         ViewBag.StudentsID = studentId;
         return View(casenotes);
     }
 
     // POST: CaseNotes/Create
-    // To protect from overposting attacks, enable the specific properties you want to bind to.
-    // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
     [HttpPost]
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> Create(
-     [Bind("CasenoteId,FullName,SessionNo,SessionDate,SessionTopics,SessionRelevance,GoalPlan,Interventions,Observations,CounselProgess,BehaviorStatus,Homework,StrengthsChallenges,SpecificGoal,OverallGoal")] CaseNotes casenotes,
-    string[]? selectedSessionTopics,
-    string[]? selectedInterventions,
-    int? studentId)
+        [Bind("CasenoteId,StudentsID,FullName,SessionNo,SessionDate,SessionTopics,SessionRelevance,GoalPlan,Interventions,Observations,CounselProgess,BehaviorStatus,Homework,StrengthsChallenges,SpecificGoal")] CaseNotes casenotes,
+        string[]? selectedSessionTopics,
+        string[]? selectedInterventions,
+        int? studentId)
     {
+        if (studentId.HasValue) casenotes.StudentsID = studentId.Value;
 
         if (ModelState.IsValid)
         {
@@ -79,23 +86,19 @@ public class CaseNotesController : Controller
         var casenotes = await _context.CaseNotes.FindAsync(id);
         if (casenotes == null) return NotFound();
 
-        ViewBag.StudentsID = studentId
-            ?? (await _context.Students.FirstOrDefaultAsync(s => s.StuName == casenotes.FullName))?.StudentsID;
-
+        ViewBag.StudentsID = studentId ?? casenotes.StudentsID;
         return View(casenotes);
     }
 
     // POST: CaseNotes/Edit/5
-    // To protect from overposting attacks, enable the specific properties you want to bind to.
-    // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
     [HttpPost]
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> Edit(
-     int? id,
-     [Bind("CasenoteId,FullName,SessionNo,SessionDate,SessionTopics,SessionRelevance,GoalPlan,Interventions,Observations,CounselProgess,BehaviorStatus,Homework,StrengthsChallenges,SpecificGoal,OverallGoal")] CaseNotes casenotes,
-     string[]? sessionTopics,
-    string[]? interventions, 
-    int? studentId)
+        int? id,
+        [Bind("CasenoteId,StudentsID,FullName,SessionNo,SessionDate,SessionTopics,SessionRelevance,GoalPlan,Interventions,Observations,CounselProgess,BehaviorStatus,Homework,StrengthsChallenges,SpecificGoal")] CaseNotes casenotes,
+        string[]? sessionTopics,
+        string[]? interventions,
+        int? studentId)
     {
         if (id != casenotes.CasenoteId) return NotFound();
 
@@ -125,22 +128,15 @@ public class CaseNotesController : Controller
     // GET: CaseNotes/Delete/5
     public async Task<IActionResult> Delete(int? id)
     {
-        if (id == null)
-        {
-            return NotFound();
-        }
+        if (id == null) return NotFound();
 
-        var casenotes = await _context.CaseNotes
-            .FirstOrDefaultAsync(m => m.CasenoteId == id);
-        if (casenotes == null)
-        {
-            return NotFound();
-        }
+        var casenotes = await _context.CaseNotes.FirstOrDefaultAsync(m => m.CasenoteId == id);
+        if (casenotes == null) return NotFound();
 
         return View(casenotes);
     }
 
-    // POST: CaseNotes/Delete/5
+    // POST: CaseNotes/Delete/5 (hard delete — no undo)
     [HttpPost, ActionName("Delete")]
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> DeleteConfirmed(int? id, int? studentId)

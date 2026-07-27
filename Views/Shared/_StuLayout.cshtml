@@ -1,0 +1,359 @@
+﻿﻿
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - MVC_DenoyJabines</title>
+    <script type="importmap"></script>
+    <link rel="stylesheet" href="@(Url.Content("~/lib/bootstrap/dist/css/bootstrap.min.css"))" />
+    <link rel="stylesheet" href="@(Url.Content("~/css/site.css"))" />
+    <link rel="stylesheet" href="@(Url.Content("~/MVC_DenoyJabines.styles.css"))" />
+    <link href="https://fonts.googleapis.com/css2?family=Sora:wght@300;400;500;600;700&family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet" />
+    <style>
+        :root {
+            --sidebar-bg: #1B5E20;
+            --sidebar-hover: #0f2e27;
+            --sidebar-active: #133d32;
+            --sidebar-border: rgba(255,255,255,0.06);
+            --sidebar-text: #ffffff;
+            --sidebar-heading: #ffffff;
+            --sidebar-label: #2e5248;
+            --sidebar-width: 240px;
+            --accent: #1a7f74;
+            --accent-soft: rgba(26,127,116,0.18);
+            --page-bg: #f0f7f4;
+            --topbar-bg: #ffffff;
+            --topbar-border: #d4ede6;
+            --ink: #0a1f1a;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: Arial, Helvetica, sans-serif,;
+            background: var(--page-bg);
+            color: var(--ink);
+            overflow-x: hidden;
+        }
+
+        .layout-wrapper {
+            display: flex;
+            min-height: 100vh;
+        }
+
+        .sidebar-account,
+        .sidebar-logout {
+            display: block;
+            width: 100%;
+            padding: 10px 12px;
+            border-radius: 10px;
+            font-size: 0.85rem;
+            font-weight: 500;
+            text-decoration: none;
+            text-align: left;
+            cursor: pointer;
+            transition: all 0.2s;
+            margin-bottom: 6px;
+        }
+
+        .sidebar-account {
+            background: rgba(59, 91, 219, 0.1);
+            color: #3b5bdb;
+        }
+
+            .sidebar-account:hover {
+                background: rgba(59, 91, 219, 0.2);
+            }
+
+        .sidebar-logout {
+            background: rgba(229, 52, 74, 0.12);
+            color: #e5344a;
+            border: 1px solid rgba(229,52,74,0.25);
+        }
+
+            .sidebar-logout:hover {
+                background: #e5344a;
+                color: #ffffff;
+                border-color: #e5344a;
+            }
+
+        /* ── SIDEBAR ── */
+        .sidebar {
+            width: var(--sidebar-width);
+            background: var(--sidebar-bg);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            position: fixed;
+            top: 0;
+            left: 0;
+            z-index: 100;
+            transition: transform .3s ease;
+        }
+
+        .sidebar-brand {
+            padding: 24px 20px 20px;
+            border-bottom: 1px solid var(--sidebar-border);
+            margin-bottom: 8px;
+        }
+
+            .sidebar-brand h4 {
+                font-family: Arial, Helvetica, sans-serif,;
+                font-size: 1.2rem;
+                font-weight: 400;
+                color: var(--sidebar-heading);
+                margin: 0;
+            }
+
+            .sidebar-brand span {
+                display: inline-block;
+                margin-bottom: 6px;
+                font-size: 0.65rem;
+                font-weight: 700;
+                letter-spacing: 0.12em;
+                text-transform: uppercase;
+                color: var(--accent);
+                background: var(--accent-soft);
+                padding: 2px 8px;
+                border-radius: 20px;
+            }
+
+        .sidebar-section-label {
+            font-size: 0.62rem;
+            font-weight: 700;
+            letter-spacing: 0.12em;
+            text-transform: uppercase;
+            color: var(--sidebar-label);
+            padding: 16px 20px 6px;
+        }
+
+        .sidebar-nav {
+            list-style: none;
+            padding: 0 10px;
+            margin: 0;
+        }
+
+            .sidebar-nav li a {
+                display: flex;
+                align-items: center;
+                gap: 10px;
+                padding: 10px 12px;
+                border-radius: 10px;
+                color: var(--sidebar-text);
+                text-decoration: none;
+                font-size: 0.85rem;
+                font-weight: 500;
+                transition: all .18s;
+                margin-bottom: 2px;
+            }
+
+                .sidebar-nav li a:hover {
+                    background: var(--sidebar-hover);
+                    color: #ffffff;
+                }
+
+                .sidebar-nav li a.active {
+                    background: var(--sidebar-active);
+                    color: #ffffff;
+                    border-left: 3px solid var(--accent);
+                }
+
+        .sidebar-footer {
+            margin-top: auto;
+            padding: 16px 10px;
+            border-top: 1px solid var(--sidebar-border);
+        }
+
+            .sidebar-footer form button {
+                width: 100%;
+                background: rgba(229,52,74,0.1);
+                color: #f87171;
+                border: 1px solid rgba(229,52,74,0.22);
+                border-radius: 10px;
+                padding: 10px;
+                font-family: Arial, Helvetica, sans-serif,;
+                font-size: 0.82rem;
+                font-weight: 600;
+                cursor: pointer;
+                transition: all .18s;
+            }
+
+                .sidebar-footer form button:hover {
+                    background: #e5344a;
+                    color: #ffffff;
+                    border-color: #e5344a;
+                }
+
+        /* ── MAIN ── */
+        .main-content {
+            margin-left: var(--sidebar-width);
+            flex: 1;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .topbar {
+            background: var(--topbar-bg);
+            border-bottom: 1px solid var(--topbar-border);
+            padding: 14px 28px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            position: sticky;
+            top: 0;
+            z-index: 50;
+        }
+
+        .topbar-title {
+            font-family: Arial, Helvetica, sans-serif,;
+            font-size: 1.1rem;
+            font-weight: 400;
+            color: var(--ink);
+        }
+
+        .topbar-badge {
+            font-size: 0.72rem;
+            font-weight: 700;
+            color: var(--accent);
+            background: rgba(26,127,116,0.1);
+            padding: 3px 10px;
+            border-radius: 20px;
+        }
+
+        .sidebar-toggle {
+            display: none;
+            background: none;
+            border: none;
+            cursor: pointer;
+            padding: 4px;
+            flex-direction: column;
+            gap: 5px;
+        }
+
+            .sidebar-toggle span {
+                display: block;
+                width: 22px;
+                height: 2px;
+                background: var(--ink);
+                border-radius: 2px;
+            }
+
+        .sidebar-overlay {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,0.4);
+            z-index: 99;
+        }
+
+            .sidebar-overlay.active {
+                display: block;
+            }
+
+        .page-body {
+            padding: 28px;
+            flex: 1;
+        }
+
+        /* ── RESPONSIVE ── */
+        @@media (max-width: 900px) {
+            .sidebar {
+                transform: translateX(-100%);
+            }
+
+                .sidebar.open {
+                    transform: translateX(0);
+                }
+
+            .main-content {
+                margin-left: 0;
+            }
+
+            .sidebar-toggle {
+                display: flex;
+            }
+        }
+
+        @@media (max-width: 500px) {
+            .page-body {
+                padding: 16px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="layout-wrapper">
+
+        <aside class="sidebar" id="sidebar">
+            <div class="sidebar-brand">
+                <span>Counselor</span>
+            </div>
+            <ul class="sidebar-nav">
+                <li>
+                    <a asp-controller="Home" asp-action="Index">
+                        Dashboard
+                    </a>
+                </li>
+                <li>
+                    <a asp-controller="Appointments" asp-action="Create">Book Appointment</a>
+                </li>
+                <li>
+                    <a asp-controller="Appointments" asp-action="MyAppointments">My Appointments</a>
+                </li>
+                <li>
+                    <form asp-controller="Users" asp-action="Logout" method="post">
+                        @Html.AntiForgeryToken()
+                        <button type="submit" class="sidebar-logout">Logout</button>
+                    </form>
+                </li>
+
+            </ul>
+        </aside>
+
+        <div class="sidebar-overlay" id="sidebarOverlay"></div>
+
+        <div class="main-content">
+            <div class="topbar">
+                <div style="display:flex;align-items:center;gap:14px;">
+                    <button class="sidebar-toggle" id="sidebarToggle" aria-label="Toggle menu">
+                        <span></span><span></span><span></span>
+                    </button>
+                    <div class="topbar-title">@ViewData["Title"]</div>
+                </div>
+            </div>
+
+            <div class="page-body">
+                <main role="main" class="pb-3">
+                    @RenderBody()
+                </main>
+            </div>
+        </div>
+
+    </div>
+
+    <script src="@(Url.Content("~/lib/jquery/dist/jquery.min.js"))"></script>
+    <script src="@(Url.Content("~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"))"></script>
+    <script src="@(Url.Content("~/js/site.js"))"></script>
+    <script>
+        const toggle = document.getElementById('sidebarToggle');
+        const sidebar = document.getElementById('sidebar');
+        const overlay = document.getElementById('sidebarOverlay');
+        toggle.addEventListener('click', () => {
+            sidebar.classList.toggle('open');
+            overlay.classList.toggle('active');
+        });
+        overlay.addEventListener('click', () => {
+            sidebar.classList.remove('open');
+            overlay.classList.remove('active');
+        });
+    </script>
+    @await RenderSectionAsync("Scripts", required: false)
+</body>
+</html>

@@ -1,4 +1,4 @@
-﻿@model GCAMS.Models.CaseNotes.CaseNotes
+﻿@model GCAMS.Models.CaseNotes.CaseNotes 
 
 
 <style>
@@ -264,7 +264,10 @@
                 </div>
                 <div>
                     <label class="field-label">Session No.</label>
-                    <input asp-for="SessionNo" class="form-control" />
+                    <input asp-for="SessionNo" readonly class="form-control" />
+                    <span class="text-muted" style="font-size:12px;">
+                        @ViewBag.SessionCount
+                    </span>
                     <span asp-validation-for="SessionNo" class="text-danger" style="font-size:12px;"></span>
                 </div>
                 <div>

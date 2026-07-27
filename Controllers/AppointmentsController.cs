@@ -1,228 +1,250 @@
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
+using GCAMS.Models.Appointment;
+using GCAMS.Data;
 
-    using Microsoft.AspNetCore.Mvc;
-    using Microsoft.EntityFrameworkCore;
-    using GCAMS.Models.Appointment;
-    using GCAMS.Data;
+[Authorize] // must be logged in for anything in this controller
+public class AppointmentsController : Controller
+{
+    private readonly AppDbContext _context;
 
-    public class AppointmentsController : Controller
+    public AppointmentsController(AppDbContext context)
     {
-        private readonly AppDbContext _context;
+        _context = context;
+    }
 
-        public AppointmentsController(AppDbContext context)
+    // Only Admin/Counselor see the full list — students never get a "list everyone's appointments" view
+    [Authorize(Roles = "Admin,Counselor")]
+    public async Task<IActionResult> Index()
+    {
+        return View(await _context.Appointments.ToListAsync());
+    }
+
+    // Anyone logged in can view Details — but a Student can only view their OWN appointment
+    public async Task<IActionResult> Details(int? appointmentid)
+    {
+        if (appointmentid == null) return NotFound();
+
+        var appointment = await _context.Appointments
+            .FirstOrDefaultAsync(m => m.AppointmentID == appointmentid);
+        if (appointment == null) return NotFound();
+
+        if (User.IsInRole("Student"))
         {
-            _context = context;
+            var student = await _context.Students
+                .FirstOrDefaultAsync(s => s.StuID == User.Identity!.Name);
+
+            if (student == null || appointment.StudentsID != student.StudentsID)
+                return Forbid(); // not their appointment
         }
 
-        // GET: APPOINTMENTSS
-        public async Task<IActionResult> Index()    
+        return View(appointment);
+    }
+
+    // Anyone logged in can book — Student, Counselor, or Admin
+    public async Task<IActionResult> Create()
+    {
+        if (User.IsInRole("Student"))
         {
-            return View(await _context.Appointments.ToListAsync());
+            var student = await _context.Students
+                .FirstOrDefaultAsync(s => s.StuID == User.Identity!.Name);
+
+            if (student != null)
+            {
+                ViewBag.IsStudentBooking = true;
+                ViewBag.GradeLevel = student.GradeLevel;
+                ViewBag.Section = student.Section;
+
+                return View(new Appointments
+                {
+                    StudentsID = student.StudentsID,
+                    FullName = student.StuName,
+                    Email = student.Email ?? ""
+                });
+            }
         }
 
-        // GET: APPOINTMENTSS/Details/5
-        public async Task<IActionResult> Details(int? appointmentid)
+        ViewBag.IsStudentBooking = false;
+        return View();
+    }
+
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> Create([Bind("FullName,Email,ContactNumber,AppointmentDate,AppointmentType,Notes,StudentsID")] Appointments appointments)
+    {
+        if (User.IsInRole("Student"))
         {
-            if (appointmentid == null)
-            {
-                return NotFound();
-            }
+            var student = await _context.Students
+                .FirstOrDefaultAsync(s => s.StuID == User.Identity!.Name);
 
-            var appointments = await _context.Appointments
-                .FirstOrDefaultAsync(m => m.AppointmentID == appointmentid);
-            if (appointments == null)
-            {
-                return NotFound();
-            }
+            if (student == null) return Forbid();
 
+            // Never trust the posted values for a student — overwrite with their real record
+            appointments.StudentsID = student.StudentsID;
+            appointments.FullName = student.StuName;
+            appointments.Email = student.Email ?? "";
+        }
+
+        ModelState.Remove("Status");
+        ModelState.Remove("CreatedAt");
+        ModelState.Remove("UpdatedAt");
+
+        appointments.Status = "Pending";
+        appointments.CreatedAt = DateTime.Now;
+        appointments.UpdatedAt = null;
+
+        var hasConflict = await _context.Appointments.AnyAsync(a =>
+            a.StudentsID == appointments.StudentsID &&
+            a.AppointmentDate.Date == appointments.AppointmentDate.Date &&
+            a.Status != "Cancelled" &&
+            a.Status != "Rejected");
+
+        if (hasConflict)
+        {
+            ModelState.AddModelError("", "This student already has an appointment scheduled on this date.");
             return View(appointments);
         }
-
-        // GET: APPOINTMENTSS/Create
-        public IActionResult Create()
-        {
-            return View();
-        }
-
-        // POST: APPOINTMENTSS/Create
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("FullName,Email,ContactNumber,AppointmentDate,AppointmentType,Notes,StudentsID")] Appointments appointments)
-        {
-            ModelState.Remove("Status");
-            ModelState.Remove("CreatedAt");
-            ModelState.Remove("UpdatedAt");
-
-            appointments.Status = "Pending";
-            appointments.CreatedAt = DateTime.Now;
-            appointments.UpdatedAt = null;
-
-            // Prevent double-booking: same student, same day, not already cancelled/rejected
-            var hasConflict = await _context.Appointments.AnyAsync(a =>
-                a.StudentsID == appointments.StudentsID &&
-                a.AppointmentDate.Date == appointments.AppointmentDate.Date &&
-                a.Status != "Cancelled" &&
-                a.Status != "Rejected");
-
-            if (hasConflict)
-            {
-                ModelState.AddModelError("", "This student already has an appointment scheduled on this date.");
-                return View(appointments);
-            }
-
-            if (ModelState.IsValid)
-            {
-                _context.Add(appointments);
-                await _context.SaveChangesAsync();
-                return RedirectToAction(nameof(Index));
-            }
-            return View(appointments);
-        }
-
-        // GET: APPOINTMENTSS/Edit/5
-        public async Task<IActionResult> Edit(int? appointmentid)
-        {
-            if (appointmentid == null)
-            {
-                return NotFound();
-            }
-
-            var appointments = await _context.Appointments.FindAsync(appointmentid);
-            if (appointments == null)
-            {
-                return NotFound();
-            }
-            return View(appointments);
-        }
-
-        // POST: APPOINTMENTSS/Edit/5
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int? appointmentid, [Bind("AppointmentID,FullName,Email,AppointmentDate,AppointmentType,Notes,Status,CreatedAt,StudentsID")]  Appointments appointments)
-        {
-            if (appointmentid != appointments.AppointmentID)
-            {
-                return NotFound();
-            }
-
-            //Set the UpdatedAt property to the current date and time when editing an appointment
-            appointments.UpdatedAt = DateTime.Now;
-            appointments.Status = appointments.Status ?? "Pending"; // Ensure Status is not null
 
         if (ModelState.IsValid)
-            {
-                try
-                {
-                    _context.Update(appointments);
-                    await _context.SaveChangesAsync();
-                }
-                catch (DbUpdateConcurrencyException)
-                {
-                    if (!AppointmentsExists(appointments.AppointmentID))
-                    {
-                        return NotFound();
-                    }
-                    else
-                    {
-                        throw;
-                    }
-                }
-                return RedirectToAction(nameof(Index));
-            }
-            return View(appointments);
-        }
-
-        // GET: APPOINTMENTSS/Delete/5
-        public async Task<IActionResult> Delete(int? appointmentid)
         {
-            if (appointmentid == null)
-            {
-                return NotFound();
-            }
-
-            var appointments = await _context.Appointments
-                .FirstOrDefaultAsync(m => m.AppointmentID == appointmentid);
-            if (appointments == null)
-            {
-                return NotFound();
-            }
-
-            return View(appointments);
-        }
-
-        // POST: APPOINTMENTSS/Delete/5
-        [HttpPost, ActionName("Delete")]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> DeleteConfirmed(int? appointmentid)
-        {
-            var appointments = await _context.Appointments.FindAsync(appointmentid);
-            if (appointments != null)
-            {
-                _context.Appointments.Remove(appointments);
-            }
-
+            _context.Add(appointments);
             await _context.SaveChangesAsync();
+
+            if (User.IsInRole("Student"))
+                return RedirectToAction(nameof(Details), new { appointmentid = appointments.AppointmentID });
+
             return RedirectToAction(nameof(Index));
         }
 
-        private bool AppointmentsExists(int? appointmentid)
-        {
-            return _context.Appointments.Any(e => e.AppointmentID == appointmentid);
-        }
-
-        //Get students by ID
-
-        [HttpGet]
-        public async Task<IActionResult> GetStudentByStuID(string? stuId)
-        {
-            if (string.IsNullOrWhiteSpace(stuId))
-                return BadRequest("Student ID is required.");
-
-            // Search by the school-issued StuID string, not the database PK
-            var student = await _context.Students
-                .FirstOrDefaultAsync(s => s.StuID == stuId.Trim());
-
-            if (student == null)
-                return NotFound($"Student with ID '{stuId}' not found.");
-
-            return Json(new
-            {
-                studentsID = student.StudentsID, // DB primary key (int) � stored in hidden field to link the appointment
-                fullName = student.StuName,
-                email = student.Email ?? "",
-                gradeLevel = student.GradeLevel,
-                section = student.Section
-            });
-        }
-
-        [HttpPost]
-        public async Task<IActionResult> UpdateStatus([FromBody] UpdateStatusRequest request)
-        {
-            var appointment = await _context.Appointments.FindAsync(request.AppointmentId);
-
-            if (appointment == null)
-                return NotFound();
-
-            // Only accept known status values � reject anything else to prevent tampering
-            var validStatuses = new[] { "Pending", "Confirmed", "Cancelled", "Completed", "Missed" };
-            if (!validStatuses.Contains(request.NewStatus))
-                return BadRequest("Invalid status value.");
-
-            appointment.Status = request.NewStatus;
-            appointment.UpdatedAt = DateTime.Now; // record when the status was last changed
-
-            await _context.SaveChangesAsync();
-            return Ok();
-        }
-
-        // Simple DTO to receive the JSON body from the fetch() call
-        public class UpdateStatusRequest
-        {
-            public int AppointmentId { get; set; }
-            public string NewStatus { get; set; } = string.Empty;
-        }
-
+        return View(appointments);
     }
+
+    // ── Everything below: Admin/Counselor only — students get 403 if they try the URL directly ──
+
+    [Authorize(Roles = "Admin,Counselor")]
+    public async Task<IActionResult> Edit(int? appointmentid)
+    {
+        if (appointmentid == null) return NotFound();
+        var appointments = await _context.Appointments.FindAsync(appointmentid);
+        if (appointments == null) return NotFound();
+        return View(appointments);
+    }
+
+    [Authorize(Roles = "Admin,Counselor")]
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> Edit(int? appointmentid, [Bind("AppointmentID,FullName,Email,AppointmentDate,AppointmentType,Notes,Status,CreatedAt,StudentsID")] Appointments appointments)
+    {
+        if (appointmentid != appointments.AppointmentID) return NotFound();
+
+        appointments.UpdatedAt = DateTime.Now;
+        appointments.Status = appointments.Status ?? "Pending";
+
+        if (ModelState.IsValid)
+        {
+            try
+            {
+                _context.Update(appointments);
+                await _context.SaveChangesAsync();
+            }
+            catch (DbUpdateConcurrencyException)
+            {
+                if (!AppointmentsExists(appointments.AppointmentID)) return NotFound();
+                throw;
+            }
+            return RedirectToAction(nameof(Index));
+        }
+        return View(appointments);
+    }
+
+    [Authorize(Roles = "Admin,Counselor")]
+    public async Task<IActionResult> Delete(int? appointmentid)
+    {
+        if (appointmentid == null) return NotFound();
+        var appointments = await _context.Appointments.FirstOrDefaultAsync(m => m.AppointmentID == appointmentid);
+        if (appointments == null) return NotFound();
+        return View(appointments);
+    }
+
+    [Authorize(Roles = "Admin,Counselor")]
+    [HttpPost, ActionName("Delete")]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> DeleteConfirmed(int? appointmentid)
+    {
+        var appointments = await _context.Appointments.FindAsync(appointmentid);
+        if (appointments != null)
+            _context.Appointments.Remove(appointments);
+
+        await _context.SaveChangesAsync();
+        return RedirectToAction(nameof(Index));
+    }
+
+    private bool AppointmentsExists(int? appointmentid)
+    {
+        return _context.Appointments.Any(e => e.AppointmentID == appointmentid);
+    }
+
+    // Only Admin/Counselor use the manual lookup — students never need this, they're auto-filled
+    [Authorize(Roles = "Admin,Counselor")]
+    [HttpGet]
+    public async Task<IActionResult> GetStudentByStuID(string? stuId)
+    {
+        if (string.IsNullOrWhiteSpace(stuId))
+            return BadRequest("Student ID is required.");
+
+        var student = await _context.Students.FirstOrDefaultAsync(s => s.StuID == stuId.Trim());
+        if (student == null)
+            return NotFound($"Student with ID '{stuId}' not found.");
+
+        return Json(new
+        {
+            studentsID = student.StudentsID,
+            fullName = student.StuName,
+            email = student.Email ?? "",
+            gradeLevel = student.GradeLevel,
+            section = student.Section
+        });
+    }
+
+    [Authorize(Roles = "Admin,Counselor")]
+    [HttpPost]
+    public async Task<IActionResult> UpdateStatus([FromBody] UpdateStatusRequest request)
+    {
+        var appointment = await _context.Appointments.FindAsync(request.AppointmentId);
+        if (appointment == null) return NotFound();
+
+        var validStatuses = new[] { "Pending", "Confirmed", "Cancelled", "Completed", "Missed" };
+        if (!validStatuses.Contains(request.NewStatus))
+            return BadRequest("Invalid status value.");
+
+        appointment.Status = request.NewStatus;
+        appointment.UpdatedAt = DateTime.Now;
+
+        await _context.SaveChangesAsync();
+        return Ok();
+    }
+
+    public async Task<IActionResult> MyAppointments()
+    {
+        if (!User.IsInRole("Student")) return Forbid();
+
+        var student = await _context.Students
+            .FirstOrDefaultAsync(s => s.StuID == User.Identity!.Name);
+
+        if (student == null) return NotFound();
+
+        var appointments = await _context.Appointments
+            .Where(a => a.StudentsID == student.StudentsID)
+            .OrderByDescending(a => a.AppointmentDate)
+            .ToListAsync();
+
+        return View(appointments);
+    }
+
+    public class UpdateStatusRequest
+    {
+        public int AppointmentId { get; set; }
+        public string NewStatus { get; set; } = string.Empty;
+    }
+}
