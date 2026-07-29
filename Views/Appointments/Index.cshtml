@@ -173,7 +173,7 @@
                             <select class="status-select status-dropdown"
                                     data-id="@item.AppointmentID"
                                     data-current="@item.Status">
-                                @foreach (var status in new[] { "Pending", "Confirmed", "Cancelled", "Completed", "Missed" })
+                                @foreach (var status in new[] { "Pending", "Confirmed", "Rejected", "Completed", "Missed" })
                                 {
                                     <option value="@status" selected="@(item.Status == status ? "selected" : null)">
                                         @status
@@ -192,7 +192,20 @@
                                 {
                                     <span class="action-disabled" title="Only pending appointments can be edited">✏️</span>
                                 }
-                                <a asp-action="Delete" asp-route-appointmentid="@item.AppointmentID" class="del">🗑</a>
+                                @if (item.Status == "Pending" || item.Status == "Confirmed")
+                                {
+                                    <form asp-action="RejectAppointment" method="post" onsubmit="return confirm('Reject this appointment?');" style="display:inline;">
+                                        @Html.AntiForgeryToken()
+                                        <input type="hidden" name="appointmentid" value="@item.AppointmentID" />
+                                        <button type="submit" class="del" style="background:none;border:none;cursor:pointer;font:inherit;padding:0;">
+                                            ✕ Reject
+                                        </button>
+                                    </form>
+                                }
+                                else
+                                {
+                                    <span class="action-disabled" title="Only pending or confirmed appointments can be rejected">✕ Reject</span>
+                                }
                             </div>
                         </td>
                     </tr>

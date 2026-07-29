@@ -53,8 +53,10 @@
 
             //Link to Student
             public int? StudentsID { get; set; }
-             public Students.Students? Student { get; set; }
-        }
+
+            [ForeignKey(nameof(StudentsID))]
+            public Students.Students? Student { get; set; }
+    }
 
         public class FutureDateAttribute : ValidationAttribute
         {

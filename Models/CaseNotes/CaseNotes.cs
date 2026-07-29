@@ -1,8 +1,9 @@
 ﻿using GCAMS.Models.Appointment;
+using GCAMS.Models.Students;
 using Microsoft.AspNetCore.Mvc.ModelBinding.Validation;
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 using System.Globalization;
-using GCAMS.Models.Students;
 
 namespace GCAMS.Models.CaseNotes
 {
@@ -16,8 +17,8 @@ namespace GCAMS.Models.CaseNotes
         public int StudentsID { get; set; }
 
         [ValidateNever]
+        [ForeignKey(nameof(StudentsID))]
         public Students.Students Student { get; set; }
-
         //Name of Counselee
         [Required(ErrorMessage = "Full name is required")]
         [StringLength(100)]

@@ -54,15 +54,15 @@ namespace GCAMS.Data
             //the related records in FamilyBackground,
             //EmergencyContact, EducationalBackground,
             //and HealthInformation will also be deleted.
-            
-            
+
+
             //FamilyBackground
             modelBuilder.Entity<Students>()
                 .HasOne(s => s.FamilyBackground)
                 .WithOne(fb => fb.Student)
                 .HasForeignKey<FamilyBackground>(fb => fb.StudentsID)
                 .IsRequired(false)
-                .OnDelete(DeleteBehavior.Cascade); 
+                .OnDelete(DeleteBehavior.Cascade);
 
 
             //EmergencyContact
@@ -71,7 +71,7 @@ namespace GCAMS.Data
                 .WithOne(ec => ec.Student)
                 .HasForeignKey<EmergencyContact>(ec => ec.StudentsID)
                 .IsRequired(false)
-                .OnDelete(DeleteBehavior.Cascade); 
+                .OnDelete(DeleteBehavior.Cascade);
 
             //EducationalBackground
             modelBuilder.Entity<Students>()
@@ -94,6 +94,48 @@ namespace GCAMS.Data
                 .HasOne(c => c.Counselor)
                 .WithMany(c => c.ContactNumbers)
                 .HasForeignKey(c => c.CounselorID)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            // Appointments
+            modelBuilder.Entity<Appointments>()
+                .HasOne(a => a.Student)
+                .WithMany()
+                .HasForeignKey(a => a.StudentsID)
+                .OnDelete(DeleteBehavior.Cascade);  
+
+            // StudentContactNumber
+            modelBuilder.Entity<StudentContactNumber>()
+                .HasOne(scn => scn.Student)
+                .WithMany(s => s.ContactNumbers)
+                .HasForeignKey(scn => scn.StudentsID)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            // AnecRecs
+            modelBuilder.Entity<AnecRecs>()
+                .HasOne(ar => ar.Student)
+                .WithMany()
+                .HasForeignKey(ar => ar.StudentsID)
+                .OnDelete(DeleteBehavior.Cascade);
+
+
+            // CaseNotes
+            modelBuilder.Entity<CaseNotes>()
+                .HasOne(cn => cn.Student)
+                .WithMany()
+                .HasForeignKey(cn => cn.StudentsID)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            // FamilyContactNumber / EmergencyContactNumber
+            modelBuilder.Entity<FamilyContactNumber>()
+                .HasOne(fcn => fcn.FamilyBackground)
+                .WithMany(fb => fb.ContactNumbers)
+                .HasForeignKey(fcn => fcn.FamilyBackgroundID)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            modelBuilder.Entity<EmergencyContactNumber>()
+                .HasOne(ecn => ecn.EmergencyContact)
+                .WithMany(ec => ec.ContactNumbers)
+                .HasForeignKey(ecn => ecn.EmergencyContactID)
                 .OnDelete(DeleteBehavior.Cascade);
         }
     }

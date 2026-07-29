@@ -4,7 +4,9 @@ using Microsoft.EntityFrameworkCore;
 using GCAMS.Models.Appointment;
 using GCAMS.Data;
 
-[Authorize] // must be logged in for anything in this controller
+// must be logged in for anything in this controller
+
+//[Authorize]
 public class AppointmentsController : Controller
 {
     private readonly AppDbContext _context;
@@ -15,7 +17,7 @@ public class AppointmentsController : Controller
     }
 
     // Only Admin/Counselor see the full list — students never get a "list everyone's appointments" view
-    [Authorize(Roles = "Admin,Counselor")]
+    //[Authorize(Roles = "Admin,Counselor")]
     public async Task<IActionResult> Index()
     {
         return View(await _context.Appointments.ToListAsync());
@@ -136,62 +138,152 @@ public class AppointmentsController : Controller
         return View(appointments);
     }
 
-    // ── Everything below: Admin/Counselor only — students get 403 if they try the URL directly ──
 
-    [Authorize(Roles = "Admin,Counselor")]
     public async Task<IActionResult> Edit(int? appointmentid)
     {
         if (appointmentid == null) return NotFound();
-        var appointments = await _context.Appointments.FindAsync(appointmentid);
-        if (appointments == null) return NotFound();
-        return View(appointments);
+
+        var appointment = await _context.Appointments.FindAsync(appointmentid);
+        if (appointment == null) return NotFound();
+
+        if (User.IsInRole("Student"))
+        {
+            var student = await _context.Students
+                .FirstOrDefaultAsync(s => s.StuID == User.Identity!.Name);
+
+            if (student == null || appointment.StudentsID != student.StudentsID)
+                return Forbid();
+
+            if (appointment.Status != "Pending" && appointment.Status != "Confirmed")
+            {
+                TempData["Error"] = "This appointment can no longer be edited.";
+                return RedirectToAction(nameof(MyAppointments));
+            }
+        }
+
+        ViewBag.IsStudentEdit = User.IsInRole("Student");
+        return View(appointment);
     }
 
-    [Authorize(Roles = "Admin,Counselor")]
     [HttpPost]
     [ValidateAntiForgeryToken]
-    public async Task<IActionResult> Edit(int? appointmentid, [Bind("AppointmentID,FullName,Email,AppointmentDate,AppointmentType,Notes,Status,CreatedAt,StudentsID")] Appointments appointments)
+    public async Task<IActionResult> Edit(int appointmentid,
+        [Bind("AppointmentID,FullName,Email,AppointmentDate,AppointmentType,Notes,StudentsID")] Appointments posted)
     {
-        if (appointmentid != appointments.AppointmentID) return NotFound();
+        if (appointmentid != posted.AppointmentID) return NotFound();
 
-        appointments.UpdatedAt = DateTime.Now;
-        appointments.Status = appointments.Status ?? "Pending";
+        var existing = await _context.Appointments.FindAsync(appointmentid);
+        if (existing == null) return NotFound();
 
-        if (ModelState.IsValid)
+        bool isStudent = User.IsInRole("Student");
+
+        if (isStudent)
         {
-            try
-            {
-                _context.Update(appointments);
-                await _context.SaveChangesAsync();
-            }
-            catch (DbUpdateConcurrencyException)
-            {
-                if (!AppointmentsExists(appointments.AppointmentID)) return NotFound();
-                throw;
-            }
-            return RedirectToAction(nameof(Index));
+            var student = await _context.Students
+                .FirstOrDefaultAsync(s => s.StuID == User.Identity!.Name);
+
+            if (student == null || existing.StudentsID != student.StudentsID)
+                return Forbid();
+
+            if (existing.Status != "Pending" && existing.Status != "Confirmed")
+                return Forbid(); // can't touch a closed appointment
+
+            // Students can only change the appointment details — never identity, never Status
+            existing.AppointmentDate = posted.AppointmentDate;
+            existing.AppointmentType = posted.AppointmentType;
+            existing.Notes = posted.Notes;
         }
-        return View(appointments);
+        else
+        {
+            existing.FullName = posted.FullName;
+            existing.Email = posted.Email;
+            existing.AppointmentDate = posted.AppointmentDate;
+            existing.AppointmentType = posted.AppointmentType;
+            existing.Notes = posted.Notes;
+            // Status is intentionally NOT editable here anymore — use Reject / UpdateStatus instead
+        }
+
+        existing.UpdatedAt = DateTime.Now;
+
+        if (!ModelState.IsValid)
+        {
+            ViewBag.IsStudentEdit = isStudent;
+            return View(posted);
+        }
+
+        try
+        {
+            await _context.SaveChangesAsync();
+        }
+        catch (DbUpdateConcurrencyException)
+        {
+            if (!AppointmentsExists(appointmentid)) return NotFound();
+            throw;
+        }
+
+        return RedirectToAction(isStudent ? nameof(MyAppointments) : nameof(Index));
     }
 
-    [Authorize(Roles = "Admin,Counselor")]
+
+    //[Authorize(Roles = "Student")]
     public async Task<IActionResult> Delete(int? appointmentid)
     {
         if (appointmentid == null) return NotFound();
-        var appointments = await _context.Appointments.FirstOrDefaultAsync(m => m.AppointmentID == appointmentid);
+
+        var appointments = await _context.Appointments
+            .FirstOrDefaultAsync(m => m.AppointmentID == appointmentid);
         if (appointments == null) return NotFound();
+
+        if (User.IsInRole("Student"))
+        {
+            var student = await _context.Students
+                .FirstOrDefaultAsync(s => s.StuID == User.Identity!.Name);
+
+            if (student == null || appointments.StudentsID != student.StudentsID)
+                return Forbid();
+
+            if (appointments.Status != "Pending" && appointments.Status != "Confirmed")
+            {
+                TempData["Error"] = "This appointment can no longer be cancelled.";
+                return RedirectToAction(nameof(MyAppointments));
+            }
+        }
+
         return View(appointments);
     }
 
-    [Authorize(Roles = "Admin,Counselor")]
     [HttpPost, ActionName("Delete")]
+    //[Authorize(Roles = "Student")]
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> DeleteConfirmed(int? appointmentid)
     {
         var appointments = await _context.Appointments.FindAsync(appointmentid);
-        if (appointments != null)
-            _context.Appointments.Remove(appointments);
+        if (appointments == null) return NotFound();
 
+        if (User.IsInRole("Student"))
+        {
+            var student = await _context.Students
+                .FirstOrDefaultAsync(s => s.StuID == User.Identity!.Name);
+
+            if (student == null || appointments.StudentsID != student.StudentsID)
+                return Forbid();
+
+            if (appointments.Status != "Pending" && appointments.Status != "Confirmed")
+            {
+                TempData["Error"] = "This appointment can no longer be cancelled.";
+                return RedirectToAction(nameof(MyAppointments));
+            }
+
+            appointments.Status = "Cancelled";
+            appointments.UpdatedAt = DateTime.Now;
+            await _context.SaveChangesAsync();
+
+            TempData["Info"] = "Your appointment has been cancelled.";
+            return RedirectToAction(nameof(MyAppointments));
+        }
+
+        // Admin/Counselor still hitting this endpoint = real delete (e.g. cleaning up bad data)
+        _context.Appointments.Remove(appointments);
         await _context.SaveChangesAsync();
         return RedirectToAction(nameof(Index));
     }
@@ -202,7 +294,7 @@ public class AppointmentsController : Controller
     }
 
     // Only Admin/Counselor use the manual lookup — students never need this, they're auto-filled
-    [Authorize(Roles = "Admin,Counselor")]
+    //[Authorize(Roles = "Admin,Counselor")]
     [HttpGet]
     public async Task<IActionResult> GetStudentByStuID(string? stuId)
     {
@@ -223,14 +315,14 @@ public class AppointmentsController : Controller
         });
     }
 
-    [Authorize(Roles = "Admin,Counselor")]
+    //[Authorize(Roles = "Admin,Counselor")]
     [HttpPost]
     public async Task<IActionResult> UpdateStatus([FromBody] UpdateStatusRequest request)
     {
         var appointment = await _context.Appointments.FindAsync(request.AppointmentId);
         if (appointment == null) return NotFound();
 
-        var validStatuses = new[] { "Pending", "Confirmed", "Cancelled", "Completed", "Missed" };
+        var validStatuses = new[] { "Pending", "Confirmed", "Rejected", "Completed", "Missed", "Cancelled" };
         if (!validStatuses.Contains(request.NewStatus))
             return BadRequest("Invalid status value.");
 
@@ -240,6 +332,29 @@ public class AppointmentsController : Controller
         await _context.SaveChangesAsync();
         return Ok();
     }
+
+
+    //[Authorize(Roles = "Admin,Counselor")]
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> RejectAppointment(int appointmentid)
+    {
+        var appointment = await _context.Appointments.FindAsync(appointmentid);
+        if (appointment == null) return NotFound();
+
+        if (appointment.Status != "Pending" && appointment.Status != "Confirmed")
+        {
+            TempData["Error"] = "Only pending or confirmed appointments can be rejected.";
+            return RedirectToAction(nameof(Index));
+        }
+
+        appointment.Status = "Rejected";
+        appointment.UpdatedAt = DateTime.Now;
+        await _context.SaveChangesAsync();
+
+        return RedirectToAction(nameof(Index));
+    }
+
 
     public async Task<IActionResult> MyAppointments()
     {

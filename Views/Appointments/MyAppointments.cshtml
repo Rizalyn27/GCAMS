@@ -108,6 +108,17 @@
                     <a asp-controller="Appointments" asp-action="Details" asp-route-appointmentid="@appt.AppointmentID">
                         View
                     </a>
+
+                    @if (appt.Status == "Pending" || appt.Status == "Confirmed")
+                    {
+                        <a asp-controller="Appointments" asp-action="Edit" asp-route-appointmentid="@appt.AppointmentID">
+                            Edit
+                        </a>
+                        <a asp-controller="Appointments" asp-action="Delete" asp-route-appointmentid="@appt.AppointmentID"
+                           style="color:#991b1b;">
+                            Cancel
+                        </a>
+                    }
                 </div>
             </div>
         }

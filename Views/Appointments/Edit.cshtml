@@ -137,12 +137,12 @@
             <div class="form-grid">
                 <div>
                     <label asp-for="FullName" class="field-label"></label>
-                    <input asp-for="FullName" class="form-control" />
+                    <input asp-for="FullName" class="form-control" readonly="@(ViewBag.IsStudentEdit == true)" />
                     <span asp-validation-for="FullName" class="text-danger" style="font-size:12px;"></span>
                 </div>
                 <div>
                     <label asp-for="Email" class="field-label"></label>
-                    <input asp-for="Email" class="form-control" />
+                    <input asp-for="Email" class="form-control" readonly="@(ViewBag.IsStudentEdit == true)" />
                     <span asp-validation-for="Email" class="text-danger" style="font-size:12px;"></span>
                 </div>
             </div>
@@ -184,7 +184,7 @@
             </div>
         </div>
 
-        <div class="form-card">
+     @*    <div class="form-card">
             <div class="form-section-title">
                 <i class="bi bi-info-circle"></i> Status
             </div>
@@ -198,11 +198,18 @@
                 </select>
                 <span asp-validation-for="Status" class="text-danger" style="font-size:12px;"></span>
             </div>
-        </div>
+        </div> *@
 
         <div class="form-footer">
             <button type="submit" class="btn-save">Save changes</button>
-            <a asp-action="Index" class="btn-cancel">Cancel</a>
+            @if (User.IsInRole("Student"))
+            {
+                <a asp-action="MyAppointments" class="btn-back">Cancel</a>
+            }
+            else
+            {
+                <a asp-action="Index" class="btn-back">Cancel</a>
+            }
         </div>
     </form>
 </div>

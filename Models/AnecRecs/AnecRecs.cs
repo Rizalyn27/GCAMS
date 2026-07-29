@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc.ModelBinding.Validation;
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace GCAMS.Models.AnecRecs
 {
@@ -11,6 +12,7 @@ namespace GCAMS.Models.AnecRecs
         public int StudentsID { get; set; }
 
         [ValidateNever]
+        [ForeignKey(nameof(StudentsID))]
         public Students.Students Student { get; set; }
 
         [Required]
