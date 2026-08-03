@@ -1,9 +1,5 @@
 @model GCAMS.Models.Appointment.Appointments
 
-<h1>Delete</h1>
-
-<h3>Are you sure you want to delete this?</h3>
-
 <div>
     <style>
         @@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Manrope:wght@600;700&display=swap');
@@ -89,22 +85,37 @@
             color: #374151;
         }
 
-        .detail-actions {
+        .warn-banner {
+            background: #fef2f2;
+            border: 1px solid #fecaca;
+            border-radius: 10px;
+            padding: 12px 16px;
+            font-family: 'Inter', sans-serif;
+            font-size: 13px;
+            color: #991b1b;
+            margin-bottom: 1.25rem;
+        }
+
+        .form-footer {
             display: flex;
             gap: 8px;
             margin-top: 1.5rem;
         }
 
-        .btn-edit {
-            background: #1B5E20;
-            color: #fff;
+        .btn-danger {
+            background: #dc2626;
             border: none;
             border-radius: 8px;
             padding: 9px 20px;
             font-size: 14px;
             font-family: 'Inter', sans-serif;
-            text-decoration: none;
+            color: #fff;
+            cursor: pointer;
         }
+
+            .btn-danger:hover {
+                background: #b91c1c;
+            }
 
         .btn-back {
             background: #fff;
@@ -117,23 +128,17 @@
             text-decoration: none;
         }
 
-        .btn-edit:hover {
-            background: #1648c0;
-            color: #fff;
-            text-decoration: none;
-        }
-
-        .btn-back:hover {
-            background: #f9fafb;
-            text-decoration: none;
-        }
+            .btn-back:hover {
+                background: #f9fafb;
+                text-decoration: none;
+            }
 
         .page-title {
             font-family: 'Manrope', sans-serif;
             font-size: 22px;
             font-weight: 700;
             color: #111;
-            margin-bottom: 1.5rem;
+            margin-bottom: 0.5rem;
         }
 
         @@media (max-width: 768px) {
@@ -144,7 +149,11 @@
     </style>
 
     <div class="container-lg py-4" style="max-width: 720px;">
-        <p class="page-title">Appointment Details</p>
+        <p class="page-title">Cancel this appointment?</p>
+
+        <div class="warn-banner">
+            This can't be undone. You'll need to book a new appointment if you change your mind.
+        </div>
 
         <div class="detail-card">
             <div class="detail-section-title">
@@ -184,7 +193,7 @@
 
         <div class="detail-card">
             <div class="detail-section-title">
-                <i class="bi bi-info-circle"></i> Status & Audit
+                <i class="bi bi-info-circle"></i> Status
             </div>
             <div class="detail-grid">
                 <div class="detail-field">
@@ -194,22 +203,19 @@
                     </div>
                 </div>
                 <div class="detail-field">
-                    <label>Linked Student ID</label>
-                    <div class="value">@(Model?.StudentsID?.ToString() ?? "—")</div>
-                </div>
-                <div class="detail-field">
                     <label>@Html.DisplayNameFor(m => m.CreatedAt)</label>
                     <div class="value">@Model?.CreatedAt.ToString("MMM d, yyyy h:mm tt")</div>
                 </div>
-                <div class="detail-field">
-                    <label>@Html.DisplayNameFor(m => m.UpdatedAt)</label>
-                    <div class="value">@(Model?.UpdatedAt?.ToString("MMM d, yyyy h:mm tt") ?? "—")</div>
-                </div>
             </div>
         </div>
-    <form asp-action="Delete">
-        <input type="hidden" asp-for="AppointmentID" />
-        <input type="submit" value="Delete" class="btn btn-danger" /> |
-        <a asp-action="Index">Back to List</a>
-    </form>
+
+        <form asp-action="Delete" method="post">
+            @Html.AntiForgeryToken()
+            <input type="hidden" asp-for="AppointmentID" />
+            <div class="form-footer">
+                <input type="submit" value="Yes, cancel appointment" class="btn-danger" />
+                <a asp-action="MyAppointments" class="btn-back">Go back</a>
+            </div>
+        </form>
+    </div>
 </div>

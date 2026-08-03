@@ -1,22 +1,145 @@
 ﻿@{
     Layout = null;
 }
-@if (ViewBag.Forced == true)
-{
-    <p>You must set a new password before continuing.</p>
-}
-<form method="post">
-    @Html.AntiForgeryToken()
-    <input type="password" name="currentPassword" placeholder="Current Password" />
-    <input type="password" name="newPassword" placeholder="New Password" />
-    <input type="password" name="confirmPassword" placeholder="Confirm New Password" />
-    <button type="submit">Change Password</button>
-</form>
-@if (ViewBag.ErrorMessage != null)
-{
-    <p style="color:red">@ViewBag.ErrorMessage</p>
-}
-@if (ViewBag.SuccessMessage != null)
-{
-    <p style="color:green">@ViewBag.SuccessMessage</p>
-}
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <title>Change Password</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet" />
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background: #f9fafb;
+            margin: 0;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .auth-card {
+            background: #fff;
+            border: 1px solid #e5e7eb;
+            border-radius: 12px;
+            padding: 2rem;
+            width: 100%;
+            max-width: 360px;
+        }
+
+        .auth-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: #111;
+            margin: 0 0 0.75rem;
+            text-align: center;
+        }
+
+        .auth-notice {
+            font-size: 13px;
+            color: #92400e;
+            background: #fef3c7;
+            border-radius: 8px;
+            padding: 8px 12px;
+            margin-bottom: 1rem;
+            text-align: center;
+        }
+
+        input[type="password"], input[type="text"].pw-field {
+            width: 100%;
+            box-sizing: border-box;
+            font-size: 14px;
+            font-family: 'Inter', sans-serif;
+            border: 1px solid #d1d5db;
+            border-radius: 8px;
+            padding: 9px 12px;
+            margin-bottom: 10px;
+        }
+
+            input[type="password"]:focus, input[type="text"].pw-field:focus {
+                outline: none;
+                border-color: #1a56db;
+                box-shadow: 0 0 0 3px rgba(26,86,219,0.1);
+            }
+
+        .show-pw {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 13px;
+            color: #6b7280;
+            margin: -2px 0 12px;
+        }
+
+            .show-pw input {
+                margin: 0;
+            }
+
+        button[type="submit"] {
+            width: 100%;
+            background: #1B5E20;
+            color: #fff;
+            border: none;
+            border-radius: 8px;
+            padding: 10px;
+            font-size: 14px;
+            font-weight: 500;
+            font-family: 'Inter', sans-serif;
+            cursor: pointer;
+            margin-top: 4px;
+        }
+
+            button[type="submit"]:hover {
+                background: #164a1a;
+            }
+
+        .msg {
+            font-size: 13px;
+            text-align: center;
+            margin-top: 12px;
+        }
+    </style>
+</head>
+<body>
+    <div class="auth-card">
+        <p class="auth-title">Change Password</p>
+
+        @if (ViewBag.Forced == true)
+        {
+            <div class="auth-notice">You must set a new password before continuing.</div>
+        }
+
+        <form method="post">
+            @Html.AntiForgeryToken()
+            <input type="password" name="currentPassword" class="pw-field" placeholder="Current Password" />
+            <input type="password" name="newPassword" class="pw-field" placeholder="New Password" />
+            <input type="password" name="confirmPassword" class="pw-field" placeholder="Confirm New Password" />
+
+            <label class="show-pw">
+                <input type="checkbox" id="showPw" />
+                Show password
+            </label>
+
+            <button type="submit">Change Password</button>
+        </form>
+
+        @if (ViewBag.ErrorMessage != null)
+        {
+            <p class="msg" style="color:#dc2626;">@ViewBag.ErrorMessage</p>
+        }
+        @if (ViewBag.SuccessMessage != null)
+        {
+            <p class="msg" style="color:#065f46;">@ViewBag.SuccessMessage</p>
+        }
+    </div>
+
+    <script>
+        document.getElementById('showPw').addEventListener('change', function () {
+            var type = this.checked ? 'text' : 'password';
+            document.querySelectorAll('.pw-field').forEach(function (el) {
+                el.type = type;
+            });
+        });
+    </script>
+</body>
+</html>

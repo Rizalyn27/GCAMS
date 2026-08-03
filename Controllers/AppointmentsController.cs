@@ -91,9 +91,11 @@ public class AppointmentsController : Controller
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> Create([Bind("FullName,Email,ContactNumber,AppointmentDate,AppointmentType,Notes,StudentsID")] Appointments appointments)
     {
+        GCAMS.Models.Students.Students? student = null;
+
         if (User.IsInRole("Student"))
         {
-            var student = await _context.Students
+            student = await _context.Students
                 .FirstOrDefaultAsync(s => s.StuID == User.Identity!.Name);
 
             if (student == null) return Forbid();
@@ -104,9 +106,23 @@ public class AppointmentsController : Controller
             appointments.Email = student.Email ?? "";
         }
 
+        // Set once, used by every return View(appointments) below
+        ViewBag.IsStudentBooking = student != null;
+        ViewBag.GradeLevel = student?.GradeLevel;
+        ViewBag.Section = student?.Section;
+
         ModelState.Remove("Status");
         ModelState.Remove("CreatedAt");
         ModelState.Remove("UpdatedAt");
+
+        appointments.AppointmentDate = appointments.AppointmentDate.Date
+            .AddHours(appointments.AppointmentDate.Hour);
+
+        if (!IsWithinWorkingHours(appointments.AppointmentDate))
+        {
+            ModelState.AddModelError("AppointmentDate", "Appointments must be booked between 8–11 AM or 1–4 PM.");
+            return View(appointments);
+        }
 
         appointments.Status = "Pending";
         appointments.CreatedAt = DateTime.Now;
@@ -168,7 +184,7 @@ public class AppointmentsController : Controller
     [HttpPost]
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> Edit(int appointmentid,
-        [Bind("AppointmentID,FullName,Email,AppointmentDate,AppointmentType,Notes,StudentsID")] Appointments posted)
+    [Bind("AppointmentID,FullName,Email,AppointmentDate,AppointmentType,Notes,StudentsID")] Appointments posted)
     {
         if (appointmentid != posted.AppointmentID) return NotFound();
 
@@ -203,6 +219,19 @@ public class AppointmentsController : Controller
             // Status is intentionally NOT editable here anymore — use Reject / UpdateStatus instead
         }
 
+        // Snap to the hour regardless of which branch set it
+        existing.AppointmentDate = existing.AppointmentDate.Date
+    .AddHours(existing.AppointmentDate.Hour);
+
+        if (!IsWithinWorkingHours(existing.AppointmentDate))
+        {
+            ModelState.AddModelError("AppointmentDate", "Appointments must be booked between 8–11 AM or 1–4 PM.");
+            ViewBag.IsStudentEdit = isStudent;
+            return View(posted);
+        }
+
+        existing.UpdatedAt = DateTime.Now;
+
         existing.UpdatedAt = DateTime.Now;
 
         if (!ModelState.IsValid)
@@ -223,7 +252,6 @@ public class AppointmentsController : Controller
 
         return RedirectToAction(isStudent ? nameof(MyAppointments) : nameof(Index));
     }
-
 
     //[Authorize(Roles = "Student")]
     public async Task<IActionResult> Delete(int? appointmentid)
@@ -287,6 +315,10 @@ public class AppointmentsController : Controller
         await _context.SaveChangesAsync();
         return RedirectToAction(nameof(Index));
     }
+
+    private static readonly int[] AllowedHours = { 8, 9, 10, 11, 13, 14, 15, 16 };
+
+    private static bool IsWithinWorkingHours(DateTime dt) => AllowedHours.Contains(dt.Hour);
 
     private bool AppointmentsExists(int? appointmentid)
     {

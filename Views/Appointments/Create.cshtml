@@ -218,8 +218,13 @@
             <div class="form-grid">
                 <div>
                     <label asp-for="AppointmentDate" class="field-label"></label>
-                    <input asp-for="AppointmentDate" class="form-control" type="datetime-local" />
+                    <input asp-for="AppointmentDate" asp-format="{0:yyyy-MM-ddTHH:00}"
+                           id="fieldAppointmentDate"
+                           class="form-control" type="datetime-local"
+                           step="3600"
+                           min="@DateTime.Now.ToString("yyyy-MM-ddTHH:00")" />
                     <span asp-validation-for="AppointmentDate" class="text-danger" style="font-size:12px;"></span>
+                    <small id="hoursHint" class="lookup-status" style="color:#6b7280;">Available 8–11 AM and 1–4 PM.</small>
                 </div>
                 <div>
                     <label asp-for="AppointmentType" class="field-label"></label>
@@ -370,6 +375,26 @@
                 statusEl.textContent = message;
                 statusEl.className   = `form-text text-${color}`;
             }
+
+                    const dateInput = document.getElementById('fieldAppointmentDate');
+        const allowedHours = [8, 9, 10, 11, 13, 14, 15, 16];
+
+        function isWithinWorkingHours(value) {
+            if (!value) return true; // let required-field validation handle empties
+            const hour = parseInt(value.split('T')[1].split(':')[0], 10);
+            return allowedHours.includes(hour);
+        }
+
+        if (dateInput) {
+            dateInput.addEventListener('change', function () {
+                if (!isWithinWorkingHours(this.value)) {
+                    this.setCustomValidity('Appointments must be booked between 8–11 AM or 1–4 PM.');
+                } else {
+                    this.setCustomValidity('');
+                }
+                this.reportValidity();
+            });
+        }
         }
     </script>
 }

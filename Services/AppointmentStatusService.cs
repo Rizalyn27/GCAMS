@@ -42,7 +42,6 @@ namespace GCAMS.Services
                     }
                 }
 
-                // Check every 15 minutes — adjust to whatever granularity makes sense.
                 await Task.Delay(TimeSpan.FromHours(3), stoppingToken);
             }
         }

@@ -173,7 +173,7 @@
                             <select class="status-select status-dropdown"
                                     data-id="@item.AppointmentID"
                                     data-current="@item.Status">
-                                @foreach (var status in new[] { "Pending", "Confirmed", "Rejected", "Completed", "Missed" })
+                                @foreach (var status in new[] { "Pending", "Confirmed", "Rejected", "Completed", "Missed", "Cancelled" })
                                 {
                                     <option value="@status" selected="@(item.Status == status ? "selected" : null)">
                                         @status
