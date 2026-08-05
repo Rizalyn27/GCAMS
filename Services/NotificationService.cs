@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace GCAMS.Services
 {
-   
+
     public class NotificationService
     {
 
@@ -21,6 +21,7 @@ namespace GCAMS.Services
         {
             await GenerateAppointmentRemindersAsync();
             await GenerateFollowUpRemindersAsync();
+            await AppointmentStatusUpdateAsync();
         }
 
         private async Task GenerateAppointmentRemindersAsync()
@@ -43,7 +44,8 @@ namespace GCAMS.Services
                         bool alreadyNotified = await _context.Notifs.AnyAsync(n =>
                             n.RelatedEntityType == "Appointment" &&
                             n.RelatedEntityId == appt.AppointmentID &&
-                            n.RecipientUsername == student.StuID);
+                            n.RecipientUsername == student.StuID &&
+                            n.Type == NotificationType.AppointmentReminder);
 
                         if (!alreadyNotified)
                         {
@@ -69,7 +71,8 @@ namespace GCAMS.Services
                         bool alreadyNotified = await _context.Notifs.AnyAsync(n =>
                             n.RelatedEntityType == "Appointment" &&
                             n.RelatedEntityId == appt.AppointmentID &&
-                            n.RecipientUsername == counselor.EmailAddress);
+                            n.RecipientUsername == counselor.EmailAddress &&
+                            n.Type == NotificationType.AppointmentReminder);
 
                         if (!alreadyNotified)
                         {
@@ -130,7 +133,48 @@ namespace GCAMS.Services
 
             await _context.SaveChangesAsync();
         }
+
+        // Catches appointments that passed their scheduled time while still Pending/Confirmed
+        // (i.e. nobody marked them Completed/Cancelled/Missed) and flags them as Missed.
+        private async Task AppointmentStatusUpdateAsync()
+        {
+            var now = DateTime.Now;
+            var pastAppointments = await _context.Appointments
+                .Where(a => a.AppointmentDate < now && (a.Status == "Pending" || a.Status == "Confirmed"))
+                .ToListAsync();
+
+            foreach (var appt in pastAppointments)
+            {
+                if (!appt.StudentsID.HasValue) continue;
+
+                var student = await _context.Students.FindAsync(appt.StudentsID.Value);
+                if (student == null) continue;
+
+                bool alreadyNotified = await _context.Notifs.AnyAsync(n =>
+                    n.RelatedEntityType == "Appointment" &&
+                    n.RelatedEntityId == appt.AppointmentID &&
+                    n.RecipientUsername == student.StuID &&
+                    n.Type == NotificationType.StatusUpdate);
+
+                if (alreadyNotified) continue;
+
+                appt.Status = "Missed";
+                appt.UpdatedAt = now;
+
+                _context.Notifs.Add(new Notifs
+                {
+                    RecipientUsername = student.StuID,
+                    Type = NotificationType.StatusUpdate,
+                    Title = "Appointment Missed",
+                    Message = $"You missed your appointment scheduled on {appt.AppointmentDate:MMM dd, yyyy - h:mm tt}.",
+                    RelatedEntityType = "Appointment",
+                    RelatedEntityId = appt.AppointmentID
+                });
+            }
+
+            await _context.SaveChangesAsync();
+        }
+
     }
 
 }
-

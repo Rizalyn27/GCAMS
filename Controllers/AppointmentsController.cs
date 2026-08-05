@@ -11,10 +11,16 @@ public class AppointmentsController : Controller
 {
     private readonly AppDbContext _context;
 
+    private static readonly int[] AllowedHours = { 8, 9, 10, 11, 13, 14, 15, 16 };
+
+    private static bool IsWithinWorkingHours(DateTime dt) => AllowedHours.Contains(dt.Hour);
+
+ 
     public AppointmentsController(AppDbContext context)
     {
         _context = context;
     }
+   
 
     // Only Admin/Counselor see the full list — students never get a "list everyone's appointments" view
     [Authorize(Roles = "Admin,Counselor")]
@@ -22,7 +28,7 @@ public class AppointmentsController : Controller
     {
         return View(await _context.Appointments
             .Include(a => a.Counselor)
-            .OrderBy(a => a.AppointmentDate)
+            .OrderByDescending(a => a.AppointmentDate)
             .ToListAsync());
     }
 
@@ -115,6 +121,8 @@ public class AppointmentsController : Controller
 
         appointments.AppointmentDate = appointments.AppointmentDate.Date
             .AddHours(appointments.AppointmentDate.Hour);
+
+
 
         if (!IsWithinWorkingHours(appointments.AppointmentDate))
         {
@@ -314,10 +322,6 @@ public class AppointmentsController : Controller
         await _context.SaveChangesAsync();
         return RedirectToAction(nameof(Index));
     }
-
-    private static readonly int[] AllowedHours = { 8, 9, 10, 11, 13, 14, 15, 16 };
-
-    private static bool IsWithinWorkingHours(DateTime dt) => AllowedHours.Contains(dt.Hour);
 
     private bool AppointmentsExists(int? appointmentid)
     {
