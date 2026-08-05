@@ -6,7 +6,8 @@ namespace GCAMS.Models.Notifs
     {
         AppointmentReminder,
         FollowUp,
-        Announcement
+        Announcement,
+        StatusUpdate
     }
     public class Notifs
     {

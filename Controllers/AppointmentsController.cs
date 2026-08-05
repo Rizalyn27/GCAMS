@@ -1,8 +1,9 @@
-﻿using Microsoft.AspNetCore.Authorization;
+﻿using GCAMS.Data;
+using GCAMS.Models.Appointment;
+using GCAMS.Models.Notifs;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using GCAMS.Models.Appointment;
-using GCAMS.Data;
 
 // must be logged in for anything in this controller
 [Authorize]
@@ -355,23 +356,47 @@ public class AppointmentsController : Controller
         if (!validStatuses.Contains(request.NewStatus))
             return BadRequest("Invalid status value.");
 
-        // First counselor to act on it claims it; later actions don't reassign.
         appointment.CounselorID ??= await GetCurrentCounselorIdAsync();
-
         appointment.Status = request.NewStatus;
         appointment.UpdatedAt = DateTime.Now;
 
         await _context.SaveChangesAsync();
 
-        // Notify the counselor handling this appointment.
-        if (appointment.CounselorID.HasValue)
+        // Notify the student of the status change
+        if (appointment.StudentsID.HasValue)
         {
-            var counselor = await _context.Counselors.FindAsync(appointment.CounselorID.Value);
-            // ... build/send the notification using `counselor` here ...
+            var student = await _context.Students.FindAsync(appointment.StudentsID.Value);
+            if (student != null)
+            {
+                var (title, message) = request.NewStatus switch
+                {
+                    "Confirmed" => ("Appointment Confirmed", $"Your appointment on {appointment.AppointmentDate:MMM dd, yyyy - h:mm tt} has been confirmed."),
+                    "Rejected" => ("Appointment Rejected", $"Your appointment request for {appointment.AppointmentDate:MMM dd, yyyy - h:mm tt} was declined."),
+                    "Completed" => ("Appointment Completed", $"Your appointment on {appointment.AppointmentDate:MMM dd, yyyy - h:mm tt} is marked completed."),
+                    "Missed" => ("Appointment Missed", $"You missed your appointment scheduled on {appointment.AppointmentDate:MMM dd, yyyy - h:mm tt}."),
+                    "Cancelled" => ("Appointment Cancelled", $"Your appointment on {appointment.AppointmentDate:MMM dd, yyyy - h:mm tt} was cancelled."),
+                    _ => (null as string, null as string)
+                };
+
+                if (title != null)
+                {
+                    _context.Notifs.Add(new Notifs
+                    {
+                        RecipientUsername = student.StuID,
+                        Type = NotificationType.StatusUpdate,
+                        Title = title,
+                        Message = message!,
+                        RelatedEntityType = "Appointment",
+                        RelatedEntityId = appointment.AppointmentID
+                    });
+                    await _context.SaveChangesAsync();
+                }
+            }
         }
 
         return Ok();
     }
+
 
     [Authorize(Roles = "Admin,Counselor")]
     [HttpPost]
@@ -388,10 +413,28 @@ public class AppointmentsController : Controller
         }
 
         appointment.CounselorID ??= await GetCurrentCounselorIdAsync();
-
         appointment.Status = "Rejected";
         appointment.UpdatedAt = DateTime.Now;
         await _context.SaveChangesAsync();
+
+        // Notify the student their appointment was rejected
+        if (appointment.StudentsID.HasValue)
+        {
+            var student = await _context.Students.FindAsync(appointment.StudentsID.Value);
+            if (student != null)
+            {
+                _context.Notifs.Add(new Notifs
+                {
+                    RecipientUsername = student.StuID,
+                    Type = NotificationType.StatusUpdate,
+                    Title = "Appointment Rejected",
+                    Message = $"Your appointment request for {appointment.AppointmentDate:MMM dd, yyyy - h:mm tt} was declined. Please book a new appointment or contact the guidance office.",
+                    RelatedEntityType = "Appointment",
+                    RelatedEntityId = appointment.AppointmentID
+                });
+                await _context.SaveChangesAsync();
+            }
+        }
 
         return RedirectToAction(nameof(Index));
     }
