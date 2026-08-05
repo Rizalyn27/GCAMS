@@ -1,4 +1,6 @@
-﻿﻿
+﻿@{
+    var isStudent = User.Identity?.IsAuthenticated == true && User.IsInRole("Student");
+}
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -10,6 +12,7 @@
     <link rel="stylesheet" href="@(Url.Content("~/css/site.css"))" />
     <link rel="stylesheet" href="@(Url.Content("~/MVC_DenoyJabines.styles.css"))" />
     <link href="https://fonts.googleapis.com/css2?family=Sora:wght@300;400;500;600;700&family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <style>
         :root {
             --sidebar-bg: #1B5E20;
@@ -35,7 +38,7 @@
         }
 
         body {
-            font-family: Arial, Helvetica, sans-serif,;
+            font-family: Arial, Helvetica, sans-serif;
             background: var(--page-bg);
             color: var(--ink);
             overflow-x: hidden;
@@ -59,6 +62,7 @@
             cursor: pointer;
             transition: all 0.2s;
             margin-bottom: 6px;
+            border: none;
         }
 
         .sidebar-account {
@@ -103,7 +107,7 @@
         }
 
             .sidebar-brand h4 {
-                font-family: Arial, Helvetica, sans-serif,;
+                font-family: Arial, Helvetica, sans-serif;
                 font-size: 1.2rem;
                 font-weight: 400;
                 color: var(--sidebar-heading);
@@ -176,7 +180,7 @@
                 border: 1px solid rgba(229,52,74,0.22);
                 border-radius: 10px;
                 padding: 10px;
-                font-family: Arial, Helvetica, sans-serif,;
+                font-family: Arial, Helvetica, sans-serif;
                 font-size: 0.82rem;
                 font-weight: 600;
                 cursor: pointer;
@@ -211,7 +215,7 @@
         }
 
         .topbar-title {
-            font-family: Arial, Helvetica, sans-serif,;
+            font-family: Arial, Helvetica, sans-serif;
             font-size: 1.1rem;
             font-weight: 400;
             color: var(--ink);
@@ -261,6 +265,79 @@
             flex: 1;
         }
 
+        /* ── NOTIFICATION BELL ── */
+        .notif-bell {
+            position: relative;
+            background: none;
+            border: none;
+            cursor: pointer;
+        }
+
+        .notif-badge {
+            display: none;
+            position: absolute;
+            top: -4px;
+            right: -4px;
+            background: #93000a;
+            color: #fff;
+            font-size: 11px;
+            font-weight: 700;
+            border-radius: 999px;
+            padding: 1px 6px;
+        }
+
+        .notif-dropdown {
+            display: none;
+            position: absolute;
+            right: 0;
+            top: 36px;
+            width: 320px;
+            max-height: 400px;
+            overflow-y: auto;
+            background: #fff;
+            border: 1px solid #e1e4db;
+            border-radius: 12px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.12);
+            z-index: 1000;
+            padding: 8px;
+        }
+
+        .notif-item {
+            padding: 10px 12px;
+            border-radius: 8px;
+            cursor: pointer;
+            margin-bottom: 4px;
+        }
+
+            .notif-item.unread {
+                background: #f2f5ec;
+            }
+
+        .notif-title {
+            font-weight: 600;
+            font-size: 13px;
+            color: #191d18;
+        }
+
+        .notif-message {
+            font-size: 12px;
+            color: #41493e;
+            margin-top: 2px;
+        }
+
+        .notif-time {
+            font-size: 11px;
+            color: #a3aa9e;
+            margin-top: 4px;
+        }
+
+        .notif-empty {
+            padding: 16px;
+            text-align: center;
+            color: #717a6d;
+            font-size: 13px;
+        }
+
         /* ── RESPONSIVE ── */
         @@media (max-width: 900px) {
             .sidebar {
@@ -293,31 +370,33 @@
 
         <aside class="sidebar" id="sidebar">
             <div class="sidebar-brand">
-                <span>Counselor</span>
+                <span>@(isStudent ? "Student" : "Counselor")</span>
             </div>
             <ul class="sidebar-nav">
-                <li>
-                    <a asp-controller="Home" asp-action="Home">
-                        Dashboard
-                    </a>
-                </li>
-                <li>
-                    <a asp-controller="Students" asp-action="Index">
-                        Students
-                    </a>
-                </li>
-                <li>
-                    <a asp-controller="Counselors" asp-action="Index">
-                        Counselors
-                    </a>
-                </li>
-                <li>
-                    <a asp-controller="Appointments" asp-action="Index">
-                         Appointments
-                    </a>
-                </li>
-               
-            </ul>         
+                @if (isStudent)
+                {
+                    <li><a asp-controller="Home" asp-action="Index">Dashboard</a></li>
+                    <li><a asp-controller="Appointments" asp-action="Create">Book Appointment</a></li>
+                    <li><a asp-controller="Appointments" asp-action="MyAppointments">My Appointments</a></li>
+                }
+                else
+                {
+                    <li><a asp-controller="Home" asp-action="Home">Dashboard</a></li>
+                    <li><a asp-controller="Students" asp-action="Index">Students</a></li>
+                    <li><a asp-controller="Counselors" asp-action="Index">Counselors</a></li>
+                    <li><a asp-controller="Appointments" asp-action="Index">Appointments</a></li>
+                }
+            </ul>
+
+            @if (User.Identity?.IsAuthenticated == true)
+            {
+                <div class="sidebar-footer">
+                    <form asp-controller="Users" asp-action="Logout" method="post">
+                        @Html.AntiForgeryToken()
+                        <button type="submit" class="sidebar-logout">Logout</button>
+                    </form>
+                </div>
+            }
         </aside>
 
         <div class="sidebar-overlay" id="sidebarOverlay"></div>
@@ -330,6 +409,20 @@
                     </button>
                     <div class="topbar-title">@ViewData["Title"]</div>
                 </div>
+
+                @if (User.Identity?.IsAuthenticated == true)
+                {
+                    <div style="position:relative; display:inline-block;">
+                        <button id="notif-bell" class="notif-bell">
+                            <i class="fa-regular fa-bell" style="font-size:24px; color:#41493e;"></i>
+                            <span id="notif-badge" class="notif-badge"></span>
+                        </button>
+                        <div id="notif-dropdown" class="notif-dropdown">
+                            <div id="notif-list"></div>
+                        </div>
+                    </div>
+                    <form style="display:none;">@Html.AntiForgeryToken()</form>
+                }
             </div>
 
             <div class="page-body">
@@ -357,6 +450,62 @@
             overlay.classList.remove('active');
         });
     </script>
+
+    @if (User.Identity?.IsAuthenticated == true)
+    {
+        <script>
+            const bell = document.getElementById('notif-bell');
+            const dropdown = document.getElementById('notif-dropdown');
+            const badge = document.getElementById('notif-badge');
+            const list = document.getElementById('notif-list');
+            const token = () => document.querySelector('input[name="__RequestVerificationToken"]')?.value || '';
+
+            function renderNotification(n) {
+                return `
+                    <div class="notif-item ${n.isRead ? '' : 'unread'}" onclick="markRead(${n.notificationId})">
+                        <div class="notif-title">${n.title}</div>
+                        <div class="notif-message">${n.message}</div>
+                        <div class="notif-time">${new Date(n.createdAt).toLocaleString()}</div>
+                    </div>`;
+            }
+
+            async function fetchNotifications() {
+                const res = await fetch('/Notifications/GetUnread');
+                if (!res.ok) return;
+
+                const { unreadCount, notifications } = await res.json();
+
+                badge.style.display = unreadCount > 0 ? 'inline-block' : 'none';
+                badge.textContent = unreadCount;
+
+                list.innerHTML = notifications.length
+                    ? notifications.map(renderNotification).join('')
+                    : '<div class="notif-empty">No notifications</div>';
+            }
+
+            async function markRead(id) {
+                await fetch(`/Notifications/MarkRead/${id}`, {
+                    method: 'POST',
+                    headers: { 'RequestVerificationToken': token() }
+                });
+                fetchNotifications();
+            }
+
+            bell.addEventListener('click', () => {
+                dropdown.style.display = dropdown.style.display === 'block' ? 'none' : 'block';
+            });
+
+            document.addEventListener('click', e => {
+                if (!bell.contains(e.target) && !dropdown.contains(e.target)) {
+                    dropdown.style.display = 'none';
+                }
+            });
+
+            fetchNotifications();
+            setInterval(fetchNotifications, 30000);
+        </script>
+    }
+
     @await RenderSectionAsync("Scripts", required: false)
 </body>
 </html>

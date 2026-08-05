@@ -1,0 +1,136 @@
+﻿using GCAMS.Controllers;
+using GCAMS.Data;
+using GCAMS.Models.Notifs;
+using GCAMS.Models.Students;
+using Microsoft.EntityFrameworkCore;
+
+namespace GCAMS.Services
+{
+   
+    public class NotificationService
+    {
+
+        private readonly AppDbContext _context;
+
+        public NotificationService(AppDbContext context)
+        {
+            _context = context;
+        }
+
+        public async Task GenerateDueNotificationsAsync()
+        {
+            await GenerateAppointmentRemindersAsync();
+            await GenerateFollowUpRemindersAsync();
+        }
+
+        private async Task GenerateAppointmentRemindersAsync()
+        {
+            var windowStart = DateTime.Now;
+            var windowEnd = DateTime.Now.AddHours(24);
+
+            var upcoming = await _context.Appointments
+                .Where(a => a.AppointmentDate >= windowStart && a.AppointmentDate <= windowEnd)
+                .ToListAsync();
+
+            foreach (var appt in upcoming)
+            {
+                // Notify the student — only if this appointment is actually linked to one
+                if (appt.StudentsID.HasValue)
+                {
+                    var student = await _context.Students.FindAsync(appt.StudentsID.Value);
+                    if (student != null)
+                    {
+                        bool alreadyNotified = await _context.Notifs.AnyAsync(n =>
+                            n.RelatedEntityType == "Appointment" &&
+                            n.RelatedEntityId == appt.AppointmentID &&
+                            n.RecipientUsername == student.StuID);
+
+                        if (!alreadyNotified)
+                        {
+                            _context.Notifs.Add(new Notifs
+                            {
+                                RecipientUsername = student.StuID,
+                                Type = NotificationType.AppointmentReminder,
+                                Title = "Upcoming Appointment",
+                                Message = $"You have an appointment on {appt.AppointmentDate:MMM dd, yyyy - h:mm tt}.",
+                                RelatedEntityType = "Appointment",
+                                RelatedEntityId = appt.AppointmentID
+                            });
+                        }
+                    }
+                }
+
+                // Notify the counselor — only if one has claimed this appointment
+                if (appt.CounselorID.HasValue)
+                {
+                    var counselor = await _context.Counselors.FindAsync(appt.CounselorID.Value);
+                    if (counselor != null)
+                    {
+                        bool alreadyNotified = await _context.Notifs.AnyAsync(n =>
+                            n.RelatedEntityType == "Appointment" &&
+                            n.RelatedEntityId == appt.AppointmentID &&
+                            n.RecipientUsername == counselor.EmailAddress);
+
+                        if (!alreadyNotified)
+                        {
+                            _context.Notifs.Add(new Notifs
+                            {
+                                RecipientUsername = counselor.EmailAddress,
+                                Type = NotificationType.AppointmentReminder,
+                                Title = "Upcoming Appointment",
+                                Message = $"You have a session with {appt.FullName} on {appt.AppointmentDate:MMM dd, yyyy - h:mm tt}.",
+                                RelatedEntityType = "Appointment",
+                                RelatedEntityId = appt.AppointmentID
+                            });
+                        }
+                    }
+                }
+            }
+
+            await _context.SaveChangesAsync();
+        }
+        private async Task GenerateFollowUpRemindersAsync()
+        {
+            var cutoff = DateTime.Now.AddDays(-14);
+
+            var staleNotes = await _context.CaseNotes
+                .Where(n => n.SessionDate <= cutoff)
+                .GroupBy(n => n.StudentsID)
+                .Select(g => g.OrderByDescending(n => n.SessionDate).First())
+                .ToListAsync();
+
+            foreach (var note in staleNotes)
+            {
+                var student = await _context.Students.FindAsync(note.StudentsID);
+                if (student == null) continue;
+
+                // NEW — resolve the actual counselor instead of a placeholder string
+                if (note.CounselorID == null) continue; // no owning counselor recorded — skip
+                var counselor = await _context.Counselors.FindAsync(note.CounselorID.Value);
+                if (counselor == null) continue;
+
+                bool alreadyNotified = await _context.Notifs.AnyAsync(n =>
+                    n.RelatedEntityType == "CaseNotes" &&
+                    n.RelatedEntityId == note.CasenoteId &&
+                    n.Type == NotificationType.FollowUp);
+
+                if (!alreadyNotified)
+                {
+                    _context.Notifs.Add(new Notifs
+                    {
+                        RecipientUsername = counselor.EmailAddress, // Username == EmailAddress per EnsureCounselorAccountAsync
+                        Type = NotificationType.FollowUp,
+                        Title = "Follow-Up Due",
+                        Message = $"{student.StuName} may need a follow-up session (last seen {note.SessionDate:MMM dd, yyyy}).",
+                        RelatedEntityType = "CaseNotes",
+                        RelatedEntityId = note.CasenoteId
+                    });
+                }
+            }
+
+            await _context.SaveChangesAsync();
+        }
+    }
+
+}
+

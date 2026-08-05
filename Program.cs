@@ -8,6 +8,7 @@ var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddHostedService<AppointmentStatusService>();
+builder.Services.AddScoped<NotificationService>();
 builder.Services.AddControllersWithViews();
 
 //Database Connection
@@ -25,6 +26,8 @@ builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationSc
         options.ExpireTimeSpan = TimeSpan.FromHours(8);
         options.SlidingExpiration = true;
     });
+
+
 
 var app = builder.Build();
 

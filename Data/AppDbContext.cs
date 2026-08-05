@@ -5,6 +5,7 @@ using GCAMS.Models.Appointment;
 using GCAMS.Models.CaseNotes;
 using GCAMS.Models.Users;
 using GCAMS.Models.AnecRecs;
+using GCAMS.Models.Notifs;
 
 
 namespace GCAMS.Data
@@ -43,6 +44,9 @@ namespace GCAMS.Data
 
         //Anecdotal Records
         public DbSet<AnecRecs> AnecRecs { get; set; }
+
+        //Notifications
+        public DbSet<Notifs> Notifs { get; set; }
 
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)

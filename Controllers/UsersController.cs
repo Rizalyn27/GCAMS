@@ -9,6 +9,7 @@ using Microsoft.EntityFrameworkCore;
 using System.Security.Claims;
 using System.Security.Cryptography;
 using System.Text;
+using System.Text.RegularExpressions;
 
 
 namespace GCAMS.Controllers
@@ -63,6 +64,11 @@ namespace GCAMS.Controllers
         }
 
 
+
+        private static readonly Regex PasswordPolicy = new Regex(
+    @"^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*]).+$",
+    RegexOptions.Compiled);
+
         [HttpGet("ChangePass")]
         [Authorize]
         public IActionResult ChangePass()
@@ -78,7 +84,24 @@ namespace GCAMS.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> ChangePass(string currentPassword, string newPassword, string confirmPassword)
         {
-            if (string.IsNullOrWhiteSpace(newPassword) || newPassword != confirmPassword)
+            // Re-derive this so the view still knows whether the change was forced
+            // even after we bounce back here with an error.
+            ViewBag.Forced = User.FindFirst("PasswordChange")?.Value
+                .Equals("false", StringComparison.OrdinalIgnoreCase) == true;
+
+            if (string.IsNullOrWhiteSpace(newPassword) || newPassword.Length < 8)
+            {
+                ViewBag.ErrorMessage = "Password must be at least 8 characters.";
+                return View();
+            }
+
+            if (!PasswordPolicy.IsMatch(newPassword))
+            {
+                ViewBag.ErrorMessage = "Password must contain an uppercase letter, a lowercase letter, a number, and a special character (!@#$%^&*).";
+                return View();
+            }
+
+            if (newPassword != confirmPassword)
             {
                 ViewBag.ErrorMessage = "New passwords do not match.";
                 return View();
@@ -104,9 +127,6 @@ namespace GCAMS.Controllers
 
             await _context.SaveChangesAsync();
 
-            // Re-sign-in with an updated "PasswordChange" claim — otherwise the cookie
-            // still says "false" until they log out/in again, and the middleware
-            // above would keep bouncing them back here.
             var identity = new ClaimsIdentity(
                 new[]
                 {
@@ -121,6 +141,8 @@ namespace GCAMS.Controllers
 
             return RedirectToAction("Index", "Home");
         }
+
+
 
         public static byte[] CreateSalt()
         {

@@ -19,6 +19,16 @@ namespace GCAMS.Models.CaseNotes
         [ValidateNever]
         [ForeignKey(nameof(StudentsID))]
         public Students.Students Student { get; set; }
+
+
+        // Who added this note — set automatically from the logged-in counselor, never from the form.
+
+        public int? CounselorID { get; set; }
+        [ValidateNever]
+        [ForeignKey(nameof(CounselorID))]
+        public Counselor.Counselor? Counselor { get; set; }
+
+
         //Name of Counselee
         [Required(ErrorMessage = "Full name is required")]
         [StringLength(100)]

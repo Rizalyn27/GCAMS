@@ -5,8 +5,7 @@ using GCAMS.Models.Appointment;
 using GCAMS.Data;
 
 // must be logged in for anything in this controller
-
-//[Authorize]
+[Authorize]
 public class AppointmentsController : Controller
 {
     private readonly AppDbContext _context;
@@ -17,10 +16,13 @@ public class AppointmentsController : Controller
     }
 
     // Only Admin/Counselor see the full list — students never get a "list everyone's appointments" view
-    //[Authorize(Roles = "Admin,Counselor")]
+    [Authorize(Roles = "Admin,Counselor")]
     public async Task<IActionResult> Index()
     {
-        return View(await _context.Appointments.ToListAsync());
+        return View(await _context.Appointments
+            .Include(a => a.Counselor)
+            .OrderBy(a => a.AppointmentDate)
+            .ToListAsync());
     }
 
     // Anyone logged in can view Details — but a Student can only view their OWN appointment
@@ -38,13 +40,12 @@ public class AppointmentsController : Controller
                 .FirstOrDefaultAsync(s => s.StuID == User.Identity!.Name);
 
             if (student == null || appointment.StudentsID != student.StudentsID)
-                return Forbid(); // not their appointment
+                return Forbid();
         }
 
         return View(appointment);
     }
 
-    // Anyone logged in can book — Student, Counselor, or Admin
     // Anyone logged in can book — Student, Counselor, or Admin
     public async Task<IActionResult> Create(bool force = false)
     {
@@ -55,7 +56,6 @@ public class AppointmentsController : Controller
 
             if (student == null) return Forbid();
 
-            // Unless they explicitly want to book another one, check for an existing pending appointment first
             if (!force)
             {
                 var pending = await _context.Appointments
@@ -86,7 +86,6 @@ public class AppointmentsController : Controller
         return View();
     }
 
-
     [HttpPost]
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> Create([Bind("FullName,Email,ContactNumber,AppointmentDate,AppointmentType,Notes,StudentsID")] Appointments appointments)
@@ -100,13 +99,11 @@ public class AppointmentsController : Controller
 
             if (student == null) return Forbid();
 
-            // Never trust the posted values for a student — overwrite with their real record
             appointments.StudentsID = student.StudentsID;
             appointments.FullName = student.StuName;
             appointments.Email = student.Email ?? "";
         }
 
-        // Set once, used by every return View(appointments) below
         ViewBag.IsStudentBooking = student != null;
         ViewBag.GradeLevel = student?.GradeLevel;
         ViewBag.Section = student?.Section;
@@ -127,6 +124,11 @@ public class AppointmentsController : Controller
         appointments.Status = "Pending";
         appointments.CreatedAt = DateTime.Now;
         appointments.UpdatedAt = null;
+
+        // If a Counselor/Admin is booking this directly (not a student self-booking),
+        // it's already being handled by them — claim it right away.
+        if (!User.IsInRole("Student"))
+            appointments.CounselorID = await GetCurrentCounselorIdAsync();
 
         var hasConflict = await _context.Appointments.AnyAsync(a =>
             a.StudentsID == appointments.StudentsID &&
@@ -153,7 +155,6 @@ public class AppointmentsController : Controller
 
         return View(appointments);
     }
-
 
     public async Task<IActionResult> Edit(int? appointmentid)
     {
@@ -184,7 +185,7 @@ public class AppointmentsController : Controller
     [HttpPost]
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> Edit(int appointmentid,
-    [Bind("AppointmentID,FullName,Email,AppointmentDate,AppointmentType,Notes,StudentsID")] Appointments posted)
+        [Bind("AppointmentID,FullName,Email,AppointmentDate,AppointmentType,Notes,StudentsID")] Appointments posted)
     {
         if (appointmentid != posted.AppointmentID) return NotFound();
 
@@ -202,9 +203,8 @@ public class AppointmentsController : Controller
                 return Forbid();
 
             if (existing.Status != "Pending" && existing.Status != "Confirmed")
-                return Forbid(); // can't touch a closed appointment
+                return Forbid();
 
-            // Students can only change the appointment details — never identity, never Status
             existing.AppointmentDate = posted.AppointmentDate;
             existing.AppointmentType = posted.AppointmentType;
             existing.Notes = posted.Notes;
@@ -216,12 +216,13 @@ public class AppointmentsController : Controller
             existing.AppointmentDate = posted.AppointmentDate;
             existing.AppointmentType = posted.AppointmentType;
             existing.Notes = posted.Notes;
-            // Status is intentionally NOT editable here anymore — use Reject / UpdateStatus instead
+
+            // A counselor editing an unclaimed appointment claims it.
+            existing.CounselorID ??= await GetCurrentCounselorIdAsync();
         }
 
-        // Snap to the hour regardless of which branch set it
         existing.AppointmentDate = existing.AppointmentDate.Date
-    .AddHours(existing.AppointmentDate.Hour);
+            .AddHours(existing.AppointmentDate.Hour);
 
         if (!IsWithinWorkingHours(existing.AppointmentDate))
         {
@@ -229,8 +230,6 @@ public class AppointmentsController : Controller
             ViewBag.IsStudentEdit = isStudent;
             return View(posted);
         }
-
-        existing.UpdatedAt = DateTime.Now;
 
         existing.UpdatedAt = DateTime.Now;
 
@@ -253,7 +252,7 @@ public class AppointmentsController : Controller
         return RedirectToAction(isStudent ? nameof(MyAppointments) : nameof(Index));
     }
 
-    //[Authorize(Roles = "Student")]
+    [Authorize(Roles = "Student")]
     public async Task<IActionResult> Delete(int? appointmentid)
     {
         if (appointmentid == null) return NotFound();
@@ -281,7 +280,7 @@ public class AppointmentsController : Controller
     }
 
     [HttpPost, ActionName("Delete")]
-    //[Authorize(Roles = "Student")]
+    [Authorize(Roles = "Student")]
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> DeleteConfirmed(int? appointmentid)
     {
@@ -310,7 +309,6 @@ public class AppointmentsController : Controller
             return RedirectToAction(nameof(MyAppointments));
         }
 
-        // Admin/Counselor still hitting this endpoint = real delete (e.g. cleaning up bad data)
         _context.Appointments.Remove(appointments);
         await _context.SaveChangesAsync();
         return RedirectToAction(nameof(Index));
@@ -325,8 +323,7 @@ public class AppointmentsController : Controller
         return _context.Appointments.Any(e => e.AppointmentID == appointmentid);
     }
 
-    // Only Admin/Counselor use the manual lookup — students never need this, they're auto-filled
-    //[Authorize(Roles = "Admin,Counselor")]
+    [Authorize(Roles = "Admin,Counselor")]
     [HttpGet]
     public async Task<IActionResult> GetStudentByStuID(string? stuId)
     {
@@ -347,7 +344,7 @@ public class AppointmentsController : Controller
         });
     }
 
-    //[Authorize(Roles = "Admin,Counselor")]
+    [Authorize(Roles = "Admin,Counselor")]
     [HttpPost]
     public async Task<IActionResult> UpdateStatus([FromBody] UpdateStatusRequest request)
     {
@@ -358,15 +355,25 @@ public class AppointmentsController : Controller
         if (!validStatuses.Contains(request.NewStatus))
             return BadRequest("Invalid status value.");
 
+        // First counselor to act on it claims it; later actions don't reassign.
+        appointment.CounselorID ??= await GetCurrentCounselorIdAsync();
+
         appointment.Status = request.NewStatus;
         appointment.UpdatedAt = DateTime.Now;
 
         await _context.SaveChangesAsync();
+
+        // Notify the counselor handling this appointment.
+        if (appointment.CounselorID.HasValue)
+        {
+            var counselor = await _context.Counselors.FindAsync(appointment.CounselorID.Value);
+            // ... build/send the notification using `counselor` here ...
+        }
+
         return Ok();
     }
 
-
-    //[Authorize(Roles = "Admin,Counselor")]
+    [Authorize(Roles = "Admin,Counselor")]
     [HttpPost]
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> RejectAppointment(int appointmentid)
@@ -380,13 +387,14 @@ public class AppointmentsController : Controller
             return RedirectToAction(nameof(Index));
         }
 
+        appointment.CounselorID ??= await GetCurrentCounselorIdAsync();
+
         appointment.Status = "Rejected";
         appointment.UpdatedAt = DateTime.Now;
         await _context.SaveChangesAsync();
 
         return RedirectToAction(nameof(Index));
     }
-
 
     public async Task<IActionResult> MyAppointments()
     {
@@ -403,6 +411,18 @@ public class AppointmentsController : Controller
             .ToListAsync();
 
         return View(appointments);
+    }
+
+    // Resolves the logged-in counselor's ID from their email (== their Username).
+    private async Task<int?> GetCurrentCounselorIdAsync()
+    {
+        var email = User.Identity?.Name;
+        if (string.IsNullOrWhiteSpace(email)) return null;
+
+        return await _context.Counselors
+            .Where(c => c.EmailAddress == email)
+            .Select(c => (int?)c.CounselorID)
+            .FirstOrDefaultAsync();
     }
 
     public class UpdateStatusRequest

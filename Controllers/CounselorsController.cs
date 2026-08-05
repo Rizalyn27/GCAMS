@@ -116,6 +116,7 @@ namespace GCAMS.Controllers
         // ===================================================================
         [HttpPost]
         [ValidateAntiForgeryToken]
+        [HttpPost]
         public async Task<IActionResult> Edit(int id, Counselor counselor)
         {
             if (id != counselor.CounselorID) return NotFound();
@@ -124,6 +125,13 @@ namespace GCAMS.Controllers
             {
                 try
                 {
+                    // Grab what's on file *before* we overwrite it, so we know
+                    // whether the linked Users.Username needs to move with it.
+                    var oldEmail = await _context.Counselors
+                        .Where(c => c.CounselorID == id)
+                        .Select(c => c.EmailAddress)
+                        .FirstOrDefaultAsync();
+
                     var incoming = counselor.ContactNumbers
                         .Where(x => !string.IsNullOrWhiteSpace(x.Number))
                         .ToList();
@@ -136,7 +144,6 @@ namespace GCAMS.Controllers
                     _context.CounselorContactNumbers.RemoveRange(old);
                     await _context.SaveChangesAsync();
 
-                    // Re-insert the contact numbers currently in the form.
                     foreach (var c in incoming)
                     {
                         _context.CounselorContactNumbers.Add(new CounselorContactNumber
@@ -148,21 +155,45 @@ namespace GCAMS.Controllers
                     }
 
                     await _context.SaveChangesAsync();
+
+                    // Either move the existing login to the new email, or —
+                    // if this counselor predates the account feature — create one now.
+                    await SyncCounselorAccountAsync(oldEmail, counselor.EmailAddress, counselor.EmployeeNumber);
                 }
                 catch (DbUpdateConcurrencyException)
                 {
-
                     if (!_context.Counselors.Any(e => e.CounselorID == id)) return NotFound();
-                   
                     else throw;
                 }
                 return RedirectToAction(nameof(Index));
             }
 
-            // Validation failed — re-show the form with error messages.
             return View(counselor);
         }
 
+        private async Task SyncCounselorAccountAsync(string oldEmail, string newEmail, string employeeNumber)
+        {
+            if (string.IsNullOrWhiteSpace(newEmail)) return;
+
+            // No prior email on file, or the account was never created — create it now.
+            if (string.IsNullOrWhiteSpace(oldEmail))
+            {
+                await EnsureCounselorAccountAsync(newEmail, employeeNumber);
+                return;
+            }
+
+            if (string.Equals(oldEmail, newEmail, StringComparison.OrdinalIgnoreCase)) return;
+
+            var account = await _context.Users.FirstOrDefaultAsync(u => u.Username == oldEmail);
+            if (account == null)
+            {
+                await EnsureCounselorAccountAsync(newEmail, employeeNumber);
+                return;
+            }
+
+            account.Username = newEmail;
+            await _context.SaveChangesAsync();
+        }
 
         private async Task EnsureCounselorAccountAsync(string email, string employeeNumber)
         {
