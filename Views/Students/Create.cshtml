@@ -1,7 +1,42 @@
 ﻿@model GCAMS.ViewModels.StudentFormViewModel
 
 <style>
-    @@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Manrope:wght@600;700&display=swap');
+    @@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Manrope:wght@600;700;800&display=swap');
+
+    :root {
+        --brand-green: #1B5E20;
+        --brand-green-dark: #164317;
+        --brand-green-light: #e8f5e9;
+        --text-main: #111827;
+        --text-muted: #6b7280;
+        --border-light: #e5e7eb;
+    }
+
+    body {
+        font-family: 'Inter', sans-serif;
+    }
+
+    h1, h2, h3, h4, h5, h6 {
+        font-family: 'Manrope', sans-serif;
+    }
+
+    .page-header {
+        margin-bottom: 1.5rem;
+    }
+
+        .page-header .breadcrumb-text {
+            font-size: 13px;
+            color: var(--text-muted);
+            margin-bottom: 6px;
+        }
+
+        .page-header h1 {
+            font-size: 26px;
+            font-weight: 800;
+            color: var(--brand-green);
+            margin: 0;
+        }
+
     .form-wrapper {
         display: flex;
         gap: 1.5rem;
@@ -9,7 +44,7 @@
     }
 
     .form-sidebar {
-        width: 200px;
+        width: 220px;
         flex-shrink: 0;
         position: sticky;
         top: 1rem;
@@ -18,30 +53,72 @@
         .form-sidebar .nav-link {
             display: flex;
             align-items: center;
-            gap: 8px;
+            gap: 10px;
             padding: 10px 14px;
-            border-radius: 8px;
+            border-radius: 10px;
             font-size: 14px;
-            font-family: Inter;
-            color: #555;
+            font-family: 'Inter', sans-serif;
+            color: #4b5563;
             text-decoration: none;
             margin-bottom: 4px;
-            transition: background 0.15s;
+            transition: background 0.15s, color 0.15s;
         }
 
             .form-sidebar .nav-link:hover {
-                background: #f0f0f0;
-                color: #222;
+                background: #f3f4f6;
+                color: #1f2937;
             }
 
             .form-sidebar .nav-link.active {
-                background: #e8f0fe;
-                color: #1a56db;
-                font-weight: 500;
+                background: var(--brand-green-light);
+                color: var(--brand-green);
+                font-weight: 600;
             }
 
             .form-sidebar .nav-link i {
                 font-size: 16px;
+            }
+
+    .sidebar-progress {
+        margin-top: 10px;
+        padding: 12px 14px;
+        background: #f4f6f4;
+        border-radius: 10px;
+    }
+
+        .sidebar-progress .progress-label {
+            font-size: 12px;
+            font-style: italic;
+            color: var(--text-muted);
+            margin-bottom: 8px;
+        }
+
+        .sidebar-progress .progress-track {
+            position: relative;
+            height: 5px;
+            border-radius: 999px;
+            background: #dfe5df;
+        }
+
+        .sidebar-progress .progress-fill {
+            height: 100%;
+            width: 0%;
+            background: var(--brand-green);
+            border-radius: 999px;
+            transition: width 0.25s ease;
+            position: relative;
+        }
+
+            .sidebar-progress .progress-fill::after {
+                content: "";
+                position: absolute;
+                right: -2px;
+                top: 50%;
+                transform: translateY(-50%);
+                width: 8px;
+                height: 8px;
+                border-radius: 50%;
+                background: var(--brand-green);
             }
 
     .form-content {
@@ -51,150 +128,236 @@
 
     .form-section {
         background: #fff;
-        border: 1px solid #e5e7eb;
-        border-radius: 12px;
-        padding: 1.5rem;
+        border: 1px solid var(--border-light);
+        border-radius: 14px;
+        padding: 1.75rem;
         margin-bottom: 1.5rem;
+        box-shadow: 0 1px 2px rgba(0,0,0,0.02);
     }
 
     .form-section-title {
-        font-size: 18px;
+        font-size: 17px;
         font-weight: 700;
         font-family: 'Manrope', sans-serif;
-        color: #111;
-        margin-bottom: 1.25rem;
+        color: var(--text-main);
+        margin-bottom: 1.4rem;
         display: flex;
         align-items: center;
-        gap: 8px;
+        gap: 10px;
     }
 
         .form-section-title i {
             font-size: 18px;
-            color: #1a56db;
+            color: var(--brand-green);
         }
 
-    .form-grid {
-        display: grid;
-        grid-template-columns: 1fr 1fr;
-        gap: 1rem;
+    /* Row-based layout: each row can hold a different number/ratio of fields,
+           matching the mockup exactly instead of a fixed grid */
+    .form-row {
+        display: flex;
+        gap: 1.5rem;
+        margin-bottom: 1.1rem;
+        align-items: flex-start;
     }
 
-        .form-grid .full-width {
-            grid-column: 1 / -1;
+        .form-row:last-child {
+            margin-bottom: 0;
         }
 
-    .form-grid-3 {
-        display: grid;
-        grid-template-columns: 1fr 1fr 1fr;
-        gap: 1rem;
-    }
+        .form-row > div {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .form-row .grow-2 {
+            flex: 1.8;
+        }
+
+        .form-row .grow-1-3 {
+            flex: 1.3;
+        }
+
+        .form-row .shrink {
+            flex: 0.9;
+        }
 
     .field-label {
         font-size: 13px;
         font-family: 'Inter', sans-serif;
         font-weight: 500;
-        color: #6b7280;
-        margin-bottom: 4px;
+        color: #374151;
+        margin-bottom: 6px;
+        display: block;
+    }
+
+    .field-label-caps {
+        font-size: 11px;
+        font-family: 'Inter', sans-serif;
+        font-weight: 600;
+        letter-spacing: 0.04em;
+        text-transform: uppercase;
+        color: var(--text-muted);
+        margin-bottom: 6px;
         display: block;
     }
 
     .form-control, .form-select {
         font-size: 14px;
         font-family: 'Inter', sans-serif;
-        border-radius: 8px;
+        border-radius: 10px;
         border: 1px solid #d1d5db;
-        padding: 8px 12px;
+        padding: 10px 14px;
         width: 100%;
-        color: #111;
+        color: var(--text-main);
+        background: #fff;
     }
+
+        .form-control::placeholder {
+            color: #9ca3af;
+        }
 
         .form-control:focus, .form-select:focus {
-            border-color: #1a56db;
+            border-color: var(--brand-green);
             outline: none;
-            box-shadow: 0 0 0 3px rgba(26, 86, 219, 0.1);
+            box-shadow: 0 0 0 3px rgba(27, 94, 32, 0.12);
         }
+
+        .form-control[readonly], .form-control.readonly-look {
+            background: #f9fafb;
+            color: #9ca3af;
+        }
+
+    .student-id-field .form-control {
+        background: var(--brand-green-light);
+        border-color: #bfe0c2;
+        color: var(--brand-green-dark);
+        font-weight: 600;
+    }
+
+    .subsection-label {
+        font-size: 12px;
+        font-weight: 700;
+        letter-spacing: 0.04em;
+        text-transform: uppercase;
+        color: #374151;
+        margin: 0.25rem 0 0.9rem;
+    }
+
+    .form-section > .form-row + .subsection-label {
+        margin-top: 1.5rem;
+    }
 
     .health-note {
-        background: #fffbeb;
-        border: 1px solid #fcd34d;
-        border-radius: 8px;
-        padding: 10px 14px;
+        background: #fef2f2;
+        border: 1px solid #fecaca;
+        border-radius: 10px;
+        padding: 12px 16px;
         font-size: 13px;
-        color: #92400e;
-        margin-bottom: 1rem;
+        color: #991b1b;
+        margin-bottom: 1.25rem;
+        display: flex;
+        align-items: flex-start;
+        gap: 8px;
     }
 
-    .edu-table {
-        width: 100%;
-        border-collapse: collapse;
-        font-size: 14px;
+        .health-note i {
+            font-size: 15px;
+            margin-top: 1px;
+        }
+
+    .add-link-btn {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        background: none;
+        border: none;
+        color: var(--brand-green);
+        font-size: 13px;
+        font-weight: 600;
+        padding: 4px 0 0;
+        cursor: pointer;
     }
 
-        .edu-table th {
-            font-size: 12px;
-            color: #6b7280;
-            font-weight: 500;
-            padding: 8px 10px;
-            border-bottom: 1px solid #e5e7eb;
-            text-align: left;
+        .add-link-btn:hover {
+            text-decoration: underline;
         }
 
-        .edu-table td {
-            padding: 8px 10px;
-            border-bottom: 1px solid #f3f4f6;
+        .add-link-btn i {
+            font-size: 15px;
         }
 
-            .edu-table td input {
-                width: 100%;
-                border: none;
-                background: transparent;
-                font-size: 14px;
-                color: #111;
-                outline: none;
-            }
+    .contact-row {
+        display: flex;
+        gap: 8px;
+        margin-bottom: 8px;
+    }
 
-                .edu-table td input:focus {
-                    background: #f9fafb;
-                    border-radius: 4px;
-                    padding: 2px 4px;
-                }
+        .contact-row .form-control {
+            flex: 1;
+        }
+
+        .contact-row select.form-control {
+            max-width: 180px;
+        }
+
+        .contact-row .remove-contact {
+            border: 1px solid var(--border-light);
+            background: #fff;
+            border-radius: 8px;
+            color: #dc2626;
+            width: 38px;
+            flex-shrink: 0;
+        }
 
     .form-footer {
         display: flex;
         justify-content: space-between;
         align-items: center;
-        padding: 1rem 0;
-        border-top: 1px solid #e5e7eb;
-        margin-top: 1rem;
+        padding: 1.25rem 1.5rem;
+        background: #fff;
+        border: 1px solid var(--border-light);
+        border-radius: 14px;
+        margin-top: 0.5rem;
     }
+
+        .form-footer .footer-note {
+            font-size: 13px;
+            color: var(--text-muted);
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
 
     .btn-save-draft {
         background: #fff;
         border: 1px solid #d1d5db;
-        border-radius: 8px;
-        padding: 9px 20px;
+        border-radius: 10px;
+        padding: 10px 22px;
         font-size: 14px;
+        font-weight: 500;
         color: #374151;
         cursor: pointer;
+        text-decoration: none;
     }
 
+        .btn-save-draft:hover {
+            background: #f9fafb;
+        }
+
     .btn-save-changes {
-        background: #1B5E20;
+        background: var(--brand-green);
         border: none;
-        border-radius: 8px;
-        padding: 9px 20px;
+        border-radius: 10px;
+        padding: 10px 22px;
         font-size: 14px;
+        font-weight: 600;
         color: #fff;
         cursor: pointer;
     }
 
         .btn-save-changes:hover {
-            background: #1648c0;
+            background: var(--brand-green-dark);
         }
-
-    .btn-save-draft:hover {
-        background: #f9fafb;
-    }
 
     @@media (max-width: 768px) {
         .form-wrapper {
@@ -206,18 +369,38 @@
             position: static;
         }
 
-        .form-grid, .form-grid-3 {
-            grid-template-columns: 1fr;
+        .form-row {
+            flex-direction: column;
+            gap: 1rem;
         }
-    }
 
-    body { font-family: 'Inter', sans-serif; }
-    h1, h2, h3, h4, h5, h6 { font-family: 'Manrope', sans-serif; }
+        .form-footer {
+            flex-direction: column;
+            gap: 12px;
+            align-items: stretch;
+        }
+
+            .form-footer > div {
+                display: flex;
+                gap: 10px;
+            }
+
+                .form-footer > div a, .form-footer > div input {
+                    flex: 1;
+                    text-align: center;
+                }
+    }
 </style>
+
+<div class="page-header">
+    <div class="breadcrumb-text">Students &gt; Add New Student</div>
+    <h1>Student Registration</h1>
+</div>
 
 <div class="form-wrapper">
 
-    <!-- Sidebar -->
+    <!-- Local form sidebar (this is scoped to this view; the dark green
+         app sidebar/top bar in the mockup belongs to the shared _Layout) -->
     <div class="form-sidebar">
         <a href="#personal" class="nav-link active">
             <i class="bi bi-person"></i> Personal Information
@@ -226,127 +409,147 @@
             <i class="bi bi-people"></i> Family Background
         </a>
         <a href="#education" class="nav-link">
-            <i class="bi bi-book"></i> Educational History
+            <i class="bi bi-mortarboard"></i> Educational History
         </a>
         <a href="#health" class="nav-link">
-            <i class="bi bi-heart-pulse"></i> Health & Wellness
+            <i class="bi bi-heart-pulse"></i> Health &amp; Wellness
         </a>
         <a href="#emergency" class="nav-link">
             <i class="bi bi-telephone"></i> Emergency Contact
         </a>
+
+        <div class="sidebar-progress">
+            <div class="progress-label">Completion: <span id="completion-percent">0</span>%</div>
+            <div class="progress-track">
+                <div class="progress-fill" id="completion-fill"></div>
+            </div>
+        </div>
     </div>
 
     <!-- Form Content -->
     <div asp-validation-summary="All" class="text-danger"></div>
-        <form asp-action="Create" method="post" class="form-content">
-            <div class="form-content">
+    <form asp-action="Create" method="post" class="form-content" id="student-form">
+        <div class="form-content">
 
-        <!-- Personal Information -->
-        <div class="form-section" id="personal">
-            <div class="form-section-title">
-                <i class="bi bi-person-badge"></i> Student Information
-            </div>
-            <div class="form-grid">
-                <div>
-                    <label class="field-label">Student ID</label>
-                    <input asp-for="Student.StuID" class="form-control" />
-                    <span asp-validation-for="Student.StuID" class="text-danger" style="font-size:12px;"></span>
+            <!-- Personal Information -->
+            <div class="form-section" id="personal">
+                <div class="form-section-title">
+                    <i class="bi bi-person-badge"></i> Student Information
                 </div>
-                <div>
-                    <label class="field-label">Full Name</label>
-                    <input asp-for="Student.StuName" class="form-control" />
-                    <span asp-validation-for="Student.StuName" class="text-danger" style="font-size:12px;"></span>
+
+                <div class="form-row">
+                    <div class="grow-2">
+                        <label class="field-label">Full Name</label>
+                        <input asp-for="Student.StuName" class="form-control" placeholder="e.g. John" />
+                        <span asp-validation-for="Student.StuName" class="text-danger" style="font-size:12px;"></span>
+                    </div>
+                    <div class="student-id-field">
+                        <label class="field-label">Student ID</label>
+                        <input asp-for="Student.StuID" class="form-control" placeholder="#ST-2024-483" />
+                        <span asp-validation-for="Student.StuID" class="text-danger" style="font-size:12px;"></span>
+                    </div>
                 </div>
-                <div>
-                    <label class="field-label">Gender</label>
-                    <select asp-for="Student.Gender" class="form-control">
-                        <option value="">Select</option>
-                        <option>Male</option>
-                        <option>Female</option>
-                    </select>
+
+                <div class="form-row">
+                    <div>
+                        <label class="field-label">Gender</label>
+                        <select asp-for="Student.Gender" class="form-control">
+                            <option value="">Select Gender</option>
+                            <option>Male</option>
+                            <option>Female</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="field-label">Birth Date</label>
+                        <input asp-for="Student.Birthday" type="date" class="form-control" />
+                        <span asp-validation-for="Student.Birthday" class="text-danger" style="font-size:12px;"></span>
+                    </div>
+                    <div>
+                        <label class="field-label">Age</label>
+                        <input asp-for="Student.Age" class="form-control" />
+                        <span asp-validation-for="Student.Age" class="text-danger" style="font-size:12px;"></span>
+                    </div>
                 </div>
-                <div>
-                    <label class="field-label">Age</label>
-                    <input asp-for="Student.Age" class="form-control" />
-                    <span asp-validation-for="Student.Age" class="text-danger" style="font-size:12px;"></span>
-                </div>
-                <div>
-                    <label class="field-label">Birthday</label>
-                    <input asp-for="Student.Birthday" type="date" class="form-control" />
-                    <span asp-validation-for="Student.Birthday" class="text-danger" style="font-size:12px;"></span>
-                </div>
-                <div>
-                    <label class="field-label">Birth Order</label>
-                    <input asp-for="Student.BirthOrder" placeholder="e.g. 1st of 3" class="form-control" />
-                </div>
-                <div>
-                    <label class="field-label">Email Address</label>
-                    <input asp-for="Student.Email" class="form-control" />
-                    <span asp-validation-for="Student.Email" class="text-danger" style="font-size:12px;"></span>
-                </div>
-                    <div class="full-width" id="student-contacts-section">
-                        <label class="field-label">Contact Numbers</label>
+
+                <div class="form-row">
+                    <div>
+                        <label class="field-label">Birth Order</label>
+                        <input asp-for="Student.BirthOrder" placeholder="e.g. 1st of 3" class="form-control" />
+                    </div>
+                    <div class="grow-1-3" id="student-contacts-section">
+                        <label class="field-label">Contact Number</label>
                         <div id="student-contacts">
                             @for (int i = 0; i < Model.StudentContacts.Count; i++)
                             {
-                                <div class="contact-row input-group mb-2">
+                                <div class="contact-row">
                                     <input name="StudentContacts[@i].Number" value="@Model.StudentContacts[i].Number"
-                                           class="form-control" placeholder="Number" />
-                                    <select name="StudentContacts[@i].Label" value="@Model.StudentContacts[i].Label"
-                                           class="form-control" style="max-width:200px;">
+                                           class="form-control" placeholder="+63 917 123 4567" />
+                                    <select name="StudentContacts[@i].Label" class="form-control">
                                         <option value="">Select type</option>
-                                        <option value="Office Telephone">Office Telephone</option>
-                                        <option value="Office Mobile Phone">Office Mobile Phone</option>
-                                        <option value="Home Telephone">Home Telephone</option>
-                                        <option value="Home Mobile Phone">Home Mobile Phone</option>
-                                        <option value="Personal Mobile Phone">Personal Mobile Phone</option>
+                                        <option value="Office Telephone" selected="@(Model.StudentContacts[i].Label == "Office Telephone")">Office Telephone</option>
+                                        <option value="Office Mobile Phone" selected="@(Model.StudentContacts[i].Label == "Office Mobile Phone")">Office Mobile Phone</option>
+                                        <option value="Home Telephone" selected="@(Model.StudentContacts[i].Label == "Home Telephone")">Home Telephone</option>
+                                        <option value="Home Mobile Phone" selected="@(Model.StudentContacts[i].Label == "Home Mobile Phone")">Home Mobile Phone</option>
+                                        <option value="Personal Mobile Phone" selected="@(Model.StudentContacts[i].Label == "Personal Mobile Phone")">Personal Mobile Phone</option>
                                     </select>
-                                    <button type="button" class="btn btn-sm btn-outline-danger ms-1 remove-contact">✕</button>
+                                    <button type="button" class="btn remove-contact">✕</button>
                                 </div>
                             }
                         </div>
-                        <button type="button" class="btn btn-sm btn-outline-secondary mt-1"
-                                onclick="addContact('student-contacts', 'StudentContacts')">
-                            + Add Number
+                        <button type="button" class="add-link-btn" onclick="addContact('student-contacts', 'StudentContacts')">
+                            <i class="bi bi-plus-circle"></i> Add Another Number
                         </button>
                     </div>
-                <div>
-                    <label class="field-label">Nationality</label>
-                    <input asp-for="Student.Nationality" class="form-control" />
                 </div>
-                <div>
-                    <label class="field-label">Religion</label>
-                    <input asp-for="Student.Religion" class="form-control" />
+
+                <div class="form-row">
+                    <div>
+                        <label class="field-label">Email Address</label>
+                        <input asp-for="Student.Email" class="form-control" placeholder="student@school.edu" />
+                        <span asp-validation-for="Student.Email" class="text-danger" style="font-size:12px;"></span>
+                    </div>
+                    <div>
+                        <label class="field-label">Living Arrangement</label>
+                        <select asp-for="Student.StayingWith" class="form-control">
+                            <option value="">Select</option>
+                            <option value="Parents">With Parents</option>
+                            <option value="Relatives">Relatives</option>
+                            <option value="Own Family">Own Family</option>
+                            <option value="Alone">Alone</option>
+                        </select>
+                    </div>
                 </div>
-                <div class="full-width">
-                    <label class="field-label">Home Address</label>
-                    <input asp-for="Student.Address" class="form-control" />
-                    <span asp-validation-for="Student.Address" class="text-danger" style="font-size:12px;"></span>
+
+                <div class="form-row">
+                    <div>
+                        <label class="field-label">Religion</label>
+                        <input asp-for="Student.Religion" class="form-control" />
+                    </div>
+                    <div>
+                        <label class="field-label">Grade Level</label>
+                        <input asp-for="Student.GradeLevel" class="form-control" placeholder="Select Grade" />
+                        <span asp-validation-for="Student.GradeLevel" class="text-danger" style="font-size:12px;"></span>
+                    </div>
+                    <div>
+                        <label class="field-label">Section</label>
+                        <input asp-for="Student.Section" class="form-control" placeholder="Select Section" />
+                        <span asp-validation-for="Student.Section" class="text-danger" style="font-size:12px;"></span>
+                    </div>
                 </div>
-                <div>
-                    <label class="field-label">Grade Level</label>
-                    <input asp-for="Student.GradeLevel" class="form-control" />
-                    <span asp-validation-for="Student.GradeLevel" class="text-danger" style="font-size:12px;"></span>
+
+                <div class="form-row">
+                    <div>
+                        <label class="field-label">Home Address</label>
+                        <textarea asp-for="Student.Address" class="form-control" rows="2" placeholder="Full residential address..."></textarea>
+                        <span asp-validation-for="Student.Address" class="text-danger" style="font-size:12px;"></span>
+                    </div>
                 </div>
-                <div>
-                    <label class="field-label">Section</label>
-                    <input asp-for="Student.Section" class="form-control" />
-                    <span asp-validation-for="Student.Section" class="text-danger" style="font-size:12px;"></span>
-                </div>
-                <div>
-                    <label class="field-label">Living Arrangement</label>
-                    <select asp-for="Student.StayingWith" class="form-control">
-                        <option value="">Select</option>
-                        <option value="Parents">With Parents</option>
-                        <option value="Relatives">Relatives</option>
-                        <option value="Own Family">Own Family</option>
-                        <option value="Alone">Alone</option>
-                    </select>
-                </div>
-                <div>
-                    <label class="field-label">School</label>
-                    <input asp-for="Student.School" class="form-control" />
-                </div>
+
+                <div class="form-row">
+                    <div>
+                        <label class="field-label">School</label>
+                        <input asp-for="Student.School" class="form-control" />
+                    </div>
                     <div>
                         <label class="field-label">Academic Year</label>
                         <select asp-for="Student.AcademicYear" class="form-control">
@@ -360,40 +563,45 @@
                             <option value="Second Semester A.Y. @yearRange">Second Semester A.Y. @yearRange</option>
                         </select>
                     </div>
+                    <div><!-- spacer to keep 3-col rhythm --></div>
+                </div>
             </div>
-        </div>
 
-        <!-- Family Background -->
-        <div class="form-section" id="family">
-            <div class="form-section-title">
-                <i class="bi bi-people-fill"></i> Family Information
-            </div>
-            <div class="form-grid">
-                <div>
-                    <label class="field-label">Father's Full Name</label>
-                    <input asp-for="Family.FatherName" class="form-control" />
+            <!-- Family Background -->
+            <div class="form-section" id="family">
+                <div class="form-section-title">
+                    <i class="bi bi-people-fill"></i> Family Information
                 </div>
-                <div>
-                    <label class="field-label">Father's Age</label>
-                    <input asp-for="Family.FatherAge" class="form-control" />
+
+                <div class="subsection-label">Father's Details</div>
+                <div class="form-row">
+                    <div>
+                        <label class="field-label">Full Name</label>
+                        <input asp-for="Family.FatherName" class="form-control" />
+                    </div>
+                    <div>
+                        <label class="field-label">Age</label>
+                        <input asp-for="Family.FatherAge" class="form-control" />
+                    </div>
+                    <div>
+                        <label class="field-label">Occupation</label>
+                        <input asp-for="Family.FatherOccupation" class="form-control" />
+                    </div>
                 </div>
-                <div class="full-width">
-                    <label class="field-label">Father's Occupation</label>
-                    <input asp-for="Family.FatherOccupation" class="form-control" />
-                </div>
-                <div class="full-width">
-                    <label class="field-label">Father's Educational Attainment</label>
-                    <input asp-for="Family.FatherEducationalAttainment" class="form-control" />
-                </div>
-                    <div class="full-width">
+                <div class="form-row">
+                    <div>
+                        <label class="field-label">Father Educational Attainment</label>
+                        <input asp-for="Family.FatherEducationalAttainment" class="form-control" />
+                    </div>
+                    <div>
                         <label class="field-label">Contact Number</label>
                         <div id="father-contacts">
                             @for (int i = 0; i < Model.FatherContacts.Count; i++)
                             {
-                                <div class="contact-row input-group mb-2">
+                                <div class="contact-row">
                                     <input name="FatherContacts[@i].Number" value="@Model.FatherContacts[i].Number"
                                            class="form-control" placeholder="Number" />
-                                    <select name="FatherContacts[@i].Label" class="form-control" style="max-width:200px;">
+                                    <select name="FatherContacts[@i].Label" class="form-control">
                                         <option value="">Select type</option>
                                         <option value="Office Telephone" selected="@(Model.FatherContacts[i].Label == "Office Telephone")">Office Telephone</option>
                                         <option value="Office Mobile Phone" selected="@(Model.FatherContacts[i].Label == "Office Mobile Phone")">Office Mobile Phone</option>
@@ -401,41 +609,45 @@
                                         <option value="Home Mobile Phone" selected="@(Model.FatherContacts[i].Label == "Home Mobile Phone")">Home Mobile Phone</option>
                                         <option value="Personal Mobile Phone" selected="@(Model.FatherContacts[i].Label == "Personal Mobile Phone")">Personal Mobile Phone</option>
                                     </select>
-                                    <button type="button" class="btn btn-sm btn-outline-danger ms-1 remove-contact">✕</button>
+                                    <button type="button" class="btn remove-contact">✕</button>
                                 </div>
                             }
                         </div>
-                        <button type="button" class="btn btn-sm btn-outline-secondary mt-1"
-                                onclick="addContact('father-contacts', 'FatherContacts')">
-                            + Add Number
+                        <button type="button" class="add-link-btn" onclick="addContact('father-contacts', 'FatherContacts')">
+                            <i class="bi bi-plus-circle"></i> Add Another Number
                         </button>
                     </div>
-                <div></div>
-                <div>
-                    <label class="field-label">Mother's Full Name</label>
-                    <input asp-for="Family.MotherName" class="form-control" />
                 </div>
-                <div>
-                    <label class="field-label">Mother's Age</label>
-                    <input asp-for="Family.MotherAge" class="form-control" />
+
+                <div class="subsection-label">Mother's Details</div>
+                <div class="form-row">
+                    <div>
+                        <label class="field-label">Full Name</label>
+                        <input asp-for="Family.MotherName" class="form-control" />
+                    </div>
+                    <div>
+                        <label class="field-label">Age</label>
+                        <input asp-for="Family.MotherAge" class="form-control" />
+                    </div>
+                    <div>
+                        <label class="field-label">Occupation</label>
+                        <input asp-for="Family.MotherOccupation" class="form-control" />
+                    </div>
                 </div>
-                <div class="full-width">
-                    <label class="field-label">Mother's Occupation</label>
-                    <input asp-for="Family.MotherOccupation" class="form-control" />
-                </div>
-                <div class="full-width">
-                    <label class="field-label">Mother's Educational Attainment</label>
-                    <input asp-for="Family.MotherEducationalAttainment" class="form-control" />
-                </div>
-                    <div class="full-width">
+                <div class="form-row">
+                    <div>
+                        <label class="field-label">Mother Educational Attainment</label>
+                        <input asp-for="Family.MotherEducationalAttainment" class="form-control" />
+                    </div>
+                    <div>
                         <label class="field-label">Contact Number</label>
                         <div id="mother-contacts">
                             @for (int i = 0; i < Model.MotherContacts.Count; i++)
                             {
-                                <div class="contact-row input-group mb-2">
+                                <div class="contact-row">
                                     <input name="MotherContacts[@i].Number" value="@Model.MotherContacts[i].Number"
                                            class="form-control" placeholder="Number" />
-                                    <select name="MotherContacts[@i].Label" class="form-control" style="max-width:200px;">
+                                    <select name="MotherContacts[@i].Label" class="form-control">
                                         <option value="">Select type</option>
                                         <option value="Office Telephone" selected="@(Model.MotherContacts[i].Label == "Office Telephone")">Office Telephone</option>
                                         <option value="Office Mobile Phone" selected="@(Model.MotherContacts[i].Label == "Office Mobile Phone")">Office Mobile Phone</option>
@@ -443,84 +655,95 @@
                                         <option value="Home Mobile Phone" selected="@(Model.MotherContacts[i].Label == "Home Mobile Phone")">Home Mobile Phone</option>
                                         <option value="Personal Mobile Phone" selected="@(Model.MotherContacts[i].Label == "Personal Mobile Phone")">Personal Mobile Phone</option>
                                     </select>
-                                    <button type="button" class="btn btn-sm btn-outline-danger ms-1 remove-contact">✕</button>
+                                    <button type="button" class="btn remove-contact">✕</button>
                                 </div>
                             }
                         </div>
-                        <button type="button" class="btn btn-sm btn-outline-secondary mt-1"
-                                onclick="addContact('mother-contacts', 'MotherContacts')">
-                            + Add Number
+                        <button type="button" class="add-link-btn" onclick="addContact('mother-contacts', 'MotherContacts')">
+                            <i class="bi bi-plus-circle"></i> Add Another Number
                         </button>
                     </div>
-                <div></div>
-                <div>
-                    <label class="field-label">Parents' Status</label>
-                    <select asp-for="Family.ParentsRelationshipStatus" class="form-control">
-                        <option value="">Select</option>
-                        <option>Married and Living Together</option>
-                        <option>Married but Separated</option>
-                        <option>Both with other partners</option>
-                        <option>Not Married</option>
-                        <option>Father/Mother with another partner</option>
-                        <option>Both without parents</option>
-                        <option>Deceased</option>
-                    </select>
                 </div>
-                <div>
-                    <label class="field-label">Monthly Household Income</label>
-                    <select asp-for="Family.MonthlyFamilyIncome" class="form-control">
-                        <option value="">Select</option>
-                        <option>Below 10,000</option>
-                        <option>10,000 - 20,000</option>
-                        <option>20,001 - 30,000</option>
-                        <option>Above 30,000</option>
-                    </select>
-                </div>
-            </div>
-        </div>
 
-        <!-- Educational History -->
-        <div class="form-section" id="education">
-            <div class="form-section-title">
-                <i class="bi bi-mortarboard-fill"></i> Education History
-            </div>
-            <table class="edu-table">
-                <thead>
-                    <tr>
-                        <th>Previous School Name</th>
-                        <th>Level / Year</th>
-                        <th>Honors/Awards</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr>
-                        <td><input asp-for="Education.ElementarySchool" placeholder="Elementary school" /></td>
-                        <td><input asp-for="Education.ElementaryYear" placeholder="Year graduated" /></td>
-                        <td><input asp-for="Education.ElementaryHonors" placeholder="Honors, if any" /></td>
-                    </tr>
-                    <tr>
-                        <td><input asp-for="Education.SecondarySchool" placeholder="Secondary school" /></td>
-                        <td><input asp-for="Education.SecondaryYear" placeholder="Year graduated" /></td>
-                        <td><input asp-for="Education.SecondaryHonors" placeholder="Honors, if any" /></td>
-                    </tr>
-                </tbody>
-            </table>
-        </div>
-
-        <!-- Health & Wellness -->
-        <div class="form-section" id="health">
-            <div class="form-section-title">
-                <i class="bi bi-heart-pulse-fill"></i> Health & Wellness
-            </div>
-            <div class="health-note">
-                ⚠️ This section contains sensitive health information. Please handle with care and ensure confidentiality.
-            </div>
-            <div class="form-grid">
-                <div class="form-grid-3 full-width">
+                <div class="form-row">
                     <div>
-                        <label class="field-label">Blood Type</label>
-                        <select asp-for="Health.BloodType" class="form-control">
+                        <label class="field-label">Parents Status</label>
+                        <select asp-for="Family.ParentsRelationshipStatus" class="form-control">
                             <option value="">Select</option>
+                            <option>Married and Living Together</option>
+                            <option>Married but Separated</option>
+                            <option>Both with other partners</option>
+                            <option>Not Married</option>
+                            <option>Father/Mother with another partner</option>
+                            <option>Both without parents</option>
+                            <option>Deceased</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="field-label">Monthly Household Income</label>
+                        <select asp-for="Family.MonthlyFamilyIncome" class="form-control">
+                            <option value="">Select</option>
+                            <option>Below &#8369;10,000</option>
+                            <option>10,000 - 20,000</option>
+                            <option>20,001 - 30,000</option>
+                            <option>Above 30,000</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Educational History -->
+            <div class="form-section" id="education">
+                <div class="form-section-title">
+                    <i class="bi bi-mortarboard-fill"></i> Educational History
+                </div>
+
+                <div class="form-row">
+                    <div>
+                        <label class="field-label">Elementary School</label>
+                        <input asp-for="Education.ElementarySchool" class="form-control" />
+                    </div>
+                    <div>
+                        <label class="field-label">Year Graduated</label>
+                        <input asp-for="Education.ElementaryYear" class="form-control" />
+                    </div>
+                    <div>
+                        <label class="field-label">Honors/Awards</label>
+                        <input asp-for="Education.ElementaryHonors" class="form-control" placeholder="Honors, if any" />
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div>
+                        <label class="field-label">High School</label>
+                        <input asp-for="Education.SecondarySchool" class="form-control" />
+                    </div>
+                    <div>
+                        <label class="field-label">Year Graduated</label>
+                        <input asp-for="Education.SecondaryYear" class="form-control" />
+                    </div>
+                    <div>
+                        <label class="field-label">Honors/Awards</label>
+                        <input asp-for="Education.SecondaryHonors" class="form-control" placeholder="Honors, if any" />
+                    </div>
+                </div>
+            </div>
+
+            <!-- Health & Wellness -->
+            <div class="form-section" id="health">
+                <div class="form-section-title">
+                    <i class="bi bi-heart-pulse-fill"></i> Health &amp; Wellness
+                </div>
+                <div class="health-note">
+                    <i class="bi bi-exclamation-triangle-fill"></i>
+                    <span>This section contains sensitive health information. Please handle with care and ensure confidentiality.</span>
+                </div>
+
+                <div class="form-row">
+                    <div>
+                        <label class="field-label-caps">Blood Type</label>
+                        <select asp-for="Health.BloodType" class="form-control">
+                            <option value="">Unknown</option>
                             <option>A+</option>
                             <option>A-</option>
                             <option>B+</option>
@@ -532,111 +755,125 @@
                         </select>
                     </div>
                     <div>
-                        <label class="field-label">Height (cm)</label>
-                        <input asp-for="Health.Height" class="form-control" />
+                        <label class="field-label-caps">Height (cm)</label>
+                        <input asp-for="Health.Height" class="form-control readonly-look" placeholder="--" />
                     </div>
                     <div>
-                        <label class="field-label">Weight (kg)</label>
-                        <input asp-for="Health.Weight" class="form-control" />
+                        <label class="field-label-caps">Weight (kg)</label>
+                        <input asp-for="Health.Weight" class="form-control readonly-look" placeholder="--" />
                     </div>
                 </div>
-                <div class="full-width">
-                    <label class="field-label">Family Medical History</label>
-                    <textarea asp-for="Health.Ailments" placeholder="Specify condition(s), if any" class="form-control" rows="2"></textarea>
-                </div>
-                <div class="full-width">
-                    <label class="field-label">Under Medication</label>
-                    <textarea asp-for="Health.Medication" placeholder="List medication name and dosage, if applicable" class="form-control" rows="2"></textarea>
-                </div>
-                <div class="full-width">
-                    <label asp-for="Health.SuicideRiskHistory" class="field-label"></label>
-                    <textarea asp-for="Health.SuicideRiskHistory" class="form-control" rows="2"></textarea>
-                    <span asp-validation-for="Health.SuicideRiskHistory" class="text-danger"></span>
-                </div>
-                <div class="full-width">
-                    <label asp-for="Health.AbuseHistory" class="field-label"></label>
-                    <textarea asp-for="Health.AbuseHistory" class="form-control" rows="2"></textarea>
-                    <span asp-validation-for="Health.AbuseHistory" class="text-danger"></span>
-                </div>
-                <div class="full-width">
-                    <label asp-for="Health.DrugHistory" class="field-label"></label>
-                    <textarea asp-for="Health.DrugHistory" placeholder="If yes, indicate type and approximate time period" class="form-control" rows="2"></textarea>
-                    <span asp-validation-for="Health.DrugHistory" class="text-danger"></span>
-                </div>
-                <div class="full-width">
-                    <label asp-for="Health.FamilyMentalHealthHistory" class="field-label"></label>
-                    <textarea asp-for="Health.FamilyMentalHealthHistory" placeholder="Specify condition and relationship to the family member" class="form-control" rows="2"></textarea>
-                    <span asp-validation-for="Health.FamilyMentalHealthHistory" class="text-danger"></span>
-                </div>
-                <div class="full-width">
-                    <label asp-for="Health.PsychiatricConsultation" class="field-label"></label>
-                    <textarea asp-for="Health.PsychiatricConsultation" placeholder="State reason and approximate date of consultation(s)" class="form-control" rows="2"></textarea>
-                    <span asp-validation-for="Health.PsychiatricConsultation" class="text-danger"></span>
-                </div>
-                <div class="full-width">
-                    <label asp-for="Health.AdditionalNotes" class="field-label"></label>
-                    <textarea asp-for="Health.AdditionalNotes" placeholder="Enter any additional notes or comments" class="form-control" rows="2"></textarea>
-                    <span asp-validation-for="Health.AdditionalNotes" class="text-danger"></span>
-                </div>
-            </div>
-        </div>
 
-        <!-- Emergency Contact -->
-        <div class="form-section" id="emergency">
-            <div class="form-section-title">
-                <i class="bi bi-telephone-fill"></i> Emergency Contact
-            </div>
-            <div class="form-grid">
-                <div>
-                    <label class="field-label">Emergency Contact Name</label>
-                    <input asp-for="Emergency.EmergencyContactPerson" class="form-control" />
+                <div class="form-row">
+                    <div>
+                        <label class="field-label-caps">Current Medications / Chronic Ailments</label>
+                        <textarea asp-for="Health.Medication" placeholder="List any medications or medical conditions..." class="form-control" rows="2"></textarea>
+                    </div>
                 </div>
-                    <div class="full-width">
+                <div class="form-row">
+                    <div>
+                        <label class="field-label-caps">Family Medical History</label>
+                        <textarea asp-for="Health.Ailments" placeholder="Specify condition(s), if any" class="form-control" rows="2"></textarea>
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div>
+                        <label asp-for="Health.SuicideRiskHistory" class="field-label-caps">History of Suicidal Thoughts or Attempts</label>
+                        <textarea asp-for="Health.SuicideRiskHistory" placeholder="Details if applicable..." class="form-control" rows="2"></textarea>
+                        <span asp-validation-for="Health.SuicideRiskHistory" class="text-danger"></span>
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div>
+                        <label asp-for="Health.AbuseHistory" class="field-label-caps">History of Abuse or Maltreatment</label>
+                        <textarea asp-for="Health.AbuseHistory" class="form-control" rows="2"></textarea>
+                        <span asp-validation-for="Health.AbuseHistory" class="text-danger"></span>
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div>
+                        <label asp-for="Health.DrugHistory" class="field-label-caps">History of Illegal Drug Use</label>
+                        <textarea asp-for="Health.DrugHistory" placeholder="If yes, indicate type and approximate time period" class="form-control" rows="2"></textarea>
+                        <span asp-validation-for="Health.DrugHistory" class="text-danger"></span>
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div>
+                        <label asp-for="Health.FamilyMentalHealthHistory" class="field-label-caps">Family History of Mental or Developmental Conditions</label>
+                        <textarea asp-for="Health.FamilyMentalHealthHistory" placeholder="Specify condition and relationship to the family member" class="form-control" rows="2"></textarea>
+                        <span asp-validation-for="Health.FamilyMentalHealthHistory" class="text-danger"></span>
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div>
+                        <label asp-for="Health.PsychiatricConsultation" class="field-label-caps">Previous Psychiatric or Psychological Consultation</label>
+                        <textarea asp-for="Health.PsychiatricConsultation" placeholder="State reason and approximate date of consultation(s)" class="form-control" rows="2"></textarea>
+                        <span asp-validation-for="Health.PsychiatricConsultation" class="text-danger"></span>
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div>
+                        <label asp-for="Health.AdditionalNotes" class="field-label-caps">Additional Relevant Information / Remarks</label>
+                        <textarea asp-for="Health.AdditionalNotes" placeholder="Enter any additional notes or comments" class="form-control" rows="2"></textarea>
+                        <span asp-validation-for="Health.AdditionalNotes" class="text-danger"></span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Emergency Contact -->
+            <div class="form-section" id="emergency">
+                <div class="form-section-title">
+                    <i class="bi bi-telephone-fill"></i> Emergency Contact
+                </div>
+
+                <div class="form-row">
+                    <div>
+                        <label class="field-label">Full Name</label>
+                        <input asp-for="Emergency.EmergencyContactPerson" class="form-control" placeholder="e.g. Martha Wayne" />
+                    </div>
+                    <div>
+                        <label class="field-label">Age</label>
+                        <input asp-for="Emergency.EmergencyContactAge" class="form-control" />
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div id="emergency-contacts-wrap">
                         <label class="field-label">Contact Number</label>
                         <div id="emergency-contacts">
                             @for (int i = 0; i < Model.EmergencyContacts.Count; i++)
                             {
-                                <div class="contact-row input-group mb-2">
+                                <div class="contact-row">
                                     <input name="EmergencyContacts[@i].Number" value="@Model.EmergencyContacts[i].Number"
                                            class="form-control" placeholder="Number" />
-                                    <select name="EmergencyContacts[@i].Label" class="form-control" style="max-width:200px;">
-                                        <option value="">Select type</option>
-                                        <option value="Office Telephone" selected="@(Model.EmergencyContacts[i].Label == "Office Telephone")">Office Telephone</option>
-                                        <option value="Office Mobile Phone" selected="@(Model.EmergencyContacts[i].Label == "Office Mobile Phone")">Office Mobile Phone</option>
-                                        <option value="Home Telephone" selected="@(Model.EmergencyContacts[i].Label == "Home Telephone")">Home Telephone</option>
-                                        <option value="Home Mobile Phone" selected="@(Model.EmergencyContacts[i].Label == "Home Mobile Phone")">Home Mobile Phone</option>
-                                        <option value="Personal Mobile Phone" selected="@(Model.EmergencyContacts[i].Label == "Personal Mobile Phone")">Personal Mobile Phone</option>
-                                    </select>
-                                    <button type="button" class="btn btn-sm btn-outline-danger ms-1 remove-contact">✕</button>
+                                    @* Type kept as a hidden field to preserve model binding; the mockup
+                                       doesn't show a type selector for the emergency contact. *@
+                                    <input type="hidden" name="EmergencyContacts[@i].Label" value="@(string.IsNullOrEmpty(Model.EmergencyContacts[i].Label) ? "Personal Mobile Phone" : Model.EmergencyContacts[i].Label)" />
                                 </div>
                             }
                         </div>
-                        <button type="button" class="btn btn-sm btn-outline-secondary mt-1"
-                                onclick="addContact('emergency-contacts', 'EmergencyContacts')">
-                            + Add Number
-                        </button>
                     </div>
-                <div>
-                    <label class="field-label">Occupation</label>
-                    <input asp-for="Emergency.EmergencyContactOccupation" class="form-control" />
+                    <div>
+                        <label class="field-label">Occupation</label>
+                        <input asp-for="Emergency.EmergencyContactOccupation" class="form-control" />
+                    </div>
                 </div>
-                <div>
-                    <label class="field-label">Age</label>
-                    <input asp-for="Emergency.EmergencyContactAge" class="form-control" />
-                </div>
-                <div class="full-width">
-                    <label class="field-label">Address</label>
-                    <textarea asp-for="Emergency.EmergencyContactAddress" class="form-control" rows="2"></textarea>
+
+                <div class="form-row">
+                    <div>
+                        <label class="field-label">Address</label>
+                        <textarea asp-for="Emergency.EmergencyContactAddress" class="form-control" rows="2"></textarea>
+                    </div>
                 </div>
             </div>
-        </div>
 
-        <!-- Footer -->
-        <div class="form-footer">
-            <small class="text-muted">🔒 Privacy Protected • Sys.Logged</small>
-            <div style="display:flex; gap:10px;">
-                <a asp-action="Index" class="btn-save-draft">Cancel</a>
-                <input type="submit" value="Add Student" class="btn-save-changes" />
+            <!-- Footer -->
+            <div class="form-footer">
+                <small class="footer-note"><i class="bi bi-shield-check"></i> Privacy Protected &amp; Encrypted</small>
+                <div style="display:flex; gap:10px;">
+                    <a asp-action="Index" class="btn-save-draft">Cancel</a>
+                    <input type="submit" value="Add Student" class="btn-save-changes" />
+                </div>
             </div>
         </div>
     </form>
@@ -665,14 +902,14 @@
         });
     });
 
-        function addContact(containerId, prefix) {
+    function addContact(containerId, prefix) {
         const container = document.getElementById(containerId);
         const index = container.querySelectorAll('.contact-row').length;
         const row = document.createElement('div');
-        row.className = 'contact-row input-group mb-2';
+        row.className = 'contact-row';
         row.innerHTML = `
             <input name="${prefix}[${index}].Number" class="form-control" placeholder="Number" />
-            <select name="${prefix}[${index}].Label" class="form-control" style="max-width:200px;">
+            <select name="${prefix}[${index}].Label" class="form-control">
                 <option value="">Select type</option>
                 <option value="Office Telephone">Office Telephone</option>
                 <option value="Office Mobile Phone">Office Mobile Phone</option>
@@ -680,13 +917,30 @@
                 <option value="Home Mobile Phone">Home Mobile Phone</option>
                 <option value="Personal Mobile Phone">Personal Mobile Phone</option>
             </select>
-            <button type="button" class="btn btn-sm btn-outline-danger ms-1 remove-contact">✕</button>`;
+            <button type="button" class="btn remove-contact">✕</button>`;
         container.appendChild(row);
+        updateCompletion();
     }
 
     document.addEventListener('click', e => {
         if (e.target.classList.contains('remove-contact')) {
             e.target.closest('.contact-row').remove();
+            updateCompletion();
         }
     });
+
+    // Simple completion tracker based on filled fields
+    function updateCompletion() {
+        const form = document.getElementById('student-form');
+        const fields = form.querySelectorAll('input.form-control, select.form-control, textarea.form-control');
+        let filled = 0;
+        fields.forEach(f => { if (f.value && f.value.trim() !== '') filled++; });
+        const percent = fields.length ? Math.round((filled / fields.length) * 100) : 0;
+        document.getElementById('completion-percent').textContent = percent;
+        document.getElementById('completion-fill').style.width = percent + '%';
+    }
+
+    document.getElementById('student-form').addEventListener('input', updateCompletion);
+    document.getElementById('student-form').addEventListener('change', updateCompletion);
+    updateCompletion();
 </script>

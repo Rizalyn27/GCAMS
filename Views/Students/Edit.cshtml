@@ -1,405 +1,994 @@
-﻿@model GCAMS.Models.Counselor.Counselor
+﻿@model GCAMS.ViewModels.StudentFormViewModel
 
 @{
-    ViewData["Title"] = "Edit Counselor";
+    ViewData["Title"] = "Edit Student";
+    Layout = null;
 }
 
-<style>
-    @@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Manrope:wght@600;700&display=swap');
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - CounselCare</title>
 
-    .form-wrapper {
-        display: flex;
-        gap: 1.5rem;
-        align-items: flex-start;
-    }
+    <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@600;700;800&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet">
 
-    .form-sidebar {
-        width: 200px;
-        flex-shrink: 0;
-        position: sticky;
-        top: 1rem;
-    }
+    <style>
+        * {
+            box-sizing: border-box;
+        }
 
-        .form-sidebar .nav-link {
+        body {
+            margin: 0;
+            background: #f4f6f0;
+            font-family: 'Inter', sans-serif;
+        }
+
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+            vertical-align: middle;
+        }
+
+        h1, h2, h3, h4 {
+            font-family: 'Manrope', sans-serif;
+            margin: 0;
+        }
+
+        /* ===== APP SIDEBAR ===== */
+        .sidebar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            bottom: 0;
+            width: 220px;
+            background: linear-gradient(180deg, #0b3d10, #12481a 60%, #0e3d12);
+            color: #e7f0e3;
+            padding: 22px 14px;
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+            z-index: 10;
+        }
+
+        .sidebar-logo {
             display: flex;
             align-items: center;
-            gap: 8px;
-            padding: 10px 14px;
-            border-radius: 8px;
+            gap: 10px;
+            padding: 4px 10px 22px 10px;
+        }
+
+            .sidebar-logo .logo-icon {
+                width: 36px;
+                height: 36px;
+                border-radius: 10px;
+                background: radial-gradient(circle at 30% 30%, #a0f499, #1b6d24);
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                flex-shrink: 0;
+            }
+
+            .sidebar-logo .logo-text {
+                line-height: 1.2;
+            }
+
+                .sidebar-logo .logo-text .name {
+                    font-family: 'Manrope', sans-serif;
+                    font-weight: 700;
+                    font-size: 15px;
+                    color: #fff;
+                }
+
+                .sidebar-logo .logo-text .sub {
+                    font-size: 11px;
+                    color: #a9c7a4;
+                }
+
+        .nav-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 10px 12px;
+            border-radius: 10px;
             font-size: 14px;
-            font-family: Inter;
-            color: #555;
+            font-weight: 600;
+            color: #cfe0ca;
             text-decoration: none;
-            margin-bottom: 4px;
-            transition: background 0.15s;
+            transition: background 0.15s, color 0.15s;
         }
 
-            .form-sidebar .nav-link:hover {
-                background: #f0f0f0;
-                color: #222;
+            .nav-item .material-symbols-outlined {
+                font-size: 20px;
             }
 
-            .form-sidebar .nav-link.active {
-                background: #e8f5e9;
+            .nav-item:hover {
+                background: rgba(255,255,255,0.08);
+                color: #fff;
+            }
+
+            .nav-item.active {
+                background: #a0f499;
+                color: #04310a;
+            }
+
+        /* ===== TOPBAR ===== */
+        .topbar {
+            position: sticky;
+            top: 0;
+            height: 64px;
+            background: #f9faf6;
+            border-bottom: 1px solid rgba(192,201,187,0.4);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 28px;
+            z-index: 5;
+        }
+
+        .breadcrumb-nav {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 14px;
+            color: #717a6d;
+        }
+
+            .breadcrumb-nav a {
+                color: #717a6d;
+                text-decoration: none;
+            }
+
+                .breadcrumb-nav a:hover {
+                    color: #1b6d24;
+                }
+
+            .breadcrumb-nav .current {
                 color: #1b6d24;
-                font-weight: 500;
+                font-weight: 700;
             }
 
-            .form-sidebar .nav-link i {
-                font-size: 16px;
+        .topbar-right {
+            display: flex;
+            align-items: center;
+            gap: 18px;
+        }
+
+        .bell-btn {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #41493e;
+            cursor: pointer;
+        }
+
+            .bell-btn:hover {
+                background: rgba(192,201,187,0.25);
             }
 
-    .form-content {
-        flex: 1;
-        min-width: 0;
-    }
-
-    .form-section {
-        background: #fff;
-        border: 1px solid #e5e7eb;
-        border-radius: 12px;
-        padding: 1.5rem;
-        margin-bottom: 1.5rem;
-    }
-
-    .form-section-title {
-        font-size: 18px;
-        font-weight: 700;
-        font-family: 'Manrope', sans-serif;
-        color: #111;
-        margin-bottom: 1.25rem;
-        display: flex;
-        align-items: center;
-        gap: 8px;
-    }
-
-        .form-section-title i {
-            font-size: 18px;
-            color: #1b6d24;
+        .user-avatar {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #2e6b2f, #1b6d24);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #fff;
+            font-weight: 700;
+            font-size: 13px;
         }
 
-    .form-grid {
-        display: grid;
-        grid-template-columns: 1fr 1fr;
-        gap: 1rem;
-    }
-
-        .form-grid .full-width {
-            grid-column: 1 / -1;
+        /* ===== SHELL ===== */
+        .app-shell {
+            margin-left: 220px;
+            min-height: 100vh;
         }
 
-    .form-grid-3 {
-        display: grid;
-        grid-template-columns: 1fr 1fr 1fr;
-        gap: 1rem;
-    }
-
-    .field-label {
-        font-size: 13px;
-        font-family: 'Inter', sans-serif;
-        font-weight: 500;
-        color: #6b7280;
-        margin-bottom: 4px;
-        display: block;
-    }
-
-    .form-control, .form-select {
-        font-size: 14px;
-        font-family: 'Inter', sans-serif;
-        border-radius: 8px;
-        border: 1px solid #d1d5db;
-        padding: 8px 12px;
-        width: 100%;
-        color: #111;
-    }
-
-        .form-control:focus, .form-select:focus {
-            border-color: #1b6d24;
-            outline: none;
-            box-shadow: 0 0 0 3px rgba(27, 109, 36, 0.1);
+        .page-body {
+            max-width: 1180px;
+            margin: 0 auto;
+            padding: 24px 28px 64px;
         }
 
-    .form-footer {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        padding: 1rem 0;
-        border-top: 1px solid #e5e7eb;
-        margin-top: 1rem;
-    }
-
-    .btn-cancel {
-        background: #fff;
-        border: 1px solid #d1d5db;
-        border-radius: 8px;
-        padding: 9px 20px;
-        font-size: 14px;
-        color: #374151;
-        cursor: pointer;
-        text-decoration: none;
-    }
-
-        .btn-cancel:hover {
-            background: #f9fafb;
-            color: #374151;
-        }
-
-    .btn-save {
-        background: #1b6d24;
-        border: none;
-        border-radius: 8px;
-        padding: 9px 20px;
-        font-size: 14px;
-        color: #fff;
-        cursor: pointer;
-    }
-
-        .btn-save:hover {
-            background: #155a1e;
-        }
-
-    @@media (max-width: 768px) {
+        /* ===== FORM WRAPPER (from your existing pattern) ===== */
         .form-wrapper {
-            flex-direction: column;
+            display: flex;
+            gap: 1.5rem;
+            align-items: flex-start;
         }
 
         .form-sidebar {
+            width: 220px;
+            flex-shrink: 0;
+            position: sticky;
+            top: 88px;
+            background: #fff;
+            border: 1px solid rgba(192,201,187,0.3);
+            border-radius: 12px;
+            padding: 10px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.04);
+        }
+
+            .form-sidebar .nav-link {
+                display: flex;
+                align-items: center;
+                gap: 8px;
+                padding: 10px 14px;
+                border-radius: 8px;
+                font-size: 14px;
+                font-family: Inter;
+                color: #555;
+                text-decoration: none;
+                margin-bottom: 4px;
+                transition: background 0.15s;
+            }
+
+                .form-sidebar .nav-link .material-symbols-outlined {
+                    font-size: 18px;
+                }
+
+                .form-sidebar .nav-link:hover {
+                    background: #f0f0f0;
+                    color: #222;
+                }
+
+                .form-sidebar .nav-link.active {
+                    background: #e8f5e9;
+                    color: #1b6d24;
+                    font-weight: 600;
+                }
+
+            .form-sidebar .progress-block {
+                margin-top: 12px;
+                padding: 12px 14px 4px;
+                border-top: 1px solid rgba(192,201,187,0.4);
+            }
+
+            .form-sidebar .progress-label {
+                font-size: 12px;
+                font-weight: 600;
+                color: #6b7280;
+                margin-bottom: 6px;
+                display: flex;
+                justify-content: space-between;
+            }
+
+            .form-sidebar .progress-track {
+                height: 6px;
+                border-radius: 999px;
+                background: #e5e7eb;
+                overflow: hidden;
+            }
+
+            .form-sidebar .progress-fill {
+                height: 100%;
+                width: 0%;
+                background: #1b6d24;
+                border-radius: 999px;
+                transition: width 0.25s ease;
+            }
+
+        .form-content {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .form-section {
+            background: #fff;
+            border: 1px solid #e5e7eb;
+            border-radius: 12px;
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+            scroll-margin-top: 88px;
+        }
+
+        .form-section-title {
+            font-size: 18px;
+            font-weight: 700;
+            font-family: 'Manrope', sans-serif;
+            color: #111;
+            margin-bottom: 1.25rem;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+            .form-section-title .material-symbols-outlined {
+                font-size: 20px;
+                color: #1b6d24;
+            }
+
+        .confidential-banner {
+            display: flex;
+            align-items: flex-start;
+            gap: 10px;
+            background: #fff1f0;
+            border: 1px solid #ffdad6;
+            color: #93000a;
+            border-radius: 10px;
+            padding: 12px 14px;
+            font-size: 13px;
+            margin-bottom: 1.25rem;
+        }
+
+            .confidential-banner .material-symbols-outlined {
+                font-size: 18px;
+                flex-shrink: 0;
+            }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+        }
+
+            .form-grid .full-width {
+                grid-column: 1 / -1;
+            }
+
+        .form-grid-3 {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 1rem;
+        }
+
+        .field-label {
+            font-size: 13px;
+            font-family: 'Inter', sans-serif;
+            font-weight: 500;
+            color: #6b7280;
+            margin-bottom: 4px;
+            display: block;
+        }
+
+        .form-control, .form-select {
+            font-size: 14px;
+            font-family: 'Inter', sans-serif;
+            border-radius: 8px;
+            border: 1px solid #d1d5db;
+            padding: 8px 12px;
             width: 100%;
-            position: static;
+            color: #111;
         }
 
-        .form-grid, .form-grid-3 {
-            grid-template-columns: 1fr;
+            .form-control:focus, .form-select:focus {
+                border-color: #1b6d24;
+                outline: none;
+                box-shadow: 0 0 0 3px rgba(27, 109, 36, 0.1);
+            }
+
+        textarea.form-control {
+            resize: vertical;
         }
-    }
 
-    body {
-        font-family: 'Inter', sans-serif;
-    }
+        .add-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            background: none;
+            border: none;
+            color: #1b6d24;
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+            padding: 6px 0;
+        }
 
-    h1, h2, h3, h4, h5, h6 {
-        font-family: 'Manrope', sans-serif;
-    }
-</style>
+            .add-link .material-symbols-outlined {
+                font-size: 16px;
+            }
 
-<div class="form-wrapper">
+            .add-link:hover {
+                text-decoration: underline;
+            }
 
-    <!-- Sidebar -->
-    <div class="form-sidebar">
-        <a href="#personal" class="nav-link active">
-            <i class="bi bi-person-badge"></i> Personal Info
+        .contact-row {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 8px;
+        }
+
+            .contact-row .form-control:first-child {
+                flex: 1;
+            }
+
+            .contact-row select.form-control {
+                max-width: 200px;
+            }
+
+        .remove-contact {
+            background: #fff;
+            border: 1px solid #ffdad6;
+            color: #93000a;
+            border-radius: 8px;
+            width: 36px;
+            flex-shrink: 0;
+            cursor: pointer;
+        }
+
+            .remove-contact:hover {
+                background: #ffdad6;
+            }
+
+        .form-footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1rem 0.25rem;
+            margin-top: 0.5rem;
+        }
+
+            .form-footer .privacy-note {
+                display: flex;
+                align-items: center;
+                gap: 6px;
+                font-size: 13px;
+                color: #6b7280;
+            }
+
+                .form-footer .privacy-note .material-symbols-outlined {
+                    font-size: 16px;
+                    color: #1b6d24;
+                }
+
+        .btn-cancel {
+            background: #fff;
+            border: 1px solid #d1d5db;
+            border-radius: 8px;
+            padding: 9px 20px;
+            font-size: 14px;
+            color: #374151;
+            cursor: pointer;
+            text-decoration: none;
+        }
+
+            .btn-cancel:hover {
+                background: #f9fafb;
+            }
+
+        .btn-save {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            background: #1b6d24;
+            border: none;
+            border-radius: 8px;
+            padding: 9px 20px;
+            font-size: 14px;
+            font-weight: 600;
+            color: #fff;
+            cursor: pointer;
+        }
+
+            .btn-save:hover {
+                background: #155a1e;
+            }
+
+        @@media (max-width: 900px) {
+            .sidebar {
+                display: none;
+            }
+
+            .app-shell {
+                margin-left: 0;
+            }
+        }
+
+        @@media (max-width: 768px) {
+            .form-wrapper {
+                flex-direction: column;
+            }
+
+            .form-sidebar {
+                width: 100%;
+                position: static;
+            }
+
+            .form-grid, .form-grid-3 {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- ===== APP SIDEBAR ===== -->
+    <aside class="sidebar">
+        <div class="sidebar-logo">
+            <div class="logo-icon">
+                <span class="material-symbols-outlined" style="color:#04310a; font-size:20px;">park</span>
+            </div>
+            <div class="logo-text">
+                <div class="name">CounselCare</div>
+                <div class="sub">Counselor Portal</div>
+            </div>
+        </div>
+
+        <a asp-controller="Dashboard" asp-action="Index" class="nav-item">
+            <span class="material-symbols-outlined">dashboard</span> Dashboard
         </a>
-        <a href="#professional" class="nav-link">
-            <i class="bi bi-briefcase"></i> Professional
+        <a asp-controller="Students" asp-action="Index" class="nav-item active">
+            <span class="material-symbols-outlined">group</span> Students
         </a>
-        <a href="#employment" class="nav-link">
-            <i class="bi bi-building"></i> Employment
+        <a asp-controller="Counselors" asp-action="Index" class="nav-item">
+            <span class="material-symbols-outlined">supervisor_account</span> Counselors
         </a>
-    </div>
+        <a asp-controller="Appointments" asp-action="Index" class="nav-item">
+            <span class="material-symbols-outlined">event</span> Appointments
+        </a>
+        <a asp-controller="Resources" asp-action="Index" class="nav-item">
+            <span class="material-symbols-outlined">folder</span> Resources
+        </a>
+    </aside>
 
-    <!-- Form Content -->
-    <div class="form-content">
-        <form asp-action="Edit">
-            <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
-            <input type="hidden" asp-for="CounselorID" />
+    <!-- ===== APP SHELL ===== -->
+    <div class="app-shell">
 
-            <!-- Personal Information -->
-            <div class="form-section" id="personal">
-                <div class="form-section-title">
-                    <i class="bi bi-person-badge"></i> Personal Information
+        <!-- ===== TOPBAR ===== -->
+        <header class="topbar">
+            <nav class="breadcrumb-nav">
+                <a asp-action="Index">Students</a>
+                <span class="material-symbols-outlined" style="font-size:16px; color:#c0c9bb;">chevron_right</span>
+                <a asp-action="Details" asp-route-id="@Model.Student.StudentsID">Student Management</a>
+                <span class="material-symbols-outlined" style="font-size:16px; color:#c0c9bb;">chevron_right</span>
+                <span class="current">Edit Record</span>
+            </nav>
+
+            <div class="topbar-right">
+                <div class="bell-btn">
+                    <span class="material-symbols-outlined">notifications</span>
                 </div>
-                <div class="form-grid">
-                    <div>
-                        <label class="field-label">Employee Number</label>
-                        <input asp-for="EmployeeNumber" class="form-control" />
-                        <span asp-validation-for="EmployeeNumber" class="text-danger" style="font-size:12px;"></span>
-                    </div>
-                    <div>
-                        <label class="field-label">Gender</label>
-                        <select asp-for="Gender" class="form-control">
-                            <option value="">Select</option>
-                            <option>Male</option>
-                            <option>Female</option>
-                        </select>
-                        <span asp-validation-for="Gender" class="text-danger" style="font-size:12px;"></span>
-                    </div>
-                    <div>
-                        <label class="field-label">First Name</label>
-                        <input asp-for="FirstName" class="form-control" />
-                        <span asp-validation-for="FirstName" class="text-danger" style="font-size:12px;"></span>
-                    </div>
-                    <div>
-                        <label class="field-label">Middle Name</label>
-                        <input asp-for="MiddleName" class="form-control" />
-                        <span asp-validation-for="MiddleName" class="text-danger" style="font-size:12px;"></span>
-                    </div>
-                    <div>
-                        <label class="field-label">Last Name</label>
-                        <input asp-for="LastName" class="form-control" />
-                        <span asp-validation-for="LastName" class="text-danger" style="font-size:12px;"></span>
-                    </div>
-                    <div>
-                        <label class="field-label">Birth Date</label>
-                        <input asp-for="BirthDate" type="date" class="form-control" />
-                        <span asp-validation-for="BirthDate" class="text-danger" style="font-size:12px;"></span>
-                    </div>
-                    <div>
-                        <label class="field-label">Email Address</label>
-                        <input asp-for="EmailAddress" class="form-control" />
-                        <span asp-validation-for="EmailAddress" class="text-danger" style="font-size:12px;"></span>
-                    </div>
-                    <div class="full-width">
-                        <label class="field-label">Address</label>
-                        <textarea asp-for="Address" class="form-control" rows="2"></textarea>
-                        <span asp-validation-for="Address" class="text-danger" style="font-size:12px;"></span>
-                    </div>
-                    <div class="full-width">
-                        <label class="field-label">Contact Numbers</label>
-                        <div id="counselor-contacts">
-                            @for (int i = 0; i < Model.ContactNumbers.Count; i++)
-                            {
-                                <div class="contact-row input-group mb-2">
-                                    <input name="ContactNumbers[@i].Number"
-                                           value="@Model.ContactNumbers[i].Number"
-                                           class="form-control" placeholder="Number" />
-                                    <select name="ContactNumbers[@i].Label"
-                                            class="form-control" style="max-width:200px;">
-                                        <option value="">Select type</option>
-                                        <option value="Office Telephone" selected="@(Model.ContactNumbers[i].Label == "Office Telephone")">Office Telephone</option>
-                                        <option value="Office Mobile Phone" selected="@(Model.ContactNumbers[i].Label == "Office Mobile Phone")">Office Mobile Phone</option>
-                                        <option value="Home Telephone" selected="@(Model.ContactNumbers[i].Label == "Home Telephone")">Home Telephone</option>
-                                        <option value="Home Mobile Phone" selected="@(Model.ContactNumbers[i].Label == "Home Mobile Phone")">Home Mobile Phone</option>
-                                        <option value="Personal Mobile Phone" selected="@(Model.ContactNumbers[i].Label == "Personal Mobile Phone")">Personal Mobile Phone</option>
-                                    </select>
-                                    <button type="button" class="btn btn-sm btn-outline-danger ms-1 remove-contact">✕</button>
-                                </div>
-                            }
+                <div class="user-avatar">IF</div>
+            </div>
+        </header>
+
+        <div class="page-body">
+
+            <form asp-action="Edit" id="student-edit-form">
+                <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
+                <input type="hidden" asp-for="Student.StudentsID" />
+
+                <div class="form-wrapper">
+
+                    <!-- Form Sidebar -->
+                    <div class="form-sidebar">
+                        <a href="#personal" class="nav-link active">
+                            <span class="material-symbols-outlined">person</span> Personal Information
+                        </a>
+                        <a href="#family" class="nav-link">
+                            <span class="material-symbols-outlined">family_restroom</span> Family Background
+                        </a>
+                        <a href="#education" class="nav-link">
+                            <span class="material-symbols-outlined">school</span> Educational History
+                        </a>
+                        <a href="#health" class="nav-link">
+                            <span class="material-symbols-outlined">favorite</span> Health &amp; Wellness
+                        </a>
+                        <a href="#emergency" class="nav-link">
+                            <span class="material-symbols-outlined">contact_emergency</span> Emergency Contact
+                        </a>
+
+                        <div class="progress-block">
+                            <div class="progress-label">
+                                <span>Completion</span>
+                                <span id="progress-percent">0%</span>
+                            </div>
+                            <div class="progress-track">
+                                <div class="progress-fill" id="progress-fill"></div>
+                            </div>
                         </div>
-                        <button type="button" class="btn btn-sm btn-outline-secondary mt-1"
-                                onclick="addContact('counselor-contacts', 'ContactNumbers')">
-                            + Add Number
-                        </button>
                     </div>
-                </div>
-            </div>
 
-            <!-- Professional Background -->
-            <div class="form-section" id="professional">
-                <div class="form-section-title">
-                    <i class="bi bi-briefcase-fill"></i> Professional Background
-                </div>
-                <div class="form-grid">
-                    <div class="full-width">
-                        <label class="field-label">Educational Attainment</label>
-                        <input asp-for="EducationalAttainment" class="form-control" />
-                        <span asp-validation-for="EducationalAttainment" class="text-danger" style="font-size:12px;"></span>
-                    </div>
-                    <div>
-                        <label class="field-label">License Number</label>
-                        <input asp-for="LicenseNumber" class="form-control" />
-                        <span asp-validation-for="LicenseNumber" class="text-danger" style="font-size:12px;"></span>
-                    </div>
-                    <div>
-                        <label class="field-label">Years of Experience</label>
-                        <input asp-for="YearsOfExperience" class="form-control" />
-                        <span asp-validation-for="YearsOfExperience" class="text-danger" style="font-size:12px;"></span>
-                    </div>
-                </div>
-            </div>
+                    <!-- Form Content -->
+                    <div class="form-content">
 
-            <!-- Employment Details -->
-            <div class="form-section" id="employment">
-                <div class="form-section-title">
-                    <i class="bi bi-building"></i> Employment Details
-                </div>
-                <div class="form-grid">
-                    <div>
-                        <label class="field-label">Position</label>
-                        <input asp-for="Position" class="form-control" />
-                        <span asp-validation-for="Position" class="text-danger" style="font-size:12px;"></span>
-                    </div>
-                    <div>
-                        <label class="field-label">Date Hired</label>
-                        <input asp-for="DateHired" type="date" class="form-control" />
-                        <span asp-validation-for="DateHired" class="text-danger" style="font-size:12px;"></span>
-                    </div>
-                    <div>
-                        <label class="field-label">Employment Status</label>
-                        <select asp-for="EmploymentStatus" class="form-control">
-                            <option value="">Select</option>
-                            <option>Regular</option>
-                            <option>Part-Time</option>
-                            <option>Contractual</option>
-                            <option>Casual</option>
-                        </select>
-                        <span asp-validation-for="EmploymentStatus" class="text-danger" style="font-size:12px;"></span>
-                    </div>
-                </div>
-            </div>
+                        <!-- Student Information -->
+                        <div class="form-section" id="personal">
+                            <div class="form-section-title">
+                                <span class="material-symbols-outlined">person</span> Student Information
+                            </div>
+                            <div class="form-grid">
+                                <div>
+                                    <label class="field-label">Student ID</label>
+                                    <input asp-for="Student.StuID" class="form-control" />
+                                    <span asp-validation-for="Student.StuID" class="text-danger" style="font-size:12px;"></span>
+                                </div>
+                                <div>
+                                    <label class="field-label">Full Name</label>
+                                    <input asp-for="Student.StuName" class="form-control" />
+                                    <span asp-validation-for="Student.StuName" class="text-danger" style="font-size:12px;"></span>
+                                </div>
+                                <div>
+                                    <label class="field-label">Gender</label>
+                                    <select asp-for="Student.Gender" class="form-control">
+                                        <option value="">Select Gender</option>
+                                        <option>Male</option>
+                                        <option>Female</option>
+                                    </select>
+                                    <span asp-validation-for="Student.Gender" class="text-danger" style="font-size:12px;"></span>
+                                </div>
+                                <div>
+                                    <label class="field-label">Birthday</label>
+                                    <input asp-for="Student.Birthday" type="date" class="form-control" />
+                                    <span asp-validation-for="Student.Birthday" class="text-danger" style="font-size:12px;"></span>
+                                </div>
+                                <div>
+                                    <label class="field-label">Email Address</label>
+                                    <input asp-for="Student.Email" class="form-control" />
+                                    <span asp-validation-for="Student.Email" class="text-danger" style="font-size:12px;"></span>
+                                </div>
+                                <div>
+                                    <label class="field-label">Living Arrangement</label>
+                                    <select asp-for="Student.StayingWith" class="form-control">
+                                        <option value="">Select</option>
+                                        <option>With Parents</option>
+                                        <option>With Relatives</option>
+                                        <option>With Guardian</option>
+                                        <option>Alone / Boarding House</option>
+                                    </select>
+                                    <span asp-validation-for="Student.StayingWith" class="text-danger" style="font-size:12px;"></span>
+                                </div>
 
-            <!-- Footer -->
-            <div class="form-footer">
-                <small class="text-muted">🔒 Privacy Protected • Sys.Logged</small>
-                <div style="display:flex; gap:10px;">
-                    <a asp-action="Index" class="btn-cancel">Cancel</a>
-                    <input type="submit" value="Save Changes" class="btn-save" />
-                </div>
-            </div>
+                                <div class="full-width">
+                                    <label class="field-label">Contact Numbers</label>
+                                    <div id="student-contacts">
+                                        @for (int i = 0; i < Model.StudentContacts.Count; i++)
+                                        {
+                                            <div class="contact-row">
+                                                <input name="StudentContacts[@i].Number"
+                                                       value="@Model.StudentContacts[i].Number"
+                                                       class="form-control" placeholder="+63 9XX XXX XXXX" />
+                                                <select name="StudentContacts[@i].Label" class="form-control">
+                                                    <option value="">Select type</option>
+                                                    <option value="Mobile" selected="@(Model.StudentContacts[i].Label == "Mobile")">Mobile</option>
+                                                    <option value="Home Telephone" selected="@(Model.StudentContacts[i].Label == "Home Telephone")">Home Telephone</option>
+                                                    <option value="Guardian's Phone" selected="@(Model.StudentContacts[i].Label == "Guardian's Phone")">Guardian's Phone</option>
+                                                </select>
+                                                <button type="button" class="remove-contact">✕</button>
+                                            </div>
+                                        }
+                                        @if (!Model.StudentContacts.Any())
+                                        {
+                                            <div class="contact-row">
+                                                <input name="StudentContacts[0].Number" class="form-control" placeholder="+63 9XX XXX XXXX" />
+                                                <select name="StudentContacts[0].Label" class="form-control">
+                                                    <option value="">Select type</option>
+                                                    <option value="Mobile">Mobile</option>
+                                                    <option value="Home Telephone">Home Telephone</option>
+                                                    <option value="Guardian's Phone">Guardian's Phone</option>
+                                                </select>
+                                                <button type="button" class="remove-contact">✕</button>
+                                            </div>
+                                        }
+                                    </div>
+                                    <button type="button" class="add-link" onclick="addContact('student-contacts', 'StudentContacts')">
+                                        <span class="material-symbols-outlined">add_circle</span> Add Another Number
+                                    </button>
+                                </div>
 
-        </form>
+                                <div>
+                                    <label class="field-label">Nationality</label>
+                                    <input asp-for="Student.Nationality" class="form-control" />
+                                    <span asp-validation-for="Student.Nationality" class="text-danger" style="font-size:12px;"></span>
+                                </div>
+                                <div>
+                                    <label class="field-label">Religion</label>
+                                    <input asp-for="Student.Religion" class="form-control" />
+                                    <span asp-validation-for="Student.Religion" class="text-danger" style="font-size:12px;"></span>
+                                </div>
+                                <div>
+                                    <label class="field-label">Birth Order</label>
+                                    <input asp-for="Student.BirthOrder" class="form-control" placeholder="e.g. 1st of 3" />
+                                    <span asp-validation-for="Student.BirthOrder" class="text-danger" style="font-size:12px;"></span>
+                                </div>
+
+                                <div class="full-width">
+                                    <label class="field-label">Home Address</label>
+                                    <textarea asp-for="Student.Address" class="form-control" rows="2"></textarea>
+                                    <span asp-validation-for="Student.Address" class="text-danger" style="font-size:12px;"></span>
+                                </div>
+
+                                <div>
+                                    <label class="field-label">Grade Level</label>
+                                    <input asp-for="Student.GradeLevel" class="form-control" />
+                                    <span asp-validation-for="Student.GradeLevel" class="text-danger" style="font-size:12px;"></span>
+                                </div>
+                                <div>
+                                    <label class="field-label">Section</label>
+                                    <input asp-for="Student.Section" class="form-control" />
+                                    <span asp-validation-for="Student.Section" class="text-danger" style="font-size:12px;"></span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Family Information -->
+                        <div class="form-section" id="family">
+                            <div class="form-section-title">
+                                <span class="material-symbols-outlined">family_restroom</span> Family Information
+                            </div>
+                            <div class="form-grid">
+                                <div>
+                                    <label class="field-label">Father's Full Name</label>
+                                    <input asp-for="Family.FatherName" class="form-control" />
+                                </div>
+                                <div>
+                                    <label class="field-label">Father's Age</label>
+                                    <input asp-for="Family.FatherAge" type="number" class="form-control" />
+                                </div>
+                                <div class="full-width">
+                                    <label class="field-label">Father's Occupation</label>
+                                    <input asp-for="Family.FatherOccupation" class="form-control" />
+                                </div>
+
+                                <div>
+                                    <label class="field-label">Mother's Full Name</label>
+                                    <input asp-for="Family.MotherName" class="form-control" />
+                                </div>
+                                <div>
+                                    <label class="field-label">Mother's Age</label>
+                                    <input asp-for="Family.MotherAge" type="number" class="form-control" />
+                                </div>
+                                <div class="full-width">
+                                    <label class="field-label">Mother's Occupation</label>
+                                    <input asp-for="Family.MotherOccupation" class="form-control" />
+                                </div>
+
+                                <div>
+                                    <label class="field-label">Parents' Marital Status</label>
+                                    <select asp-for="Family.ParentsRelationshipStatus" class="form-control">
+                                        <option value="">Select</option>
+                                        <option>Married</option>
+                                        <option>Separated</option>
+                                        <option>Widowed</option>
+                                        <option>Single Parent</option>
+                                        <option>Remarried</option>
+                                    </select>
+                                </div>
+                                <div>
+                                    <label class="field-label">Monthly Household Income</label>
+                                    <select asp-for="Family.MonthlyFamilyIncome" class="form-control">
+                                        <option value="">Select</option>
+                                        <option>Below ₱10,000</option>
+                                        <option>₱10,000 - ₱20,000</option>
+                                        <option>₱20,000 - ₱40,000</option>
+                                        <option>Above ₱40,000</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Education History -->
+                        <div class="form-section" id="education">
+                            <div class="form-section-title">
+                                <span class="material-symbols-outlined">school</span> Education History
+                            </div>
+                            <div class="form-grid-3">
+                                <div>
+                                    <label class="field-label">Elementary School Name</label>
+                                    <input asp-for="Education.ElementarySchool" class="form-control" />
+                                </div>
+                                <div>
+                                    <label class="field-label">Year Graduated</label>
+                                    <input asp-for="Education.ElementaryYear" class="form-control" />
+                                </div>
+                                <div>
+                                    <label class="field-label">Honors / Awards</label>
+                                    <input asp-for="Education.ElementaryHonors" class="form-control" />
+                                </div>
+
+                                <div>
+                                    <label class="field-label">Secondary School Name</label>
+                                    <input asp-for="Education.SecondarySchool" class="form-control" />
+                                </div>
+                                <div>
+                                    <label class="field-label">Year Graduated</label>
+                                    <input asp-for="Education.SecondaryYear" class="form-control" />
+                                </div>
+                                <div>
+                                    <label class="field-label">Honors / Awards</label>
+                                    <input asp-for="Education.SecondaryHonors" class="form-control" />
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Health & Wellness -->
+                        <div class="form-section" id="health">
+                            <div class="form-section-title">
+                                <span class="material-symbols-outlined">favorite</span> Health &amp; Wellness
+                            </div>
+
+                            <div class="confidential-banner">
+                                <span class="material-symbols-outlined">warning</span>
+                                <span>This section contains sensitive health information. Please handle with care and ensure confidentiality.</span>
+                            </div>
+
+                            <div class="form-grid-3" style="margin-bottom:1rem;">
+                                <div>
+                                    <label class="field-label">Blood Type</label>
+                                    <select asp-for="Health.BloodType" class="form-control">
+                                        <option value="">Unknown</option>
+                                        <option>A+</option>
+                                        <option>A-</option>
+                                        <option>B+</option>
+                                        <option>B-</option>
+                                        <option>AB+</option>
+                                        <option>AB-</option>
+                                        <option>O+</option>
+                                        <option>O-</option>
+                                    </select>
+                                </div>
+                                <div>
+                                    <label class="field-label">Height (cm)</label>
+                                    <input asp-for="Health.Height" class="form-control" placeholder="--" />
+                                </div>
+                                <div>
+                                    <label class="field-label">Weight (kg)</label>
+                                    <input asp-for="Health.Weight" class="form-control" placeholder="--" />
+                                </div>
+                            </div>
+
+                            <div class="form-grid">
+                                <div class="full-width">
+                                    <label class="field-label">Current Medications / Chronic Ailments</label>
+                                    <textarea asp-for="Health.Ailments" class="form-control" rows="2" placeholder="List any medications or medical conditions..."></textarea>
+                                </div>
+                                <div class="full-width">
+                                    <label class="field-label">Family Medical History</label>
+                                    <textarea asp-for="Health.Medication" class="form-control" rows="2" placeholder="Specify condition(s), if any"></textarea>
+                                </div>
+                                <div class="full-width">
+                                    <label class="field-label">History of Suicidal Thoughts or Attempts</label>
+                                    <textarea asp-for="Health.SuicideRiskHistory" class="form-control" rows="2" placeholder="Details if applicable..."></textarea>
+                                </div>
+                                <div class="full-width">
+                                    <label class="field-label">History of Abuse or Maltreatment</label>
+                                    <textarea asp-for="Health.AbuseHistory" class="form-control" rows="2"></textarea>
+                                </div>
+                                <div class="full-width">
+                                    <label class="field-label">History of Illegal Drug Use</label>
+                                    <textarea asp-for="Health.DrugHistory" class="form-control" rows="2" placeholder="If yes, indicate type and approximate time period"></textarea>
+                                </div>
+                                <div class="full-width">
+                                    <label class="field-label">Family History of Mental or Developmental Conditions</label>
+                                    <textarea asp-for="Health.FamilyMentalHealthHistory" class="form-control" rows="2" placeholder="Specify condition and relationship to the family member"></textarea>
+                                </div>
+                                <div class="full-width">
+                                    <label class="field-label">Previous Psychiatric or Psychological Consultation</label>
+                                    <textarea asp-for="Health.PsychiatricConsultation" class="form-control" rows="2" placeholder="State reason and approximate date of consultation(s)"></textarea>
+                                </div>
+                                <div class="full-width">
+                                    <label class="field-label">Additional Relevant Information / Remarks</label>
+                                    <textarea asp-for="Health.AdditionalNotes" class="form-control" rows="2" placeholder="Enter any additional notes or comments"></textarea>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Emergency Contact -->
+                        <div class="form-section" id="emergency">
+                            <div class="form-section-title">
+                                <span class="material-symbols-outlined">contact_emergency</span> Emergency Contact
+                            </div>
+                            <div class="form-grid">
+                                <div>
+                                    <label class="field-label">Emergency Contact Name</label>
+                                    <input asp-for="Emergency.EmergencyContactPerson" class="form-control" />
+                                </div>
+                                <div>
+                                    <label class="field-label">Contact Number</label>
+                                    <input name="EmergencyContacts[0].Number"
+                                           value="@(Model.EmergencyContacts.Any() ? Model.EmergencyContacts[0].Number : "")"
+                                           class="form-control" />
+                                </div>
+                                <div>
+                                    <label class="field-label">Occupation</label>
+                                    <input asp-for="Emergency.EmergencyContactOccupation" class="form-control" />
+                                </div>
+                                <div>
+                                    <label class="field-label">Age</label>
+                                    <input asp-for="Emergency.EmergencyContactAge" type="number" class="form-control" />
+                                </div>
+                                <div class="full-width">
+                                    <label class="field-label">Address</label>
+                                    <input asp-for="Emergency.EmergencyContactAddress" class="form-control" />
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Footer -->
+                        <div class="form-footer">
+                            <div class="privacy-note">
+                                <span class="material-symbols-outlined">verified_user</span>
+                                Privacy Protected &amp; Encrypted
+                            </div>
+                            <div style="display:flex; gap:10px;">
+                                <a asp-action="Details" asp-route-id="@Model.Student.StudentsID" class="btn-cancel">Cancel</a>
+                                <button type="submit" class="btn-save">
+                                    <span class="material-symbols-outlined" style="font-size:18px;">check_circle</span>
+                                    Save Changes
+                                </button>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+            </form>
+        </div>
     </div>
-</div>
 
-<script>
-    const links = document.querySelectorAll('.form-sidebar .nav-link');
-    const sections = document.querySelectorAll('.form-section');
+    <script>
+        // Active section highlight on scroll
+        const links = document.querySelectorAll('.form-sidebar .nav-link');
+        const sections = document.querySelectorAll('.form-section');
 
-    const observer = new IntersectionObserver((entries) => {
-        entries.forEach(entry => {
-            if (entry.isIntersecting) {
-                links.forEach(l => l.classList.remove('active'));
-                const active = document.querySelector(`.nav-link[href="#${entry.target.id}"]`);
-                if (active) active.classList.add('active');
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    links.forEach(l => l.classList.remove('active'));
+                    const active = document.querySelector(`.nav-link[href="#${entry.target.id}"]`);
+                    if (active) active.classList.add('active');
+                }
+            });
+        }, { threshold: 0.3 });
+
+        sections.forEach(s => observer.observe(s));
+
+        links.forEach(link => {
+            link.addEventListener('click', e => {
+                e.preventDefault();
+                document.querySelector(link.getAttribute('href')).scrollIntoView({ behavior: 'smooth' });
+            });
+        });
+
+        // Dynamic contact rows
+        function addContact(containerId, prefix) {
+            const container = document.getElementById(containerId);
+            const index = container.querySelectorAll('.contact-row').length;
+            const row = document.createElement('div');
+            row.className = 'contact-row';
+            row.innerHTML = `
+                <input name="${prefix}[${index}].Number" class="form-control" placeholder="+63 9XX XXX XXXX" />
+                <select name="${prefix}[${index}].Label" class="form-control">
+                    <option value="">Select type</option>
+                    <option value="Mobile">Mobile</option>
+                    <option value="Home Telephone">Home Telephone</option>
+                    <option value="Guardian's Phone">Guardian's Phone</option>
+                </select>
+                <button type="button" class="remove-contact">✕</button>`;
+            container.appendChild(row);
+            updateProgress();
+        }
+
+        document.addEventListener('click', e => {
+            if (e.target.classList.contains('remove-contact')) {
+                e.target.closest('.contact-row').remove();
+                updateProgress();
             }
         });
-    }, { threshold: 0.3 });
 
-    sections.forEach(s => observer.observe(s));
+        // Completion progress: % of form fields filled
+        function updateProgress() {
+            const form = document.getElementById('student-edit-form');
+            const fields = form.querySelectorAll('input:not([type=hidden]), select, textarea');
+            let filled = 0;
+            fields.forEach(f => { if (f.value && f.value.trim() !== '') filled++; });
+            const percent = fields.length ? Math.round((filled / fields.length) * 100) : 0;
+            document.getElementById('progress-fill').style.width = percent + '%';
+            document.getElementById('progress-percent').textContent = percent + '%';
+        }
 
-    links.forEach(link => {
-        link.addEventListener('click', e => {
-            e.preventDefault();
-            document.querySelector(link.getAttribute('href')).scrollIntoView({ behavior: 'smooth' });
-        });
-    });
+        document.getElementById('student-edit-form').addEventListener('input', updateProgress);
+        document.getElementById('student-edit-form').addEventListener('change', updateProgress);
+        updateProgress();
+    </script>
 
-    function addContact(containerId, prefix) {
-        const container = document.getElementById(containerId);
-        const index = container.querySelectorAll('.contact-row').length;
-        const row = document.createElement('div');
-        row.className = 'contact-row input-group mb-2';
-        row.innerHTML = `
-            <input name="${prefix}[${index}].Number" class="form-control" placeholder="Number" />
-            <select name="${prefix}[${index}].Label" class="form-control" style="max-width:200px;">
-                <option value="">Select type</option>
-                <option value="Office Telephone">Office Telephone</option>
-                <option value="Office Mobile Phone">Office Mobile Phone</option>
-                <option value="Home Telephone">Home Telephone</option>
-                <option value="Home Mobile Phone">Home Mobile Phone</option>
-                <option value="Personal Mobile Phone">Personal Mobile Phone</option>
-            </select>
-            <button type="button" class="btn btn-sm btn-outline-danger ms-1 remove-contact">✕</button>`;
-        container.appendChild(row);
-    }
+    @* @section Scripts {
+        @{ await Html.RenderPartialAsync("_ValidationScriptsPartial"); }
+    } — add back once this view uses a shared _Layout with @RenderSection *@
 
-    document.addEventListener('click', e => {
-        if (e.target.classList.contains('remove-contact'))
-            e.target.closest('.contact-row').remove();
-    });
-</script>
-
-@section Scripts {
-    @{
-        await Html.RenderPartialAsync("_ValidationScriptsPartial");
-    }
-}
+</body>
+</html>
