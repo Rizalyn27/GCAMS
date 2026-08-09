@@ -1,0 +1,126 @@
+﻿@model List<GCAMS.Models.Appointment.Appointments>
+@{
+    ViewData["Title"] = "My Appointments";
+}
+
+<style>
+    .appt-card {
+        background: #fff;
+        border: 1px solid #e5e7eb;
+        border-radius: 12px;
+        padding: 1rem 1.25rem;
+        margin-bottom: 12px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    .appt-info .appt-date {
+        font-weight: 600;
+        font-size: 15px;
+        color: #111;
+    }
+
+    .appt-info .appt-type {
+        font-size: 13px;
+        color: #6b7280;
+        margin-top: 2px;
+    }
+
+    .status-badge {
+        font-size: 12px;
+        font-weight: 600;
+        padding: 4px 12px;
+        border-radius: 20px;
+        text-transform: capitalize;
+    }
+
+    .status-pending {
+        background: #fef3c7;
+        color: #92400e;
+    }
+
+    .status-confirmed {
+        background: #dbeafe;
+        color: #1e40af;
+    }
+
+    .status-completed {
+        background: #d1fae5;
+        color: #065f46;
+    }
+
+    .status-cancelled {
+        background: #fee2e2;
+        color: #991b1b;
+    }
+
+    .status-missed {
+        background: #e5e7eb;
+        color: #374151;
+    }
+
+    .empty-state {
+        text-align: center;
+        padding: 3rem 1rem;
+        color: #6b7280;
+    }
+
+    .btn-book {
+        background: #1B5E20;
+        border: none;
+        border-radius: 8px;
+        padding: 9px 20px;
+        font-size: 14px;
+        color: #fff;
+        text-decoration: none;
+        display: inline-block;
+    }
+</style>
+
+<div class="container-lg py-4" style="max-width: 720px;">
+    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1.25rem;">
+        <h2 style="margin:0;">My Appointments</h2>
+        <a asp-controller="Appointments" asp-action="Create" asp-route-force="true" class="btn-book">
+            Book Appointment
+        </a>
+    </div>
+
+    @if (!Model.Any())
+    {
+        <div class="empty-state">
+            <p>You don't have any appointments yet.</p>
+            <a asp-controller="Appointments" asp-action="Create" class="btn-book">Book your first appointment</a>
+        </div>
+    }
+    else
+    {
+        foreach (var appt in Model)
+        {
+            var statusClass = "status-" + appt.Status.ToLower();
+            <div class="appt-card">
+                <div class="appt-info">
+                    <div class="appt-date">@appt.AppointmentDate.ToString("MMM d, yyyy - h:mm tt")</div>
+                    <div class="appt-type">@appt.AppointmentType</div>
+                </div>
+                <div style="display:flex; align-items:center; gap:12px;">
+                    <span class="status-badge @statusClass">@appt.Status</span>
+                    <a asp-controller="Appointments" asp-action="Details" asp-route-appointmentid="@appt.AppointmentID">
+                        View
+                    </a>
+
+                    @if (appt.Status == "Pending" || appt.Status == "Confirmed")
+                    {
+                        <a asp-controller="Appointments" asp-action="Edit" asp-route-appointmentid="@appt.AppointmentID">
+                            Edit
+                        </a>
+                        <a asp-controller="Appointments" asp-action="Delete" asp-route-appointmentid="@appt.AppointmentID"
+                           style="color:#991b1b;">
+                            Cancel
+                        </a>
+                    }
+                </div>
+            </div>
+        }
+    }
+</div>

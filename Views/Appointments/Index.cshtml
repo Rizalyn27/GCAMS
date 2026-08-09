@@ -1,0 +1,246 @@
+﻿@model IEnumerable<GCAMS.Models.Appointment.Appointments>
+@{
+    ViewData["Title"] = "Appointments";
+}
+
+<style>
+    @@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Manrope:wght@600;700&display=swap');
+
+    .action-disabled {
+        opacity: 0.35;
+        cursor: not-allowed;
+    }
+    .page-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: 1.25rem;
+    }
+
+    .page-title {
+        font-family: 'Manrope', sans-serif;
+        font-size: 22px;
+        font-weight: 700;
+        color: #111;
+        margin: 0;
+    }
+
+    .btn-new {
+        background: #1B5E20;
+        color: #fff;
+        border: none;
+        border-radius: 8px;
+        padding: 9px 18px;
+        font-size: 14px;
+        font-family: 'Inter', sans-serif;
+        text-decoration: none;
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+    }
+
+        .btn-new:hover {
+            background: #1648c0;
+            color: #fff;
+            text-decoration: none;
+        }
+
+    .table-card {
+        background: #fff;
+        border: 1px solid #e5e7eb;
+        border-radius: 12px;
+        overflow: hidden;
+    }
+
+    .appt-table {
+        width: 100%;
+        border-collapse: collapse;
+        font-family: 'Inter', sans-serif;
+        font-size: 14px;
+    }
+
+        .appt-table thead th {
+            background: #f9fafb;
+            font-size: 12px;
+            font-weight: 500;
+            color: #6b7280;
+            text-transform: uppercase;
+            letter-spacing: 0.04em;
+            padding: 10px 16px;
+            border-bottom: 1px solid #e5e7eb;
+            text-align: left;
+            white-space: nowrap;
+        }
+
+        .appt-table tbody td {
+            padding: 12px 16px;
+            border-bottom: 1px solid #f3f4f6;
+            color: #111;
+            vertical-align: middle;
+        }
+
+        .appt-table tbody tr:last-child td {
+            border-bottom: none;
+        }
+
+        .appt-table tbody tr:hover td {
+            background: #f9fafb;
+        }
+
+    .status-select {
+        font-size: 13px;
+        font-family: 'Inter', sans-serif;
+        border-radius: 6px;
+        border: 1px solid #d1d5db;
+        padding: 4px 8px;
+        color: #111;
+        cursor: pointer;
+        background: #fff;
+    }
+
+        .status-select:focus {
+            border-color: #1a56db;
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(26,86,219,0.1);
+        }
+
+    .row-actions {
+        display: flex;
+        gap: 12px;
+    }
+
+        .row-actions a {
+            font-size: 13px;
+            color: #1a56db;
+            text-decoration: none;
+        }
+
+            .row-actions a:hover {
+                text-decoration: underline;
+            }
+
+        .row-actions .del {
+            color: #dc2626;
+        }
+
+    @@media (max-width: 768px) {
+        .appt-table thead {
+            display: none;
+        }
+
+        .appt-table tbody td {
+            display: block;
+            padding: 6px 16px;
+        }
+
+        .appt-table tbody tr {
+            border-bottom: 1px solid #e5e7eb;
+            display: block;
+            padding: 8px 0;
+        }
+    }
+</style>
+
+<div class="container-lg py-4">
+    <div class="page-header">
+        <p class="page-title">Appointments</p>
+        <a asp-action="Create" class="btn-new">
+            <i class="bi bi-plus-lg"></i> New appointment
+        </a>
+    </div>
+
+    <div class="table-card">
+        <table class="appt-table">
+            <thead>
+                <tr>
+                    <th>@Html.DisplayNameFor(m => m.FullName)</th>
+                    <th>@Html.DisplayNameFor(m => m.Email)</th>
+                    <th>@Html.DisplayNameFor(m => m.AppointmentDate)</th>
+                    <th>@Html.DisplayNameFor(m => m.AppointmentType)</th>
+                    <th>Status</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in Model)
+                {
+                    <tr>
+                        <td>@Html.DisplayFor(m => item.FullName)</td>
+                        <td style="color:#6b7280;">@Html.DisplayFor(m => item.Email)</td>
+                        <td style="white-space:nowrap;">@item.AppointmentDate.ToString("MMM d, yyyy h:mm tt")</td>
+                        <td>@Html.DisplayFor(m => item.AppointmentType)</td>
+                        <td>
+                            <select class="status-select status-dropdown"
+                                    data-id="@item.AppointmentID"
+                                    data-current="@item.Status">
+                                @foreach (var status in new[] { "Pending", "Confirmed", "Rejected", "Completed", "Missed", "Cancelled" })
+                                {
+                                    <option value="@status" selected="@(item.Status == status ? "selected" : null)">
+                                        @status
+                                    </option>
+                                }
+                            </select>
+                        </td>
+                        <td>
+                            <div class="row-actions">
+                                <a asp-action="Details" asp-route-appointmentid="@item.AppointmentID">👁</a>
+                                @if (item.Status == "Pending")
+                                {
+                                    <a asp-action="Edit" asp-route-appointmentid="@item.AppointmentID">✏️</a>
+                                }
+                                else
+                                {
+                                    <span class="action-disabled" title="Only pending appointments can be edited">✏️</span>
+                                }
+                                @if (item.Status == "Pending" || item.Status == "Confirmed")
+                                {
+                                    <form asp-action="RejectAppointment" method="post" onsubmit="return confirm('Reject this appointment?');" style="display:inline;">
+                                        @Html.AntiForgeryToken()
+                                        <input type="hidden" name="appointmentid" value="@item.AppointmentID" />
+                                        <button type="submit" class="del" style="background:none;border:none;cursor:pointer;font:inherit;padding:0;">
+                                            ✕ Reject
+                                        </button>
+                                    </form>
+                                }
+                                else
+                                {
+                                    <span class="action-disabled" title="Only pending or confirmed appointments can be rejected">✕ Reject</span>
+                                }
+                            </div>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        document.querySelectorAll('.status-dropdown').forEach(function (dropdown) {
+            dropdown.addEventListener('change', async function () {
+                const appointmentId  = this.dataset.id;
+                const newStatus      = this.value;
+                const previousStatus = this.dataset.current;
+                try {
+                    const response = await fetch('/Appointments/UpdateStatus', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ appointmentId, newStatus })
+                    });
+                    if (response.ok) {
+                        location.reload();
+                        this.dataset.current = newStatus;
+                    } else {
+                        alert('Failed to update status. Please try again.');
+                        this.value = previousStatus;
+                    }
+                } catch (err) {
+                    console.error('Status update failed:', err);
+                    alert('Could not reach the server. Please try again.');
+                    this.value = previousStatus;
+                }
+            });
+        });
+    </script>
+}

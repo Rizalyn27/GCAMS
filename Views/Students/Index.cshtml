@@ -1,329 +1,629 @@
-﻿@model IEnumerable<GCAMS.Models.Students>
+﻿@model IEnumerable<GCAMS.Models.Students.Students>
 
 @{
-    ViewData["Title"] = "Index";
+    ViewData["Title"] = "Student Management";
+    var pagedList = Model.ToList();
+    int pageSize = 10;
+    int totalStudents = pagedList.Count;
 }
 
-<h1>Index</h1>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet">
 
-<p>
-    <a asp-action="Create">Create New</a>
-</p>
-<table class="table">
-    <thead>
-        <tr>
-            <th>
-                @Html.DisplayNameFor(model => model.FName)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.LName)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.MName)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.GradeLevel)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Section)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.School)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Birthday)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Age)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.BirthOrder)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Address)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.ContactNumber)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Email)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Gender)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Nationality)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Religion)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.StayingWith)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.FatherName)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.FatherAge)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.FatherEducationalAttainment)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.FatherOccupation)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.FatherContactNumber)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.MotherName)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.MotherAge)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.MotherEducationalAttainment)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.MotherOccupation)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.MotherContactNumber)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.MonthlyFamilyIncome)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.ParentsRelationshipStatus)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.EmergencyContactPerson)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.EmergencyContactAge)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.EmergencyContactOccupation)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.EmergencyContactNumber)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.EmergencyContactAddress)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.ElementarySchool)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.ElementaryYear)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.ElementaryHonors)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.SecondarySchool)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.SecondaryYear)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.SecondaryHonors)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Height)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Weight)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.BloodType)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Ailments)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Medication)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.SuicidalAttempts)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.VictimOfAbuse)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.InvolvedWithDrugs)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.MentallyChallengedRelative)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.VisitedPsychiatrist)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.VisitedPsychiatristReason)
-            </th>
-            <th></th>
-        </tr>
-    </thead>
-    <tbody>
-@foreach (var item in Model) {
-        <tr>
-            <td>
-                @Html.DisplayFor(modelItem => item.FName)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.LName)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.MName)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.GradeLevel)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Section)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.School)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Birthday)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Age)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.BirthOrder)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Address)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.ContactNumber)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Email)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Gender)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Nationality)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Religion)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.StayingWith)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.FatherName)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.FatherAge)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.FatherEducationalAttainment)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.FatherOccupation)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.FatherContactNumber)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.MotherName)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.MotherAge)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.MotherEducationalAttainment)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.MotherOccupation)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.MotherContactNumber)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.MonthlyFamilyIncome)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.ParentsRelationshipStatus)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.EmergencyContactPerson)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.EmergencyContactAge)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.EmergencyContactOccupation)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.EmergencyContactNumber)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.EmergencyContactAddress)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.ElementarySchool)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.ElementaryYear)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.ElementaryHonors)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.SecondarySchool)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.SecondaryYear)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.SecondaryHonors)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Height)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Weight)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.BloodType)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Ailments)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Medication)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.SuicidalAttempts)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.VictimOfAbuse)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.InvolvedWithDrugs)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.MentallyChallengedRelative)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.VisitedPsychiatrist)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.VisitedPsychiatristReason)
-            </td>
-            <td>
-                <a asp-action="Edit" asp-route-id="@item.Id">Edit</a> |
-                <a asp-action="Details" asp-route-id="@item.Id">Details</a> |
-                <a asp-action="Delete" asp-route-id="@item.Id">Delete</a>
-            </td>
-        </tr>
-}
-    </tbody>
-</table>
+<style>
+    .material-symbols-outlined {
+        font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        vertical-align: middle;
+    }
+
+    .student-page * {
+        font-family: 'Inter', sans-serif;
+    }
+
+    .page-breadcrumb {
+        font-size: 13px;
+        color: #717a6d;
+        margin-bottom: 16px;
+        display: flex;
+        align-items: center;
+        gap: 4px;
+    }
+
+        .page-breadcrumb a {
+            color: #717a6d;
+            text-decoration: none;
+        }
+
+        .page-breadcrumb .current {
+            color: #191d18;
+            font-weight: 700;
+        }
+
+    .page-header {
+        display: flex;
+        justify-content: flex-end;
+        align-items: center;
+        margin-bottom: 20px;
+    }
+
+    .btn-add {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        background: #1b6d24;
+        color: white;
+        padding: 10px 20px;
+        border-radius: 10px;
+        font-size: 14px;
+        font-weight: 600;
+        text-decoration: none;
+        border: none;
+        cursor: pointer;
+        transition: all 0.2s;
+    }
+
+        .btn-add:hover {
+            filter: brightness(1.1);
+            color: white;
+            box-shadow: 0 2px 8px rgba(27,109,36,0.3);
+        }
+
+    .btn-import {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        background: #fff;
+        color: #1b6d24;
+        padding: 10px 20px;
+        border-radius: 10px;
+        font-size: 14px;
+        font-weight: 600;
+        text-decoration: none;
+        border: 1.5px solid #1b6d24;
+        cursor: pointer;
+        transition: all 0.2s;
+        margin-right: 10px;
+    }
+
+        .btn-import:hover {
+            background: #f2f5ec;
+        }
+
+    .filter-bar {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        margin-bottom: 20px;
+        flex-wrap: wrap;
+    }
+
+    .search-box {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        background: #fff;
+        border: 1.5px solid #e1e4db;
+        border-radius: 10px;
+        padding: 9px 14px;
+        flex: 1;
+        min-width: 200px;
+        max-width: 320px;
+        transition: border-color 0.2s;
+    }
+
+        .search-box:focus-within {
+            border-color: #1b6d24;
+        }
+
+        .search-box input {
+            border: none;
+            outline: none;
+            background: transparent;
+            font-size: 14px;
+            color: #191d18;
+            width: 100%;
+        }
+
+            .search-box input::placeholder {
+                color: #b0b8ac;
+            }
+
+        .search-box .material-symbols-outlined {
+            color: #b0b8ac;
+            font-size: 18px;
+        }
+
+    .filter-select {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        background: #fff;
+        border: 1.5px solid #e1e4db;
+        border-radius: 10px;
+        padding: 9px 14px;
+        font-size: 14px;
+        font-weight: 500;
+        color: #191d18;
+        cursor: pointer;
+        appearance: none;
+        -webkit-appearance: none;
+        background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%23717a6d' stroke-width='2'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");
+        background-repeat: no-repeat;
+        background-position: right 10px center;
+        padding-right: 32px;
+        transition: border-color 0.2s;
+    }
+
+        .filter-select:focus {
+            outline: none;
+            border-color: #1b6d24;
+        }
+
+    .filter-icon-btn {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 40px;
+        height: 40px;
+        background: #fff;
+        border: 1.5px solid #e1e4db;
+        border-radius: 10px;
+        cursor: pointer;
+        color: #717a6d;
+        transition: all 0.2s;
+        margin-left: auto;
+    }
+
+        .filter-icon-btn:hover {
+            border-color: #1b6d24;
+            color: #1b6d24;
+        }
+
+    .student-table {
+        width: 100%;
+        border-collapse: collapse;
+        background: #fff;
+        border-radius: 12px;
+        overflow: hidden;
+        border: 1px solid #e1e4db;
+    }
+
+        .student-table thead tr {
+            background: #f8faf2;
+            border-bottom: 1px solid #e1e4db;
+        }
+
+        .student-table thead th {
+            padding: 12px 16px;
+            font-size: 11px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.06em;
+            color: #717a6d;
+            text-align: left;
+        }
+
+        .student-table tbody tr {
+            border-bottom: 1px solid #f2f5ec;
+            transition: background 0.15s;
+        }
+
+            .student-table tbody tr:last-child {
+                border-bottom: none;
+            }
+
+            .student-table tbody tr:hover {
+                background: #f8faf2;
+            }
+
+        .student-table tbody td {
+            padding: 14px 16px;
+            font-size: 14px;
+            color: #191d18;
+            vertical-align: middle;
+        }
+
+    .student-id {
+        font-family: monospace;
+        font-size: 12px;
+        color: #717a6d;
+        font-weight: 600;
+    }
+
+    .student-name {
+        font-weight: 600;
+        color: #191d18;
+    }
+
+    .student-email {
+        color: #717a6d;
+        font-size: 13px;
+    }
+
+    .grade-pill {
+        display: inline-block;
+        background: #dbeafe;
+        color: #1e40af;
+        padding: 3px 10px;
+        border-radius: 999px;
+        font-size: 12px;
+        font-weight: 600;
+    }
+
+    .action-icons {
+        display: flex;
+        align-items: center;
+        gap: 4px;
+    }
+
+    .action-icon {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 32px;
+        height: 32px;
+        border-radius: 8px;
+        border: none;
+        background: transparent;
+        cursor: pointer;
+        color: #717a6d;
+        text-decoration: none;
+        transition: all 0.15s;
+    }
+
+        .action-icon:hover {
+            background: #f2f5ec;
+            color: #1b6d24;
+        }
+
+        .action-icon.danger:hover {
+            background: #ffdad6;
+            color: #93000a;
+        }
+
+        .action-icon .material-symbols-outlined {
+            font-size: 18px;
+        }
+
+    .table-footer {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-top: 16px;
+        flex-wrap: wrap;
+        gap: 12px;
+    }
+
+    .showing-text {
+        font-size: 13px;
+        color: #717a6d;
+    }
+
+    .pagination {
+        display: flex;
+        align-items: center;
+        gap: 4px;
+        list-style: none;
+        margin: 0;
+        padding: 0;
+    }
+
+    .page-btn {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 32px;
+        height: 32px;
+        border-radius: 8px;
+        border: none;
+        background: transparent;
+        font-size: 13px;
+        font-weight: 500;
+        color: #717a6d;
+        cursor: pointer;
+        transition: all 0.15s;
+    }
+
+        .page-btn:hover {
+            background: #f2f5ec;
+            color: #191d18;
+        }
+
+        .page-btn.active {
+            background: #1b6d24;
+            color: white;
+            font-weight: 700;
+        }
+
+        .page-btn:disabled {
+            opacity: 0.35;
+            cursor: default;
+        }
+
+        .page-btn.arrow {
+            color: #717a6d;
+        }
+
+    .alert-success {
+        background: #dcfce7;
+        color: #166534;
+        border: 1px solid #bbf7d0;
+        border-radius: 10px;
+        padding: 12px 16px;
+        margin-bottom: 16px;
+        font-size: 14px;
+    }
+
+    .alert-danger {
+        background: #ffdad6;
+        color: #93000a;
+        border: 1px solid #ffb4ab;
+        border-radius: 10px;
+        padding: 12px 16px;
+        margin-bottom: 16px;
+        font-size: 14px;
+    }
+
+    .archive-form {
+        display: inline;
+    }
+</style>
+
+<div class="student-page" style="max-width: 1100px; margin: 0 auto; padding: 24px 16px;">
+
+    <!-- Breadcrumb -->
+    <div class="page-breadcrumb">
+        <span>Students</span>
+        <span class="material-symbols-outlined" style="font-size:14px;">></span>
+        <span class="current">Student Management</span>
+    </div>
+
+    <!-- Header -->
+    <div class="page-header">
+        <button type="button" class="btn-import" data-bs-toggle="modal" data-bs-target="#importModal">
+            <span class="material-symbols-outlined" style="font-size:18px;"></span>
+            Import Excel
+        </button>
+        <a asp-action="Create" class="btn-add">
+            <span class="material-symbols-outlined" style="font-size:18px;"></span>
+            Add New Student
+        </a>
+    </div>
+
+    @if (TempData["Success"] != null)
+    {
+        <div class="alert-success">
+            <span class="material-symbols-outlined" style="font-size:16px; vertical-align:middle; margin-right:6px;"></span>
+            @TempData["Success"]
+        </div>
+    }
+    @if (TempData["Error"] != null)
+    {
+        <div class="alert-danger">
+            <span class="material-symbols-outlined" style="font-size:16px; vertical-align:middle; margin-right:6px;">error</span>
+            @TempData["Error"]
+        </div>
+    }
+
+    <!-- Filter Bar -->
+    <div class="filter-bar">
+        <div class="search-box">
+            <span class="material-symbols-outlined"></span>
+            <input type="text" id="studentSearch" placeholder="Search students by name or ID" />
+        </div>
+
+        <!--Grade Level Filter-->
+        <select id="gradeFilter" class="filter-select">
+            <option value="">All Grades</option>
+
+            @foreach (var gradeLevel in Model.Select(s => s.GradeLevel).Distinct().OrderBy(s => s))
+            {
+                <option value="@gradeLevel?.ToLower()">@gradeLevel</option>
+            }
+        </select>
+
+        <!--Section Filter-->
+        <select id="sectionFilter" class="filter-select">
+            <option value="">All Sections</option>
+            @foreach (var sec in Model.Select(s => s.Section).Distinct().OrderBy(s => s))
+            {
+                <option value="@sec?.ToLower()">@sec</option>
+            }
+        </select>
+
+        <!--Status Filter-->
+        <select id="statusFilter" class="filter-select">
+            <option value="">All Status</option>
+            <option value="true">Active</option>
+            <option value="false">Inactive</option>
+        </select>
+
+    </div>
+
+    <!-- Table -->
+    <table class="student-table" id="studentTable">
+        <thead>
+            <tr>
+                <th>Student ID</th>
+                <th>Full Name</th>
+                <th>Email</th>
+                <th>Grade</th>
+                <th>Section</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model)
+            {
+                <tr data-active="@item.IsActive.ToString().ToLower()">
+                    <td><span class="student-id">@item.StuID</span></td>
+                    <td><span class="student-name">@item.StuName</span></td>
+                    <td><span class="student-email">@item.Email</span></td>
+                    <td><span class="grade-pill">@item.GradeLevel</span></td>
+                    <td>@item.Section</td>
+                    <td>
+                        <div class="action-icons">
+                            <a asp-action="Details" asp-route-id="@item.StudentsID" class="action-icon" title="View Details">
+                                <span class="material-symbols-outlined">👁</span>
+                            </a>
+                            <a asp-action="Edit" asp-route-id="@item.StudentsID" class="action-icon" title="Edit">
+                                <span class="material-symbols-outlined">✏️</span>
+                            </a>
+                            @if (item.IsActive)
+                            {
+                                <form asp-action="SoftDelete" asp-route-id="@item.StudentsID" method="post" class="archive-form">
+                                    @Html.AntiForgeryToken()
+                                    <button type="submit" class="action-icon danger" title="Archive Student">
+                                        <span class="material-symbols-outlined" style="font-size:18px;">🗑</span>
+                                    </button>
+                                </form>
+                            }
+                            else
+                            {
+                                <form asp-action="Restore" asp-route-id="@item.StudentsID" method="post" class="archive-form">
+                                     @Html.AntiForgeryToken()
+                                    <button type="submit" class="action-icon" title="Restore Student" style="color:#1b6d24;">
+                                        <span class="material-symbols-outlined" style="font-size:18px;">↺</span>
+                                    </button>
+                                </form>
+                            }
+                        </div>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+
+    <!-- Table Footer -->
+    <div class="table-footer">
+        <span class="showing-text" id="showingText"></span>
+        <div class="pagination" id="pagination"></div>
+    </div>
+
+</div>
+
+<!-- Import Modal -->
+<div class="modal fade" id="importModal" tabindex="-1" aria-labelledby="importModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="importModalLabel">Import Students from Excel</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <form asp-action="Import" method="post" enctype="multipart/form-data">
+                @Html.AntiForgeryToken()
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label class="form-label">Select Excel File (.xlsx)</label>
+                        <input type="file" name="file" accept=".xlsx" class="form-control" required />
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <input type="submit" value="Upload & Import" class="btn btn-success" />
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script>
+    const pageSize = 10;
+    let currentPage = 1;
+    let visibleRows = [];
+        function applyFilters() {
+        const query           = document.getElementById('studentSearch').value.toLowerCase().trim();
+        const grade           = document.getElementById('gradeFilter').value.toLowerCase();
+        const selectedSection = document.getElementById('sectionFilter').value.toLowerCase();
+        const status          = document.getElementById('statusFilter').value;
+
+        visibleRows = [];
+
+        document.querySelectorAll('#studentTable tbody tr').forEach(function (row) {
+            const stuId     = row.cells[0]?.textContent.trim().toLowerCase() || '';
+            const name      = row.cells[1]?.textContent.trim().toLowerCase() || '';
+            const rowGrade  = row.cells[3]?.textContent.trim().toLowerCase() || '';
+            const rowSec    = row.cells[4]?.textContent.trim().toLowerCase() || '';
+            const rowActive = (row.getAttribute('data-active') || '').trim();
+
+            const matchesSearch  = !query           || name.includes(query) || stuId.includes(query);
+            const matchesGrade   = !grade           || rowGrade === grade;
+            const matchesSection = !selectedSection || rowSec === selectedSection;
+            const matchesStatus  = !status          || rowActive === status; 
+
+            if (matchesSearch && matchesGrade && matchesSection && matchesStatus) {
+                visibleRows.push(row);
+            }
+            row.style.display = 'none';
+        });
+
+        currentPage = 1;
+        renderPage();
+    }
+
+    function renderPage() {
+        const start = (currentPage - 1) * pageSize;
+        const end   = start + pageSize;
+
+        document.querySelectorAll('#studentTable tbody tr').forEach(r => r.style.display = 'none');
+        visibleRows.slice(start, end).forEach(r => r.style.display = '');
+
+        const total = visibleRows.length;
+        const showing = Math.min(end, total);
+        document.getElementById('showingText').textContent =
+            total === 0 ? 'No students found' :
+            `Showing ${start + 1} - ${showing} of ${total} student${total !== 1 ? 's' : ''}`;
+
+        renderPagination(total);
+    }
+
+    function renderPagination(total) {
+        const totalPages = Math.ceil(total / pageSize);
+        const pg = document.getElementById('pagination');
+        pg.innerHTML = '';
+
+        function btn(label, page, isActive, isDisabled, isArrow) {
+            const b = document.createElement('button');
+            b.className = 'page-btn' + (isActive ? ' active' : '') + (isArrow ? ' arrow' : '');
+            b.innerHTML = label;
+            b.disabled = isDisabled;
+            if (!isDisabled && !isActive) {
+                b.onclick = () => { currentPage = page; renderPage(); };
+            }
+            return b;
+        }
+
+        pg.appendChild(btn('<span class="material-symbols-outlined" style="font-size:16px;"><</span>', currentPage - 1, false, currentPage === 1, true));
+
+        const pages = [];
+        if (totalPages <= 7) {
+            for (let i = 1; i <= totalPages; i++) pages.push(i);
+        } else {
+            pages.push(1);
+            if (currentPage > 3) pages.push('...');
+            for (let i = Math.max(2, currentPage - 1); i <= Math.min(totalPages - 1, currentPage + 1); i++) pages.push(i);
+            if (currentPage < totalPages - 2) pages.push('...');
+            pages.push(totalPages);
+        }
+
+        pages.forEach(p => {
+            if (p === '...') {
+                const s = document.createElement('span');
+                s.textContent = '...';
+                s.style.cssText = 'padding:0 4px; color:#717a6d; font-size:13px;';
+                pg.appendChild(s);
+            } else {
+                pg.appendChild(btn(p, p, p === currentPage, false, false));
+            }
+        });
+
+        pg.appendChild(btn('<span class="material-symbols-outlined" style="font-size:16px;">></span>', currentPage + 1, false, currentPage === totalPages || totalPages === 0, true));
+    }
+
+    document.getElementById('studentSearch').addEventListener('input', applyFilters);
+    document.getElementById('gradeFilter').addEventListener('change', applyFilters);
+    document.getElementById('sectionFilter').addEventListener('change', applyFilters);
+    document.getElementById('statusFilter').addEventListener('change', applyFilters);
+
+    applyFilters();
+</script>
