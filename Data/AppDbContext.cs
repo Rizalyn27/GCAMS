@@ -121,7 +121,6 @@ namespace GCAMS.Data
                 .HasForeignKey(ar => ar.StudentsID)
                 .OnDelete(DeleteBehavior.Cascade);
 
-
             // CaseNotes
             modelBuilder.Entity<CaseNotes>()
                 .HasOne(cn => cn.Student)
@@ -129,18 +128,20 @@ namespace GCAMS.Data
                 .HasForeignKey(cn => cn.StudentsID)
                 .OnDelete(DeleteBehavior.Cascade);
 
-            // FamilyContactNumber / EmergencyContactNumber
+            // FamilyContactNumber
             modelBuilder.Entity<FamilyContactNumber>()
                 .HasOne(fcn => fcn.FamilyBackground)
                 .WithMany(fb => fb.ContactNumbers)
                 .HasForeignKey(fcn => fcn.FamilyBackgroundID)
                 .OnDelete(DeleteBehavior.Cascade);
 
+            // EmergencyContactNumber
             modelBuilder.Entity<EmergencyContactNumber>()
                 .HasOne(ecn => ecn.EmergencyContact)
                 .WithMany(ec => ec.ContactNumbers)
                 .HasForeignKey(ecn => ecn.EmergencyContactID)
                 .OnDelete(DeleteBehavior.Cascade);
+
         }
     }
 }

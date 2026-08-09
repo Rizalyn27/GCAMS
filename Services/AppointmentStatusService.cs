@@ -1,11 +1,9 @@
 ﻿using GCAMS.Data;
+using GCAMS.Models.Notifs;
 using Microsoft.EntityFrameworkCore;
 
 namespace GCAMS.Services
 {
-    // Runs in the background for the lifetime of the app.
-    // Periodically scans for appointments whose date has passed
-    // while still "Pending" or "Confirmed", and marks them "Missed".
     public class AppointmentStatusService : BackgroundService
     {
         private readonly IServiceScopeFactory _scopeFactory;
@@ -19,8 +17,6 @@ namespace GCAMS.Services
         {
             while (!stoppingToken.IsCancellationRequested)
             {
-                // BackgroundService doesn't get its own scoped DbContext automatically —
-                // we have to create one manually each cycle.
                 using (var scope = _scopeFactory.CreateScope())
                 {
                     var context = scope.ServiceProvider.GetRequiredService<AppDbContext>();
@@ -30,16 +26,31 @@ namespace GCAMS.Services
                                     (a.Status == "Pending" || a.Status == "Confirmed"))
                         .ToListAsync(stoppingToken);
 
-                    if (overdue.Count > 0)
+                    foreach (var appointment in overdue)
                     {
-                        foreach (var appointment in overdue)
-                        {
-                            appointment.Status = "Missed";
-                            appointment.UpdatedAt = DateTime.Now;
-                        }
+                        appointment.Status = "Missed";
+                        appointment.UpdatedAt = DateTime.Now;
 
-                        await context.SaveChangesAsync(stoppingToken);
+                        if (appointment.StudentsID.HasValue)
+                        {
+                            var student = await context.Students.FindAsync(new object[] { appointment.StudentsID.Value }, stoppingToken);
+                            if (student != null)
+                            {
+                                context.Notifs.Add(new Notifs
+                                {
+                                    RecipientUsername = student.StuID,
+                                    Type = NotificationType.StatusUpdate,
+                                    Title = "Appointment Missed",
+                                    Message = $"You missed your appointment scheduled on {appointment.AppointmentDate:MMM dd, yyyy - h:mm tt}.",
+                                    RelatedEntityType = "Appointment",
+                                    RelatedEntityId = appointment.AppointmentID
+                                });
+                            }
+                        }
                     }
+
+                    if (overdue.Count > 0)
+                        await context.SaveChangesAsync(stoppingToken);
                 }
 
                 await Task.Delay(TimeSpan.FromHours(3), stoppingToken);

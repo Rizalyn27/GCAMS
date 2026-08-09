@@ -36,7 +36,7 @@ namespace GCAMS.Services
             foreach (var appt in upcoming)
             {
                 // Notify the student — only if this appointment is actually linked to one
-                if (appt.StudentsID.HasValue)
+                if (appt.StudentsID.HasValue && appt.Status == "Confirmed")
                 {
                     var student = await _context.Students.FindAsync(appt.StudentsID.Value);
                     if (student != null)
@@ -107,8 +107,7 @@ namespace GCAMS.Services
                 var student = await _context.Students.FindAsync(note.StudentsID);
                 if (student == null) continue;
 
-                // NEW — resolve the actual counselor instead of a placeholder string
-                if (note.CounselorID == null) continue; // no owning counselor recorded — skip
+                if (note.CounselorID == null) continue;
                 var counselor = await _context.Counselors.FindAsync(note.CounselorID.Value);
                 if (counselor == null) continue;
 

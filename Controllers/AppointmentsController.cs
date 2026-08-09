@@ -24,11 +24,13 @@ public class AppointmentsController : Controller
 
     // Only Admin/Counselor see the full list — students never get a "list everyone's appointments" view
     [Authorize(Roles = "Admin,Counselor")]
+    [Authorize(Roles = "Admin,Counselor")]
     public async Task<IActionResult> Index()
     {
         return View(await _context.Appointments
             .Include(a => a.Counselor)
-            .OrderByDescending(a => a.AppointmentDate)
+            .OrderBy(a => (a.Status == "Cancelled" || a.Status == "Rejected") ? 1 : 0)
+            .ThenByDescending(a => a.AppointmentDate)
             .ToListAsync());
     }
 
@@ -72,7 +74,7 @@ public class AppointmentsController : Controller
 
                 if (pending != null)
                 {
-                    TempData["Info"] = "You already have a pending appointment. You can view it below, or book another one if needed.";
+                    TempData["Info"] = "You already have a pending appointment. You can view it in MyAppointments, or book ano  ther one if needed.";
                     return RedirectToAction(nameof(Details), new { appointmentid = pending.AppointmentID });
                 }
             }
@@ -81,6 +83,7 @@ public class AppointmentsController : Controller
             ViewBag.GradeLevel = student.GradeLevel;
             ViewBag.Section = student.Section;
 
+            
             return View(new Appointments
             {
                 StudentsID = student.StudentsID,
@@ -154,6 +157,21 @@ public class AppointmentsController : Controller
         if (ModelState.IsValid)
         {
             _context.Add(appointments);
+            await _context.SaveChangesAsync();
+
+            var counselor = await _context.Counselors.ToListAsync();
+            foreach (var c in counselor)
+            {
+                _context.Notifs.Add(new Notifs
+                {
+                    RecipientUsername = c.EmailAddress,
+                    Type = NotificationType.NewAppointment,
+                    Title = "New Appointment Request",
+                    Message = $"A new appointment has been requested by {appointments.FullName} for {appointments.AppointmentDate:MMM dd, yyyy - h:mm tt}.",
+                    RelatedEntityType = "Appointment",
+                    RelatedEntityId = appointments.AppointmentID
+                });
+            }
             await _context.SaveChangesAsync();
 
             if (User.IsInRole("Student"))
@@ -314,6 +332,41 @@ public class AppointmentsController : Controller
             appointments.UpdatedAt = DateTime.Now;
             await _context.SaveChangesAsync();
 
+            // Notify the claiming counselor, or all counselors if nobody claimed it yet
+            if (appointments.CounselorID.HasValue)
+            {
+                var counselor = await _context.Counselors.FindAsync(appointments.CounselorID.Value);
+                if (counselor != null)
+                {
+                    _context.Notifs.Add(new Notifs
+                    {
+                        RecipientUsername = counselor.EmailAddress,
+                        Type = NotificationType.StatusUpdate,
+                        Title = "Appointment Cancelled",
+                        Message = $"{appointments.FullName} cancelled their appointment scheduled on {appointments.AppointmentDate:MMM dd, yyyy - h:mm tt}.",
+                        RelatedEntityType = "Appointment",
+                        RelatedEntityId = appointments.AppointmentID
+                    });
+                }
+            }
+            else
+            {
+                var counselors = await _context.Counselors.ToListAsync();
+                foreach (var c in counselors)
+                {
+                    _context.Notifs.Add(new Notifs
+                    {
+                        RecipientUsername = c.EmailAddress,
+                        Type = NotificationType.StatusUpdate,
+                        Title = "Appointment Cancelled",
+                        Message = $"{appointments.FullName} cancelled their appointment scheduled on {appointments.AppointmentDate:MMM dd, yyyy - h:mm tt}.",
+                        RelatedEntityType = "Appointment",
+                        RelatedEntityId = appointments.AppointmentID
+                    });
+                }
+            }
+            await _context.SaveChangesAsync();
+
             TempData["Info"] = "Your appointment has been cancelled.";
             return RedirectToAction(nameof(MyAppointments));
         }
@@ -378,7 +431,6 @@ public class AppointmentsController : Controller
                     "Rejected" => ("Appointment Rejected", $"Your appointment request for {appointment.AppointmentDate:MMM dd, yyyy - h:mm tt} was declined."),
                     "Completed" => ("Appointment Completed", $"Your appointment on {appointment.AppointmentDate:MMM dd, yyyy - h:mm tt} is marked completed."),
                     "Missed" => ("Appointment Missed", $"You missed your appointment scheduled on {appointment.AppointmentDate:MMM dd, yyyy - h:mm tt}."),
-                    "Cancelled" => ("Appointment Cancelled", $"Your appointment on {appointment.AppointmentDate:MMM dd, yyyy - h:mm tt} was cancelled."),
                     _ => (null as string, null as string)
                 };
 
@@ -454,7 +506,8 @@ public class AppointmentsController : Controller
 
         var appointments = await _context.Appointments
             .Where(a => a.StudentsID == student.StudentsID)
-            .OrderByDescending(a => a.AppointmentDate)
+            .OrderBy(a => (a.Status == "Cancelled" || a.Status == "Rejected") ? 1 : 0)
+            .ThenByDescending(a => a.AppointmentDate)
             .ToListAsync();
 
         return View(appointments);
