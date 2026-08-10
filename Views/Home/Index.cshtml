@@ -1,6 +1,23 @@
-﻿
+﻿@{
+    var announcements = ViewBag.UnreadAnnouncements as List<GCAMS.Models.Notifs.Notifs>;
+}
 
-<div class="text-center">
-    <h1 class="display-4">Welcome</h1>
-    <p>Learn about <a href="https://learn.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
-</div>
+@if (announcements != null && announcements.Any())
+{
+    foreach (var a in announcements)
+    {
+        <div style="background:#f2f5ec; border:1px solid #1b6d24; border-radius:12px; padding:16px 20px; margin-bottom:16px; display:flex; justify-content:space-between; align-items:flex-start; gap:16px;">
+            <div>
+                <strong style="color:#1b6d24;">@a.Title</strong>
+                <p style="margin:4px 0 0; color:#41493e;">@a.Message</p>
+                <small style="color:#717a6d;">@a.CreatedAt.ToString("MMM dd, yyyy")</small>
+            </div>
+            <form asp-controller="Notifications" asp-action="MarkRead" asp-route-id="@a.NotificationId" method="post" style="flex-shrink:0;">
+                @Html.AntiForgeryToken()
+                <input type="hidden" name="returnUrl" value="@Url.Action("Index", "Home")" />
+                <button type="submit" class="btn btn-sm btn-outline-secondary">Dismiss</button>
+            </form>
+        </div>
+    }
+}
+

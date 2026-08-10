@@ -51,7 +51,7 @@ namespace GCAMS.Controllers
         // POST: /Notifications/MarkRead/5
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> MarkRead(int id)
+        public async Task<IActionResult> MarkRead(int id, string? returnUrl = null)
         {
             var username = User.Identity?.Name;
             var notif = await _context.Notifs
@@ -61,6 +61,12 @@ namespace GCAMS.Controllers
 
             notif.IsRead = true;
             await _context.SaveChangesAsync();
+
+            // The bell's fetch() call doesn't pass returnUrl, so this falls back to Ok() for it;
+            // the dashboard's plain <form> POST does pass it, so it redirects back there instead.
+            if (!string.IsNullOrEmpty(returnUrl) && Url.IsLocalUrl(returnUrl))
+                return Redirect(returnUrl);
+
             return Ok();
         }
 

@@ -1,11 +1,12 @@
-﻿using Microsoft.EntityFrameworkCore;
-using GCAMS.Models.Students;
-using GCAMS.Models.Counselor;
+﻿using GCAMS.Models.AnecRecs;
+using GCAMS.Models.Announcements;
 using GCAMS.Models.Appointment;
 using GCAMS.Models.CaseNotes;
-using GCAMS.Models.Users;
-using GCAMS.Models.AnecRecs;
+using GCAMS.Models.Counselor;
 using GCAMS.Models.Notifs;
+using GCAMS.Models.Students;
+using GCAMS.Models.Users;
+using Microsoft.EntityFrameworkCore;
 
 
 namespace GCAMS.Data
@@ -48,6 +49,8 @@ namespace GCAMS.Data
         //Notifications
         public DbSet<Notifs> Notifs { get; set; }
 
+        //Announcements
+        public DbSet<Announcement> Announcements { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
