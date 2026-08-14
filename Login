@@ -1,0 +1,292 @@
+@{
+    Layout = null;
+}
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <title>Login</title>
+    <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=Inter:wght@400;500;600&display=swap" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20,400,0,0" rel="stylesheet" />
+    <style>
+        :root {
+            --green-primary: #1b6d24;
+            --green-header-from: #33cc66;
+            --green-header-to: #22b357;
+            --gray-bg: #eef1eb;
+            --text-dark: #14210f;
+            --text-muted: #6b7280;
+            --border-soft: #e5e7eb;
+        }
+
+        * { box-sizing: border-box; }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: #eaedf3;
+            margin: 0;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .auth-card {
+            background: #fff;
+            border-radius: 20px;
+            width: 100%;
+            max-width: 350px;
+            overflow: hidden;
+            box-shadow: 0 20px 40px rgba(20, 33, 15, 0.08);
+        }
+
+        /* ---------- Header ---------- */
+        .auth-header {
+            background: linear-gradient(180deg, var(--green-header-from), var(--green-header-to));
+            padding: 34px 0 30px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .auth-logo {
+            width: 76px;
+            height: 76px;
+            border-radius: 50%;
+            background: #fff;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.12);
+        }
+
+        .auth-logo img {
+            width: 52px;
+            height: 52px;
+            object-fit: contain;
+        }
+
+        /* ---------- Body ---------- */
+        .auth-body {
+            padding: 26px 26px 28px;
+        }
+
+        /* Role toggle */
+        .role-toggle {
+            display: flex;
+            background: #eef1eb;
+            border-radius: 10px;
+            padding: 4px;
+            margin-bottom: 22px;
+        }
+
+        .role-toggle button {
+            flex: 1;
+            border: none;
+            background: transparent;
+            font-family: 'Manrope', sans-serif;
+            font-size: 12.5px;
+            font-weight: 600;
+            color: #6b7280;
+            padding: 9px 6px;
+            border-radius: 7px;
+            cursor: pointer;
+            transition: all 0.18s ease;
+        }
+
+        .role-toggle button.active {
+            background: #fff;
+            color: var(--text-dark);
+            font-weight: 700;
+            font-size: 13.5px;
+            box-shadow: 0 1px 4px rgba(0,0,0,0.10);
+        }
+
+        /* Fields */
+        .field-label {
+            display: block;
+            font-family: 'Manrope', sans-serif;
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--text-dark);
+            margin-bottom: 6px;
+        }
+
+        .field-wrap {
+            position: relative;
+            margin-bottom: 16px;
+        }
+
+        input[type="text"], input[type="password"], input[type="email"] {
+            width: 100%;
+            font-family: 'Inter', sans-serif;
+            font-size: 14px;
+            color: var(--text-dark);
+            background: var(--gray-bg);
+            border: 1px solid transparent;
+            border-radius: 10px;
+            padding: 12px 14px;
+        }
+
+        .field-wrap input { padding-right: 40px; }
+
+        input::placeholder { color: #9aa08f; }
+
+        input[type="text"]:focus, input[type="password"]:focus, input[type="email"]:focus {
+            outline: none;
+            border-color: var(--green-primary);
+            box-shadow: 0 0 0 3px rgba(27,109,36,0.12);
+            background: #fff;
+        }
+
+        .toggle-eye {
+            position: absolute;
+            right: 12px;
+            top: 50%;
+            transform: translateY(-50%);
+            background: none;
+            border: none;
+            cursor: pointer;
+            padding: 0;
+            display: flex;
+            color: #8a9086;
+        }
+
+        .toggle-eye .material-symbols-outlined { font-size: 20px; }
+
+        .forgot-row {
+            display: flex;
+            justify-content: flex-end;
+            margin: 2px 0 20px;
+        }
+
+        .forgot-row a {
+            font-family: 'Manrope', sans-serif;
+            font-size: 12.5px;
+            font-weight: 600;
+            color: var(--text-dark);
+            text-decoration: none;
+        }
+
+        .forgot-row a:hover { text-decoration: underline; }
+
+        button[type="submit"] {
+            width: 100%;
+            background: var(--green-primary);
+            color: #fff;
+            border: none;
+            border-radius: 10px;
+            padding: 13px;
+            font-family: 'Manrope', sans-serif;
+            font-size: 14.5px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: background 0.15s ease;
+        }
+
+        button[type="submit"]:hover { background: #164f1c; }
+        button[type="submit"]:disabled { opacity: 0.7; cursor: default; }
+
+        #errorMsg {
+            font-family: 'Inter', sans-serif;
+            font-size: 12.5px;
+            color: #d33131;
+            text-align: center;
+            margin-top: 12px;
+            min-height: 16px;
+        }
+    </style>
+</head>
+<body>
+    <div class="auth-card">
+        <div class="auth-header">
+            <div class="auth-logo">
+                <img src="~/img/logo.png" alt="CounselCare logo" />
+            </div>
+        </div>
+
+        <div class="auth-body">
+            <div class="role-toggle">
+                <button type="button" id="roleAdminBtn" class="role-btn">Counselor/ admin</button>
+                <button type="button" id="roleStudentBtn" class="role-btn active">Student</button>
+            </div>
+
+            <form method="post" id="LoginForm">
+                @Html.AntiForgeryToken()
+                <input type="hidden" id="role" name="role" value="student" />
+
+                <label class="field-label" for="username">Username</label>
+                <div class="field-wrap">
+                    <input type="text" id="username" name="username" placeholder="student@edu.com" autocomplete="username" />
+                </div>
+
+                <label class="field-label" for="password">Password</label>
+                <div class="field-wrap">
+                    <input type="password" id="password" name="password" placeholder="Password" autocomplete="current-password" />
+                    <button type="button" class="toggle-eye" id="showPwBtn" aria-label="Show password">
+                        <span class="material-symbols-outlined" id="eyeIcon">visibility_off</span>
+                    </button>
+                </div>
+
+                <div class="forgot-row">
+                    <a href="#" id="forgotPasswordLink">Forgot password?</a>
+                </div>
+
+                <button type="submit" id="loginBtn">Sign in</button>
+            </form>
+            <div id="errorMsg"></div>
+        </div>
+    </div>
+
+    <script>
+        // Password show/hide
+        var pwVisible = false;
+        document.getElementById('showPwBtn').addEventListener('click', function () {
+            pwVisible = !pwVisible;
+            document.getElementById('password').type = pwVisible ? 'text' : 'password';
+            document.getElementById('eyeIcon').textContent = pwVisible ? 'visibility' : 'visibility_off';
+        });
+
+        // Role toggle
+        var roleAdminBtn = document.getElementById('roleAdminBtn');
+        var roleStudentBtn = document.getElementById('roleStudentBtn');
+        var roleInput = document.getElementById('role');
+        var usernameInput = document.getElementById('username');
+
+        function setRole(role) {
+            roleInput.value = role;
+            if (role === 'student') {
+                roleStudentBtn.classList.add('active');
+                roleAdminBtn.classList.remove('active');
+                usernameInput.placeholder = 'student@edu.com';
+            } else {
+                roleAdminBtn.classList.add('active');
+                roleStudentBtn.classList.remove('active');
+                usernameInput.placeholder = 'admin@edu.com';
+            }
+        }
+
+        roleAdminBtn.addEventListener('click', function () { setRole('admin'); });
+        roleStudentBtn.addEventListener('click', function () { setRole('student'); });
+
+        // Submit
+        $(document).ready(function () {
+            $('#LoginForm').on('submit', function (e) {
+                e.preventDefault();
+                $('#errorMsg').text('');
+                $.ajax({
+                    url: '/Login',
+                    type: 'POST',
+                    data: $('#LoginForm').serialize(),
+                    success: function (response) {
+                        window.location.href = '/Home/Index';
+                    },
+                    error: function (xhr, status, error) {
+                        $('#errorMsg').text('Login failed. Please check your credentials.');
+                    }
+                });
+            });
+        });
+    </script>
+</body>
+</html>
