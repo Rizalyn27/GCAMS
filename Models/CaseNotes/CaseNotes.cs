@@ -88,6 +88,12 @@ namespace GCAMS.Models.CaseNotes
         [Display(Name = "Signs, symptoms, and any increase or decrease in the severity of behaviors as they relate to the main concern")]
         public string BehaviorStatus { get; set; }
 
+        //FollowUpDate
+        [FutureDate]
+        [Display(Name = "Follow-up Date")]
+        public DateTime? FollowUpDate { get; set; }
+
+
         //Homework assigned, results, and compliance (if any)
         [StringLength(100)]
         [Display(Name = "Homework assigned, results, and compliance (if any)")]

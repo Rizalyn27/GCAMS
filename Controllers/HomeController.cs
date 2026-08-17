@@ -11,26 +11,27 @@ namespace GCAMS.Controllers
     public class HomeController : Controller
     {
         private readonly ILogger<HomeController> _logger;
-        private readonly AppDbContext _context;   // ← was missing
+        private readonly AppDbContext _context; 
 
-        public HomeController(ILogger<HomeController> logger, AppDbContext context)   // ← add param
+        public HomeController(ILogger<HomeController> logger, AppDbContext context)
         {
             _logger = logger;
-            _context = context;   // ← add assignment
+            _context = context;
         }
 
         [Authorize(Roles = "Student")]
         public async Task<IActionResult> Index()
         {
             var username = User.Identity?.Name;
-            var unreadAnnouncements = await _context.Notifs
+
+            var popupNotifications = await _context.Notifs
                 .Where(n => n.RecipientUsername == username
-                         && n.Type == NotificationType.Announcement
+                         && (n.Type == NotificationType.Announcement || n.Type == NotificationType.SameDayAppointment)
                          && !n.IsRead)
                 .OrderByDescending(n => n.CreatedAt)
                 .ToListAsync();
 
-            ViewBag.UnreadAnnouncements = unreadAnnouncements;
+            ViewBag.UnreadAnnouncements = popupNotifications;
             return View();
         }
 

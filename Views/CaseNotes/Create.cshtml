@@ -327,6 +327,16 @@
             <div class="form-section-title">
                 <i class="bi bi-flag"></i> Follow-Up & Goals
             </div>
+            <div>
+                <label asp-for="FollowUpDate" class="field-label"></label>
+                <input asp-for="FollowUpDate" asp-format="{0:yyyy-MM-ddTHH:00}"
+                       id="fieldFollowUpDate"
+                       class="form-control" type="datetime-local"
+                       step="3600"
+                       min="@DateTime.Now.ToString("yyyy-MM-ddTHH:00")" />
+                <span asp-validation-for="FollowUpDate" class="text-danger" style="font-size:12px;"></span>
+                <small id="hoursHint" class="lookup-status" style="color:#6b7280;">Available 8–11 AM and 1–4 PM.</small>
+            </div>
             <div class="form-grid">
                 <div class="full-width">
                     <label class="field-label">Homework</label>
@@ -381,6 +391,25 @@
             document.querySelector(link.getAttribute('href')).scrollIntoView({ behavior: 'smooth' });
         });
     });
+      const dateInput = document.getElementById('fieldAppointmentDate');
+        const allowedHours = [8, 9, 10, 11, 13, 14, 15, 16];
+
+        function isWithinWorkingHours(value) {
+            if (!value) return true; // let required-field validation handle empties
+            const hour = parseInt(value.split('T')[1].split(':')[0], 10);
+            return allowedHours.includes(hour);
+        }
+
+        if (dateInput) {
+            dateInput.addEventListener('change', function () {
+                if (!isWithinWorkingHours(this.value)) {
+                    this.setCustomValidity('Appointments must be booked between 8–11 AM or 1–4 PM.');
+                } else {
+                    this.setCustomValidity('');
+                }
+                this.reportValidity();
+            });
+        }
 </script>
 
 @section Scripts {

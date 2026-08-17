@@ -250,12 +250,12 @@
 
             <div style="display:flex; align-items:center; gap:20px;">
                 <div class="avatar-circle">
-                    @Model.FirstName.Substring(0, 1).ToUpper()
+                    @Model.CounselorName.Substring(0, 1).ToUpper()
                 </div>
                 <div>
                     <div style="display:flex; align-items:center; gap:10px; flex-wrap:wrap; margin-bottom:6px;">
                         <h2 style="font-family:'Manrope',sans-serif; font-size:24px; font-weight:700; color:#002c06; margin:0;">
-                            @Model.FullName
+                            @Model.CounselorName
                         </h2>
                         <div class="field-label">Employment Status</div>
                         <div class="field-value">
@@ -310,20 +310,8 @@
         <div class="section-body cols-3">
 
             <div>
-                <div class="field-label">First Name</div>
-                <div class="field-value">@Model.FirstName</div>
-            </div>
-
-            <div>
-                <div class="field-label">Middle Name</div>
-                <div class="field-value @(string.IsNullOrEmpty(Model.MiddleName) ? "empty" : "")">
-                    @(string.IsNullOrEmpty(Model.MiddleName) ? "Not specified" : Model.MiddleName)
-                </div>
-            </div>
-
-            <div>
-                <div class="field-label">Last Name</div>
-                <div class="field-value">@Model.LastName</div>
+                <div class="field-label">Full Name</div>
+                <div class="field-value">@Model.CounselorName</div>
             </div>
 
             <div>

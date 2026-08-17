@@ -412,7 +412,7 @@
                 <tr data-position="@item.Position?.ToLower()"
                     data-active="@item.EmploymentStatus.ToString().ToLower()">
                     <td><span class="emp-id">@item.EmployeeNumber</span></td>
-                    <td><span class="counselor-name">@item.LastName, @item.FirstName @item.MiddleName</span></td>
+                    <td><span class="counselor-name">@item.CounselorName</span></td>
                     <td><span style="font-size:13px; color:#717a6d;">@string.Join(", ", item.ContactNumbers.Select(c => c.Number))</span></td>
                     <td><span class="counselor-email">@item.EmailAddress</span></td>
                     <td><span class="status-pill pill-position">@item.Position</span></td>

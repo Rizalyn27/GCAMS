@@ -1,34 +1,320 @@
-﻿@model IEnumerable<GCAMS.Models.Announcements.Announcement>
+﻿@model GCAMS.ViewModels.AnnouncementCalendarViewModel
 @{
     ViewData["Title"] = "Announcements";
+    var prevMonth = new DateTime(Model.Year, Model.Month, 1).AddMonths(-1);
+    var nextMonth = new DateTime(Model.Year, Model.Month, 1).AddMonths(1);
 }
 
-<h1>Announcements</h1>
-<a asp-action="Create" class="btn btn-primary mb-3">New Announcement</a>
+<style>
+    @@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Manrope:wght@600;700&display=swap');
 
-@if (TempData["Success"] != null)
-{
-    <div class="alert alert-success">@TempData["Success"]</div>
-}
+    .page-title {
+        font-family: 'Manrope', sans-serif;
+        font-size: 22px;
+        font-weight: 700;
+        color: #111;
+        margin: 0;
+    }
 
-<table class="table">
-    <thead>
-        <tr>
-            <th>Title</th>
-            <th>Target</th>
-            <th>Posted By</th>
-            <th>Date</th>
-        </tr>
-    </thead>
-    <tbody>
-        @foreach (var a in Model)
-        {
-            <tr>
-                <td>@a.Title</td>
-                <td>@(string.IsNullOrEmpty(a.GradeLevel) ? "All Students" : $"{a.GradeLevel} {a.Section}")</td>
-                <td>@(a.Counselor?.EmailAddress ?? "—")</td>
-                <td>@a.CreatedAt.ToString("MMM dd, yyyy - h:mm tt")</td>
-            </tr>
+    .cal-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: 1.25rem;
+    }
+
+    .cal-nav {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+    }
+
+        .cal-nav a {
+            background: #fff;
+            border: 1px solid #d1d5db;
+            border-radius: 8px;
+            padding: 6px 12px;
+            font-size: 14px;
+            font-family: 'Inter', sans-serif;
+            color: #374151;
+            text-decoration: none;
         }
-    </tbody>
-</table>
+
+            .cal-nav a:hover {
+                background: #f9fafb;
+            }
+
+    .cal-month-label {
+        font-family: 'Manrope', sans-serif;
+        font-size: 16px;
+        font-weight: 700;
+        color: #111;
+        min-width: 160px;
+        text-align: center;
+    }
+
+    .btn-save {
+        background: #1B5E20;
+        border: none;
+        border-radius: 8px;
+        padding: 9px 20px;
+        font-size: 14px;
+        font-family: 'Inter', sans-serif;
+        color: #fff;
+        cursor: pointer;
+        text-decoration: none;
+        display: inline-block;
+    }
+
+        .btn-save:hover {
+            background: #164a19;
+            color: #fff;
+        }
+
+    .cal-grid {
+        display: grid;
+        grid-template-columns: repeat(7, 1fr);
+        gap: 1px;
+        background: #e5e7eb;
+        border: 1px solid #e5e7eb;
+        border-radius: 12px;
+        overflow: hidden;
+    }
+
+    .cal-weekday {
+        background: #f9fafb;
+        padding: 8px;
+        font-size: 11px;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.06em;
+        color: #6b7280;
+        text-align: center;
+        font-family: 'Inter', sans-serif;
+    }
+
+    .cal-day {
+        background: #fff;
+        min-height: 76px;
+        padding: 8px;
+        text-decoration: none;
+        display: block;
+        position: relative;
+    }
+
+        .cal-day:hover {
+            background: #f9fafb;
+        }
+
+        .cal-day.other-month {
+            background: #fafafa;
+        }
+
+            .cal-day.other-month .cal-day-num {
+                color: #d1d5db;
+            }
+
+        .cal-day.selected {
+            background: #eaf3e0;
+            box-shadow: inset 0 0 0 2px #1B5E20;
+        }
+
+    .cal-day-num {
+        font-size: 13px;
+        font-family: 'Inter', sans-serif;
+        color: #374151;
+    }
+
+        .cal-day-num.today {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: #1B5E20;
+            color: #fff;
+            font-weight: 600;
+        }
+
+    .cal-marker {
+        position: absolute;
+        bottom: 8px;
+        left: 8px;
+        display: flex;
+        align-items: center;
+        gap: 4px;
+    }
+
+    .cal-dot {
+        width: 6px;
+        height: 6px;
+        border-radius: 50%;
+        background: #1B5E20;
+    }
+
+    .cal-count {
+        font-size: 11px;
+        color: #1B5E20;
+        font-family: 'Inter', sans-serif;
+        font-weight: 600;
+    }
+
+    .day-panel {
+        margin-top: 1.5rem;
+        background: #fff;
+        border: 1px solid #e5e7eb;
+        border-radius: 12px;
+        padding: 1.25rem 1.5rem;
+    }
+
+    .day-panel-title {
+        font-family: 'Manrope', sans-serif;
+        font-size: 15px;
+        font-weight: 700;
+        color: #111;
+        margin-bottom: 12px;
+    }
+
+    .announcement-card {
+        border-bottom: 1px solid #f3f4f6;
+        padding: 12px 0;
+    }
+
+        .announcement-card:last-child {
+            border-bottom: none;
+        }
+
+    .announcement-title {
+        font-family: 'Manrope', sans-serif;
+        font-size: 15px;
+        font-weight: 700;
+        color: #111;
+        margin-bottom: 4px;
+    }
+
+    .announcement-meta {
+        font-size: 12px;
+        font-family: 'Inter', sans-serif;
+        color: #6b7280;
+        margin-bottom: 8px;
+    }
+
+    .announcement-message {
+        font-size: 14px;
+        font-family: 'Inter', sans-serif;
+        color: #374151;
+        white-space: pre-wrap;
+        margin-bottom: 10px;
+    }
+
+    .announcement-actions {
+        display: flex;
+        gap: 8px;
+    }
+
+    .btn-edit-sm, .btn-delete-sm {
+        border-radius: 8px;
+        padding: 6px 14px;
+        font-size: 13px;
+        font-family: 'Inter', sans-serif;
+        text-decoration: none;
+    }
+
+    .btn-edit-sm {
+        background: #fff;
+        border: 1px solid #d1d5db;
+        color: #374151;
+    }
+
+    .btn-delete-sm {
+        background: #fff;
+        border: 1px solid #fca5a5;
+        color: #b91c1c;
+    }
+
+    .empty-state {
+        text-align: center;
+        color: #9ca3af;
+        font-size: 14px;
+        font-family: 'Inter', sans-serif;
+        padding: 16px 0;
+    }
+</style>
+
+<div class="container-lg py-4" style="max-width: 780px;">
+    <div class="cal-header">
+        <p class="page-title">Announcements</p>
+        <a asp-action="Create" class="btn-save">New Announcement</a>
+    </div>
+
+    @if (TempData["Success"] != null)
+    {
+        <div class="alert alert-success">@TempData["Success"]</div>
+    }
+
+    <div class="cal-nav" style="justify-content:center; margin-bottom:1rem;">
+        <a asp-action="Index" asp-route-year="@prevMonth.Year" asp-route-month="@prevMonth.Month">&larr; Prev</a>
+        <div class="cal-month-label">@Model.MonthName</div>
+        <a asp-action="Index" asp-route-year="@nextMonth.Year" asp-route-month="@nextMonth.Month">Next &rarr;</a>
+    </div>
+
+    <div class="cal-grid">
+        @foreach (var wd in new[] { "Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat" })
+        {
+            <div class="cal-weekday">@wd</div>
+        }
+
+        @foreach (var d in Model.Days)
+        {
+            var isSelected = Model.SelectedDate.HasValue && Model.SelectedDate.Value == d.Date;
+            <a class="cal-day @(d.IsCurrentMonth ? "" : "other-month") @(isSelected ? "selected" : "")"
+               asp-action="Index"
+               asp-route-year="@d.Date.Year"
+               asp-route-month="@d.Date.Month"
+               asp-route-day="@d.Date.Day">
+                <span class="cal-day-num @(d.IsToday ? "today" : "")">@d.Date.Day</span>
+                @if (d.Count > 0)
+                {
+                    <div class="cal-marker">
+                        <span class="cal-dot"></span>
+                        <span class="cal-count">@d.Count</span>
+                    </div>
+                }
+            </a>
+        }
+    </div>
+
+    @if (Model.SelectedDate.HasValue)
+    {
+        <div class="day-panel">
+            <div class="day-panel-title">@Model.SelectedDate.Value.ToString("MMMM dd, yyyy")</div>
+
+            @if (!Model.SelectedDayAnnouncements.Any())
+            {
+                <div class="empty-state">No announcements posted on this day.</div>
+            }
+            else
+            {
+                foreach (var a in Model.SelectedDayAnnouncements)
+                {
+                    <div class="announcement-card">
+                        <div class="announcement-title">@a.Title</div>
+                        <div class="announcement-meta">
+                            Posted by @(a.Counselor?.EmailAddress ?? "—") · @a.CreatedAt.ToString("h:mm tt")
+                            @if (a.UpdatedAt.HasValue)
+                            {
+                                <span>· edited @a.UpdatedAt.Value.ToString("MMM dd, yyyy - h:mm tt")</span>
+                            }
+                        </div>
+                        <div class="announcement-message">@a.Message</div>
+                        <div class="announcement-actions">
+                            <a asp-action="Edit" asp-route-id="@a.AnnouncementId" class="btn-edit-sm">Edit</a>
+                            <a asp-action="Delete" asp-route-id="@a.AnnouncementId" class="btn-delete-sm">Delete</a>
+                        </div>
+                    </div>
+                }
+            }
+        </div>
+    }
+</div>

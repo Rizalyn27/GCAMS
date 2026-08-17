@@ -145,6 +145,11 @@ namespace GCAMS.Data
                 .HasForeignKey(ecn => ecn.EmergencyContactID)
                 .OnDelete(DeleteBehavior.Cascade);
 
+            //Notification
+            modelBuilder.Entity<Notifs>()
+            .HasIndex(n => new { n.RecipientUsername, n.Type, n.RelatedEntityType, n.RelatedEntityId })
+            .IsUnique();
+
         }
     }
 }

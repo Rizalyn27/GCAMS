@@ -8,7 +8,8 @@ namespace GCAMS.Models.Notifs
         FollowUp,
         Announcement,
         StatusUpdate,
-        NewAppointment
+        NewAppointment,
+        SameDayAppointment
     }
 
 

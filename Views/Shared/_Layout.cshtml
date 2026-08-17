@@ -362,6 +362,31 @@
                 padding: 16px;
             }
         }
+
+        .notif-filters {
+            display: flex;
+            gap: 6px;
+            padding: 4px 4px 10px;
+            border-bottom: 1px solid #f2f5ec;
+            margin-bottom: 8px;
+            flex-wrap: wrap;
+        }
+
+        .notif-filter-btn {
+            background: none;
+            border: 1px solid #e1e4db;
+            border-radius: 999px;
+            padding: 4px 10px;
+            font-size: 12px;
+            color: #41493e;
+            cursor: pointer;
+        }
+
+            .notif-filter-btn.active {
+                background: #1b6d24;
+                border-color: #1b6d24;
+                color: #fff;
+            }
     </style>
 </head>
 <body>
@@ -382,7 +407,7 @@
                 }
                 else
                 {
-                    <li><a asp-controller="Home" asp-action="Home">Dashboard</a></li>
+                    <li><a asp-controller="Home" asp-action="Index">Dashboard</a></li>
                     <li><a asp-controller="Students" asp-action="Index">Students</a></li>
                     <li><a asp-controller="Counselors" asp-action="Index">Counselors</a></li>
                     <li><a asp-controller="Appointments" asp-action="Index">Appointments</a></li>
@@ -420,6 +445,12 @@
                             <span id="notif-badge" class="notif-badge"></span>
                         </button>
                         <div id="notif-dropdown" class="notif-dropdown">
+                            <div class="notif-filters">
+                                <button class="notif-filter-btn active" data-filter="all">All</button>
+                                <button class="notif-filter-btn" data-filter="Announcement">Announcements</button>
+                                <button class="notif-filter-btn" data-filter="AppointmentReminder">Reminders</button>
+                                <button class="notif-filter-btn" data-filter="StatusUpdate">Updates</button>
+                            </div>
                             <div id="notif-list"></div>
                         </div>
                     </div>
@@ -460,7 +491,11 @@
             const dropdown = document.getElementById('notif-dropdown');
             const badge = document.getElementById('notif-badge');
             const list = document.getElementById('notif-list');
+            const filterButtons = document.querySelectorAll('.notif-filter-btn');
             const token = () => document.querySelector('input[name="__RequestVerificationToken"]')?.value || '';
+
+            let allNotifications = [];
+            let activeFilter = 'all';
 
             function renderNotification(n) {
                 return `
@@ -469,6 +504,16 @@
                         <div class="notif-message">${n.message}</div>
                         <div class="notif-time">${new Date(n.createdAt).toLocaleString()}</div>
                     </div>`;
+            }
+
+            function renderList() {
+                const filtered = activeFilter === 'all'
+                    ? allNotifications
+                    : allNotifications.filter(n => n.type === activeFilter);
+
+                list.innerHTML = filtered.length
+                    ? filtered.map(renderNotification).join('')
+                    : '<div class="notif-empty">No notifications</div>';
             }
 
             async function fetchNotifications() {
@@ -480,9 +525,8 @@
                 badge.style.display = unreadCount > 0 ? 'inline-block' : 'none';
                 badge.textContent = unreadCount;
 
-                list.innerHTML = notifications.length
-                    ? notifications.map(renderNotification).join('')
-                    : '<div class="notif-empty">No notifications</div>';
+                allNotifications = notifications;
+                renderList();
             }
 
             async function markRead(id) {
@@ -492,6 +536,15 @@
                 });
                 fetchNotifications();
             }
+
+            filterButtons.forEach(btn => {
+                btn.addEventListener('click', () => {
+                    filterButtons.forEach(b => b.classList.remove('active'));
+                    btn.classList.add('active');
+                    activeFilter = btn.dataset.filter;
+                    renderList();
+                });
+            });
 
             bell.addEventListener('click', () => {
                 dropdown.style.display = dropdown.style.display === 'block' ? 'none' : 'block';

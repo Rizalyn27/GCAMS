@@ -1,6 +1,7 @@
 ﻿using GCAMS.Data;
 using GCAMS.Models.Appointment;
 using GCAMS.Models.Notifs;
+using GCAMS.ViewModels;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -15,23 +16,70 @@ public class AppointmentsController : Controller
 
     private static bool IsWithinWorkingHours(DateTime dt) => AllowedHours.Contains(dt.Hour);
 
- 
     public AppointmentsController(AppDbContext context)
     {
         _context = context;
     }
-   
 
-    // Only Admin/Counselor see the full list — students never get a "list everyone's appointments" view
+    // GET: Appointments — now a calendar, matching Announcements
     [Authorize(Roles = "Admin,Counselor")]
-    [Authorize(Roles = "Admin,Counselor")]
-    public async Task<IActionResult> Index()
+    public async Task<IActionResult> Index(int? year, int? month, int? day)
     {
-        return View(await _context.Appointments
+        var today = DateTime.Today;
+        int y = year ?? today.Year;
+        int m = month ?? today.Month;
+
+        var firstOfMonth = new DateTime(y, m, 1);
+        var lastOfMonth = firstOfMonth.AddMonths(1).AddDays(-1);
+
+        var monthAppointments = await _context.Appointments
             .Include(a => a.Counselor)
-            .OrderBy(a => (a.Status == "Cancelled" || a.Status == "Rejected") ? 1 : 0)
-            .ThenByDescending(a => a.AppointmentDate)
-            .ToListAsync());
+            .Where(a => a.AppointmentDate.Date >= firstOfMonth && a.AppointmentDate.Date <= lastOfMonth)
+            .OrderBy(a => a.AppointmentDate)
+            .ToListAsync();
+
+        var countsByDay = monthAppointments
+            .GroupBy(a => a.AppointmentDate.Date)
+            .ToDictionary(g => g.Key, g => g.Count());
+
+        var gridStart = firstOfMonth.AddDays(-(int)firstOfMonth.DayOfWeek);
+        var gridEnd = lastOfMonth.AddDays(6 - (int)lastOfMonth.DayOfWeek);
+
+        var days = new List<CalendarDay>();
+        for (var d = gridStart; d <= gridEnd; d = d.AddDays(1))
+        {
+            days.Add(new CalendarDay
+            {
+                Date = d,
+                IsCurrentMonth = d.Month == m,
+                IsToday = d == today,
+                Count = countsByDay.TryGetValue(d, out var c) ? c : 0
+            });
+        }
+
+        List<Appointments> selectedDayAppointments = new();
+        DateTime? selectedDate = null;
+
+        if (day.HasValue)
+        {
+            selectedDate = new DateTime(y, m, day.Value);
+            selectedDayAppointments = monthAppointments
+                .Where(a => a.AppointmentDate.Date == selectedDate.Value)
+                .OrderBy(a => a.AppointmentDate)
+                .ToList();
+        }
+
+        var vm = new AppointmentCalendarViewModel
+        {
+            Year = y,
+            Month = m,
+            MonthName = firstOfMonth.ToString("MMMM yyyy"),
+            Days = days,
+            SelectedDate = selectedDate,
+            SelectedDayAppointments = selectedDayAppointments
+        };
+
+        return View(vm);
     }
 
     // Anyone logged in can view Details — but a Student can only view their OWN appointment
@@ -74,7 +122,7 @@ public class AppointmentsController : Controller
 
                 if (pending != null)
                 {
-                    TempData["Info"] = "You already have a pending appointment. You can view it in MyAppointments, or book ano  ther one if needed.";
+                    TempData["Info"] = "You already have a pending appointment. You can view it in MyAppointments, or book another one if needed.";
                     return RedirectToAction(nameof(Details), new { appointmentid = pending.AppointmentID });
                 }
             }
@@ -83,7 +131,6 @@ public class AppointmentsController : Controller
             ViewBag.GradeLevel = student.GradeLevel;
             ViewBag.Section = student.Section;
 
-            
             return View(new Appointments
             {
                 StudentsID = student.StudentsID,
@@ -125,8 +172,6 @@ public class AppointmentsController : Controller
         appointments.AppointmentDate = appointments.AppointmentDate.Date
             .AddHours(appointments.AppointmentDate.Hour);
 
-
-
         if (!IsWithinWorkingHours(appointments.AppointmentDate))
         {
             ModelState.AddModelError("AppointmentDate", "Appointments must be booked between 8–11 AM or 1–4 PM.");
@@ -137,8 +182,6 @@ public class AppointmentsController : Controller
         appointments.CreatedAt = DateTime.Now;
         appointments.UpdatedAt = null;
 
-        // If a Counselor/Admin is booking this directly (not a student self-booking),
-        // it's already being handled by them — claim it right away.
         if (!User.IsInRole("Student"))
             appointments.CounselorID = await GetCurrentCounselorIdAsync();
 
@@ -154,13 +197,32 @@ public class AppointmentsController : Controller
             return View(appointments);
         }
 
+        // NEW — the exact hour slot on this day is already taken by someone else
+        var slotTaken = await _context.Appointments.AnyAsync(a =>
+            a.AppointmentDate == appointments.AppointmentDate &&
+            a.Status != "Cancelled" &&
+            a.Status != "Missed");
+
+        if (slotTaken)
+        {
+            ModelState.AddModelError("AppointmentDate", "This time slot is already booked. Please choose a different hour.");
+            return View(appointments);
+        }
+
         if (ModelState.IsValid)
         {
             _context.Add(appointments);
             await _context.SaveChangesAsync();
 
-            var counselor = await _context.Counselors.ToListAsync();
-            foreach (var c in counselor)
+            // Dedup by EmailAddress + save one-at-a-time, same fix as Announcements —
+            // one collision no longer takes the whole batch (and every other counselor's
+            // notification) down with it.
+            var counselors = await _context.Counselors
+                .GroupBy(c => c.EmailAddress)
+                .Select(g => g.First())
+                .ToListAsync();
+
+            foreach (var c in counselors)
             {
                 _context.Notifs.Add(new Notifs
                 {
@@ -171,8 +233,16 @@ public class AppointmentsController : Controller
                     RelatedEntityType = "Appointment",
                     RelatedEntityId = appointments.AppointmentID
                 });
+
+                try
+                {
+                    await _context.SaveChangesAsync();
+                }
+                catch (DbUpdateException)
+                {
+                    _context.ChangeTracker.Clear();
+                }
             }
-            await _context.SaveChangesAsync();
 
             if (User.IsInRole("Student"))
                 return RedirectToAction(nameof(Details), new { appointmentid = appointments.AppointmentID });
@@ -244,7 +314,6 @@ public class AppointmentsController : Controller
             existing.AppointmentType = posted.AppointmentType;
             existing.Notes = posted.Notes;
 
-            // A counselor editing an unclaimed appointment claims it.
             existing.CounselorID ??= await GetCurrentCounselorIdAsync();
         }
 
@@ -332,7 +401,6 @@ public class AppointmentsController : Controller
             appointments.UpdatedAt = DateTime.Now;
             await _context.SaveChangesAsync();
 
-            // Notify the claiming counselor, or all counselors if nobody claimed it yet
             if (appointments.CounselorID.HasValue)
             {
                 var counselor = await _context.Counselors.FindAsync(appointments.CounselorID.Value);
@@ -347,11 +415,24 @@ public class AppointmentsController : Controller
                         RelatedEntityType = "Appointment",
                         RelatedEntityId = appointments.AppointmentID
                     });
+
+                    try
+                    {
+                        await _context.SaveChangesAsync();
+                    }
+                    catch (DbUpdateException)
+                    {
+                        _context.ChangeTracker.Clear();
+                    }
                 }
             }
             else
             {
-                var counselors = await _context.Counselors.ToListAsync();
+                var counselors = await _context.Counselors
+                    .GroupBy(c => c.EmailAddress)
+                    .Select(g => g.First())
+                    .ToListAsync();
+
                 foreach (var c in counselors)
                 {
                     _context.Notifs.Add(new Notifs
@@ -363,9 +444,17 @@ public class AppointmentsController : Controller
                         RelatedEntityType = "Appointment",
                         RelatedEntityId = appointments.AppointmentID
                     });
+
+                    try
+                    {
+                        await _context.SaveChangesAsync();
+                    }
+                    catch (DbUpdateException)
+                    {
+                        _context.ChangeTracker.Clear();
+                    }
                 }
             }
-            await _context.SaveChangesAsync();
 
             TempData["Info"] = "Your appointment has been cancelled.";
             return RedirectToAction(nameof(MyAppointments));
@@ -409,7 +498,7 @@ public class AppointmentsController : Controller
         var appointment = await _context.Appointments.FindAsync(request.AppointmentId);
         if (appointment == null) return NotFound();
 
-        var validStatuses = new[] { "Pending", "Confirmed", "Rejected", "Completed", "Missed", "Cancelled" };
+        var validStatuses = new[] { "Pending", "Confirmed", "Completed", "Missed", "Cancelled" };
         if (!validStatuses.Contains(request.NewStatus))
             return BadRequest("Invalid status value.");
 
@@ -419,7 +508,6 @@ public class AppointmentsController : Controller
 
         await _context.SaveChangesAsync();
 
-        // Notify the student of the status change
         if (appointment.StudentsID.HasValue)
         {
             var student = await _context.Students.FindAsync(appointment.StudentsID.Value);
@@ -428,7 +516,6 @@ public class AppointmentsController : Controller
                 var (title, message) = request.NewStatus switch
                 {
                     "Confirmed" => ("Appointment Confirmed", $"Your appointment on {appointment.AppointmentDate:MMM dd, yyyy - h:mm tt} has been confirmed."),
-                    "Rejected" => ("Appointment Rejected", $"Your appointment request for {appointment.AppointmentDate:MMM dd, yyyy - h:mm tt} was declined."),
                     "Completed" => ("Appointment Completed", $"Your appointment on {appointment.AppointmentDate:MMM dd, yyyy - h:mm tt} is marked completed."),
                     "Missed" => ("Appointment Missed", $"You missed your appointment scheduled on {appointment.AppointmentDate:MMM dd, yyyy - h:mm tt}."),
                     _ => (null as string, null as string)
@@ -445,54 +532,20 @@ public class AppointmentsController : Controller
                         RelatedEntityType = "Appointment",
                         RelatedEntityId = appointment.AppointmentID
                     });
-                    await _context.SaveChangesAsync();
+
+                    try
+                    {
+                        await _context.SaveChangesAsync();
+                    }
+                    catch (DbUpdateException)
+                    {
+                        _context.ChangeTracker.Clear();
+                    }
                 }
             }
         }
 
         return Ok();
-    }
-
-
-    [Authorize(Roles = "Admin,Counselor")]
-    [HttpPost]
-    [ValidateAntiForgeryToken]
-    public async Task<IActionResult> RejectAppointment(int appointmentid)
-    {
-        var appointment = await _context.Appointments.FindAsync(appointmentid);
-        if (appointment == null) return NotFound();
-
-        if (appointment.Status != "Pending" && appointment.Status != "Confirmed")
-        {
-            TempData["Error"] = "Only pending or confirmed appointments can be rejected.";
-            return RedirectToAction(nameof(Index));
-        }
-
-        appointment.CounselorID ??= await GetCurrentCounselorIdAsync();
-        appointment.Status = "Rejected";
-        appointment.UpdatedAt = DateTime.Now;
-        await _context.SaveChangesAsync();
-
-        // Notify the student their appointment was rejected
-        if (appointment.StudentsID.HasValue)
-        {
-            var student = await _context.Students.FindAsync(appointment.StudentsID.Value);
-            if (student != null)
-            {
-                _context.Notifs.Add(new Notifs
-                {
-                    RecipientUsername = student.StuID,
-                    Type = NotificationType.StatusUpdate,
-                    Title = "Appointment Rejected",
-                    Message = $"Your appointment request for {appointment.AppointmentDate:MMM dd, yyyy - h:mm tt} was declined. Please book a new appointment or contact the guidance office.",
-                    RelatedEntityType = "Appointment",
-                    RelatedEntityId = appointment.AppointmentID
-                });
-                await _context.SaveChangesAsync();
-            }
-        }
-
-        return RedirectToAction(nameof(Index));
     }
 
     public async Task<IActionResult> MyAppointments()
@@ -513,7 +566,6 @@ public class AppointmentsController : Controller
         return View(appointments);
     }
 
-    // Resolves the logged-in counselor's ID from their email (== their Username).
     private async Task<int?> GetCurrentCounselorIdAsync()
     {
         var email = User.Identity?.Name;

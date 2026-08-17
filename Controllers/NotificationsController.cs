@@ -38,7 +38,8 @@ namespace GCAMS.Controllers
                     n.IsRead,
                     n.CreatedAt,
                     n.RelatedEntityType,
-                    n.RelatedEntityId
+                    n.RelatedEntityId,
+                    Type = n.Type.ToString()
                 })
                 .ToListAsync();
 
@@ -73,7 +74,7 @@ namespace GCAMS.Controllers
         // POST: /Notifications/MarkAllRead
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> MarkAllRead()
+        public async Task<IActionResult> MarkAllRead(string? returnUrl = null)
         {
             var username = User.Identity?.Name;
             var unread = await _context.Notifs
@@ -82,6 +83,10 @@ namespace GCAMS.Controllers
 
             unread.ForEach(n => n.IsRead = true);
             await _context.SaveChangesAsync();
+
+            if (!string.IsNullOrEmpty(returnUrl) && Url.IsLocalUrl(returnUrl))
+                return Redirect(returnUrl);
+
             return Ok();
         }
     }

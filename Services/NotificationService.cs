@@ -22,6 +22,7 @@ namespace GCAMS.Services
             await GenerateAppointmentRemindersAsync();
             await GenerateFollowUpRemindersAsync();
             await AppointmentStatusUpdateAsync();
+            await GenerateSameDayPopupAsync();
         }
 
         private async Task GenerateAppointmentRemindersAsync()
@@ -90,7 +91,14 @@ namespace GCAMS.Services
                 }
             }
 
-            await _context.SaveChangesAsync();
+            try
+            {
+                await _context.SaveChangesAsync();
+            }
+            catch (DbUpdateException)
+            {
+
+            }
         }
         private async Task GenerateFollowUpRemindersAsync()
         {
@@ -114,6 +122,7 @@ namespace GCAMS.Services
                 bool alreadyNotified = await _context.Notifs.AnyAsync(n =>
                     n.RelatedEntityType == "CaseNotes" &&
                     n.RelatedEntityId == note.CasenoteId &&
+                    n.RecipientUsername == counselor.EmailAddress &&
                     n.Type == NotificationType.FollowUp);
 
                 if (!alreadyNotified)
@@ -130,7 +139,14 @@ namespace GCAMS.Services
                 }
             }
 
-            await _context.SaveChangesAsync();
+            try
+            {
+                await _context.SaveChangesAsync();
+            }
+            catch (DbUpdateException)
+            {
+
+            }
         }
 
         // Catches appointments that passed their scheduled time while still Pending/Confirmed
@@ -171,8 +187,62 @@ namespace GCAMS.Services
                 });
             }
 
-            await _context.SaveChangesAsync();
+            try
+            {
+                await _context.SaveChangesAsync();
+            }
+            catch (DbUpdateException)
+            {
+
+            }
         }
+
+
+        private async Task GenerateSameDayPopupAsync()
+        {
+            var today = DateTime.Today;
+
+            var todaysAppointments = await _context.Appointments
+                .Where(a => a.AppointmentDate.Date == today && a.Status == "Confirmed")
+                .ToListAsync();
+
+            foreach (var appt in todaysAppointments)
+            {
+                if (!appt.StudentsID.HasValue) continue;
+
+                var student = await _context.Students.FindAsync(appt.StudentsID.Value);
+                if (student == null) continue;
+
+                bool alreadyNotified = await _context.Notifs.AnyAsync(n =>
+                    n.RelatedEntityType == "Appointment" &&
+                    n.RelatedEntityId == appt.AppointmentID &&
+                    n.RecipientUsername == student.StuID &&
+                    n.Type == NotificationType.SameDayAppointment);
+
+                if (!alreadyNotified)
+                {
+                    _context.Notifs.Add(new Notifs
+                    {
+                        RecipientUsername = student.StuID,
+                        Type = NotificationType.SameDayAppointment,
+                        Title = "Appointment Today",
+                        Message = $"You have an appointment today at {appt.AppointmentDate:h:mm tt}.",
+                        RelatedEntityType = "Appointment",
+                        RelatedEntityId = appt.AppointmentID
+                    });
+                }
+            }
+
+            try
+            {
+                await _context.SaveChangesAsync();
+            }
+            catch (DbUpdateException)
+            {
+
+            }
+        }
+
 
     }
 

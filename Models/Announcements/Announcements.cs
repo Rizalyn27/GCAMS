@@ -16,16 +16,10 @@ namespace GCAMS.Models.Announcements
         [StringLength(1000)]
         public string Message { get; set; }
 
-        // Leave blank to target everyone
-        [StringLength(50)]
-        public string? GradeLevel { get; set; }
-
-        [StringLength(100)]
-        public string? Section { get; set; }
-
         public int? CounselorID { get; set; }
         public Counselor.Counselor? Counselor { get; set; }
 
         public DateTime CreatedAt { get; set; } = DateTime.Now;
+        public DateTime? UpdatedAt { get; set; }
     }
 }

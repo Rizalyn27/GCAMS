@@ -13,14 +13,8 @@ namespace GCAMS.Models.Counselor
         // Personal Information
         [Required]
         [StringLength(50)]
-        public string LastName { get; set; } = string.Empty;
+        public string CounselorName { get; set; } = string.Empty;
 
-        [Required]
-        [StringLength(50)]
-        public string FirstName { get; set; } = string.Empty;
-
-        [StringLength(50)]
-        public string? MiddleName { get; set; }
 
         // Employee Information
         [Required]
@@ -114,10 +108,6 @@ namespace GCAMS.Models.Counselor
         [Display(Name = "Status")]
         public string EmploymentStatus { get; set; }
 
-        [NotMapped]
-        public string FullName =>
-            string.IsNullOrWhiteSpace(MiddleName)
-                ? $"{LastName}, {FirstName}"
-                : $"{LastName}, {FirstName} {MiddleName[0]}.";
+        
     }
 }

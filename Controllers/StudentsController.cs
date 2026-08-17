@@ -372,6 +372,7 @@ namespace GCAMS.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Import(IFormFile file)
         {
+            List<Students> Students = new List<Students>();
             try
             {
                 if (file == null || file.Length == 0)
@@ -400,6 +401,16 @@ namespace GCAMS.Controllers
                 var worksheet = package.Workbook.Worksheets[0];
                 int rowCount = worksheet.Dimension?.Rows ?? 0;
                 int successCount = 0;
+                int skippedCount = 0;
+
+                var ExistingStudent = await _context.Students
+                    .Select(s => new { s.StuID, s.StuName })
+                    .ToListAsync();
+
+                var seenKeys = new HashSet<string>(
+                    ExistingStudent.Select(s => $"{s.StuID}|{s.StuName}"),
+                    StringComparer.OrdinalIgnoreCase);
+
 
                 for (int row = 2; row <= rowCount; row++)
                 {
@@ -430,6 +441,14 @@ namespace GCAMS.Controllers
 
                     if (string.IsNullOrWhiteSpace(student.StuName) || string.IsNullOrWhiteSpace(student.StuID))
                         continue;
+
+                    string key = $"{student.StuID}|{student.StuName}";
+                    if (seenKeys.Contains(key))
+                    {
+                        skippedCount++;
+                        continue;
+                    }
+                    seenKeys.Add(key);
 
                     _context.Students.Add(student);
                     await _context.SaveChangesAsync();
@@ -516,9 +535,10 @@ namespace GCAMS.Controllers
 
                     await _context.SaveChangesAsync();
                     successCount++;
+
                 }
 
-                TempData["Success"] = $"{successCount} student(s) imported successfully.";
+                TempData["Success"] = $"{successCount} student(s) imported successfully." + (skippedCount > 0 ? $" {skippedCount} duplicate(s) skipped." : "");
                 return RedirectToAction(nameof(Index));
             }
             catch (Exception ex)

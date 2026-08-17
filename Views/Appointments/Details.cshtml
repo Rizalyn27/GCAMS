@@ -184,8 +184,11 @@ else
                 </div>
                 <div class="detail-field" style="grid-column: 1 / -1;">
                     <label>@Html.DisplayNameFor(m => m.Notes)</label>
-                    <div class="value">@(string.IsNullOrWhiteSpace(Model?.Notes) ? "—" : Model.Notes)</div>
+                    <div class="value">
+                        @(string.IsNullOrWhiteSpace(Model?.Notes) ? "—" : Html.Raw(Model.Notes))
+                    </div>
                 </div>
+
             </div>
         </div>
 

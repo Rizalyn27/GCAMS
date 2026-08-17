@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using GCAMS.Models.CaseNotes;
+using GCAMS.Models.Appointment;
 using GCAMS.Data;
 using System.Threading.Tasks;
 
@@ -9,6 +10,7 @@ using System.Threading.Tasks;
 public class CaseNotesController : Controller
 {
     private readonly AppDbContext _context;
+
 
     public CaseNotesController(AppDbContext context)
     {
@@ -56,11 +58,14 @@ public class CaseNotesController : Controller
         return View(casenotes);
     }
 
+    private static readonly int[] AllowedHours = { 8, 9, 10, 11, 13, 14, 15, 16 };
+    private static bool IsWithinWorkingHours(DateTime dt) => AllowedHours.Contains(dt.Hour);
+
     // POST: CaseNotes/Create
     [HttpPost]
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> Create(
-        [Bind("CasenoteId,StudentsID,FullName,SessionNo,SessionDate,SessionTopics,SessionRelevance,GoalPlan,Interventions,Observations,CounselProgess,BehaviorStatus,Homework,StrengthsChallenges,SpecificGoal")] CaseNotes casenotes, int? studentId)
+    [Bind("CasenoteId,StudentsID,FullName,SessionNo,SessionDate,SessionTopics,SessionRelevance,GoalPlan,Interventions,Observations,CounselProgess,BehaviorStatus,Homework,StrengthsChallenges,SpecificGoal,FollowUpDate")] CaseNotes casenotes, int? studentId)
     {
         if (studentId.HasValue) casenotes.StudentsID = studentId.Value;
 
@@ -70,6 +75,49 @@ public class CaseNotesController : Controller
 
             _context.Add(casenotes);
             await _context.SaveChangesAsync();
+
+            // Moved above the redirect — now actually runs regardless of studentId
+            if (casenotes.FollowUpDate.HasValue)
+            {
+                var followUpDate = casenotes.FollowUpDate.Value.Date
+                    .AddHours(casenotes.FollowUpDate.Value.Hour);
+
+                if (!IsWithinWorkingHours(followUpDate))
+                {
+                    TempData["Error"] = "Follow-up time must be between 8–11 AM or 1–4 PM. The case note was saved, but no follow-up appointment was booked.";
+                }
+                else
+                {
+                    var slotTaken = await _context.Appointments.AnyAsync(a =>
+                        a.AppointmentDate == followUpDate &&
+                        a.Status != "Cancelled" &&
+                        a.Status != "Missed");
+
+                    if (slotTaken)
+                    {
+                        TempData["Error"] = "That follow-up time slot is already booked. The case note was saved, but no follow-up appointment was created — please schedule one manually.";
+                    }
+                    else
+                    {
+                        var student = await _context.Students.FindAsync(casenotes.StudentsID);
+
+                        _context.Appointments.Add(new Appointments
+                        {
+                            StudentsID = casenotes.StudentsID,
+                            CounselorID = casenotes.CounselorID,
+                            FullName = student?.StuName ?? casenotes.FullName,
+                            Email = student?.Email ?? "",
+                            AppointmentDate = followUpDate,
+                            AppointmentType = "Follow-up",
+                            Status = "Confirmed", // counselor-initiated, already committed
+                            CreatedAt = DateTime.Now,
+                            Notes = $"Follow-up from Case Note #{casenotes.CasenoteId}"
+                        });
+
+                        await _context.SaveChangesAsync();
+                    }
+                }
+            }
 
             if (studentId.HasValue)
                 return RedirectToAction("Details", "Students", new { id = studentId });
