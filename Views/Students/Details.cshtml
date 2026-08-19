@@ -1,1180 +1,1114 @@
 ﻿@model GCAMS.ViewModels.StudentFormViewModel
 
 @{
-    Layout = "_Layout";
+    ViewData["Title"] = "Student Profile";
+    Layout = null;
 }
 
-<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
-<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet">
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - CounselCare</title>
 
-<style>
-    .material-symbols-outlined {
-        font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
-        vertical-align: middle;
-    }
+    <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;600;700;800&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet">
 
-    .profile-page * {
-        font-family: 'Inter', sans-serif;
-    }
-
-    .profile-page h1, .profile-page h2, .profile-page h3 {
-        font-family: 'Manrope', sans-serif;
-    }
-
-    .tab-btn {
-        padding-bottom: 12px;
-        padding-left: 4px;
-        padding-right: 4px;
-        font-weight: 600;
-        font-size: 14px;
-        border: none;
-        background: transparent;
-        color: #717a6d;
-        cursor: pointer;
-        border-bottom: 3px solid transparent;
-        transition: all 0.2s;
-        white-space: nowrap;
-    }
-
-        .tab-btn.active {
-            border-bottom: 3px solid #1b6d24;
-            color: #1b6d24;
+    <style>
+        * {
+            box-sizing: border-box;
         }
 
-        .tab-btn:hover:not(.active) {
-            color: #1b6d24;
+        body {
+            margin: 0;
+            background: #f4f6f0;
+            font-family: 'Inter', sans-serif;
         }
 
-    .tab-panel {
-        display: none;
-    }
-
-        .tab-panel.active {
-            display: block;
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+            vertical-align: middle;
         }
 
-    .field-label {
-        font-size: 11px;
-        font-weight: 600;
-        text-transform: uppercase;
-        letter-spacing: 0.06em;
-        color: #717a6d;
-        margin-bottom: 2px;
-    }
-
-    .field-value {
-        font-size: 15px;
-        color: #191d18;
-        font-weight: 500;
-    }
-
-        .field-value.empty {
-            color: #c0c9bb;
-            font-style: italic;
-            font-weight: 400;
-        }
-
-    .section-card {
-        background: #fff;
-        border-radius: 12px;
-        border: 1px solid rgba(192,201,187,0.3);
-        overflow: hidden;
-        margin-bottom: 20px;
-        box-shadow: 0 1px 3px rgba(0,0,0,0.04);
-    }
-
-    .section-header {
-        background: #f2f5ec;
-        padding: 14px 24px;
-        border-bottom: 1px solid rgba(192,201,187,0.3);
-        display: flex;
-        align-items: center;
-        gap: 8px;
-        font-family: 'Manrope', sans-serif;
-        font-size: 16px;
-        font-weight: 600;
-        color: #191d18;
-    }
-
-        .section-header .material-symbols-outlined {
-            color: #1b6d24;
-            font-size: 20px;
-        }
-
-    .section-body {
-        padding: 24px;
-        display: grid;
-        grid-template-columns: repeat(2, 1fr);
-        gap: 20px 32px;
-    }
-
-        .section-body.cols-3 {
-            grid-template-columns: repeat(3, 1fr);
-        }
-
-        .section-body.cols-1 {
-            grid-template-columns: 1fr;
-        }
-
-    .full-width {
-        grid-column: 1 / -1;
-    }
-
-    .profile-header-card {
-        background: #fff;
-        border-radius: 12px;
-        border: 1px solid rgba(192,201,187,0.2);
-        padding: 24px;
-        margin-bottom: 24px;
-        box-shadow: 0 1px 4px rgba(0,0,0,0.05);
-    }
-
-    .avatar-circle {
-        width: 80px;
-        height: 80px;
-        border-radius: 16px;
-        background: linear-gradient(135deg, #2e6b2f, #1b6d24);
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        font-family: 'Manrope', sans-serif;
-        font-size: 28px;
-        font-weight: 700;
-        color: white;
-        flex-shrink: 0;
-    }
-
-    .status-badge {
-        display: inline-flex;
-        align-items: center;
-        gap: 4px;
-        padding: 4px 12px;
-        border-radius: 999px;
-        font-size: 12px;
-        font-weight: 700;
-    }
-
-    .status-active {
-        background: #a0f499;
-        color: #004d08;
-    }
-
-    .status-inactive {
-        background: #e1e4db;
-        color: #41493e;
-    }
-
-    .breadcrumb-nav {
-        display: flex;
-        align-items: center;
-        gap: 6px;
-        font-size: 14px;
-        color: #717a6d;
-        margin-bottom: 20px;
-    }
-
-        .breadcrumb-nav a {
-            color: #717a6d;
-            text-decoration: none;
-        }
-
-            .breadcrumb-nav a:hover {
-                color: #1b6d24;
-            }
-
-        .breadcrumb-nav .current {
-            color: #1b6d24;
-            font-weight: 600;
-        }
-
-    .action-btn {
-        display: inline-flex;
-        align-items: center;
-        gap: 6px;
-        padding: 10px 20px;
-        border-radius: 10px;
-        font-size: 14px;
-        font-weight: 600;
-        cursor: pointer;
-        border: none;
-        transition: all 0.2s;
-        text-decoration: none;
-    }
-
-    .btn-outline {
-        background: rgba(192,201,187,0.15);
-        color: #41493e;
-    }
-
-        .btn-outline:hover {
-            background: rgba(192,201,187,0.3);
-            color: #191d18;
-        }
-
-    .btn-primary-green {
-        background: #1b6d24;
-        color: white;
-    }
-
-        .btn-primary-green:hover {
-            filter: brightness(1.1);
-            box-shadow: 0 2px 8px rgba(27,109,36,0.3);
-        }
-
-    .btn-danger {
-        background: #ffdad6;
-        color: #93000a;
-    }
-
-        .btn-danger:hover {
-            background: #ffb4ab;
-        }
-
-    .tabs-bar {
-        display: flex;
-        gap: 24px;
-        border-bottom: 1px solid rgba(192,201,187,0.3);
-        margin-top: 20px;
-        overflow-x: auto;
-    }
-
-    .info-pill {
-        display: inline-flex;
-        align-items: center;
-        gap: 4px;
-        background: #f2f5ec;
-        border-radius: 6px;
-        padding: 2px 10px;
-        font-size: 13px;
-        color: #41493e;
-        font-weight: 500;
-    }
-
-        .info-pill.id-pill {
-            color: #1b6d24;
-            font-family: monospace;
-            font-size: 13px;
-        }
-
-    .empty-state {
-        text-align: center;
-        padding: 32px 16px;
-        color: #717a6d;
-    }
-
-        .empty-state .material-symbols-outlined {
-            font-size: 36px;
-            color: #c0c9bb;
-            display: block;
-            margin-bottom: 8px;
-        }
-
-    /* Case notes table */
-    .cn-table {
-        width: 100%;
-        border-collapse: collapse;
-        background: #fff;
-        border-radius: 12px;
-        overflow: hidden;
-        border: 1px solid #e1e4db;
-    }
-
-        .cn-table thead tr {
-            background: #f8faf2;
-            border-bottom: 1px solid #e1e4db;
-        }
-
-        .cn-table thead th {
-            padding: 12px 16px;
-            font-size: 11px;
-            font-weight: 700;
-            text-transform: uppercase;
-            letter-spacing: 0.06em;
-            color: #717a6d;
-            text-align: left;
-        }
-
-        .cn-table tbody tr {
-            border-bottom: 1px solid #f2f5ec;
-            transition: background 0.15s;
-        }
-
-            .cn-table tbody tr:last-child {
-                border-bottom: none;
-            }
-
-            .cn-table tbody tr:hover {
-                background: #f8faf2;
-            }
-
-        .cn-table tbody td {
-            padding: 14px 16px;
-            font-size: 14px;
-            color: #191d18;
-            vertical-align: top;
-            max-width: 260px;
-        }
-
-    .cn-date {
-        font-weight: 600;
-        color: #191d18;
-        white-space: nowrap;
-    }
-
-    .cn-text {
-        color: #374151;
-        display: -webkit-box;
-        -webkit-line-clamp: 2;
-        -webkit-box-orient: vertical;
-        overflow: hidden;
-    }
-
-    .cn-actions {
-        display: flex;
-        align-items: center;
-        gap: 4px;
-    }
-
-    .cn-action-icon {
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        width: 32px;
-        height: 32px;
-        border-radius: 8px;
-        border: none;
-        background: transparent;
-        cursor: pointer;
-        color: #717a6d;
-        text-decoration: none;
-        transition: all 0.15s;
-    }
-
-        .cn-action-icon:hover {
-            background: #f2f5ec;
-            color: #1b6d24;
-        }
-
-    @@media (max-width: 768px) {
-        .section-body {
-            grid-template-columns: 1fr;
-        }
-
-            .section-body.cols-3 {
-                grid-template-columns: 1fr;
-            }
-
-        .profile-top-row {
-            flex-direction: column;
-        }
-
-        .action-buttons {
-            flex-direction: column;
-        }
-    }
-
-    .modal-overlay {
-        display: none;
-        position: fixed;
-        inset: 0;
-        background: rgba(25,29,24,0.5);
-        z-index: 1000;
-        align-items: center;
-        justify-content: center;
-        padding: 16px;
-    }
-
-        .modal-overlay.open {
-            display: flex;
-        }
-
-    .modal-box {
-        background: #fff;
-        border-radius: 12px;
-        max-width: 520px;
-        width: 100%;
-        max-height: 85vh;
-        overflow-y: auto;
-        box-shadow: 0 8px 30px rgba(0,0,0,0.2);
-        padding: 24px;
-    }
-
-    .modal-header {
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        margin-bottom: 12px;
-    }
-
-        .modal-header h3 {
+        h1, h2, h3 {
             font-family: 'Manrope', sans-serif;
-            font-size: 18px;
-            font-weight: 700;
-            color: #191d18;
             margin: 0;
         }
 
-    .modal-close {
-        border: none;
-        background: transparent;
-        font-size: 22px;
-        line-height: 1;
-        cursor: pointer;
-        color: #717a6d;
-    }
+        /* ===== SIDEBAR ===== */
+        .sidebar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            bottom: 0;
+            width: 220px;
+            background: linear-gradient(180deg, #0b3d10, #12481a 60%, #0e3d12);
+            color: #e7f0e3;
+            padding: 22px 14px;
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+            z-index: 10;
+        }
 
-    .modal-warning {
-        display: flex;
-        align-items: center;
-        gap: 8px;
-        background: #fff3e0;
-        color: #7a4a00;
-        font-size: 13px;
-        font-weight: 600;
-        padding: 10px 14px;
-        border-radius: 8px;
-        margin-bottom: 16px;
-    }
+        .sidebar-logo {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 4px 10px 22px 10px;
+        }
 
-    .modal-details {
-        display: flex;
-        flex-direction: column;
-        gap: 10px;
-        margin-bottom: 20px;
-        max-height: 300px;
-        overflow-y: auto;
-        padding-right: 4px;
-    }
+            .sidebar-logo .logo-icon {
+                width: 36px;
+                height: 36px;
+                border-radius: 10px;
+                background: radial-gradient(circle at 30% 30%, #a0f499, #1b6d24);
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                flex-shrink: 0;
+            }
 
-    .modal-row {
-        display: flex;
-        flex-direction: column;
-        gap: 2px;
-        border-bottom: 1px solid #f2f5ec;
-        padding-bottom: 8px;
-    }
+            .sidebar-logo .logo-text {
+                line-height: 1.2;
+            }
 
-    .modal-label {
-        font-size: 11px;
-        font-weight: 600;
-        text-transform: uppercase;
-        letter-spacing: 0.06em;
-        color: #717a6d;
-    }
+                .sidebar-logo .logo-text .name {
+                    font-family: 'Manrope', sans-serif;
+                    font-weight: 700;
+                    font-size: 15px;
+                    color: #fff;
+                }
 
-    .modal-value {
-        font-size: 14px;
-        color: #191d18;
-    }
+                .sidebar-logo .logo-text .sub {
+                    font-size: 11px;
+                    color: #a9c7a4;
+                }
 
-    .modal-actions {
-        display: flex;
-        justify-content: flex-end;
-        gap: 10px;
-    }
-</style>
+        .nav-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 10px 12px;
+            border-radius: 10px;
+            font-size: 14px;
+            font-weight: 600;
+            color: #cfe0ca;
+            text-decoration: none;
+            transition: background 0.15s, color 0.15s;
+        }
 
-<div class="profile-page" style="max-width: 1100px; margin: 0 auto; padding: 24px 16px;">
-    <a asp-action="Index" class="action-btn btn-primary-green">
-        <span class="material-symbols-outlined" style="font-size:18px;"></span>
-        Back to List
-    </a>
-    <!-- Breadcrumb -->
-    <nav class="breadcrumb-nav">
-        <span class="material-symbols-outlined" style="font-size:16px;"></span>
-        <a asp-action="Index"></a>
-        <span class="material-symbols-outlined" style="font-size:16px; color:#c0c9bb;"></span>
-        <span class="current">Student Profile</span>
-    </nav>
+            .nav-item .material-symbols-outlined {
+                font-size: 20px;
+            }
 
-    <!-- Profile Header Card -->
-    <div class="profile-header-card">
-        <div class="profile-top-row" style="display:flex; justify-content:space-between; align-items:flex-start; gap:20px; flex-wrap:wrap;">
+            .nav-item:hover {
+                background: rgba(255,255,255,0.08);
+                color: #fff;
+            }
 
-            <div style="display:flex; align-items:center; gap:20px;">
-                <div class="avatar-circle">
-                    @(string.IsNullOrEmpty(Model.Student.StuName) ? "?" : Model.Student.StuName.Substring(0, 1).ToUpper())
-                </div>
-                <div>
-                    <div style="display:flex; align-items:center; gap:10px; flex-wrap:wrap; margin-bottom:6px;">
-                        <h2 style="font-family:'Manrope',sans-serif; font-size:24px; font-weight:700; color:#002c06; margin:0;">
-                            @Model.Student.StuName
-                        </h2>
-                        <span class="status-badge @(Model.Student.IsActive ? "status-active" : "status-inactive")">
-                            <span class="material-symbols-outlined" style="font-size:13px; font-variation-settings:'FILL' 1;">
-                                @(Model.Student.IsActive ? "" : "cancel")
-                            </span>
-                            @(Model.Student.IsActive ? "Active" : "Inactive")
-                        </span>
-                        @if (!string.IsNullOrEmpty(Model.Student.GradeLevel))
-                        {
-                            <span class="info-pill">@Model.Student.GradeLevel</span>
-                        }
-                        @if (!string.IsNullOrEmpty(Model.Student.Section))
-                        {
-                            <span class="info-pill">Section @Model.Student.Section</span>
-                        }
-                    </div>
-                    <div style="display:flex; align-items:center; gap:8px; flex-wrap:wrap;">
-                        <span class="info-pill id-pill">
-                            <span class="material-symbols-outlined" style="font-size:13px;"></span>
-                            @Model.Student.StuID
-                        </span>
-                        @if (!string.IsNullOrEmpty(Model.Student.School))
-                        {
-                            <span style="color:#c0c9bb;">•</span>
-                            <span style="font-size:13px; color:#717a6d;">@Model.Student.School</span>
-                        }
-                        @if (!string.IsNullOrEmpty(Model.Student.Gender))
-                        {
-                            <span style="color:#c0c9bb;">•</span>
-                            <span style="font-size:13px; color:#717a6d;">@Model.Student.Gender</span>
-                        }
-                    </div>
-                </div>
+            .nav-item.active {
+                background: #a0f499;
+                color: #04310a;
+            }
+
+        /* ===== TOPBAR ===== */
+        .topbar {
+            position: sticky;
+            top: 0;
+            height: 64px;
+            background: #f9faf6;
+            border-bottom: 1px solid rgba(192,201,187,0.4);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 28px;
+            z-index: 5;
+        }
+
+        .topbar-left {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+        }
+
+        .back-arrow {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 34px;
+            height: 34px;
+            border-radius: 8px;
+            color: #41493e;
+            text-decoration: none;
+        }
+
+            .back-arrow:hover {
+                background: rgba(192,201,187,0.25);
+            }
+
+        .breadcrumb-nav {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 14px;
+            color: #717a6d;
+        }
+
+            .breadcrumb-nav a {
+                color: #717a6d;
+                text-decoration: none;
+            }
+
+                .breadcrumb-nav a:hover {
+                    color: #1b6d24;
+                }
+
+            .breadcrumb-nav .current {
+                color: #1b6d24;
+                font-weight: 700;
+            }
+
+        .topbar-right {
+            display: flex;
+            align-items: center;
+            gap: 18px;
+        }
+
+        .bell-btn {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #41493e;
+            cursor: pointer;
+        }
+
+            .bell-btn:hover {
+                background: rgba(192,201,187,0.25);
+            }
+
+        .topbar-user {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+            .topbar-user .user-text {
+                text-align: right;
+                line-height: 1.2;
+            }
+
+                .topbar-user .user-text .u-name {
+                    font-size: 13px;
+                    font-weight: 700;
+                    color: #191d18;
+                }
+
+                .topbar-user .user-text .u-role {
+                    font-size: 10.5px;
+                    font-weight: 600;
+                    letter-spacing: 0.04em;
+                    color: #717a6d;
+                    text-transform: uppercase;
+                }
+
+            .topbar-user .user-avatar {
+                width: 36px;
+                height: 36px;
+                border-radius: 50%;
+                background: linear-gradient(135deg, #2e6b2f, #1b6d24);
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                color: #fff;
+                font-weight: 700;
+                font-size: 13px;
+                overflow: hidden;
+            }
+
+        /* ===== SHELL / CONTENT ===== */
+        .app-shell {
+            margin-left: 220px;
+            min-height: 100vh;
+        }
+
+        .profile-page {
+            max-width: 1100px;
+            margin: 0 auto;
+            padding: 24px 28px 48px;
+        }
+
+        /* ===== EXISTING PROFILE STYLES ===== */
+        .tab-btn {
+            padding-bottom: 12px;
+            padding-left: 4px;
+            padding-right: 4px;
+            font-weight: 600;
+            font-size: 14px;
+            border: none;
+            background: transparent;
+            color: #717a6d;
+            cursor: pointer;
+            border-bottom: 3px solid transparent;
+            transition: all 0.2s;
+            white-space: nowrap;
+        }
+
+            .tab-btn.active {
+                border-bottom: 3px solid #1b6d24;
+                color: #1b6d24;
+            }
+
+            .tab-btn:hover:not(.active) {
+                color: #1b6d24;
+            }
+
+        .tab-panel {
+            display: none;
+        }
+
+            .tab-panel.active {
+                display: block;
+            }
+
+        .field-label {
+            font-size: 11px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.06em;
+            color: #717a6d;
+            margin-bottom: 2px;
+        }
+
+        .field-value {
+            font-size: 15px;
+            color: #191d18;
+            font-weight: 500;
+        }
+
+            .field-value.empty {
+                color: #c0c9bb;
+                font-style: italic;
+                font-weight: 400;
+            }
+
+        .section-card {
+            background: #fff;
+            border-radius: 12px;
+            border: 1px solid rgba(192,201,187,0.3);
+            overflow: hidden;
+            margin-bottom: 20px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.04);
+        }
+
+        .section-header {
+            background: #f2f5ec;
+            padding: 14px 24px;
+            border-bottom: 1px solid rgba(192,201,187,0.3);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-family: 'Manrope', sans-serif;
+            font-size: 16px;
+            font-weight: 600;
+            color: #191d18;
+        }
+
+            .section-header .material-symbols-outlined {
+                color: #1b6d24;
+                font-size: 20px;
+            }
+
+        .section-body {
+            padding: 24px;
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 20px 32px;
+        }
+
+            .section-body.cols-3 {
+                grid-template-columns: repeat(3, 1fr);
+            }
+
+            .section-body.cols-1 {
+                grid-template-columns: 1fr;
+            }
+
+        .full-width {
+            grid-column: 1 / -1;
+        }
+
+        .profile-header-card {
+            background: #fff;
+            border-radius: 12px;
+            border: 1px solid rgba(192,201,187,0.2);
+            padding: 24px;
+            margin-bottom: 24px;
+            box-shadow: 0 1px 4px rgba(0,0,0,0.05);
+        }
+
+        .avatar-circle {
+            width: 80px;
+            height: 80px;
+            border-radius: 16px;
+            background: linear-gradient(135deg, #2e6b2f, #1b6d24);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-family: 'Manrope', sans-serif;
+            font-size: 28px;
+            font-weight: 700;
+            color: white;
+            flex-shrink: 0;
+            overflow: hidden;
+        }
+
+            .avatar-circle img {
+                width: 100%;
+                height: 100%;
+                object-fit: cover;
+            }
+
+        .status-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            padding: 4px 12px;
+            border-radius: 999px;
+            font-size: 12px;
+            font-weight: 700;
+        }
+
+        .status-active {
+            background: #a0f499;
+            color: #004d08;
+        }
+
+        .status-inactive {
+            background: #e1e4db;
+            color: #41493e;
+        }
+
+        .action-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 10px 20px;
+            border-radius: 10px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            border: none;
+            transition: all 0.2s;
+            text-decoration: none;
+        }
+
+        .btn-outline {
+            background: rgba(192,201,187,0.15);
+            color: #41493e;
+        }
+
+            .btn-outline:hover {
+                background: rgba(192,201,187,0.3);
+                color: #191d18;
+            }
+
+        .btn-primary-green {
+            background: #1b6d24;
+            color: white;
+        }
+
+            .btn-primary-green:hover {
+                filter: brightness(1.1);
+                box-shadow: 0 2px 8px rgba(27,109,36,0.3);
+            }
+
+        .btn-danger {
+            background: #ffdad6;
+            color: #93000a;
+        }
+
+            .btn-danger:hover {
+                background: #ffb4ab;
+            }
+
+        .tabs-bar {
+            display: flex;
+            gap: 24px;
+            border-bottom: 1px solid rgba(192,201,187,0.3);
+            margin-top: 20px;
+            overflow-x: auto;
+        }
+
+        .info-pill {
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            background: #f2f5ec;
+            border-radius: 6px;
+            padding: 2px 10px;
+            font-size: 13px;
+            color: #41493e;
+            font-weight: 500;
+        }
+
+            .info-pill.id-pill {
+                color: #1b6d24;
+                font-family: monospace;
+                font-size: 13px;
+            }
+
+        @@media (max-width: 900px) {
+            .sidebar {
+                display: none;
+            }
+
+            .app-shell {
+                margin-left: 0;
+            }
+        }
+
+        @@media (max-width: 768px) {
+            .section-body {
+                grid-template-columns: 1fr;
+            }
+
+                .section-body.cols-3 {
+                    grid-template-columns: 1fr;
+                }
+
+            .profile-top-row {
+                flex-direction: column;
+            }
+
+            .action-buttons {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- ===== SIDEBAR ===== -->
+    <aside class="sidebar">
+        <div class="sidebar-logo">
+            <div class="logo-icon">
+                <span class="material-symbols-outlined" style="color:#04310a; font-size:20px;">park</span>
             </div>
+            <div class="logo-text">
+                <div class="name">CounselCare</div>
+                <div class="sub">Counselor Portal</div>
+            </div>
+        </div>
 
-            <div class="action-buttons" style="display:flex; gap:10px; flex-wrap:wrap; align-items:center;">
-                <a asp-action="Edit" asp-route-id="@Model.Student.StudentsID" class="action-btn btn-outline">
-                    <span class="material-symbols-outlined" style="font-size:18px;"></span>
-                    Edit Record
+        <a asp-controller="Dashboard" asp-action="Index" class="nav-item">
+            <span class="material-symbols-outlined">dashboard</span> Dashboard
+        </a>
+        <a asp-controller="Students" asp-action="Index" class="nav-item active">
+            <span class="material-symbols-outlined">group</span> Students
+        </a>
+        <a asp-controller="Counselors" asp-action="Index" class="nav-item">
+            <span class="material-symbols-outlined">supervisor_account</span> Counselors
+        </a>
+        <a asp-controller="Appointments" asp-action="Index" class="nav-item">
+            <span class="material-symbols-outlined">event</span> Appointments
+        </a>
+        <a asp-controller="Resources" asp-action="Index" class="nav-item">
+            <span class="material-symbols-outlined">folder</span> Resources
+        </a>
+    </aside>
+
+    <!-- ===== APP SHELL ===== -->
+    <div class="app-shell">
+
+        <!-- ===== TOPBAR ===== -->
+        <header class="topbar">
+            <div class="topbar-left">
+                <a asp-action="Index" class="back-arrow">
+                    <span class="material-symbols-outlined">arrow_back</span>
                 </a>
-                @if (Model.Student.IsActive)
-                {
-                    <form asp-action="SoftDelete" asp-route-id="@Model.Student.StudentsID" method="post" style="display:inline;">
-                        @Html.AntiForgeryToken()
-                        <button type="submit" class="action-btn btn-danger">Archive</button>
-                    </form>
-                }
-                else
-                {
-                    <form asp-action="Restore" asp-route-id="@Model.Student.StudentsID" method="post" style="display:inline;">
-                        @Html.AntiForgeryToken()
-                        <button type="submit" class="action-btn btn-primary-green">Restore</button>
-                    </form>
-                }
+                <nav class="breadcrumb-nav">
+                    <a asp-action="Index">Students</a>
+                    <span class="material-symbols-outlined" style="font-size:16px; color:#c0c9bb;">chevron_right</span>
+                    <span class="current">Student Profile</span>
+                </nav>
             </div>
-        </div>
 
-        <!-- Tabs -->
-        <div class="tabs-bar">
-            <button class="tab-btn active" onclick="switchTab('personal', this)">
-                <span class="material-symbols-outlined" style="font-size:15px; vertical-align:middle; margin-right:4px;"></span>
-                Personal Details
-            </button>
-            <button class="tab-btn" onclick="switchTab('family', this)">
-                <span class="material-symbols-outlined" style="font-size:15px; vertical-align:middle; margin-right:4px;"></span>
-                Family Background
-            </button>
-            <button class="tab-btn" onclick="switchTab('casenotes', this)">
-                <span class="material-symbols-outlined" style="font-size:15px; vertical-align:middle; margin-right:4px;"></span>
-                Case Notes
-            </button>
-            <button class="tab-btn" onclick="switchTab('health', this)">
-                <span class="material-symbols-outlined" style="font-size:15px; vertical-align:middle; margin-right:4px;"></span>
-                Anecdotal Records
-            </button>
-        </div>
-    </div>
-
-    <!-- TAB: PERSONAL -->
-    <div id="tab-personal" class="tab-panel active">
-
-        <div class="section-card">
-            <div class="section-header">
-                <span class="material-symbols-outlined"></span>
-                Personal Information
-            </div>
-            <div class="section-body cols-3">
-                <div>
-                    <div class="field-label">Full Name</div>
-                    <div class="field-value">@Model.Student.StuName</div>
+            <div class="topbar-right">
+                <div class="bell-btn">
+                    <span class="material-symbols-outlined">notifications</span>
                 </div>
-                <div>
-                    <div class="field-label">Student ID</div>
-                    <div class="field-value" style="font-family:monospace;">@Model.Student.StuID</div>
-                </div>
-                <div>
-                    <div class="field-label">Gender</div>
-                    <div class="field-value @(string.IsNullOrEmpty(Model.Student.Gender) ? "empty" : "")">
-                        @(string.IsNullOrEmpty(Model.Student.Gender) ? "Not specified" : Model.Student.Gender)
+                <div class="topbar-user">
+                    <div class="user-text">
+                        <div class="u-name">Ms. Imee Flores</div>
+                        <div class="u-role">Head Counselor</div>
                     </div>
-                </div>
-                <div>
-                    <div class="field-label">Date of Birth</div>
-                    <div class="field-value @(Model.Student.Birthday == null ? "empty" : "")">
-                        @(Model.Student.Birthday.HasValue? Model.Student.Birthday.Value.ToString("MMMM dd, yyyy") : "Not specified")
-                    </div>
-                </div>
-                <div>
-                    <div class="field-label">Age</div>
-                    <div class="field-value">@Model.Student.Age years old</div>
-                </div>
-                <div>
-                    <div class="field-label">Birth Order</div>
-                    <div class="field-value @(string.IsNullOrEmpty(Model.Student.BirthOrder) ? "empty" : "")">
-                        @(string.IsNullOrEmpty(Model.Student.BirthOrder) ? "Not specified" : Model.Student.BirthOrder)
-                    </div>
-                </div>
-                <div>
-                    <div class="field-label">Nationality</div>
-                    <div class="field-value @(string.IsNullOrEmpty(Model.Student.Nationality) ? "empty" : "")">
-                        @(string.IsNullOrEmpty(Model.Student.Nationality) ? "Not specified" : Model.Student.Nationality)
-                    </div>
-                </div>
-                <div>
-                    <div class="field-label">Religion</div>
-                    <div class="field-value @(string.IsNullOrEmpty(Model.Student.Religion) ? "empty" : "")">
-                        @(string.IsNullOrEmpty(Model.Student.Religion) ? "Not specified" : Model.Student.Religion)
-                    </div>
-                </div>
-                <div>
-                    <div class="field-label">Living Arrangement</div>
-                    <div class="field-value @(string.IsNullOrEmpty(Model.Student.StayingWith) ? "empty" : "")">
-                        @(string.IsNullOrEmpty(Model.Student.StayingWith) ? "Not specified" : Model.Student.StayingWith)
-                    </div>
-                </div>
-                <div class="full-width">
-                    <div class="field-label">Residential Address</div>
-                    <div class="field-value @(string.IsNullOrEmpty(Model.Student.Address) ? "empty" : "")">
-                        @(string.IsNullOrEmpty(Model.Student.Address) ? "Not specified" : Model.Student.Address)
-                    </div>
+                    <div class="user-avatar">IF</div>
                 </div>
             </div>
-        </div>
+        </header>
 
-        <div class="section-card">
-            <div class="section-header">
-                <span class="material-symbols-outlined"></span>
-                Contact Information
-            </div>
-            <div class="section-body">
-                <div>
-                    <div class="field-label">Contact Numbers</div>
-                    @if (!Model.StudentContacts.Any())
-                    {
-                        <div class="field-value empty">Not specified</div>
-                    }
-                    else
-                    {
-                        @foreach (var c in Model.StudentContacts)
-                        {
-                            <div class="field-value" style="font-family:monospace;">
-                                @c.Number @(!string.IsNullOrEmpty(c.Label) ? $"({c.Label})" : "")
+        <div class="profile-page">
+
+            <!-- Profile Header Card -->
+            <div class="profile-header-card">
+                <div class="profile-top-row" style="display:flex; justify-content:space-between; align-items:flex-start; gap:20px; flex-wrap:wrap;">
+
+                    <div style="display:flex; align-items:center; gap:20px;">
+                        <div class="avatar-circle">
+                            @* Swap in a real photo once you have a StuPhotoUrl field, e.g.:
+                               @if (!string.IsNullOrEmpty(Model.Student.StuPhotoUrl)) { <img src="@Model.Student.StuPhotoUrl" /> } else { initials } *@
+                            @(string.IsNullOrEmpty(Model.Student.StuName) ? "?" : Model.Student.StuName.Substring(0, 1).ToUpper())
+                        </div>
+                        <div>
+                            <div style="display:flex; align-items:center; gap:10px; flex-wrap:wrap; margin-bottom:6px;">
+                                <h2 style="font-family:'Manrope',sans-serif; font-size:24px; font-weight:700; color:#002c06; margin:0;">
+                                    @Model.Student.StuName
+                                </h2>
+                                <span class="status-badge @(Model.Student.IsActive ? "status-active" : "status-inactive")">
+                                    <span class="material-symbols-outlined" style="font-size:13px; font-variation-settings:'FILL' 1;">
+                                        @(Model.Student.IsActive ? "check_circle" : "block")
+                                    </span>
+                                    @(Model.Student.IsActive ? "Active" : "Inactive")
+                                </span>
+                                @if (!string.IsNullOrEmpty(Model.Student.GradeLevel))
+                                {
+                                    <span class="info-pill">@Model.Student.GradeLevel</span>
+                                }
+                                @if (!string.IsNullOrEmpty(Model.Student.Section))
+                                {
+                                    <span class="info-pill">Section @Model.Student.Section</span>
+                                }
                             </div>
-                        }
-                    }
-                </div>
-                <div>
-                    <div class="field-label">Email Address</div>
-                    <div class="field-value @(string.IsNullOrEmpty(Model.Student.Email) ? "empty" : "")">
-                        @(string.IsNullOrEmpty(Model.Student.Email) ? "Not specified" : Model.Student.Email)
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <div class="section-card">
-            <div class="section-header">
-                <span class="material-symbols-outlined"></span>
-                Educational Background
-            </div>
-            <div class="section-body cols-3">
-                <div>
-                    <div class="field-label">School</div>
-                    <div class="field-value">@Model.Student.School</div>
-                </div>
-                <div>
-                    <div class="field-label">Grade Level</div>
-                    <div class="field-value">@Model.Student.GradeLevel</div>
-                </div>
-                <div>
-                    <div class="field-label">Section</div>
-                    <div class="field-value">@Model.Student.Section</div>
-                </div>
-                <div>
-                    <div class="field-label">Academic Year</div>
-                    <div class="field-value">@Model.Student.AcademicYear</div>
-                </div>
-            </div>
-        </div>
-
-        <div class="section-card">
-            <div class="section-header">
-                <span class="material-symbols-outlined"></span>
-                Elementary
-            </div>
-            <div class="section-body cols-3">
-                <div class="full-width">
-                    <div class="field-label">School Name</div>
-                    <div class="field-value @(string.IsNullOrEmpty(Model.Education.ElementarySchool) ? "empty" : "")">
-                        @(string.IsNullOrEmpty(Model.Education.ElementarySchool) ? "Not specified" : Model.Education.ElementarySchool)
-                    </div>
-                </div>
-                <div>
-                    <div class="field-label">Year Graduated</div>
-                    <div class="field-value @(string.IsNullOrEmpty(Model.Education.ElementaryYear) ? "empty" : "")">
-                        @(string.IsNullOrEmpty(Model.Education.ElementaryYear) ? "Not specified" : Model.Education.ElementaryYear)
-                    </div>
-                </div>
-                <div class="full-width">
-                    <div class="field-label">Honors / Awards</div>
-                    <div class="field-value @(string.IsNullOrEmpty(Model.Education.ElementaryHonors) ? "empty" : "")">
-                        @(string.IsNullOrEmpty(Model.Education.ElementaryHonors) ? "None" : Model.Education.ElementaryHonors)
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <div class="section-card">
-            <div class="section-header">
-                <span class="material-symbols-outlined"></span>
-                Secondary / Junior High
-            </div>
-            <div class="section-body cols-3">
-                <div class="full-width">
-                    <div class="field-label">School Name</div>
-                    <div class="field-value @(string.IsNullOrEmpty(Model.Education.SecondarySchool) ? "empty" : "")">
-                        @(string.IsNullOrEmpty(Model.Education.SecondarySchool) ? "Not specified" : Model.Education.SecondarySchool)
-                    </div>
-                </div>
-                <div>
-                    <div class="field-label">Year Graduated</div>
-                    <div class="field-value @(string.IsNullOrEmpty(Model.Education.SecondaryYear) ? "empty" : "")">
-                        @(string.IsNullOrEmpty(Model.Education.SecondaryYear) ? "Not specified" : Model.Education.SecondaryYear)
-                    </div>
-                </div>
-                <div class="full-width">
-                    <div class="field-label">Honors / Awards</div>
-                    <div class="field-value @(string.IsNullOrEmpty(Model.Education.SecondaryHonors) ? "empty" : "")">
-                        @(string.IsNullOrEmpty(Model.Education.SecondaryHonors) ? "None" : Model.Education.SecondaryHonors)
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <div class="section-card">
-            <div class="section-header">
-                <span class="material-symbols-outlined"></span>
-                Physical Health
-            </div>
-            <div class="section-body cols-3">
-                <div>
-                    <div class="field-label">Height</div>
-                    <div class="field-value @(string.IsNullOrEmpty(Model.Health.Height) ? "empty" : "")">
-                        @(string.IsNullOrEmpty(Model.Health.Height) ? "Not specified" : Model.Health.Height)
-                    </div>
-                </div>
-                <div>
-                    <div class="field-label">Weight</div>
-                    <div class="field-value @(string.IsNullOrEmpty(Model.Health.Weight) ? "empty" : "")">
-                        @(string.IsNullOrEmpty(Model.Health.Weight) ? "Not specified" : Model.Health.Weight)
-                    </div>
-                </div>
-                <div>
-                    <div class="field-label">Blood Type</div>
-                    <div class="field-value @(string.IsNullOrEmpty(Model.Health.BloodType) ? "empty" : "")">
-                        @(string.IsNullOrEmpty(Model.Health.BloodType) ? "Not specified" : Model.Health.BloodType)
-                    </div>
-                </div>
-                <div class="full-width">
-                    <div class="field-label">History of Medical Conditions or Physical Disabilities</div>
-                    <div class="field-value @(string.IsNullOrEmpty(Model.Health.Ailments) ? "empty" : "")">
-                        @(string.IsNullOrEmpty(Model.Health.Ailments) ? "None reported" : Model.Health.Ailments)
-                    </div>
-                </div>
-                <div class="full-width">
-                    <div class="field-label">Current Medications</div>
-                    <div class="field-value @(string.IsNullOrEmpty(Model.Health.Medication) ? "empty" : "")">
-                        @(string.IsNullOrEmpty(Model.Health.Medication) ? "None reported" : Model.Health.Medication)
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <div class="section-card">
-            <div class="section-header">
-                <span class="material-symbols-outlined" style="color:#93000a;"></span>
-                Mental Health &amp; Sensitive Information
-                <span style="margin-left:auto; font-size:11px; font-weight:700; background:#ffdad6; color:#93000a; padding:2px 8px; border-radius:4px;">Confidential</span>
-            </div>
-            <div class="section-body cols-1">
-                <div>
-                    <div class="field-label">History of Suicidal Thoughts or Attempts</div>
-                    <div class="field-value @(string.IsNullOrEmpty(Model.Health.SuicideRiskHistory) ? "empty" : "")">
-                        @(string.IsNullOrEmpty(Model.Health.SuicideRiskHistory) ? "None reported" : Model.Health.SuicideRiskHistory)
-                    </div>
-                </div>
-                <div>
-                    <div class="field-label">History of Abuse or Maltreatment</div>
-                    <div class="field-value @(string.IsNullOrEmpty(Model.Health.AbuseHistory) ? "empty" : "")">
-                        @(string.IsNullOrEmpty(Model.Health.AbuseHistory) ? "None reported" : Model.Health.AbuseHistory)
-                    </div>
-                </div>
-                <div>
-                    <div class="field-label">History of Illegal Drug Use</div>
-                    <div class="field-value @(string.IsNullOrEmpty(Model.Health.DrugHistory) ? "empty" : "")">
-                        @(string.IsNullOrEmpty(Model.Health.DrugHistory) ? "None reported" : Model.Health.DrugHistory)
-                    </div>
-                </div>
-                <div>
-                    <div class="field-label">Family History of Mental or Developmental Conditions</div>
-                    <div class="field-value @(string.IsNullOrEmpty(Model.Health.FamilyMentalHealthHistory) ? "empty" : "")">
-                        @(string.IsNullOrEmpty(Model.Health.FamilyMentalHealthHistory) ? "None reported" : Model.Health.FamilyMentalHealthHistory)
-                    </div>
-                </div>
-                <div>
-                    <div class="field-label">Previous Psychiatric or Psychological Consultation</div>
-                    <div class="field-value @(string.IsNullOrEmpty(Model.Health.PsychiatricConsultation) ? "empty" : "")">
-                        @(string.IsNullOrEmpty(Model.Health.PsychiatricConsultation) ? "None reported" : Model.Health.PsychiatricConsultation)
-                    </div>
-                </div>
-                <div>
-                    <div class="field-label">Additional Relevant Information / Remarks</div>
-                    <div class="field-value @(string.IsNullOrEmpty(Model.Health.AdditionalNotes) ? "empty" : "")">
-                        @(string.IsNullOrEmpty(Model.Health.AdditionalNotes) ? "None" : Model.Health.AdditionalNotes)
-                    </div>
-                </div>
-            </div>
-        </div>
-
-    </div>
-
-    <!-- TAB: FAMILY -->
-    <div id="tab-family" class="tab-panel">
-
-        <div class="section-card">
-            <div class="section-header">
-                <span class="material-symbols-outlined"></span>
-                Father's Information
-            </div>
-            <div class="section-body cols-3">
-                <div>
-                    <div class="field-label">Father's Name</div>
-                    <div class="field-value @(string.IsNullOrEmpty(Model.Family.FatherName) ? "empty" : "")">
-                        @(string.IsNullOrEmpty(Model.Family.FatherName) ? "Not specified" : Model.Family.FatherName)
-                    </div>
-                </div>
-                <div>
-                    <div class="field-label">Age</div>
-                    <div class="field-value @(Model.Family.FatherAge == null ? "empty" : "")">
-                        @(Model.Family.FatherAge.HasValue? Model.Family.FatherAge.ToString() : "Not specified")
-                    </div>
-                </div>
-                <div>
-                    <div class="field-label">Contact Numbers</div>
-                    @if (!Model.FatherContacts.Any())
-                    {
-                        <div class="field-value empty">Not specified</div>
-                    }
-                    else
-                    {
-                        @foreach (var c in Model.FatherContacts)
-                        {
-                            <div class="field-value" style="font-family:monospace;">
-                                @c.Number @(!string.IsNullOrEmpty(c.Label) ? $"({c.Label})" : "")
+                            <div style="display:flex; align-items:center; gap:8px; flex-wrap:wrap;">
+                                <span class="info-pill id-pill">
+                                    <span class="material-symbols-outlined" style="font-size:13px;">badge</span>
+                                    @Model.Student.StuID
+                                </span>
+                                @if (!string.IsNullOrEmpty(Model.Student.School))
+                                {
+                                    <span style="color:#c0c9bb;">•</span>
+                                    <span style="font-size:13px; color:#717a6d;">@Model.Student.School</span>
+                                }
+                                @if (!string.IsNullOrEmpty(Model.Student.Gender))
+                                {
+                                    <span style="color:#c0c9bb;">•</span>
+                                    <span style="font-size:13px; color:#717a6d;">@Model.Student.Gender</span>
+                                }
                             </div>
-                        }
-                    }
-                </div>
-                <div>
-                    <div class="field-label">Occupation</div>
-                    <div class="field-value @(string.IsNullOrEmpty(Model.Family.FatherOccupation) ? "empty" : "")">
-                        @(string.IsNullOrEmpty(Model.Family.FatherOccupation) ? "Not specified" : Model.Family.FatherOccupation)
+                        </div>
                     </div>
-                </div>
-                <div>
-                    <div class="field-label">Educational Attainment</div>
-                    <div class="field-value @(string.IsNullOrEmpty(Model.Family.FatherEducationalAttainment) ? "empty" : "")">
-                        @(string.IsNullOrEmpty(Model.Family.FatherEducationalAttainment) ? "Not specified" : Model.Family.FatherEducationalAttainment)
-                    </div>
-                </div>
-            </div>
-        </div>
 
-        <div class="section-card">
-            <div class="section-header">
-                <span class="material-symbols-outlined"></span>
-                Mother's Information
-            </div>
-            <div class="section-body cols-3">
-                <div>
-                    <div class="field-label">Mother's Name</div>
-                    <div class="field-value @(string.IsNullOrEmpty(Model.Family.MotherName) ? "empty" : "")">
-                        @(string.IsNullOrEmpty(Model.Family.MotherName) ? "Not specified" : Model.Family.MotherName)
-                    </div>
-                </div>
-                <div>
-                    <div class="field-label">Age</div>
-                    <div class="field-value @(Model.Family.MotherAge == null ? "empty" : "")">
-                        @(Model.Family.MotherAge.HasValue? Model.Family.MotherAge.ToString() : "Not specified")
-                    </div>
-                </div>
-                <div>
-                    <div class="field-label">Contact Numbers</div>
-                    @if (!Model.MotherContacts.Any())
-                    {
-                        <div class="field-value empty">Not specified</div>
-                    }
-                    else
-                    {
-                        @foreach (var c in Model.MotherContacts)
+                    <div class="action-buttons" style="display:flex; gap:10px; flex-wrap:wrap; align-items:center;">
+                        <a asp-action="Edit" asp-route-id="@Model.Student.StudentsID" class="action-btn btn-outline">
+                            <span class="material-symbols-outlined" style="font-size:18px;">edit</span>
+                            Edit Record
+                        </a>
+                        @if (Model.Student.IsActive)
                         {
-                            <div class="field-value" style="font-family:monospace;">
-                                @c.Number @(!string.IsNullOrEmpty(c.Label) ? $"({c.Label})" : "")
-                            </div>
+                            <form asp-action="SoftDelete" asp-route-id="@Model.Student.StudentsID" method="post" style="display:inline;">
+                                @Html.AntiForgeryToken()
+                                <button type="submit" class="action-btn btn-danger">
+                                    <span class="material-symbols-outlined" style="font-size:18px;">archive</span>
+                                    Archive
+                                </button>
+                            </form>
                         }
-                    }
-                </div>
-                <div>
-                    <div class="field-label">Occupation</div>
-                    <div class="field-value @(string.IsNullOrEmpty(Model.Family.MotherOccupation) ? "empty" : "")">
-                        @(string.IsNullOrEmpty(Model.Family.MotherOccupation) ? "Not specified" : Model.Family.MotherOccupation)
-                    </div>
-                </div>
-                <div>
-                    <div class="field-label">Educational Attainment</div>
-                    <div class="field-value @(string.IsNullOrEmpty(Model.Family.MotherEducationalAttainment) ? "empty" : "")">
-                        @(string.IsNullOrEmpty(Model.Family.MotherEducationalAttainment) ? "Not specified" : Model.Family.MotherEducationalAttainment)
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <div class="section-card">
-            <div class="section-header">
-                <span class="material-symbols-outlined"></span>
-                Family Details
-            </div>
-            <div class="section-body">
-                <div>
-                    <div class="field-label">Monthly Family Income</div>
-                    <div class="field-value @(string.IsNullOrEmpty(Model.Family.MonthlyFamilyIncome) ? "empty" : "")">
-                        @(string.IsNullOrEmpty(Model.Family.MonthlyFamilyIncome) ? "Not specified" : Model.Family.MonthlyFamilyIncome)
-                    </div>
-                </div>
-                <div>
-                    <div class="field-label">Parents' Relationship Status</div>
-                    <div class="field-value @(string.IsNullOrEmpty(Model.Family.ParentsRelationshipStatus) ? "empty" : "")">
-                        @(string.IsNullOrEmpty(Model.Family.ParentsRelationshipStatus) ? "Not specified" : Model.Family.ParentsRelationshipStatus)
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <div class="section-card">
-            <div class="section-header">
-                <span class="material-symbols-outlined"></span>
-                Emergency Contact
-            </div>
-            <div class="section-body cols-3">
-                <div>
-                    <div class="field-label">Contact Person</div>
-                    <div class="field-value @(string.IsNullOrEmpty(Model.Emergency.EmergencyContactPerson) ? "empty" : "")">
-                        @(string.IsNullOrEmpty(Model.Emergency.EmergencyContactPerson) ? "Not specified" : Model.Emergency.EmergencyContactPerson)
-                    </div>
-                </div>
-                <div>
-                    <div class="field-label">Age</div>
-                    <div class="field-value @(Model.Emergency.EmergencyContactAge == null ? "empty" : "")">
-                        @(Model.Emergency.EmergencyContactAge.HasValue? Model.Emergency.EmergencyContactAge.ToString() : "Not specified")
-                    </div>
-                </div>
-                <div>
-                    <div class="field-label">Contact Numbers</div>
-                    @if (!Model.EmergencyContacts.Any())
-                    {
-                        <div class="field-value empty">Not specified</div>
-                    }
-                    else
-                    {
-                        @foreach (var c in Model.EmergencyContacts)
+                        else
                         {
-                            <div class="field-value" style="font-family:monospace;">
-                                @c.Number @(!string.IsNullOrEmpty(c.Label) ? $"({c.Label})" : "")
-                            </div>
+                            <form asp-action="Restore" asp-route-id="@Model.Student.StudentsID" method="post" style="display:inline;">
+                                @Html.AntiForgeryToken()
+                                <button type="submit" class="action-btn btn-primary-green">
+                                    <span class="material-symbols-outlined" style="font-size:18px;">restore</span>
+                                    Restore
+                                </button>
+                            </form>
                         }
-                    }
-                </div>
-                <div>
-                    <div class="field-label">Occupation</div>
-                    <div class="field-value @(string.IsNullOrEmpty(Model.Emergency.EmergencyContactOccupation) ? "empty" : "")">
-                        @(string.IsNullOrEmpty(Model.Emergency.EmergencyContactOccupation) ? "Not specified" : Model.Emergency.EmergencyContactOccupation)
                     </div>
                 </div>
-                <div class="full-width">
-                    <div class="field-label">Address</div>
-                    <div class="field-value @(string.IsNullOrEmpty(Model.Emergency.EmergencyContactAddress) ? "empty" : "")">
-                        @(string.IsNullOrEmpty(Model.Emergency.EmergencyContactAddress) ? "Not specified" : Model.Emergency.EmergencyContactAddress)
-                    </div>
+
+                <!-- Tabs -->
+                <div class="tabs-bar">
+                    <button class="tab-btn active" onclick="switchTab('personal', this)">
+                        <span class="material-symbols-outlined" style="font-size:15px; vertical-align:middle; margin-right:4px;">person</span>
+                        Personal Details
+                    </button>
+                    <button class="tab-btn" onclick="switchTab('family', this)">
+                        <span class="material-symbols-outlined" style="font-size:15px; vertical-align:middle; margin-right:4px;">family_restroom</span>
+                        Family Background
+                    </button>
+                    <button class="tab-btn" onclick="switchTab('education', this)">
+                        <span class="material-symbols-outlined" style="font-size:15px; vertical-align:middle; margin-right:4px;">school</span>
+                        Educational Background
+                    </button>
+                    <button class="tab-btn" onclick="switchTab('health', this)">
+                        <span class="material-symbols-outlined" style="font-size:15px; vertical-align:middle; margin-right:4px;">favorite</span>
+                        Health Information
+                    </button>
                 </div>
             </div>
-        </div>
 
-    </div>
+            <!-- TAB: PERSONAL -->
+            <div id="tab-personal" class="tab-panel active">
 
-    <!-- TAB: CASE NOTES -->
-    <div id="tab-casenotes" class="tab-panel">
-
-        <div class="section-card">
-            <div class="section-header">
-                <span class="material-symbols-outlined"></span>
-                Case Notes
-                <a asp-controller="CaseNotes" asp-action="Create" asp-route-fullName="@Model.Student.StuName" asp-route-studentId="@Model.Student.StudentsID"
-                   class="action-btn btn-primary-green" style="margin-left:auto; padding:6px 14px; font-size:13px;">
-                    <span class="material-symbols-outlined" style="font-size:16px;"></span>Add New Case Note
-                </a>
-            </div>
-            <div class="section-body cols-1">
-                @if (Model.CaseNotes == null || !Model.CaseNotes.Any())
-                {
-                    <div class="empty-state">
-                        <span class="material-symbols-outlined"></span>
-                        No case notes have been recorded yet.
+                <div class="section-card">
+                    <div class="section-header">
+                        <span class="material-symbols-outlined">person</span>
+                        Personal Information
                     </div>
-                }
-                else
-                {
-                    <table class="cn-table">
-                        <thead>
-                            <tr>
-                                <th>Session Date</th>
-                                <th>Specific Goal</th>
-                                <th>Intervention</th>
-                                <th>Actions</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            @foreach (var note in Model.CaseNotes.OrderByDescending(n => n.SessionDate))
+                    <div class="section-body cols-3">
+                        <div>
+                            <div class="field-label">Full Name</div>
+                            <div class="field-value">@Model.Student.StuName</div>
+                        </div>
+                        <div>
+                            <div class="field-label">Student ID</div>
+                            <div class="field-value" style="font-family:monospace;">@Model.Student.StuID</div>
+                        </div>
+                        <div>
+                            <div class="field-label">Gender</div>
+                            <div class="field-value @(string.IsNullOrEmpty(Model.Student.Gender) ? "empty" : "")">
+                                @(string.IsNullOrEmpty(Model.Student.Gender) ? "Not specified" : Model.Student.Gender)
+                            </div>
+                        </div>
+                        <div>
+                            <div class="field-label">Date of Birth</div>
+                            <div class="field-value @(Model.Student.Birthday == null ? "empty" : "")">
+                                @(Model.Student.Birthday.HasValue? Model.Student.Birthday.Value.ToString("MMMM dd, yyyy") : "Not specified")
+                            </div>
+                        </div>
+                        <div>
+                            <div class="field-label">Age</div>
+                            <div class="field-value">@Model.Student.Age years old</div>
+                        </div>
+                        <div>
+                            <div class="field-label">Birth Order</div>
+                            <div class="field-value @(string.IsNullOrEmpty(Model.Student.BirthOrder) ? "empty" : "")">
+                                @(string.IsNullOrEmpty(Model.Student.BirthOrder) ? "Not specified" : Model.Student.BirthOrder)
+                            </div>
+                        </div>
+                        <div>
+                            <div class="field-label">Nationality</div>
+                            <div class="field-value @(string.IsNullOrEmpty(Model.Student.Nationality) ? "empty" : "")">
+                                @(string.IsNullOrEmpty(Model.Student.Nationality) ? "Not specified" : Model.Student.Nationality)
+                            </div>
+                        </div>
+                        <div>
+                            <div class="field-label">Religion</div>
+                            <div class="field-value @(string.IsNullOrEmpty(Model.Student.Religion) ? "empty" : "")">
+                                @(string.IsNullOrEmpty(Model.Student.Religion) ? "Not specified" : Model.Student.Religion)
+                            </div>
+                        </div>
+                        <div>
+                            <div class="field-label">Living Arrangement</div>
+                            <div class="field-value @(string.IsNullOrEmpty(Model.Student.StayingWith) ? "empty" : "")">
+                                @(string.IsNullOrEmpty(Model.Student.StayingWith) ? "Not specified" : Model.Student.StayingWith)
+                            </div>
+                        </div>
+                        <div class="full-width">
+                            <div class="field-label">Residential Address</div>
+                            <div class="field-value @(string.IsNullOrEmpty(Model.Student.Address) ? "empty" : "")">
+                                @(string.IsNullOrEmpty(Model.Student.Address) ? "Not specified" : Model.Student.Address)
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="section-card">
+                    <div class="section-header">
+                        <span class="material-symbols-outlined">call</span>
+                        Contact Information
+                    </div>
+                    <div class="section-body">
+                        <div>
+                            <div class="field-label">Contact Numbers</div>
+                            @if (!Model.StudentContacts.Any())
                             {
-                                <tr>
-                                    <td><span class="cn-date">@note.SessionDate.ToString("MMM dd, yyyy - h:mm tt")</span></td>
-                                    <td><span class="cn-text" title="@note.SpecificGoal">@note.SpecificGoal</span></td>
-                                    <td><span class="cn-text" title="@note.Interventions">@note.Interventions</span></td>
-                                    <td>
-                                        <div class="cn-actions">
-                                            <a asp-controller="CaseNotes" asp-action="Details" asp-route-id="@note.CasenoteId" asp-route-studentId="@Model.Student.StudentsID"
-                                               class="cn-action-icon" title="View Details">
-                                                <span class="material-symbols-outlined" style="font-size:18px;">👁</span>
-                                            </a>
-                                            <a asp-controller="CaseNotes" asp-action="Edit" asp-route-id="@note.CasenoteId" asp-route-studentId="@Model.Student.StudentsID"
-                                               class="cn-action-icon" title="Edit">
-                                                <span class="material-symbols-outlined" style="font-size:18px;">✏️</span>
-                                            </a>
-                                            
-                                        </div>
-                                    </td>
-                                </tr>
+                                <div class="field-value empty">Not specified</div>
                             }
-                        </tbody>
-                    </table>
-                    
-                }
-            </div>
-        </div>
-
-    </div>
-
-    <!-- TAB: ANECDOTAL RECORDS -->
-    <div id="tab-health" class="tab-panel">
-
-        <div class="section-card">
-            <div class="section-header">
-                <span class="material-symbols-outlined"></span>
-                Case Notes
-                <a asp-controller="AnecRecs" asp-action="Create" asp-route-fullName="@Model.Student.StuName" asp-route-studentId="@Model.Student.StudentsID"
-                   class="action-btn btn-primary-green" style="margin-left:auto; padding:6px 14px; font-size:13px;">
-                    <span class="material-symbols-outlined" style="font-size:16px;"></span>Add New Anecdotal Record
-                </a>
-            </div>
-            <div class="section-body cols-1">
-                @if (Model.AnecRecs == null || !Model.AnecRecs.Any())
-                {
-                    <div class="empty-state">
-                        <span class="material-symbols-outlined"></span>
-                        No Anecdotal Records have been recorded yet.
-                    </div>
-                }
-                else
-                {
-                    <table class="cn-table">
-                        <thead>
-                            <tr>
-                                <th>Observer/Evaluator</th>
-                                <th>Date of Observation</th>
-                                <th>Time of Observation</th>
-                                <th>Actions</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            @foreach (var note in Model.AnecRecs.OrderByDescending(n => n.AnecRecNo))
+                            else
                             {
-                                <tr>
-                                    <td><span class="cn-text" title="@note.ObservedBy">@note.ObservedBy</span></td>
-                                    <td><span class="cn-date">@note.DateOfObserv.ToString("MMM dd, yyyy")</span></td>
-                                    <td><span class="cn-date">@note.DateOfObserv.ToString("h:mm tt")</span></td>
-                                    <td>
-                                        <div class="cn-actions">
-                                            <a asp-controller="AnecRecs" asp-action="Details" asp-route-id="@note.AnecRecsId" asp-route-studentId="@Model.Student.StudentsID"
-                                               class="cn-action-icon" title="View Details">
-                                                <span class="material-symbols-outlined" style="font-size:18px;">👁</span>
-                                            </a>
-                                            <a asp-controller="AnecRecs" asp-action="Edit" asp-route-id="@note.AnecRecsId" asp-route-studentId="@Model.Student.StudentsID"
-                                               class="cn-action-icon" title="Edit">
-                                                <span class="material-symbols-outlined" style="font-size:18px;">✏️</span>
-                                            </a>
-                                        </div>
-                                    </td>
-                                </tr>
+                                @foreach (var c in Model.StudentContacts)
+                                {
+                                    <div class="field-value" style="font-family:monospace;">
+                                        @c.Number @(!string.IsNullOrEmpty(c.Label) ? $"({c.Label})" : "")
+                                    </div>
+                                }
                             }
-                        </tbody>
-                    </table>
+                        </div>
+                        <div>
+                            <div class="field-label">Email Address</div>
+                            <div class="field-value @(string.IsNullOrEmpty(Model.Student.Email) ? "empty" : "")">
+                                @(string.IsNullOrEmpty(Model.Student.Email) ? "Not specified" : Model.Student.Email)
+                            </div>
+                        </div>
+                    </div>
+                </div>
 
-                }
+                <div class="section-card">
+                    <div class="section-header">
+                        <span class="material-symbols-outlined">school</span>
+                        Educational Background
+                    </div>
+                    <div class="section-body cols-3">
+                        <div>
+                            <div class="field-label">School</div>
+                            <div class="field-value">@Model.Student.School</div>
+                        </div>
+                        <div>
+                            <div class="field-label">Grade Level</div>
+                            <div class="field-value">@Model.Student.GradeLevel</div>
+                        </div>
+                        <div>
+                            <div class="field-label">Section</div>
+                            <div class="field-value">@Model.Student.Section</div>
+                        </div>
+                        <div>
+                            <div class="field-label">Academic Year</div>
+                            <div class="field-value">@Model.Student.AcademicYear</div>
+                        </div>
+                    </div>
+                </div>
+
             </div>
+
+            <!-- TAB: FAMILY -->
+            <div id="tab-family" class="tab-panel">
+
+                <div class="section-card">
+                    <div class="section-header">
+                        <span class="material-symbols-outlined">man</span>
+                        Father's Information
+                    </div>
+                    <div class="section-body cols-3">
+                        <div>
+                            <div class="field-label">Father's Name</div>
+                            <div class="field-value @(string.IsNullOrEmpty(Model.Family.FatherName) ? "empty" : "")">
+                                @(string.IsNullOrEmpty(Model.Family.FatherName) ? "Not specified" : Model.Family.FatherName)
+                            </div>
+                        </div>
+                        <div>
+                            <div class="field-label">Age</div>
+                            <div class="field-value @(Model.Family.FatherAge == null ? "empty" : "")">
+                                @(Model.Family.FatherAge.HasValue? Model.Family.FatherAge.ToString() : "Not specified")
+                            </div>
+                        </div>
+                        <div>
+                            <div class="field-label">Contact Numbers</div>
+                            @if (!Model.FatherContacts.Any())
+                            {
+                                <div class="field-value empty">Not specified</div>
+                            }
+                            else
+                            {
+                                @foreach (var c in Model.FatherContacts)
+                                {
+                                    <div class="field-value" style="font-family:monospace;">
+                                        @c.Number @(!string.IsNullOrEmpty(c.Label) ? $"({c.Label})" : "")
+                                    </div>
+                                }
+                            }
+                        </div>
+                        <div>
+                            <div class="field-label">Occupation</div>
+                            <div class="field-value @(string.IsNullOrEmpty(Model.Family.FatherOccupation) ? "empty" : "")">
+                                @(string.IsNullOrEmpty(Model.Family.FatherOccupation) ? "Not specified" : Model.Family.FatherOccupation)
+                            </div>
+                        </div>
+                        <div>
+                            <div class="field-label">Educational Attainment</div>
+                            <div class="field-value @(string.IsNullOrEmpty(Model.Family.FatherEducationalAttainment) ? "empty" : "")">
+                                @(string.IsNullOrEmpty(Model.Family.FatherEducationalAttainment) ? "Not specified" : Model.Family.FatherEducationalAttainment)
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="section-card">
+                    <div class="section-header">
+                        <span class="material-symbols-outlined">woman</span>
+                        Mother's Information
+                    </div>
+                    <div class="section-body cols-3">
+                        <div>
+                            <div class="field-label">Mother's Name</div>
+                            <div class="field-value @(string.IsNullOrEmpty(Model.Family.MotherName) ? "empty" : "")">
+                                @(string.IsNullOrEmpty(Model.Family.MotherName) ? "Not specified" : Model.Family.MotherName)
+                            </div>
+                        </div>
+                        <div>
+                            <div class="field-label">Age</div>
+                            <div class="field-value @(Model.Family.MotherAge == null ? "empty" : "")">
+                                @(Model.Family.MotherAge.HasValue? Model.Family.MotherAge.ToString() : "Not specified")
+                            </div>
+                        </div>
+                        <div>
+                            <div class="field-label">Contact Numbers</div>
+                            @if (!Model.MotherContacts.Any())
+                            {
+                                <div class="field-value empty">Not specified</div>
+                            }
+                            else
+                            {
+                                @foreach (var c in Model.MotherContacts)
+                                {
+                                    <div class="field-value" style="font-family:monospace;">
+                                        @c.Number @(!string.IsNullOrEmpty(c.Label) ? $"({c.Label})" : "")
+                                    </div>
+                                }
+                            }
+                        </div>
+                        <div>
+                            <div class="field-label">Occupation</div>
+                            <div class="field-value @(string.IsNullOrEmpty(Model.Family.MotherOccupation) ? "empty" : "")">
+                                @(string.IsNullOrEmpty(Model.Family.MotherOccupation) ? "Not specified" : Model.Family.MotherOccupation)
+                            </div>
+                        </div>
+                        <div>
+                            <div class="field-label">Educational Attainment</div>
+                            <div class="field-value @(string.IsNullOrEmpty(Model.Family.MotherEducationalAttainment) ? "empty" : "")">
+                                @(string.IsNullOrEmpty(Model.Family.MotherEducationalAttainment) ? "Not specified" : Model.Family.MotherEducationalAttainment)
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="section-card">
+                    <div class="section-header">
+                        <span class="material-symbols-outlined">home</span>
+                        Family Details
+                    </div>
+                    <div class="section-body">
+                        <div>
+                            <div class="field-label">Monthly Family Income</div>
+                            <div class="field-value @(string.IsNullOrEmpty(Model.Family.MonthlyFamilyIncome) ? "empty" : "")">
+                                @(string.IsNullOrEmpty(Model.Family.MonthlyFamilyIncome) ? "Not specified" : Model.Family.MonthlyFamilyIncome)
+                            </div>
+                        </div>
+                        <div>
+                            <div class="field-label">Parents' Relationship Status</div>
+                            <div class="field-value @(string.IsNullOrEmpty(Model.Family.ParentsRelationshipStatus) ? "empty" : "")">
+                                @(string.IsNullOrEmpty(Model.Family.ParentsRelationshipStatus) ? "Not specified" : Model.Family.ParentsRelationshipStatus)
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="section-card">
+                    <div class="section-header">
+                        <span class="material-symbols-outlined">emergency</span>
+                        Emergency Contact
+                    </div>
+                    <div class="section-body cols-3">
+                        <div>
+                            <div class="field-label">Contact Person</div>
+                            <div class="field-value @(string.IsNullOrEmpty(Model.Emergency.EmergencyContactPerson) ? "empty" : "")">
+                                @(string.IsNullOrEmpty(Model.Emergency.EmergencyContactPerson) ? "Not specified" : Model.Emergency.EmergencyContactPerson)
+                            </div>
+                        </div>
+                        <div>
+                            <div class="field-label">Age</div>
+                            <div class="field-value @(Model.Emergency.EmergencyContactAge == null ? "empty" : "")">
+                                @(Model.Emergency.EmergencyContactAge.HasValue? Model.Emergency.EmergencyContactAge.ToString() : "Not specified")
+                            </div>
+                        </div>
+                        <div>
+                            <div class="field-label">Contact Numbers</div>
+                            @if (!Model.EmergencyContacts.Any())
+                            {
+                                <div class="field-value empty">Not specified</div>
+                            }
+                            else
+                            {
+                                @foreach (var c in Model.EmergencyContacts)
+                                {
+                                    <div class="field-value" style="font-family:monospace;">
+                                        @c.Number @(!string.IsNullOrEmpty(c.Label) ? $"({c.Label})" : "")
+                                    </div>
+                                }
+                            }
+                        </div>
+                        <div>
+                            <div class="field-label">Occupation</div>
+                            <div class="field-value @(string.IsNullOrEmpty(Model.Emergency.EmergencyContactOccupation) ? "empty" : "")">
+                                @(string.IsNullOrEmpty(Model.Emergency.EmergencyContactOccupation) ? "Not specified" : Model.Emergency.EmergencyContactOccupation)
+                            </div>
+                        </div>
+                        <div class="full-width">
+                            <div class="field-label">Address</div>
+                            <div class="field-value @(string.IsNullOrEmpty(Model.Emergency.EmergencyContactAddress) ? "empty" : "")">
+                                @(string.IsNullOrEmpty(Model.Emergency.EmergencyContactAddress) ? "Not specified" : Model.Emergency.EmergencyContactAddress)
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
+            <!-- TAB: EDUCATION -->
+            <div id="tab-education" class="tab-panel">
+
+                <div class="section-card">
+                    <div class="section-header">
+                        <span class="material-symbols-outlined">auto_stories</span>
+                        Elementary
+                    </div>
+                    <div class="section-body cols-3">
+                        <div class="full-width">
+                            <div class="field-label">School Name</div>
+                            <div class="field-value @(string.IsNullOrEmpty(Model.Education.ElementarySchool) ? "empty" : "")">
+                                @(string.IsNullOrEmpty(Model.Education.ElementarySchool) ? "Not specified" : Model.Education.ElementarySchool)
+                            </div>
+                        </div>
+                        <div>
+                            <div class="field-label">Year Graduated</div>
+                            <div class="field-value @(string.IsNullOrEmpty(Model.Education.ElementaryYear) ? "empty" : "")">
+                                @(string.IsNullOrEmpty(Model.Education.ElementaryYear) ? "Not specified" : Model.Education.ElementaryYear)
+                            </div>
+                        </div>
+                        <div class="full-width">
+                            <div class="field-label">Honors / Awards</div>
+                            <div class="field-value @(string.IsNullOrEmpty(Model.Education.ElementaryHonors) ? "empty" : "")">
+                                @(string.IsNullOrEmpty(Model.Education.ElementaryHonors) ? "None" : Model.Education.ElementaryHonors)
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="section-card">
+                    <div class="section-header">
+                        <span class="material-symbols-outlined">menu_book</span>
+                        Secondary / Junior High
+                    </div>
+                    <div class="section-body cols-3">
+                        <div class="full-width">
+                            <div class="field-label">School Name</div>
+                            <div class="field-value @(string.IsNullOrEmpty(Model.Education.SecondarySchool) ? "empty" : "")">
+                                @(string.IsNullOrEmpty(Model.Education.SecondarySchool) ? "Not specified" : Model.Education.SecondarySchool)
+                            </div>
+                        </div>
+                        <div>
+                            <div class="field-label">Year Graduated</div>
+                            <div class="field-value @(string.IsNullOrEmpty(Model.Education.SecondaryYear) ? "empty" : "")">
+                                @(string.IsNullOrEmpty(Model.Education.SecondaryYear) ? "Not specified" : Model.Education.SecondaryYear)
+                            </div>
+                        </div>
+                        <div class="full-width">
+                            <div class="field-label">Honors / Awards</div>
+                            <div class="field-value @(string.IsNullOrEmpty(Model.Education.SecondaryHonors) ? "empty" : "")">
+                                @(string.IsNullOrEmpty(Model.Education.SecondaryHonors) ? "None" : Model.Education.SecondaryHonors)
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
+            <!-- TAB: HEALTH -->
+            <div id="tab-health" class="tab-panel">
+
+                <div class="section-card">
+                    <div class="section-header">
+                        <span class="material-symbols-outlined">monitor_heart</span>
+                        Physical Health
+                    </div>
+                    <div class="section-body cols-3">
+                        <div>
+                            <div class="field-label">Height</div>
+                            <div class="field-value @(string.IsNullOrEmpty(Model.Health.Height) ? "empty" : "")">
+                                @(string.IsNullOrEmpty(Model.Health.Height) ? "Not specified" : Model.Health.Height)
+                            </div>
+                        </div>
+                        <div>
+                            <div class="field-label">Weight</div>
+                            <div class="field-value @(string.IsNullOrEmpty(Model.Health.Weight) ? "empty" : "")">
+                                @(string.IsNullOrEmpty(Model.Health.Weight) ? "Not specified" : Model.Health.Weight)
+                            </div>
+                        </div>
+                        <div>
+                            <div class="field-label">Blood Type</div>
+                            <div class="field-value @(string.IsNullOrEmpty(Model.Health.BloodType) ? "empty" : "")">
+                                @(string.IsNullOrEmpty(Model.Health.BloodType) ? "Not specified" : Model.Health.BloodType)
+                            </div>
+                        </div>
+                        <div class="full-width">
+                            <div class="field-label">History of Medical Conditions or Physical Disabilities</div>
+                            <div class="field-value @(string.IsNullOrEmpty(Model.Health.Ailments) ? "empty" : "")">
+                                @(string.IsNullOrEmpty(Model.Health.Ailments) ? "None reported" : Model.Health.Ailments)
+                            </div>
+                        </div>
+                        <div class="full-width">
+                            <div class="field-label">Current Medications</div>
+                            <div class="field-value @(string.IsNullOrEmpty(Model.Health.Medication) ? "empty" : "")">
+                                @(string.IsNullOrEmpty(Model.Health.Medication) ? "None reported" : Model.Health.Medication)
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="section-card">
+                    <div class="section-header" style="color:#93000a;">
+                        <span class="material-symbols-outlined" style="color:#93000a;">warning</span>
+                        Mental Health &amp; Sensitive Information
+                        <span style="margin-left:auto; font-size:11px; font-weight:700; background:#ffdad6; color:#93000a; padding:2px 8px; border-radius:4px;">Confidential</span>
+                    </div>
+                    <div class="section-body cols-1">
+                        <div>
+                            <div class="field-label">History of Suicidal Thoughts or Attempts</div>
+                            <div class="field-value @(string.IsNullOrEmpty(Model.Health.SuicideRiskHistory) ? "empty" : "")">
+                                @(string.IsNullOrEmpty(Model.Health.SuicideRiskHistory) ? "None reported" : Model.Health.SuicideRiskHistory)
+                            </div>
+                        </div>
+                        <div>
+                            <div class="field-label">History of Abuse or Maltreatment</div>
+                            <div class="field-value @(string.IsNullOrEmpty(Model.Health.AbuseHistory) ? "empty" : "")">
+                                @(string.IsNullOrEmpty(Model.Health.AbuseHistory) ? "None reported" : Model.Health.AbuseHistory)
+                            </div>
+                        </div>
+                        <div>
+                            <div class="field-label">History of Illegal Drug Use</div>
+                            <div class="field-value @(string.IsNullOrEmpty(Model.Health.DrugHistory) ? "empty" : "")">
+                                @(string.IsNullOrEmpty(Model.Health.DrugHistory) ? "None reported" : Model.Health.DrugHistory)
+                            </div>
+                        </div>
+                        <div>
+                            <div class="field-label">Family History of Mental or Developmental Conditions</div>
+                            <div class="field-value @(string.IsNullOrEmpty(Model.Health.FamilyMentalHealthHistory) ? "empty" : "")">
+                                @(string.IsNullOrEmpty(Model.Health.FamilyMentalHealthHistory) ? "None reported" : Model.Health.FamilyMentalHealthHistory)
+                            </div>
+                        </div>
+                        <div>
+                            <div class="field-label">Previous Psychiatric or Psychological Consultation</div>
+                            <div class="field-value @(string.IsNullOrEmpty(Model.Health.PsychiatricConsultation) ? "empty" : "")">
+                                @(string.IsNullOrEmpty(Model.Health.PsychiatricConsultation) ? "None reported" : Model.Health.PsychiatricConsultation)
+                            </div>
+                        </div>
+                        <div>
+                            <div class="field-label">Additional Relevant Information / Remarks</div>
+                            <div class="field-value @(string.IsNullOrEmpty(Model.Health.AdditionalNotes) ? "empty" : "")">
+                                @(string.IsNullOrEmpty(Model.Health.AdditionalNotes) ? "None" : Model.Health.AdditionalNotes)
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
         </div>
-
-
     </div>
 
-</div>
+    <script>
+        function switchTab(name, btn) {
+            document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+            document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+            document.getElementById('tab-' + name).classList.add('active');
+            btn.classList.add('active');
+        }
+    </script>
 
-<script>
-    function switchTab(name, btn) {
-        document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
-        document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
-        document.getElementById('tab-' + name).classList.add('active');
-        btn.classList.add('active');
-    }
-
-        function openDeleteModal(btn) {
-        document.getElementById('deleteNoteId').value = btn.dataset.id;
-
-        document.getElementById('dn-date').textContent = btn.dataset.date || '—';
-        document.getElementById('dn-sessionno').textContent = btn.dataset.sessionno || '—';
-        document.getElementById('dn-goal').textContent = btn.dataset.goal || '—';
-        document.getElementById('dn-topics').textContent = btn.dataset.topics || '—';
-        document.getElementById('dn-interventions').textContent = btn.dataset.interventions || '—';
-        document.getElementById('dn-observations').textContent = btn.dataset.observations || '—';
-        document.getElementById('dn-progress').textContent = btn.dataset.progress || '—';
-        document.getElementById('dn-behavior').textContent = btn.dataset.behavior || '—';
-        document.getElementById('dn-homework').textContent = btn.dataset.homework || '—';
-        document.getElementById('dn-strengths').textContent = btn.dataset.strengths || '—';
-
-        document.getElementById('deleteNoteModal').classList.add('open');
-    }
-
-    function closeDeleteModal() {
-        document.getElementById('deleteNoteModal').classList.remove('open');
-    }
-
-    // Close on backdrop click
-    document.getElementById('deleteNoteModal').addEventListener('click', function (e) {
-        if (e.target === this) closeDeleteModal();
-    });
-
-    // Close on Escape
-    document.addEventListener('keydown', function (e) {
-        if (e.key === 'Escape') closeDeleteModal();
-    });
-</script>
+</body>
+</html>

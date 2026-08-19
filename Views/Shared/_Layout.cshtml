@@ -16,12 +16,13 @@
     <style>
         :root {
             --sidebar-bg: #1B5E20;
-            --sidebar-hover: #0f2e27;
-            --sidebar-active: #133d32;
-            --sidebar-border: rgba(255,255,255,0.06);
-            --sidebar-text: #ffffff;
+            --sidebar-hover: #164e1b;
+            --sidebar-active-bg: #aee9a6;
+            --sidebar-active-text: #14431a;
+            --sidebar-border: rgba(255,255,255,0.08);
+            --sidebar-text: #eaf3ea;
             --sidebar-heading: #ffffff;
-            --sidebar-label: #2e5248;
+            --sidebar-subheading: rgba(255,255,255,0.65);
             --sidebar-width: 240px;
             --accent: #1a7f74;
             --accent-soft: rgba(26,127,116,0.18);
@@ -74,18 +75,6 @@
                 background: rgba(59, 91, 219, 0.2);
             }
 
-        .sidebar-logout {
-            background: rgba(229, 52, 74, 0.12);
-            color: #e5344a;
-            border: 1px solid rgba(229,52,74,0.25);
-        }
-
-            .sidebar-logout:hover {
-                background: #e5344a;
-                color: #ffffff;
-                border-color: #e5344a;
-            }
-
         /* ── SIDEBAR ── */
         .sidebar {
             width: var(--sidebar-width);
@@ -101,60 +90,62 @@
         }
 
         .sidebar-brand {
-            padding: 24px 20px 20px;
-            border-bottom: 1px solid var(--sidebar-border);
-            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 22px 18px 20px;
+            margin-bottom: 6px;
         }
 
-            .sidebar-brand h4 {
-                font-family: Arial, Helvetica, sans-serif;
-                font-size: 1.2rem;
-                font-weight: 400;
-                color: var(--sidebar-heading);
-                margin: 0;
-            }
+        .sidebar-logo {
+            width: 40px;
+            height: 40px;
+            flex-shrink: 0;
+        }
 
-            .sidebar-brand span {
-                display: inline-block;
-                margin-bottom: 6px;
-                font-size: 0.65rem;
-                font-weight: 700;
-                letter-spacing: 0.12em;
-                text-transform: uppercase;
-                color: var(--accent);
-                background: var(--accent-soft);
-                padding: 2px 8px;
-                border-radius: 20px;
-            }
-
-        .sidebar-section-label {
-            font-size: 0.62rem;
+        .sidebar-brand-text h4 {
+            font-family: 'Sora', Arial, sans-serif;
+            font-size: 1.05rem;
             font-weight: 700;
-            letter-spacing: 0.12em;
-            text-transform: uppercase;
-            color: var(--sidebar-label);
-            padding: 16px 20px 6px;
+            color: var(--sidebar-heading);
+            line-height: 1.2;
+        }
+
+        .sidebar-brand-text small {
+            display: block;
+            font-size: 0.68rem;
+            font-weight: 500;
+            color: var(--sidebar-subheading);
+            letter-spacing: 0.02em;
         }
 
         .sidebar-nav {
             list-style: none;
-            padding: 0 10px;
+            padding: 6px 14px;
             margin: 0;
         }
 
             .sidebar-nav li a {
                 display: flex;
                 align-items: center;
-                gap: 10px;
-                padding: 10px 12px;
-                border-radius: 10px;
+                gap: 12px;
+                padding: 11px 16px;
+                border-radius: 999px;
                 color: var(--sidebar-text);
                 text-decoration: none;
-                font-size: 0.85rem;
+                font-size: 0.88rem;
                 font-weight: 500;
                 transition: all .18s;
-                margin-bottom: 2px;
+                margin-bottom: 6px;
             }
+
+                .sidebar-nav li a i,
+                .sidebar-nav li a .nav-icon {
+                    width: 18px;
+                    text-align: center;
+                    font-size: 0.95rem;
+                    flex-shrink: 0;
+                }
 
                 .sidebar-nav li a:hover {
                     background: var(--sidebar-hover);
@@ -162,35 +153,40 @@
                 }
 
                 .sidebar-nav li a.active {
-                    background: var(--sidebar-active);
-                    color: #ffffff;
-                    border-left: 3px solid var(--accent);
+                    background: var(--sidebar-active-bg);
+                    color: var(--sidebar-active-text);
+                    font-weight: 700;
                 }
+
+                    .sidebar-nav li a.active:hover {
+                        background: var(--sidebar-active-bg);
+                    }
 
         .sidebar-footer {
             margin-top: auto;
-            padding: 16px 10px;
-            border-top: 1px solid var(--sidebar-border);
+            padding: 16px 14px 22px;
         }
 
             .sidebar-footer form button {
+                display: flex;
+                align-items: center;
+                gap: 10px;
                 width: 100%;
-                background: rgba(229,52,74,0.1);
-                color: #f87171;
-                border: 1px solid rgba(229,52,74,0.22);
-                border-radius: 10px;
-                padding: 10px;
+                background: transparent;
+                color: var(--sidebar-text);
+                border: none;
+                border-radius: 999px;
+                padding: 10px 16px;
                 font-family: Arial, Helvetica, sans-serif;
-                font-size: 0.82rem;
-                font-weight: 600;
+                font-size: 0.85rem;
+                font-weight: 500;
                 cursor: pointer;
                 transition: all .18s;
             }
 
                 .sidebar-footer form button:hover {
-                    background: #e5344a;
+                    background: var(--sidebar-hover);
                     color: #ffffff;
-                    border-color: #e5344a;
                 }
 
         /* ── MAIN ── */
@@ -338,6 +334,45 @@
             font-size: 13px;
         }
 
+        /* ── TOPBAR PROFILE ── */
+        .topbar-profile {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-left: 16px;
+            padding-left: 16px;
+            border-left: 1px solid var(--topbar-border);
+        }
+
+        .profile-avatar {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            background: var(--accent);
+            color: #fff;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 14px;
+            flex-shrink: 0;
+        }
+
+        .profile-name {
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--ink);
+            line-height: 1.3;
+        }
+
+        .profile-role {
+            font-size: 11px;
+            color: #717a6d;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            line-height: 1.3;
+        }
+
         /* ── RESPONSIVE ── */
         @@media (max-width: 900px) {
             .sidebar {
@@ -395,23 +430,26 @@
 
         <aside class="sidebar" id="sidebar">
             <div class="sidebar-brand">
-                <span>@(isStudent ? "Student" : "Counselor")</span>
+                <img src="~/lib/images/logo.png" alt="CounselCare Logo" class="sidebar-logo" />
+                <div class="sidebar-brand-text">
+                    <h4>CounselCare</h4>
+                    <small>@(isStudent ? "Student Portal" : "Counselor Portal")</small>
+                </div>
             </div>
             <ul class="sidebar-nav">
                 @if (isStudent)
                 {
-                    <li><a asp-controller="Home" asp-action="Index">Dashboard</a></li>
-                    <li><a asp-controller="Appointments" asp-action="Create">Book Appointment</a></li>
-                    <li><a asp-controller="Appointments" asp-action="MyAppointments">My Appointments</a></li>
-
+                    <li><a asp-controller="Home" asp-action="Index" class="@(ViewContext.RouteData.Values["controller"]?.ToString() == "Home" ? "active" : "")"><i class="fa-solid fa-grip"></i>Dashboard</a></li>
+                    <li><a asp-controller="Appointments" asp-action="Create" class="@(ViewContext.RouteData.Values["action"]?.ToString() == "Create" ? "active" : "")"><i class="fa-regular fa-calendar-plus"></i>Book Appointment</a></li>
+                    <li><a asp-controller="Appointments" asp-action="MyAppointments" class="@(ViewContext.RouteData.Values["action"]?.ToString() == "MyAppointments" ? "active" : "")"><i class="fa-regular fa-calendar-check"></i>My Appointments</a></li>
                 }
                 else
                 {
-                    <li><a asp-controller="Home" asp-action="Index">Dashboard</a></li>
-                    <li><a asp-controller="Students" asp-action="Index">Students</a></li>
-                    <li><a asp-controller="Counselors" asp-action="Index">Counselors</a></li>
-                    <li><a asp-controller="Appointments" asp-action="Index">Appointments</a></li>
-                    <li><a asp-controller="Announcements" asp-action="Index">Announcements</a></li>
+                    <li><a asp-controller="Home" asp-action="Home" class="@(ViewContext.RouteData.Values["controller"]?.ToString() == "Home" ? "active" : "")"><i class="fa-solid fa-grip"></i>Dashboard</a></li>
+                    <li><a asp-controller="Students" asp-action="Index" class="@(ViewContext.RouteData.Values["controller"]?.ToString() == "Students" ? "active" : "")"><i class="fa-solid fa-user-graduate"></i>Students</a></li>
+                    <li><a asp-controller="Counselors" asp-action="Index" class="@(ViewContext.RouteData.Values["controller"]?.ToString() == "Counselors" ? "active" : "")"><i class="fa-solid fa-user-tie"></i>Counselors</a></li>
+                    <li><a asp-controller="Appointments" asp-action="Index" class="@(ViewContext.RouteData.Values["controller"]?.ToString() == "Appointments" ? "active" : "")"><i class="fa-regular fa-calendar-days"></i>Appointments</a></li>
+                    <li><a asp-controller="Resources" asp-action="Index" class="@(ViewContext.RouteData.Values["controller"]?.ToString() == "Resources" ? "active" : "")"><i class="fa-regular fa-folder-open"></i>Resources</a></li>
                 }
             </ul>
 
@@ -420,7 +458,7 @@
                 <div class="sidebar-footer">
                     <form asp-controller="Users" asp-action="Logout" method="post">
                         @Html.AntiForgeryToken()
-                        <button type="submit" class="sidebar-logout">Logout</button>
+                        <button type="submit"><i class="fa-solid fa-arrow-right-from-bracket"></i>Logout</button>
                     </form>
                 </div>
             }
@@ -445,15 +483,18 @@
                             <span id="notif-badge" class="notif-badge"></span>
                         </button>
                         <div id="notif-dropdown" class="notif-dropdown">
-                            <div class="notif-filters">
-                                <button class="notif-filter-btn active" data-filter="all">All</button>
-                                <button class="notif-filter-btn" data-filter="Announcement">Announcements</button>
-                                <button class="notif-filter-btn" data-filter="AppointmentReminder">Reminders</button>
-                                <button class="notif-filter-btn" data-filter="StatusUpdate">Updates</button>
-                            </div>
                             <div id="notif-list"></div>
                         </div>
                     </div>
+
+                    <div class="topbar-profile">
+                        <div class="profile-avatar">@(User.Identity?.Name?.Trim().Substring(0, 1).ToUpper() ?? "U")</div>
+                        <div>
+                            <div class="profile-name">@User.Identity?.Name</div>
+                            <div class="profile-role">@(isStudent ? "Student" : "Counselor")</div>
+                        </div>
+                    </div>
+
                     <form style="display:none;">@Html.AntiForgeryToken()</form>
                 }
             </div>
@@ -491,11 +532,7 @@
             const dropdown = document.getElementById('notif-dropdown');
             const badge = document.getElementById('notif-badge');
             const list = document.getElementById('notif-list');
-            const filterButtons = document.querySelectorAll('.notif-filter-btn');
             const token = () => document.querySelector('input[name="__RequestVerificationToken"]')?.value || '';
-
-            let allNotifications = [];
-            let activeFilter = 'all';
 
             function renderNotification(n) {
                 return `
@@ -504,16 +541,6 @@
                         <div class="notif-message">${n.message}</div>
                         <div class="notif-time">${new Date(n.createdAt).toLocaleString()}</div>
                     </div>`;
-            }
-
-            function renderList() {
-                const filtered = activeFilter === 'all'
-                    ? allNotifications
-                    : allNotifications.filter(n => n.type === activeFilter);
-
-                list.innerHTML = filtered.length
-                    ? filtered.map(renderNotification).join('')
-                    : '<div class="notif-empty">No notifications</div>';
             }
 
             async function fetchNotifications() {
@@ -525,8 +552,9 @@
                 badge.style.display = unreadCount > 0 ? 'inline-block' : 'none';
                 badge.textContent = unreadCount;
 
-                allNotifications = notifications;
-                renderList();
+                list.innerHTML = notifications.length
+                    ? notifications.map(renderNotification).join('')
+                    : '<div class="notif-empty">No notifications</div>';
             }
 
             async function markRead(id) {
@@ -536,15 +564,6 @@
                 });
                 fetchNotifications();
             }
-
-            filterButtons.forEach(btn => {
-                btn.addEventListener('click', () => {
-                    filterButtons.forEach(b => b.classList.remove('active'));
-                    btn.classList.add('active');
-                    activeFilter = btn.dataset.filter;
-                    renderList();
-                });
-            });
 
             bell.addEventListener('click', () => {
                 dropdown.style.display = dropdown.style.display === 'block' ? 'none' : 'block';
