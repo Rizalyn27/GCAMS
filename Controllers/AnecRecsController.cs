@@ -9,6 +9,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using GCAMS.Models.ActivityLog;
 
 namespace GCAMS.Controllers
 {
@@ -81,6 +82,16 @@ namespace GCAMS.Controllers
 
             if (ModelState.IsValid)
             {
+                await _context.SaveChangesAsync();
+
+                _context.ActivityLog.Add(new ActivityLog
+                {
+                    Who = User.Identity.Name,
+                    Date = DateTime.Now,
+                    ActivityAction = ActivityAction.AnnecRecCreated.ToString(),
+                    Details = $"AnecRec created for student ID {anecRecs.StudentsID} by {User.Identity.Name}."
+                });
+
                 _context.Add(anecRecs);
                 await _context.SaveChangesAsync();
 
@@ -116,7 +127,24 @@ namespace GCAMS.Controllers
             {
                 try
                 {
+
                     _context.Update(anecRecs);
+
+                    var counselorName = await _context.Counselors
+                                        .Where(c => c.EmailAddress == User.Identity.Name)
+                                        .Select(c => c.CounselorName)
+                                        .FirstOrDefaultAsync();
+
+                    await _context.SaveChangesAsync();
+
+                    _context.ActivityLog.Add(new ActivityLog
+                    {
+                        Who = counselorName ?? "Unknown",
+                        Date = DateTime.Now,
+                        ActivityAction = "AnnecRecUpdated",
+                        Details = $"{counselorName ?? User.Identity.Name} update an anecdotal record for {anecRecs.StuName}"
+                    });
+
                     await _context.SaveChangesAsync();
                 }
                 catch (DbUpdateConcurrencyException)

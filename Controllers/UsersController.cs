@@ -10,7 +10,7 @@ using System.Security.Claims;
 using System.Security.Cryptography;
 using System.Text;
 using System.Text.RegularExpressions;
-
+using GCAMS.Models.ActivityLog;
 
 namespace GCAMS.Controllers
 {
@@ -55,11 +55,36 @@ namespace GCAMS.Controllers
 
                     await HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme,
                         new ClaimsPrincipal(identity));
+
+                    _context.ActivityLog.Add(new ActivityLog
+                    {
+                        Who = User.Identity.Name,
+                        ActivityAction = "SignIn",
+                        Date = DateTime.Now,
+                        Details = $"User {user.Username} logged in."
+                    });
+
+                    await _context.SaveChangesAsync();
+
                     return RedirectToAction("Index", "Home");
+
+                   
+
                 }
             }
 
             ViewBag.ErrorMessage = "Invalid username or password.";
+
+            _context.ActivityLog.Add(new ActivityLog
+            {
+                Who = user.Username,
+                ActivityAction = "SignInFailed",
+                Date = DateTime.Now,
+                Details = $"User {user.Username} failed to logged in."
+            });
+
+            await _context.SaveChangesAsync();
+
             return View();
         }
 
@@ -126,6 +151,14 @@ namespace GCAMS.Controllers
             user.PasswordChange = true;
 
             await _context.SaveChangesAsync();
+
+            _context.ActivityLog.Add(new ActivityLog
+            {
+                Who = user.Username,
+                ActivityAction = "PasswordChanged",
+                Date = DateTime.Now,
+                Details = $"User {user.Username} changed their password."
+            });
 
             var identity = new ClaimsIdentity(
                 new[]

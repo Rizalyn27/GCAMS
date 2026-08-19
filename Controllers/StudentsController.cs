@@ -10,6 +10,7 @@ using System.Globalization;
 using System.Security.Cryptography;
 using System.Text;
 using GCAMS.Controllers;
+using GCAMS.Models.ActivityLog;
 
 namespace GCAMS.Controllers
 {
@@ -163,6 +164,16 @@ namespace GCAMS.Controllers
 
                 await _context.SaveChangesAsync();
 
+                _context.ActivityLog.Add(new ActivityLog
+                {
+                    Who = User.Identity?.Name ?? "Unknown",
+                    Date = DateTime.Now,
+                    ActivityAction = "StudentAdded",
+                    Details = $"{User.Identity?.Name ?? "Unknown"} added a new student: {vm.Student.StuName}."
+                });
+
+                await _context.SaveChangesAsync();
+
                 return RedirectToAction(nameof(Index));
             }
 
@@ -298,6 +309,18 @@ namespace GCAMS.Controllers
 
                     await _context.SaveChangesAsync();
 
+                    _context.ActivityLog.Add(new ActivityLog
+                    {
+                        Who = User.Identity?.Name ?? "Unknown",
+                        Date = DateTime.Now,
+                        ActivityAction = "StudentUpdated",
+                        Details = $"{User.Identity?.Name ?? "Unknown"} updated student {vm.Student.StuName}"
+                    });
+
+                    await _context.SaveChangesAsync();
+
+                    
+
                     await SyncStudentAccountAsync(oldStuID, vm.Student.StuID);
                 }
                 catch (DbUpdateConcurrencyException)
@@ -351,6 +374,18 @@ namespace GCAMS.Controllers
 
             student.IsActive = false;
             _context.Update(student);
+
+            await _context.SaveChangesAsync();
+
+
+            _context.ActivityLog.Add(new ActivityLog
+            {
+                Who = User.Identity?.Name ?? "Unknown",
+                Date = DateTime.Now,
+                ActivityAction = "StudentSetInactive",
+                Details = $"{User.Identity?.Name ?? "Unknown"} set student {student.StuName} as Inactive"
+            });
+
             await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
         }
@@ -365,6 +400,18 @@ namespace GCAMS.Controllers
 
             student.IsActive = true;
             _context.Update(student);
+
+            await _context.SaveChangesAsync();
+
+
+            _context.ActivityLog.Add(new ActivityLog
+            {
+                Who = User.Identity?.Name ?? "Unknown",
+                Date = DateTime.Now,
+                ActivityAction = "StudentSetActive",
+                Details = $"{User.Identity?.Name ?? "Unknown"} set student {student.StuName} as Active"
+            });
+
             await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
         }
@@ -540,8 +587,19 @@ namespace GCAMS.Controllers
 
                 }
 
+                _context.ActivityLog.Add(new ActivityLog
+                {
+                    Who = User.Identity?.Name ?? "Unknown",
+                    Date = DateTime.Now,
+                    ActivityAction = "StudentAdded",
+                    Details = $"{User.Identity?.Name ?? "Unknown"} imported {successCount} students from Excel."
+                });
+
+                await _context.SaveChangesAsync();
+
                 TempData["Success"] = $"{successCount} student(s) imported successfully." + (skippedCount > 0 ? $" {skippedCount} duplicate(s) skipped." : "");
                 return RedirectToAction(nameof(Index));
+
             }
             catch (Exception ex)
             {

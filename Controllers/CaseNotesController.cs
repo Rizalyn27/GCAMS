@@ -1,9 +1,10 @@
+using GCAMS.Data;
+using GCAMS.Models.ActivityLog;
+using GCAMS.Models.Appointment;
+using GCAMS.Models.CaseNotes;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using GCAMS.Models.CaseNotes;
-using GCAMS.Models.Appointment;
-using GCAMS.Data;
 using System.Threading.Tasks;
 
 [Authorize]
@@ -115,6 +116,16 @@ public class CaseNotesController : Controller
                         });
 
                         await _context.SaveChangesAsync();
+
+                        _context.ActivityLog.Add(new ActivityLog
+                        {
+                            Who = User.Identity.Name,
+                            Date = DateTime.Now,
+                            ActivityAction = "CaseNoteAdded",
+                            Details = $"{User.Identity.Name} added a case note for {casenotes.StudentsID}."
+                        });
+
+                        await _context.SaveChangesAsync();
                     }
                 }
             }
@@ -164,6 +175,17 @@ public class CaseNotesController : Controller
                 casenotes.CounselorID = existingCounselorId;
 
                 _context.Update(casenotes);
+
+                await _context.SaveChangesAsync();
+
+
+                _context.ActivityLog.Add(new ActivityLog
+                {
+                    Who = User.Identity.Name,
+                    Date = DateTime.Now,
+                    ActivityAction = "CaseNoteUpdated",
+                    Details = $"{User.Identity.Name} edited a case note for {casenotes.StudentsID}."
+                });
                 await _context.SaveChangesAsync();
             }
             catch (DbUpdateConcurrencyException)

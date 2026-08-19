@@ -1,4 +1,5 @@
 ﻿using GCAMS.Data;
+using GCAMS.Models.ActivityLog;
 using GCAMS.Models.Appointment;
 using GCAMS.Models.Notifs;
 using GCAMS.ViewModels;
@@ -237,6 +238,16 @@ public class AppointmentsController : Controller
                 try
                 {
                     await _context.SaveChangesAsync();
+
+                    _context.ActivityLog.Add(new ActivityLog
+                    {
+                        Who = appointments.FullName,
+                        Date = DateTime.Now,
+                        ActivityAction = "BookAppointment",
+                        Details = $"{appointments.FullName} booked an announcement."
+                    });
+
+                    await _context.SaveChangesAsync();
                 }
                 catch (DbUpdateException)
                 {
@@ -338,6 +349,16 @@ public class AppointmentsController : Controller
         try
         {
             await _context.SaveChangesAsync();
+
+            _context.ActivityLog.Add(new ActivityLog
+            {
+                Who = existing.FullName,
+                Date = DateTime.Now,
+                ActivityAction = "RescheduleAppointment",
+                Details = $"{existing.FullName} rescheduled their appointment on {existing.AppointmentDate} to {posted.AppointmentDate}",
+            });
+
+            await _context.SaveChangesAsync();
         }
         catch (DbUpdateConcurrencyException)
         {
@@ -418,6 +439,16 @@ public class AppointmentsController : Controller
 
                     try
                     {
+                        await _context.SaveChangesAsync();
+
+                        _context.ActivityLog.Add(new ActivityLog
+                        {
+                            Who = appointments.FullName,
+                            Date = DateTime.Now,
+                            ActivityAction = "CancelAppointment",
+                            Details = $"{appointments.FullName} cancelled their appointment on {appointments.AppointmentDate:MMM dd, yyyy - h:mm tt}",
+                        });
+
                         await _context.SaveChangesAsync();
                     }
                     catch (DbUpdateException)

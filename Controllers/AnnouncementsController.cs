@@ -1,10 +1,11 @@
 ﻿using GCAMS.Data;
+using GCAMS.Models.ActivityLog;
 using GCAMS.Models.Announcements;
 using GCAMS.Models.Notifs;
+using GCAMS.ViewModels;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using GCAMS.ViewModels;
 
 namespace GCAMS.Controllers
 {
@@ -122,6 +123,19 @@ namespace GCAMS.Controllers
                 // Save one at a time so a single collision doesn't roll back everyone else.
                 try
                 {
+                    var counselorName = await _context.Counselors
+                                        .Where(c => c.EmailAddress == User.Identity.Name)
+                                        .Select(c => c.CounselorName)
+                                        .FirstOrDefaultAsync();
+
+                    _context.ActivityLog.Add(new ActivityLog
+                    {
+                        Who = counselorName ?? "Unknown",
+                        Date = DateTime.Now,
+                        ActivityAction = "AnnouncementCreated",
+                        Details = $"{counselorName ?? User.Identity.Name} posted an announcement."
+                    });
+
                     await _context.SaveChangesAsync();
                     sentCount++;
                 }

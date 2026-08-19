@@ -9,6 +9,7 @@ using GCAMS.Data;
 using GCAMS.Models.Counselor;
 using System.Security.Cryptography;
 using GCAMS.Models.Users;
+using GCAMS.Models.ActivityLog;
 
 namespace GCAMS.Controllers
 {
@@ -88,6 +89,18 @@ namespace GCAMS.Controllers
                 }
 
                 await _context.SaveChangesAsync();
+
+                _context.ActivityLog.Add(new ActivityLog
+                {
+                    Who = User.Identity?.Name ?? "Unknown",
+                    Date = DateTime.Now,
+                    ActivityAction = "CounselorAdded",
+                    Details = $"{User.Identity.Name} added a new counselor: {counselor.CounselorName} ({counselor.EmailAddress}.)"
+                });
+
+                await _context.SaveChangesAsync();
+
+               
                 return RedirectToAction(nameof(Index));
             }
 
@@ -153,6 +166,16 @@ namespace GCAMS.Controllers
                             Label = c.Label
                         });
                     }
+
+                    await _context.SaveChangesAsync();
+
+                    _context.ActivityLog.Add(new ActivityLog
+                    {
+                        Who = User.Identity?.Name ?? "Unknown",
+                        Date = DateTime.Now,
+                        ActivityAction = "CounselorUpdated",
+                        Details = $"{User.Identity.Name} updated counselor: {counselor.CounselorName} ({counselor.EmailAddress}.)"
+                    });
 
                     await _context.SaveChangesAsync();
 

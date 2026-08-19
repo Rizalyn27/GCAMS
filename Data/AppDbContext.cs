@@ -1,4 +1,5 @@
-﻿using GCAMS.Models.AnecRecs;
+﻿using GCAMS.Models.ActivityLog;
+using GCAMS.Models.AnecRecs;
 using GCAMS.Models.Announcements;
 using GCAMS.Models.Appointment;
 using GCAMS.Models.CaseNotes;
@@ -51,6 +52,10 @@ namespace GCAMS.Data
 
         //Announcements
         public DbSet<Announcement> Announcements { get; set; }
+
+        //ActivityLog
+        public DbSet<ActivityLog> ActivityLog { get; set; }
+
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
