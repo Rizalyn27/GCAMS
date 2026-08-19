@@ -1,0 +1,326 @@
+@model GCAMS.ViewModels.AdminDashboardViewModel
+
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet">
+
+<style>
+    .admin-dash * {
+        font-family: 'Inter', sans-serif;
+    }
+
+    .admin-dash .material-symbols-outlined {
+        font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        vertical-align: middle;
+    }
+
+    .admin-dash h1 {
+        font-family: 'Manrope', sans-serif;
+        font-size: 22px;
+        font-weight: 700;
+        color: #191d18;
+        margin-bottom: 4px;
+    }
+
+    .admin-dash .subtitle {
+        color: #717a6d;
+        font-size: 14px;
+        margin-bottom: 24px;
+    }
+
+    .admin-dash .stat-grid {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 16px;
+        margin-bottom: 24px;
+    }
+
+    .admin-dash .stat-card {
+        background: #fff;
+        border: 1px solid #e1e4db;
+        border-radius: 14px;
+        padding: 18px 20px;
+    }
+
+    .admin-dash .stat-label {
+        font-size: 13px;
+        color: #717a6d;
+        margin-bottom: 8px;
+        display: flex;
+        align-items: center;
+        gap: 6px;
+    }
+
+    .admin-dash .stat-value {
+        font-size: 26px;
+        font-weight: 700;
+        color: #191d18;
+        font-family: 'Manrope', sans-serif;
+    }
+
+    .admin-dash .section-title {
+        font-size: 16px;
+        font-weight: 700;
+        color: #191d18;
+        margin-bottom: 12px;
+        font-family: 'Manrope', sans-serif;
+    }
+
+    .admin-dash .panel {
+        background: #fff;
+        border: 1px solid #e1e4db;
+        border-radius: 14px;
+        padding: 18px 20px;
+    }
+
+    .admin-dash .lower-grid {
+        display: grid;
+        grid-template-columns: 1.4fr 1fr;
+        gap: 20px;
+        align-items: start;
+    }
+
+    .admin-dash .bar-chart {
+        display: flex;
+        align-items: flex-end;
+        gap: 12px;
+        height: 120px;
+        margin-top: 8px;
+    }
+
+    .admin-dash .bar-col {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 6px;
+        height: 100%;
+        justify-content: flex-end;
+    }
+
+    .admin-dash .bar {
+        width: 100%;
+        background: #1a7f74;
+        border-radius: 4px 4px 0 0;
+        min-height: 3px;
+    }
+
+    .admin-dash .bar-label {
+        font-size: 11px;
+        color: #a3aa9e;
+    }
+
+    .admin-dash .activity-item {
+        display: flex;
+        align-items: flex-start;
+        gap: 10px;
+        padding: 10px 0;
+        border-bottom: 1px solid #f0f3ec;
+    }
+
+        .admin-dash .activity-item:last-child {
+            border-bottom: none;
+        }
+
+    .admin-dash .activity-icon {
+        color: #1a7f74;
+        font-size: 18px;
+        margin-top: 1px;
+    }
+
+    .admin-dash .activity-text {
+        font-size: 13px;
+        color: #191d18;
+    }
+
+    .admin-dash .activity-time {
+        font-size: 11px;
+        color: #a3aa9e;
+        margin-top: 2px;
+    }
+
+    .admin-dash .empty-note {
+        font-size: 13px;
+        color: #a3aa9e;
+        padding: 8px 0;
+    }
+
+    .admin-dash .dist-row {
+        margin-bottom: 14px;
+    }
+
+        .admin-dash .dist-row:last-child {
+            margin-bottom: 0;
+        }
+
+    .admin-dash .dist-labels {
+        display: flex;
+        justify-content: space-between;
+        font-size: 13px;
+        color: #191d18;
+        margin-bottom: 6px;
+    }
+
+    .admin-dash .dist-bar-track {
+        width: 100%;
+        height: 6px;
+        background: #f0f3ec;
+        border-radius: 4px;
+        overflow: hidden;
+    }
+
+    .admin-dash .dist-bar-fill {
+        height: 100%;
+        background: #1a7f74;
+    }
+
+    .admin-dash .pending-item {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 10px 0;
+        border-bottom: 1px solid #f0f3ec;
+    }
+
+        .admin-dash .pending-item:last-child {
+            border-bottom: none;
+        }
+
+    .admin-dash .pending-name {
+        font-size: 13px;
+        font-weight: 600;
+        color: #191d18;
+    }
+
+    .admin-dash .pending-role {
+        font-size: 12px;
+        color: #717a6d;
+    }
+
+    .admin-dash .badge-pending {
+        font-size: 11px;
+        font-weight: 600;
+        color: #8a5a00;
+        background: #fdf1d6;
+        padding: 3px 10px;
+        border-radius: 20px;
+    }
+
+    @@media (max-width: 900px) {
+        .admin-dash .stat-grid {
+            grid-template-columns: repeat(2, 1fr);
+        }
+
+        .admin-dash .lower-grid {
+            grid-template-columns: 1fr;
+        }
+    }
+</style>
+
+<div class="admin-dash">
+    <h1>Admin dashboard</h1>
+    <p class="subtitle">System-wide overview for @DateTime.Now.ToString("dddd, MMMM d")</p>
+
+    <div class="stat-grid">
+        <div class="stat-card">
+            <div class="stat-label"><span class="material-symbols-outlined" style="font-size:16px;">school</span> Active students</div>
+            <div class="stat-value">@Model.TotalActiveStudents.ToString("N0")</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-label"><span class="material-symbols-outlined" style="font-size:16px;">support_agent</span> Active counselors</div>
+            <div class="stat-value">@Model.ActiveCounselors.ToString("N0")</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-label"><span class="material-symbols-outlined" style="font-size:16px;">event</span> Appointments this week</div>
+            <div class="stat-value">@Model.AppointmentsThisWeek.ToString("N0")</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-label"><span class="material-symbols-outlined" style="font-size:16px;">folder_open</span> Open cases</div>
+            <div class="stat-value">@Model.OpenCases.ToString("N0")</div>
+        </div>
+    </div>
+
+    <div class="lower-grid">
+        <div>
+            <div class="panel" style="margin-bottom:20px;">
+                <div class="section-title">Appointments this week</div>
+                @{
+                    var dayLabels = new[] { "Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun" };
+                    var maxCount = Math.Max(1, Model.WeeklyAppointmentCounts.DefaultIfEmpty(0).Max());
+                }
+                <div class="bar-chart">
+                    @for (int i = 0; i < 7; i++)
+                    {
+                        var pct = Math.Max(4, (int)(100.0 * Model.WeeklyAppointmentCounts[i] / maxCount));
+                        <div class="bar-col">
+                            <div class="bar" style="height:@(pct)%;" title="@Model.WeeklyAppointmentCounts[i] appointments"></div>
+                            <span class="bar-label">@dayLabels[i]</span>
+                        </div>
+                    }
+                </div>
+            </div>
+
+            <div class="panel">
+                <div class="section-title">Recent activity</div>
+                @if (Model.RecentActivity.Any())
+                {
+                    foreach (var item in Model.RecentActivity)
+                    {
+                        <div class="activity-item">
+                            <span class="material-symbols-outlined activity-icon">@item.Icon</span>
+                            <div>
+                                <div class="activity-text">@item.Text</div>
+                                <div class="activity-time">@item.Timestamp.ToString("MMM d, h:mm tt")</div>
+                            </div>
+                        </div>
+                    }
+                }
+                else
+                {
+                    <div class="empty-note">No recent activity yet.</div>
+                }
+            </div>
+        </div>
+
+        <div>
+            <div class="panel" style="margin-bottom:20px;">
+                <div class="section-title">User distribution</div>
+                @{
+                    var totalUsers = Math.Max(1, Model.StudentUserCount + Model.CounselorUserCount + Model.AdminUserCount);
+                }
+                <div class="dist-row">
+                    <div class="dist-labels"><span>Students</span><span>@Model.StudentUserCount</span></div>
+                    <div class="dist-bar-track"><div class="dist-bar-fill" style="width:@(100 * Model.StudentUserCount / totalUsers)%;"></div></div>
+                </div>
+                <div class="dist-row">
+                    <div class="dist-labels"><span>Counselors</span><span>@Model.CounselorUserCount</span></div>
+                    <div class="dist-bar-track"><div class="dist-bar-fill" style="width:@(100 * Model.CounselorUserCount / totalUsers)%;"></div></div>
+                </div>
+                <div class="dist-row">
+                    <div class="dist-labels"><span>Admins</span><span>@Model.AdminUserCount</span></div>
+                    <div class="dist-bar-track"><div class="dist-bar-fill" style="width:@(100 * Model.AdminUserCount / totalUsers)%;"></div></div>
+                </div>
+            </div>
+
+            <div class="panel">
+                <div class="section-title">Accounts awaiting setup</div>
+                @if (Model.PendingSetupAccounts.Any())
+                {
+                    foreach (var (username, role) in Model.PendingSetupAccounts)
+                    {
+                        <div class="pending-item">
+                            <div>
+                                <div class="pending-name">@username</div>
+                                <div class="pending-role">@role</div>
+                            </div>
+                            <span class="badge-pending">Not logged in</span>
+                        </div>
+                    }
+                }
+                else
+                {
+                    <div class="empty-note">All accounts have completed setup.</div>
+                }
+            </div>
+        </div>
+    </div>
+</div>

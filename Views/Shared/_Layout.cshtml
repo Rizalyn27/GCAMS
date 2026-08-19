@@ -1,5 +1,8 @@
 ﻿@{
     var isStudent = User.Identity?.IsAuthenticated == true && User.IsInRole("Student");
+    var isAdmin = User.Identity?.IsAuthenticated == true && User.IsInRole("Admin");
+    var isCounselor = User.Identity?.IsAuthenticated == true && User.IsInRole("Counselor");
+
 }
 <!DOCTYPE html>
 <html lang="en">
@@ -405,7 +408,15 @@
                     <li><a asp-controller="Appointments" asp-action="MyAppointments">My Appointments</a></li>
 
                 }
-                else
+                else if (isCounselor)
+                {
+                    <li><a asp-controller="Home" asp-action="Index">Dashboard</a></li>
+                    <li><a asp-controller="Students" asp-action="Index">Students</a></li>
+                    <li><a asp-controller="Counselors" asp-action="Index">Counselors</a></li>
+                    <li><a asp-controller="Appointments" asp-action="Index">Appointments</a></li>
+                    <li><a asp-controller="Announcements" asp-action="Index">Announcements</a></li>
+                }
+                else if (isAdmin)
                 {
                     <li><a asp-controller="Home" asp-action="Index">Dashboard</a></li>
                     <li><a asp-controller="Students" asp-action="Index">Students</a></li>

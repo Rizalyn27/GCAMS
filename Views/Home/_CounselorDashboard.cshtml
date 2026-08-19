@@ -1,0 +1,431 @@
+@model GCAMS.ViewModels.CounselorDashboardViewModel
+
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet">
+
+<style>
+    .cns-dash * {
+        font-family: 'Inter', sans-serif;
+    }
+
+    .cns-dash .material-symbols-outlined {
+        font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        vertical-align: middle;
+    }
+
+    .cns-dash h1 {
+        font-family: 'Manrope', sans-serif;
+        font-size: 22px;
+        font-weight: 700;
+        color: #191d18;
+        margin-bottom: 4px;
+    }
+
+    .cns-dash .subtitle {
+        color: #717a6d;
+        font-size: 14px;
+        margin-bottom: 24px;
+    }
+
+    .cns-dash .stat-grid {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 16px;
+        margin-bottom: 24px;
+    }
+
+    .cns-dash .stat-card {
+        background: #fff;
+        border: 1px solid #e1e4db;
+        border-radius: 14px;
+        padding: 18px 20px;
+    }
+
+    .cns-dash .stat-label {
+        font-size: 13px;
+        color: #717a6d;
+        margin-bottom: 8px;
+        display: flex;
+        align-items: center;
+        gap: 6px;
+    }
+
+    .cns-dash .stat-value {
+        font-size: 26px;
+        font-weight: 700;
+        color: #191d18;
+        font-family: 'Manrope', sans-serif;
+    }
+
+    .cns-dash .section-title {
+        font-size: 16px;
+        font-weight: 700;
+        color: #191d18;
+        margin-bottom: 12px;
+        font-family: 'Manrope', sans-serif;
+    }
+
+    .cns-dash .panel {
+        background: #fff;
+        border: 1px solid #e1e4db;
+        border-radius: 14px;
+        padding: 18px 20px;
+    }
+
+    .cns-dash .lower-grid {
+        display: grid;
+        grid-template-columns: 1.3fr 1fr;
+        gap: 20px;
+        align-items: start;
+    }
+
+    .cns-dash .appt-item {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        border: 1px solid #e1e4db;
+        border-radius: 12px;
+        padding: 12px 14px;
+        margin-bottom: 10px;
+    }
+
+        .cns-dash .appt-item:last-child {
+            margin-bottom: 0;
+        }
+
+    .cns-dash .appt-name {
+        font-size: 14px;
+        font-weight: 600;
+        color: #191d18;
+    }
+
+    .cns-dash .appt-meta {
+        font-size: 12px;
+        color: #717a6d;
+        margin-top: 2px;
+        display: flex;
+        align-items: center;
+        gap: 4px;
+    }
+
+    .cns-dash .status-badge {
+        font-size: 11px;
+        font-weight: 600;
+        padding: 3px 10px;
+        border-radius: 20px;
+        white-space: nowrap;
+    }
+
+    .cns-dash .status-confirmed {
+        color: #0f6b1f;
+        background: #e3f6e6;
+    }
+
+    .cns-dash .status-pending {
+        color: #8a5a00;
+        background: #fdf1d6;
+    }
+
+    .cns-dash .status-completed {
+        color: #41493e;
+        background: #f0f3ec;
+    }
+
+    .cns-dash .bar-chart {
+        display: flex;
+        align-items: flex-end;
+        gap: 12px;
+        height: 100px;
+        margin-top: 8px;
+    }
+
+    .cns-dash .bar-col {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 6px;
+        height: 100%;
+        justify-content: flex-end;
+    }
+
+    .cns-dash .bar {
+        width: 100%;
+        background: #1a7f74;
+        border-radius: 4px 4px 0 0;
+        min-height: 3px;
+    }
+
+    .cns-dash .bar-col.is-today .bar {
+        background: #0f2e27;
+    }
+
+    .cns-dash .bar-label {
+        font-size: 11px;
+        color: #a3aa9e;
+    }
+
+    .cns-dash .flagged-item {
+        background: #fdeceb;
+        border-radius: 10px;
+        padding: 10px 12px;
+        margin-bottom: 8px;
+    }
+
+        .cns-dash .flagged-item:last-child {
+            margin-bottom: 0;
+        }
+
+    .cns-dash .flagged-name {
+        font-size: 13px;
+        font-weight: 600;
+        color: #93000a;
+    }
+
+    .cns-dash .flagged-meta {
+        font-size: 12px;
+        color: #93000a;
+        margin-top: 2px;
+    }
+
+    .cns-dash .quick-actions {
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+    }
+
+    .cns-dash .quick-action {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        border: 1px solid #e1e4db;
+        border-radius: 10px;
+        padding: 10px 14px;
+        font-size: 13px;
+        font-weight: 600;
+        color: #191d18;
+        text-decoration: none;
+        transition: background 0.15s;
+    }
+
+        .cns-dash .quick-action:hover {
+            background: #f2f5ec;
+            color: #191d18;
+        }
+
+        .cns-dash .quick-action .material-symbols-outlined {
+            font-size: 18px;
+            color: #1a7f74;
+        }
+
+    .cns-dash .empty-note {
+        font-size: 13px;
+        color: #a3aa9e;
+        padding: 8px 0;
+    }
+
+    .cns-dash .filter-bar {
+        display: flex;
+        align-items: flex-end;
+        gap: 12px;
+        margin-bottom: 14px;
+        flex-wrap: wrap;
+    }
+
+    .cns-dash .filter-field label {
+        display: block;
+        font-size: 12px;
+        color: #717a6d;
+        margin-bottom: 4px;
+    }
+
+    .cns-dash .filter-field select {
+        font-size: 13px;
+        padding: 7px 10px;
+        border: 1px solid #e1e4db;
+        border-radius: 8px;
+        min-width: 140px;
+    }
+
+    .cns-dash .btn-apply {
+        background: #1a7f74;
+        color: #fff;
+        border: none;
+        border-radius: 8px;
+        padding: 8px 16px;
+        font-size: 13px;
+        font-weight: 600;
+        cursor: pointer;
+    }
+
+    .cns-dash .period-label {
+        font-size: 12px;
+        color: #a3aa9e;
+        margin: -6px 0 12px;
+    }
+
+    @@media (max-width: 900px) {
+        .cns-dash .stat-grid {
+            grid-template-columns: repeat(1, 1fr);
+        }
+
+        .cns-dash .lower-grid {
+            grid-template-columns: 1fr;
+        }
+    }
+</style>
+
+<div class="cns-dash">
+    <h1>@(string.IsNullOrWhiteSpace(Model.CounselorName) ? "Welcome back" : $"Hi, {Model.CounselorName}")</h1>
+    <p class="subtitle">Here's what's on your plate for @DateTime.Now.ToString("dddd, MMMM d")</p>
+
+    <div class="stat-grid">
+        <div class="stat-card">
+            <div class="stat-label"><span class="material-symbols-outlined" style="font-size:16px;"></span> Sessions today</div>
+            <div class="stat-value">@Model.SessionsTodayCount</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-label"><span class="material-symbols-outlined" style="font-size:16px;"></span> Open cases</div>
+            <div class="stat-value">@Model.OpenCasesCount</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-label"><span class="material-symbols-outlined" style="font-size:16px;"></span> Pending requests</div>
+            <div class="stat-value">@Model.PendingRequestsCount</div>
+        </div>
+    </div>
+
+    <div class="lower-grid">
+        <div>
+            <div class="panel" style="margin-bottom:20px;">
+                <div class="section-title">Today's schedule</div>
+                @if (Model.TodaysAppointments.Any())
+                {
+                    foreach (var appt in Model.TodaysAppointments)
+                    {
+                        var statusClass = appt.Status switch
+                        {
+                            "Confirmed" => "status-confirmed",
+                            "Pending" => "status-pending",
+                            "Completed" => "status-completed",
+                            _ => "status-pending"
+                        };
+                        <div class="appt-item">
+                            <div>
+                                <div class="appt-name">@appt.FullName</div>
+                                <div class="appt-meta">
+                                    <span class="material-symbols-outlined" style="font-size:14px;"></span>
+                                    @appt.AppointmentDate.ToString("h:mm tt") &middot; @appt.AppointmentType
+                                </div>
+                            </div>
+                            <span class="status-badge @statusClass">@appt.Status</span>
+                        </div>
+                    }
+                }
+                else
+                {
+                    <div class="empty-note">No appointments scheduled for today.</div>
+                }
+            </div>
+
+            <div class="panel">
+                <div class="section-title">Session history</div>
+                <form method="get" asp-action="Index" class="filter-bar">
+                    <div class="filter-field">
+                        <label>Academic year</label>
+                        <select name="academicYear">
+                            @foreach (var ay in Model.AcademicYearOptions)
+                            {
+                                if (ay == Model.SelectedAcademicYear)
+                                {
+                                    <option value="@ay" selected>@ay</option>
+                                }
+                                else
+                                {
+                                    <option value="@ay">@ay</option>
+                                }
+                            }
+                        </select>
+                    </div>
+                    <div class="filter-field">
+                        <label>Month</label>
+                        <select name="month">
+                            @if (Model.SelectedMonth == null)
+                            {
+                                <option value="" selected>All months</option>
+                            }
+                            else
+                            {
+                                <option value="">All months</option>
+                            }
+                            @for (int m = 1; m <= 12; m++)
+                            {
+                                var label = new DateTime(2000, m, 1).ToString("MMMM");
+                                if (Model.SelectedMonth == m)
+                                {
+                                    <option value="@m" selected>@label</option>
+                                }
+                                else
+                                {
+                                    <option value="@m">@label</option>
+                                }
+                            }
+                        </select>
+                    </div>
+                    <button type="submit" class="btn-apply">Apply</button>
+                </form>
+
+                <div class="stat-value" style="font-size:20px; margin-bottom:2px;">@Model.SessionsInPeriod sessions</div>
+                <div class="period-label">@Model.PeriodLabel</div>
+
+                @{
+                    var periodMax = Math.Max(1, Model.PeriodChartCounts.DefaultIfEmpty(0).Max());
+                }
+                <div class="bar-chart">
+                    @for (int i = 0; i < Model.PeriodChartCounts.Count; i++)
+                    {
+                        var pct = Math.Max(4, (int)(100.0 * Model.PeriodChartCounts[i] / periodMax));
+                        <div class="bar-col">
+                            <div class="bar" style="height:@(pct)%;" title="@Model.PeriodChartCounts[i] sessions"></div>
+                            <span class="bar-label">@Model.PeriodChartLabels[i]</span>
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+
+        <div>
+            <div class="panel" style="margin-bottom:20px;">
+                <div class="section-title">Quick actions</div>
+                <div class="quick-actions">
+                   @*  <a class="quick-action" asp-controller="CaseNotes" asp-action="Create">
+                        <span class="material-symbols-outlined"></span> New case note   
+                    </a> *@
+                    <a class="quick-action" asp-controller="Appointments" asp-action="Index">
+                        <span class="material-symbols-outlined"></span> View all appointments
+                    </a>
+                    <a class="quick-action" asp-controller="Students" asp-action="Index">
+                        <span class="material-symbols-outlined"></span> Student records
+                    </a>
+                </div>
+            </div>
+
+            <div class="panel">
+                <div class="section-title">Flagged follow-ups</div>
+                @if (Model.FlaggedCases.Any())
+                {
+                    foreach (var fc in Model.FlaggedCases)
+                    {
+                        <div class="flagged-item">
+                            <div class="flagged-name">@fc.StudentName</div>
+                            <div class="flagged-meta">Follow-up was due @fc.FollowUpDate.ToString("MMM d")</div>
+                        </div>
+                    }
+                }
+                else
+                {
+                    <div class="empty-note">No overdue follow-ups.</div>
+                }
+            </div>
+        </div>
+    </div>
+</div>

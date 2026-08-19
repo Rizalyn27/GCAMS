@@ -2,17 +2,28 @@
     var popups = ViewBag.UnreadAnnouncements as List<GCAMS.Models.Notifs.Notifs>;
 }
 
+@if (User.IsInRole("Admin") && ViewBag.AdminDashboard is GCAMS.ViewModels.AdminDashboardViewModel adminVm)
+{
+    @await Html.PartialAsync("_AdminDashboard", adminVm)
+}
+else if (User.IsInRole("Counselor") && ViewBag.CounselorDashboard is GCAMS.ViewModels.CounselorDashboardViewModel counselorVm)
+{
+    @await Html.PartialAsync("_CounselorDashboard", counselorVm)
+}
+else if (User.IsInRole("Student"))
+{
+    <p>Welcome! Use the sidebar to book an appointment or view your upcoming sessions.</p>
+}
+
 @if (popups != null && popups.Any())
 {
     <div style="position:fixed; inset:0; background:rgba(10,31,26,0.55); z-index:2000; display:flex; align-items:center; justify-content:center; padding:16px;">
         <div style="background:#fff; border-radius:16px; max-width:480px; width:100%; max-height:80vh; display:flex; flex-direction:column; box-shadow:0 12px 40px rgba(0,0,0,0.25);">
-
             <div style="padding:24px 28px 16px; border-bottom:1px solid #e1e4db; flex-shrink:0;">
                 <h3 style="margin:0; font-size:18px; color:#191d18;">
                     You have @popups.Count unread @(popups.Count == 1 ? "notification" : "notifications")
                 </h3>
             </div>
-
             <div style="overflow-y:auto; padding:16px 28px; flex:1;">
                 @foreach (var item in popups)
                 {
@@ -26,17 +37,15 @@
                     </div>
                 }
             </div>
-
             <div style="padding:16px 28px 24px; border-top:1px solid #e1e4db; flex-shrink:0;">
                 <form asp-controller="Notifications" asp-action="MarkAllRead" method="post">
                     @Html.AntiForgeryToken()
                     <input type="hidden" name="returnUrl" value="@Url.Action("Index", "Home")" />
                     <button type="submit" style="width:100%; background:#1b6d24; color:#fff; border:none; border-radius:10px; padding:12px; font-size:14px; font-weight:600; cursor:pointer;">
-                        Got it — dismiss all
+                        Dismiss
                     </button>
                 </form>
             </div>
-
         </div>
     </div>
 }
