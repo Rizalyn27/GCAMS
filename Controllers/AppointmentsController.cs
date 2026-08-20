@@ -5,6 +5,7 @@ using GCAMS.ViewModels;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using GCAMS.Models.ActivityLogs;
 
 // must be logged in for anything in this controller
 [Authorize]
@@ -214,6 +215,16 @@ public class AppointmentsController : Controller
             _context.Add(appointments);
             await _context.SaveChangesAsync();
 
+            // Activity Log
+            _context.ActivityLogs.Add(new ActivityLog
+            {
+                Who = User.Identity?.Name ?? "Unknown",
+                Date = DateTime.Now,
+                ActivityAction = ActivityAction.BookAppointment.ToString(),
+                Details = $"Appointment booked for {appointments.FullName} ({appointments.AppointmentType}) on {appointments.AppointmentDate:MMM dd, yyyy - h:mm tt}."
+            });
+            await _context.SaveChangesAsync();
+
             // Dedup by EmailAddress + save one-at-a-time, same fix as Announcements —
             // one collision no longer takes the whole batch (and every other counselor's
             // notification) down with it.
@@ -335,6 +346,16 @@ public class AppointmentsController : Controller
             return View(posted);
         }
 
+
+        // Activity Log
+        _context.ActivityLogs.Add(new ActivityLog
+        {
+            Who = User.Identity?.Name ?? "Unknown",
+            Date = DateTime.Now,
+            ActivityAction = ActivityAction.RescheduleAppointment.ToString(),
+            Details = $"Appointment #{existing.AppointmentID} for {existing.FullName} was rescheduled to {existing.AppointmentDate:MMM dd, yyyy - h:mm tt}."
+        });
+
         try
         {
             await _context.SaveChangesAsync();
@@ -399,6 +420,16 @@ public class AppointmentsController : Controller
 
             appointments.Status = "Cancelled";
             appointments.UpdatedAt = DateTime.Now;
+            await _context.SaveChangesAsync();
+
+            // Activity Log
+            _context.ActivityLogs.Add(new ActivityLog
+            {
+                Who = User.Identity?.Name ?? "Unknown",
+                Date = DateTime.Now,
+                ActivityAction = ActivityAction.CancelAppointment.ToString(),
+                Details = $"Appointment #{appointments.AppointmentID} for {appointments.FullName} was cancelled."
+            });
             await _context.SaveChangesAsync();
 
             if (appointments.CounselorID.HasValue)

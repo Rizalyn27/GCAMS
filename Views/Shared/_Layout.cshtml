@@ -398,14 +398,15 @@
 
         <aside class="sidebar" id="sidebar">
             <div class="sidebar-brand">
-                <span>@(isStudent ? "Student" : "Counselor")</span>
+                <span>@(isStudent ? "Student" : isAdmin ? "Admin" : isAdmin ? "Admin" : "Guest")</span>
             </div>
             <ul class="sidebar-nav">
                 @if (isStudent)
                 {
-                    <li><a asp-controller="Home" asp-action="Index">Dashboard</a></li>
                     <li><a asp-controller="Appointments" asp-action="Create">Book Appointment</a></li>
                     <li><a asp-controller="Appointments" asp-action="MyAppointments">My Appointments</a></li>
+                    <li><a asp-controller="Home" asp-action="Index">Announcements</a></li>
+
 
                 }
                 else if (isCounselor)
@@ -423,6 +424,8 @@
                     <li><a asp-controller="Counselors" asp-action="Index">Counselors</a></li>
                     <li><a asp-controller="Appointments" asp-action="Index">Appointments</a></li>
                     <li><a asp-controller="Announcements" asp-action="Index">Announcements</a></li>
+                    <li><a asp-controller="Activity" asp-action="Index">Activity Log</a></li>
+
                 }
             </ul>
 
@@ -508,12 +511,13 @@
             let allNotifications = [];
             let activeFilter = 'all';
 
-            function renderNotification(n) {
+                        function renderNotification(n) {
+                const stale = n.isToday ? '' : ' · earlier';
                 return `
                     <div class="notif-item ${n.isRead ? '' : 'unread'}" onclick="markRead(${n.notificationId})">
                         <div class="notif-title">${n.title}</div>
                         <div class="notif-message">${n.message}</div>
-                        <div class="notif-time">${new Date(n.createdAt).toLocaleString()}</div>
+                        <div class="notif-time">${new Date(n.createdAt).toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'})}${stale}</div>
                     </div>`;
             }
 
@@ -524,7 +528,7 @@
 
                 list.innerHTML = filtered.length
                     ? filtered.map(renderNotification).join('')
-                    : '<div class="notif-empty">No notifications</div>';
+                    : '<div class="notif-empty">Nothing new today.</div>';
             }
 
             async function fetchNotifications() {

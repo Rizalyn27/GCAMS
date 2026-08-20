@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using GCAMS.Data;
 using GCAMS.Models.Counselor;
+using GCAMS.Models.ActivityLogs;
 using System.Security.Cryptography;
 using GCAMS.Models.Users;
 
@@ -88,7 +89,19 @@ namespace GCAMS.Controllers
                 }
 
                 await _context.SaveChangesAsync();
+
+                // Activity Log
+                _context.ActivityLogs.Add(new ActivityLog
+                {
+                    Who = User.Identity?.Name ?? "Unknown",
+                    Date = DateTime.Now,
+                    ActivityAction = ActivityAction.CounselorAdded.ToString(),
+                    Details = $"Counselor {counselor.CounselorName} was added."
+                });
+                await _context.SaveChangesAsync();
+
                 return RedirectToAction(nameof(Index));
+
             }
 
             return View(counselor);
@@ -159,6 +172,17 @@ namespace GCAMS.Controllers
                     // Either move the existing login to the new email, or —
                     // if this counselor predates the account feature — create one now.
                     await SyncCounselorAccountAsync(oldEmail, counselor.EmailAddress, counselor.EmployeeNumber);
+
+                    // Activity Log
+                    _context.ActivityLogs.Add(new ActivityLog
+                    {
+                        Who = User.Identity?.Name ?? "Unknown",
+                        Date = DateTime.Now,
+                        ActivityAction = ActivityAction.CounselorUpdated.ToString(),
+                        Details = $"Counselor {counselor.CounselorName} was updated."
+                    });
+                    await _context.SaveChangesAsync();
+
                 }
                 catch (DbUpdateConcurrencyException)
                 {

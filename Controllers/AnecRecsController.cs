@@ -1,4 +1,5 @@
 ﻿using GCAMS.Data;
+using GCAMS.Models.ActivityLogs;
 using GCAMS.Models.AnecRecs;
 using GCAMS.Models.CaseNotes;
 using GCAMS.Models.Students;
@@ -9,6 +10,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using GCAMS.Models.ActivityLogs;
 
 namespace GCAMS.Controllers
 {
@@ -83,6 +85,16 @@ namespace GCAMS.Controllers
             {
                 _context.Add(anecRecs);
                 await _context.SaveChangesAsync();
+                // Activity Log
+                _context.ActivityLogs.Add(new ActivityLog
+                {
+                    Who = User.Identity?.Name ?? "Unknown",
+                    Date = DateTime.Now,
+                    ActivityAction = ActivityAction.AnnecRecCreated.ToString(),
+                    Details = $"Anecdotal record #{anecRecs.AnecRecsId} was created for student {anecRecs.StuName}."
+                });
+
+                await _context.SaveChangesAsync();
 
                 return RedirectToAction("Details", "Students", new { id = anecRecs.StudentsID });
             }
@@ -117,6 +129,17 @@ namespace GCAMS.Controllers
                 try
                 {
                     _context.Update(anecRecs);
+                    await _context.SaveChangesAsync();
+
+                    // Activity Log
+                    _context.ActivityLogs.Add(new ActivityLog
+                    {
+                        Who = User.Identity?.Name ?? "Unknown",
+                        Date = DateTime.Now,
+                        ActivityAction = ActivityAction.AnnecRecUpdated.ToString(),
+                        Details = $"Anecdotal record #{anecRecs.AnecRecsId} was updated for student {anecRecs.StuName}."
+                    });
+
                     await _context.SaveChangesAsync();
                 }
                 catch (DbUpdateConcurrencyException)

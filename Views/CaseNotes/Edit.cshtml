@@ -283,6 +283,17 @@
                     <input type="text" asp-for="SessionRelevance" class="form-control" />
                     <span asp-validation-for="SessionRelevance" class="text-danger" style="font-size:12px;"></span>
                 </div>
+                <div class="full-width">
+                    <label asp-for="ConcernCategory" class="control-label"></label>
+                    <select asp-for="ConcernCategory" class="form-control">
+                        <option value="">— Choose a category —</option>
+                        @foreach (var cat in GCAMS.Models.CaseNotes.CaseNotes.ConcernCategories)
+                        {
+                            <option value="@cat">@cat</option>
+                        }
+                    </select>
+                    <span asp-validation-for="ConcernCategory" class="text-danger"></span>
+                </div>
             </div>
         </div>
 

@@ -1,4 +1,5 @@
 ﻿using GCAMS.Data;
+using GCAMS.Models.ActivityLogs;
 using GCAMS.Models.Users;
 using Konscious.Security.Cryptography;
 using Microsoft.AspNetCore.Authentication;
@@ -6,6 +7,7 @@ using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.VisualStudio.Web.CodeGenerators.Mvc.Templates.BlazorIdentity.Pages;
 using System.Security.Claims;
 using System.Security.Cryptography;
 using System.Text;
@@ -44,12 +46,22 @@ namespace GCAMS.Controllers
                 byte[] hash = HashPassword(password, Convert.FromBase64String(user.Salt));
                 if (CryptographicOperations.FixedTimeEquals(hash, Convert.FromBase64String(user.Password)))
                 {
+                    // Activity Log — success
+                    _context.ActivityLogs.Add(new ActivityLog
+                    {
+                        Who = user.Username,
+                        Date = DateTime.Now,
+                        ActivityAction = ActivityAction.SignIn.ToString(),
+                        Details = $"{user.Username} signed in."
+                    });
+                    await _context.SaveChangesAsync();
+
                     var identity = new ClaimsIdentity(
                         new[]
                         {
-                            new Claim(ClaimTypes.Name, user.Username),
-                            new Claim(ClaimTypes.Role, user.Role),
-                            new Claim("PasswordChange", user.PasswordChange.ToString())
+                    new Claim(ClaimTypes.Name, user.Username),
+                    new Claim(ClaimTypes.Role, user.Role),
+                    new Claim("PasswordChange", user.PasswordChange.ToString())
                         },
                         CookieAuthenticationDefaults.AuthenticationScheme);
 
@@ -59,10 +71,19 @@ namespace GCAMS.Controllers
                 }
             }
 
+            // Activity Log — failure (wrong password, or username doesn't exist)
+            _context.ActivityLogs.Add(new ActivityLog
+            {
+                Who = username ?? "Unknown",
+                Date = DateTime.Now,
+                ActivityAction = ActivityAction.SignInFailed.ToString(),
+                Details = $"Failed sign-in attempt for '{username}'."
+            });
+            await _context.SaveChangesAsync();
+
             ViewBag.ErrorMessage = "Invalid username or password.";
             return View();
         }
-
 
 
         private static readonly Regex PasswordPolicy = new Regex(
@@ -125,6 +146,16 @@ namespace GCAMS.Controllers
             user.Password = Convert.ToBase64String(newHash);
             user.PasswordChange = true;
 
+            await _context.SaveChangesAsync();
+
+            // Activity Log
+            _context.ActivityLogs.Add(new ActivityLog
+            {
+                Who = user.Username,
+                Date = DateTime.Now,
+                ActivityAction = ActivityAction.PasswordChanged.ToString(),
+                Details = $"{user.Username} changed their password."
+            });
             await _context.SaveChangesAsync();
 
             var identity = new ClaimsIdentity(

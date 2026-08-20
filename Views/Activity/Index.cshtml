@@ -1,0 +1,414 @@
+﻿@model IEnumerable<GCAMS.Models.ActivityLogs.ActivityLog>
+@using System.Text.RegularExpressions
+
+@{
+    ViewData["Title"] = "Activity Log";
+}
+
+@functions {
+    // "StudentSetInactive" -> "Student Set Inactive"
+    string Humanize(string action) =>
+        Regex.Replace(action ?? "", "(?<!^)([A-Z])", " $1");
+
+    string IconFor(string action)
+    {
+        if (string.IsNullOrEmpty(action)) return "history";
+        if (action.StartsWith("SignIn")) return "login";
+        if (action.StartsWith("Student")) return "school";
+        if (action.StartsWith("AnnecRec")) return "edit_note";
+        if (action.StartsWith("Announcement")) return "campaign";
+        if (action == "CancelAppointment") return "event_busy";
+        if (action == "RescheduleAppointment") return "event_repeat";
+        if (action.StartsWith("Appointment") || action == "BookAppointment") return "event_available";
+        if (action.StartsWith("CaseNote")) return "description";
+        if (action.StartsWith("Counselor")) return "badge";
+        if (action == "PasswordChanged") return "lock_reset";
+        if (action.StartsWith("Account")) return "manage_accounts";
+        return "history";
+    }
+}
+
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet">
+
+<style>
+    .material-symbols-outlined {
+        font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        vertical-align: middle;
+    }
+
+    .activity-page * {
+        font-family: 'Inter', sans-serif;
+    }
+
+    .page-breadcrumb {
+        font-size: 13px;
+        color: #717a6d;
+        margin-bottom: 16px;
+        display: flex;
+        align-items: center;
+        gap: 4px;
+    }
+
+        .page-breadcrumb .current {
+            color: #191d18;
+            font-weight: 700;
+        }
+
+    .filter-bar {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        margin-bottom: 20px;
+        flex-wrap: wrap;
+    }
+
+    .search-box {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        background: #fff;
+        border: 1.5px solid #e1e4db;
+        border-radius: 10px;
+        padding: 9px 14px;
+        flex: 1;
+        min-width: 200px;
+        max-width: 320px;
+        transition: border-color 0.2s;
+    }
+
+        .search-box:focus-within {
+            border-color: #1b6d24;
+        }
+
+        .search-box input {
+            border: none;
+            outline: none;
+            background: transparent;
+            font-size: 14px;
+            color: #191d18;
+            width: 100%;
+        }
+
+            .search-box input::placeholder {
+                color: #b0b8ac;
+            }
+
+        .search-box .material-symbols-outlined {
+            color: #b0b8ac;
+            font-size: 18px;
+        }
+
+    .filter-select {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        background: #fff;
+        border: 1.5px solid #e1e4db;
+        border-radius: 10px;
+        padding: 9px 14px;
+        font-size: 14px;
+        font-weight: 500;
+        color: #191d18;
+        cursor: pointer;
+        appearance: none;
+        -webkit-appearance: none;
+        background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%23717a6d' stroke-width='2'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");
+        background-repeat: no-repeat;
+        background-position: right 10px center;
+        padding-right: 32px;
+        transition: border-color 0.2s;
+    }
+
+        .filter-select:focus {
+            outline: none;
+            border-color: #1b6d24;
+        }
+
+    .activity-table {
+        width: 100%;
+        border-collapse: collapse;
+        background: #fff;
+        border-radius: 12px;
+        overflow: hidden;
+        border: 1px solid #e1e4db;
+    }
+
+        .activity-table thead tr {
+            background: #f8faf2;
+            border-bottom: 1px solid #e1e4db;
+        }
+
+        .activity-table thead th {
+            padding: 12px 16px;
+            font-size: 11px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.06em;
+            color: #717a6d;
+            text-align: left;
+        }
+
+        .activity-table tbody tr {
+            border-bottom: 1px solid #f2f5ec;
+            transition: background 0.15s;
+        }
+
+            .activity-table tbody tr:last-child {
+                border-bottom: none;
+            }
+
+            .activity-table tbody tr:hover {
+                background: #f8faf2;
+            }
+
+        .activity-table tbody td {
+            padding: 14px 16px;
+            font-size: 14px;
+            color: #191d18;
+            vertical-align: middle;
+        }
+
+    .activity-icon-cell .material-symbols-outlined {
+        font-size: 18px;
+        color: #1b6d24;
+    }
+
+    .activity-who {
+        font-weight: 600;
+        color: #191d18;
+    }
+
+    .activity-action-pill {
+        display: inline-block;
+        background: #f0f3ec;
+        color: #41493e;
+        padding: 3px 10px;
+        border-radius: 999px;
+        font-size: 12px;
+        font-weight: 600;
+    }
+
+    .activity-details {
+        color: #717a6d;
+        font-size: 13px;
+    }
+
+    .activity-time {
+        color: #717a6d;
+        font-size: 13px;
+        white-space: nowrap;
+    }
+
+    .table-footer {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-top: 16px;
+        flex-wrap: wrap;
+        gap: 12px;
+    }
+
+    .showing-text {
+        font-size: 13px;
+        color: #717a6d;
+    }
+
+    .pagination {
+        display: flex;
+        align-items: center;
+        gap: 4px;
+        list-style: none;
+        margin: 0;
+        padding: 0;
+    }
+
+    .page-btn {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 32px;
+        height: 32px;
+        border-radius: 8px;
+        border: none;
+        background: transparent;
+        font-size: 13px;
+        font-weight: 500;
+        color: #717a6d;
+        cursor: pointer;
+        transition: all 0.15s;
+    }
+
+        .page-btn:hover {
+            background: #f2f5ec;
+            color: #191d18;
+        }
+
+        .page-btn.active {
+            background: #1b6d24;
+            color: white;
+            font-weight: 700;
+        }
+
+        .page-btn:disabled {
+            opacity: 0.35;
+            cursor: default;
+        }
+
+        .page-btn.arrow {
+            color: #717a6d;
+        }
+</style>
+
+<div class="activity-page" style="max-width: 1100px; margin: 0 auto; padding: 24px 16px;">
+
+    <!-- Breadcrumb -->
+    <div class="page-breadcrumb">
+        <span>Admin</span>
+        <span class="material-symbols-outlined" style="font-size:14px;">></span>
+        <span class="current">Activity Log</span>
+    </div>
+
+    <!-- Filter Bar -->
+    <div class="filter-bar">
+        <div class="search-box">
+            <span class="material-symbols-outlined"></span>
+            <input type="text" id="activitySearch" placeholder="Search by user, action, or details" />
+        </div>
+
+        <!-- Action Filter -->
+        <select id="actionFilter" class="filter-select">
+            <option value="">All Actions</option>
+            @foreach (var action in Model.Select(a => a.ActivityAction).Distinct().OrderBy(a => a))
+            {
+                <option value="@action?.ToLower()">@Humanize(action)</option>
+            }
+        </select>
+    </div>
+
+    <!-- Table -->
+    <table class="activity-table" id="activityTable">
+        <thead>
+            <tr>
+                <th>User</th>
+                <th>Action</th>
+                <th>Details</th>
+                <th>When</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var log in Model)
+            {
+                <tr data-action="@log.ActivityAction?.ToLower()">
+@*                     <td class="activity-icon-cell"><span class="material-symbols-outlined">@IconFor(log.ActivityAction)</span></td>
+ *@                    <td><span class="activity-who">@log.Who</span></td>
+                    <td><span class="activity-action-pill">@Humanize(log.ActivityAction)</span></td>
+                    <td><span class="activity-details">@log.Details</span></td>
+                    <td class="activity-time">@log.Date.ToString("MMM d, yyyy h:mm tt")</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+
+    <!-- Table Footer -->
+    <div class="table-footer">
+        <span class="showing-text" id="showingText"></span>
+        <div class="pagination" id="pagination"></div>
+    </div>
+
+</div>
+
+<script>
+    const pageSize = 10;
+    let currentPage = 1;
+    let visibleRows = [];
+
+    function applyFilters() {
+        const query = document.getElementById('activitySearch').value.toLowerCase().trim();
+        const action = document.getElementById('actionFilter').value;
+
+        visibleRows = [];
+
+        document.querySelectorAll('#activityTable tbody tr').forEach(function (row) {
+            const who = row.cells[1]?.textContent.trim().toLowerCase() || '';
+            const actionText = row.cells[2]?.textContent.trim().toLowerCase() || '';
+            const details = row.cells[3]?.textContent.trim().toLowerCase() || '';
+            const rowAction = (row.getAttribute('data-action') || '').trim();
+
+            const matchesSearch = !query || who.includes(query) || actionText.includes(query) || details.includes(query);
+            const matchesAction = !action || rowAction === action;
+
+            if (matchesSearch && matchesAction) {
+                visibleRows.push(row);
+            }
+            row.style.display = 'none';
+        });
+
+        currentPage = 1;
+        renderPage();
+    }
+
+    function renderPage() {
+        const start = (currentPage - 1) * pageSize;
+        const end = start + pageSize;
+
+        document.querySelectorAll('#activityTable tbody tr').forEach(r => r.style.display = 'none');
+        visibleRows.slice(start, end).forEach(r => r.style.display = '');
+
+        const total = visibleRows.length;
+        const showing = Math.min(end, total);
+        document.getElementById('showingText').textContent =
+            total === 0 ? 'No activity found' :
+            `Showing ${start + 1} - ${showing} of ${total} event${total !== 1 ? 's' : ''}`;
+
+        renderPagination(total);
+    }
+
+    function renderPagination(total) {
+        const totalPages = Math.ceil(total / pageSize);
+        const pg = document.getElementById('pagination');
+        pg.innerHTML = '';
+
+        function btn(label, page, isActive, isDisabled, isArrow) {
+            const b = document.createElement('button');
+            b.className = 'page-btn' + (isActive ? ' active' : '') + (isArrow ? ' arrow' : '');
+            b.innerHTML = label;
+            b.disabled = isDisabled;
+            if (!isDisabled && !isActive) {
+                b.onclick = () => { currentPage = page; renderPage(); };
+            }
+            return b;
+        }
+
+        pg.appendChild(btn('<span class="material-symbols-outlined" style="font-size:16px;"><</span>', currentPage - 1, false, currentPage === 1, true));
+
+        const pages = [];
+        if (totalPages <= 7) {
+            for (let i = 1; i <= totalPages; i++) pages.push(i);
+        } else {
+            pages.push(1);
+            if (currentPage > 3) pages.push('...');
+            for (let i = Math.max(2, currentPage - 1); i <= Math.min(totalPages - 1, currentPage + 1); i++) pages.push(i);
+            if (currentPage < totalPages - 2) pages.push('...');
+            pages.push(totalPages);
+        }
+
+        pages.forEach(p => {
+            if (p === '...') {
+                const s = document.createElement('span');
+                s.textContent = '...';
+                s.style.cssText = 'padding:0 4px; color:#717a6d; font-size:13px;';
+                pg.appendChild(s);
+            } else {
+                pg.appendChild(btn(p, p, p === currentPage, false, false));
+            }
+        });
+
+        pg.appendChild(btn('<span class="material-symbols-outlined" style="font-size:16px;">></span>', currentPage + 1, false, currentPage === totalPages || totalPages === 0, true));
+    }
+
+    document.getElementById('activitySearch').addEventListener('input', applyFilters);
+    document.getElementById('actionFilter').addEventListener('change', applyFilters);
+
+    applyFilters();
+</script>

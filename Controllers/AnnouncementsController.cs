@@ -5,10 +5,11 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using GCAMS.ViewModels;
+using GCAMS.Models.ActivityLogs;
 
 namespace GCAMS.Controllers
 {
-    [Authorize(Roles = "Counselor")]
+    [Authorize(Roles = "Counselor,Admin")]
     public class AnnouncementsController : Controller
     {
         private readonly AppDbContext _context;
@@ -17,7 +18,7 @@ namespace GCAMS.Controllers
         {
             _context = context;
         }
-
+    
         // GET: Announcements
         // GET: Announcements
         public async Task<IActionResult> Index(int? year, int? month, int? day)
@@ -95,6 +96,15 @@ namespace GCAMS.Controllers
             announcement.CounselorID = await GetCurrentCounselorIdAsync();
             announcement.CreatedAt = DateTime.Now;
             _context.Announcements.Add(announcement);
+            await _context.SaveChangesAsync();
+
+            _context.ActivityLogs.Add(new ActivityLog
+            {
+                Who = User.Identity?.Name ?? "Unknown",
+                Date = DateTime.Now,
+                ActivityAction = ActivityAction.AnnouncementCreated.ToString(),
+                Details = $"Announcement \"{announcement.Title}\" was posted."
+            });
             await _context.SaveChangesAsync();
 
             // Dedup by StuID in case of duplicate student records — otherwise the same

@@ -6,6 +6,7 @@ using GCAMS.Models.Counselor;
 using GCAMS.Models.Notifs;
 using GCAMS.Models.Students;
 using GCAMS.Models.Users;
+using GCAMS.Models.ActivityLogs;
 using Microsoft.EntityFrameworkCore;
 
 
@@ -51,6 +52,9 @@ namespace GCAMS.Data
 
         //Announcements
         public DbSet<Announcement> Announcements { get; set; }
+
+        //Activity Logs
+        public DbSet<ActivityLog> ActivityLogs { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {

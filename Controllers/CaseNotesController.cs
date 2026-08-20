@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using GCAMS.Models.CaseNotes;
 using GCAMS.Models.Appointment;
+using GCAMS.Models.ActivityLogs;
 using GCAMS.Data;
 using System.Threading.Tasks;
 
@@ -65,7 +66,7 @@ public class CaseNotesController : Controller
     [HttpPost]
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> Create(
-    [Bind("CasenoteId,StudentsID,FullName,SessionNo,SessionDate,SessionTopics,SessionRelevance,GoalPlan,Interventions,Observations,CounselProgess,BehaviorStatus,Homework,StrengthsChallenges,SpecificGoal,FollowUpDate")] CaseNotes casenotes, int? studentId)
+    [Bind("CasenoteId,StudentsID,FullName,SessionNo,SessionDate,SessionTopics,SessionRelevance,GoalPlan,Interventions,Observations,CounselProgess,BehaviorStatus,Homework,StrengthsChallenges,SpecificGoal,FollowUpDate,,ConcernCategory")] CaseNotes casenotes, int? studentId)
     {
         if (studentId.HasValue) casenotes.StudentsID = studentId.Value;
 
@@ -74,6 +75,16 @@ public class CaseNotesController : Controller
             casenotes.CounselorID = await GetCurrentCounselorIdAsync();
 
             _context.Add(casenotes);
+            await _context.SaveChangesAsync();
+
+            // Activity Log
+            _context.ActivityLogs.Add(new ActivityLog
+            {
+                Who = User.Identity?.Name ?? "Unknown",
+                Date = DateTime.Now,
+                ActivityAction = ActivityAction.CaseNoteAdded.ToString(),
+                Details = $"Case note #{casenotes.CasenoteId} added for {casenotes.FullName} (session #{casenotes.SessionNo})."
+            });
             await _context.SaveChangesAsync();
 
             // Moved above the redirect — now actually runs regardless of studentId
@@ -108,7 +119,7 @@ public class CaseNotesController : Controller
                             FullName = student?.StuName ?? casenotes.FullName,
                             Email = student?.Email ?? "",
                             AppointmentDate = followUpDate,
-                            AppointmentType = "Follow-up",
+                            AppointmentType = "Follow-up Session",
                             Status = "Confirmed", // counselor-initiated, already committed
                             CreatedAt = DateTime.Now,
                             Notes = $"Follow-up from Case Note #{casenotes.CasenoteId}"
@@ -146,7 +157,7 @@ public class CaseNotesController : Controller
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> Edit(
         int? id,
-        [Bind("CasenoteId,StudentsID,FullName,SessionNo,SessionDate,SessionTopics,SessionRelevance,GoalPlan,Interventions,Observations,CounselProgess,BehaviorStatus,Homework,StrengthsChallenges,SpecificGoal")] CaseNotes casenotes, int? studentId)
+        [Bind("CasenoteId,StudentsID,FullName,SessionNo,SessionDate,SessionTopics,SessionRelevance,GoalPlan,Interventions,Observations,CounselProgess,BehaviorStatus,Homework,StrengthsChallenges,SpecificGoal,ConcernCategory")] CaseNotes casenotes, int? studentId)
     {
         if (id != casenotes.CasenoteId) return NotFound();
 
@@ -165,6 +176,17 @@ public class CaseNotesController : Controller
 
                 _context.Update(casenotes);
                 await _context.SaveChangesAsync();
+
+                // Activity Log
+                _context.ActivityLogs.Add(new ActivityLog
+                {
+                    Who = User.Identity?.Name ?? "Unknown",
+                    Date = DateTime.Now,
+                    ActivityAction = ActivityAction.CaseNoteUpdated.ToString(),
+                    Details = $"Case note #{casenotes.CasenoteId} was updated for {casenotes.FullName}."
+                });
+                await _context.SaveChangesAsync();
+
             }
             catch (DbUpdateConcurrencyException)
             {

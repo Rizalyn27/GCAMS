@@ -7,8 +7,20 @@ using System.Globalization;
 
 namespace GCAMS.Models.CaseNotes
 {
+
     public class CaseNotes
     {
+
+        public static readonly string[] ConcernCategories =
+        {
+            "Academic",
+            "Behavioral",
+            "Family",
+            "Career",
+            "Personal/Social",
+            "Health"
+        };
+
         //Primary Key
         [Key]
         public int CasenoteId { get; set; }
@@ -110,5 +122,12 @@ namespace GCAMS.Models.CaseNotes
         [StringLength(100)]
         [Display(Name = "Relevance of the session to the counseling plan")]
         public string SpecificGoal { get; set; }
+
+        [Required(ErrorMessage = "Please choose a concern category")]
+        [StringLength(50)]
+        [Display(Name = "Concern Category")]
+        public string ConcernCategory { get; set; } = string.Empty;
     }
 }
+
+    

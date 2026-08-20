@@ -25,9 +25,14 @@ namespace GCAMS.Controllers
             await _notificationService.GenerateDueNotificationsAsync();
 
             var username = User.Identity?.Name;
+            var today = DateTime.Today;
+            var tomorrow = today.AddDays(1);
 
+            // Today's items, plus anything still unread from earlier so nothing
+            // important silently disappears before the person has seen it.
             var notifications = await _context.Notifs
-                .Where(n => n.RecipientUsername == username)
+                .Where(n => n.RecipientUsername == username
+                         && ((n.CreatedAt >= today && n.CreatedAt < tomorrow) || !n.IsRead))
                 .OrderByDescending(n => n.CreatedAt)
                 .Take(20)
                 .Select(n => new
@@ -39,13 +44,14 @@ namespace GCAMS.Controllers
                     n.CreatedAt,
                     n.RelatedEntityType,
                     n.RelatedEntityId,
-                    Type = n.Type.ToString()
+                    Type = n.Type.ToString(),
+                    IsToday = n.CreatedAt >= today && n.CreatedAt < tomorrow
                 })
                 .ToListAsync();
 
             var unreadCount = await _context.Notifs
-                .CountAsync(n => n.RecipientUsername == username && !n.IsRead);
-
+                .CountAsync(n => n.RecipientUsername == username && !n.IsRead
+                              && n.CreatedAt >= today && n.CreatedAt < tomorrow);
             return Json(new { unreadCount, notifications });
         }
 

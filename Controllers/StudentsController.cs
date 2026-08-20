@@ -1,4 +1,6 @@
-﻿using GCAMS.Data;
+﻿using GCAMS.Controllers;
+using GCAMS.Data;
+using GCAMS.Models.ActivityLogs;
 using GCAMS.Models.CaseNotes;
 using GCAMS.Models.Students;
 using GCAMS.Models.Users;
@@ -9,7 +11,6 @@ using Microsoft.EntityFrameworkCore;
 using System.Globalization;
 using System.Security.Cryptography;
 using System.Text;
-using GCAMS.Controllers;
 
 namespace GCAMS.Controllers
 {
@@ -161,6 +162,15 @@ namespace GCAMS.Controllers
 
                 await _context.SaveChangesAsync();
 
+                _context.ActivityLogs.Add(new ActivityLog
+                {
+                    Who = User.Identity?.Name ?? "Unknown",
+                    Date = DateTime.Now,
+                    ActivityAction = ActivityAction.StudentAdded.ToString(),
+                    Details = $"Student {vm.Student.StuName} ({vm.Student.StuID}) was added."
+                });
+                await _context.SaveChangesAsync();
+
                 return RedirectToAction(nameof(Index));
             }
 
@@ -304,6 +314,15 @@ namespace GCAMS.Controllers
                     else throw;
                 }
 
+                _context.ActivityLogs.Add(new ActivityLog
+                {
+                    Who = User.Identity?.Name ?? "Unknown",
+                    Date = DateTime.Now,
+                    ActivityAction = ActivityAction.StudentUpdated.ToString(),
+                    Details = $"Student {vm.Student.StuName} ({vm.Student.StuID}) was updated."
+                });
+                await _context.SaveChangesAsync();
+
                 return RedirectToAction(nameof(Index));
             }
 
@@ -340,6 +359,7 @@ namespace GCAMS.Controllers
         }
 
         // POST: Students/SoftDelete/5
+        
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> SoftDelete(int id)
@@ -349,6 +369,15 @@ namespace GCAMS.Controllers
 
             student.IsActive = false;
             _context.Update(student);
+
+            _context.ActivityLogs.Add(new ActivityLog
+            {
+                Who = User.Identity?.Name ?? "Unknown",
+                Date = DateTime.Now,
+                ActivityAction = ActivityAction.StudentSetInactive.ToString(),
+                Details = $"Student {student.StuName} ({student.StuID}) was archived."
+            });
+
             await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
         }
@@ -363,6 +392,15 @@ namespace GCAMS.Controllers
 
             student.IsActive = true;
             _context.Update(student);
+
+            _context.ActivityLogs.Add(new ActivityLog
+            {
+                Who = User.Identity?.Name ?? "Unknown",
+                Date = DateTime.Now,
+                ActivityAction = ActivityAction.StudentSetActive.ToString(),
+                Details = $"Student {student.StuName} ({student.StuID}) was restored."
+            });
+
             await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
         }
@@ -537,6 +575,15 @@ namespace GCAMS.Controllers
                     successCount++;
 
                 }
+                _context.ActivityLogs.Add(new ActivityLog
+                {
+                    Who = User.Identity?.Name ?? "Unknown",
+                    Date = DateTime.Now,
+                    ActivityAction = ActivityAction.StudentAdded.ToString(),
+                    Details = $"Imported {successCount} student(s) from Excel." +
+              (skippedCount > 0 ? $" {skippedCount} duplicate(s) skipped." : "")
+                });
+                await _context.SaveChangesAsync();
 
                 TempData["Success"] = $"{successCount} student(s) imported successfully." + (skippedCount > 0 ? $" {skippedCount} duplicate(s) skipped." : "");
                 return RedirectToAction(nameof(Index));

@@ -1,4 +1,4 @@
-@model GCAMS.ViewModels.CounselorDashboardViewModel
+﻿@model GCAMS.ViewModels.CounselorDashboardViewModel
 
 <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
 <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet">
@@ -27,6 +27,7 @@
         margin-bottom: 24px;
     }
 
+    /* ---------- stat cards ---------- */
     .cns-dash .stat-grid {
         display: grid;
         grid-template-columns: repeat(3, 1fr);
@@ -39,6 +40,11 @@
         border: 1px solid #e1e4db;
         border-radius: 14px;
         padding: 18px 20px;
+    }
+
+    .cns-dash .stat-card-attention {
+        border-color: #f3c98a;
+        background: #fffbf2;
     }
 
     .cns-dash .stat-label {
@@ -57,20 +63,43 @@
         font-family: 'Manrope', sans-serif;
     }
 
-    .cns-dash .section-title {
-        font-size: 16px;
-        font-weight: 700;
-        color: #191d18;
-        margin-bottom: 12px;
-        font-family: 'Manrope', sans-serif;
+    .cns-dash .stat-baseline {
+        font-size: 12px;
+        color: #717a6d;
+        margin-top: 4px;
     }
 
+    .cns-dash .stat-note {
+        margin-top: 8px;
+        font-size: 12px;
+        color: #a3aa9e;
+    }
+
+    .cns-dash .stat-action {
+        display: inline-block;
+        margin-top: 8px;
+        font-size: 12px;
+        font-weight: 600;
+        color: #1a7f74;
+        text-decoration: none;
+    }
+
+        .cns-dash .stat-action:hover {
+            text-decoration: underline;
+        }
+
+    /* ---------- layout ---------- */
     .cns-dash .panel {
         background: #fff;
         border: 1px solid #e1e4db;
         border-radius: 14px;
         padding: 18px 20px;
+        margin-bottom: 20px;
     }
+
+        .cns-dash .panel:last-child {
+            margin-bottom: 0;
+        }
 
     .cns-dash .lower-grid {
         display: grid;
@@ -79,35 +108,93 @@
         align-items: start;
     }
 
-    .cns-dash .appt-item {
+    .cns-dash .section-title {
+        font-size: 16px;
+        font-weight: 700;
+        color: #191d18;
+        margin-bottom: 12px;
+        font-family: 'Manrope', sans-serif;
         display: flex;
         align-items: center;
         justify-content: space-between;
+    }
+
+        .cns-dash .section-title .count-pill {
+            font-family: 'Inter', sans-serif;
+            font-size: 11px;
+            font-weight: 600;
+            color: #717a6d;
+            background: #f0f3ec;
+            border-radius: 20px;
+            padding: 2px 9px;
+        }
+
+    /* ---------- generic list row ---------- */
+    .cns-dash .row-item {
         border: 1px solid #e1e4db;
         border-radius: 12px;
         padding: 12px 14px;
         margin-bottom: 10px;
     }
 
-        .cns-dash .appt-item:last-child {
+        .cns-dash .row-item:last-child {
             margin-bottom: 0;
         }
 
-    .cns-dash .appt-name {
+    .cns-dash .row-item-split {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 12px;
+    }
+
+    .cns-dash .row-name {
         font-size: 14px;
         font-weight: 600;
         color: #191d18;
     }
 
-    .cns-dash .appt-meta {
+    .cns-dash .row-meta {
         font-size: 12px;
         color: #717a6d;
         margin-top: 2px;
-        display: flex;
-        align-items: center;
-        gap: 4px;
     }
 
+    .cns-dash .row-actions {
+        display: flex;
+        gap: 12px;
+        margin-top: 8px;
+        flex-wrap: wrap;
+    }
+
+    .cns-dash .row-action {
+        font-size: 12px;
+        font-weight: 600;
+        color: #1a7f74;
+        background: none;
+        border: none;
+        padding: 0;
+        cursor: pointer;
+        text-decoration: none;
+        font-family: 'Inter', sans-serif;
+    }
+
+        .cns-dash .row-action:hover {
+            text-decoration: underline;
+            color: #14655c;
+        }
+
+    .cns-dash .row-action-muted {
+        color: #717a6d;
+    }
+
+    .cns-dash .row-action:disabled {
+        opacity: .5;
+        cursor: default;
+        text-decoration: none;
+    }
+
+    /* ---------- status badges ---------- */
     .cns-dash .status-badge {
         font-size: 11px;
         font-weight: 600;
@@ -131,6 +218,151 @@
         background: #f0f3ec;
     }
 
+    .cns-dash .status-missed {
+        color: #93000a;
+        background: #fdeceb;
+    }
+
+    .cns-dash .tag-unassigned {
+        font-size: 10px;
+        font-weight: 600;
+        color: #8a5a00;
+        background: #fdf1d6;
+        border-radius: 4px;
+        padding: 1px 6px;
+        margin-left: 6px;
+    }
+
+    .cns-dash .tag-repeat {
+        font-size: 10px;
+        font-weight: 600;
+        color: #93000a;
+        background: #fdeceb;
+        border-radius: 4px;
+        padding: 1px 6px;
+        margin-left: 6px;
+    }
+
+    /* ---------- flagged (red) rows ---------- */
+    .cns-dash .flagged-item {
+        background: #fdeceb;
+        border: 1px solid #f7d5d3;
+        border-radius: 10px;
+        padding: 10px 12px;
+        margin-bottom: 8px;
+    }
+
+        .cns-dash .flagged-item:last-child {
+            margin-bottom: 0;
+        }
+
+    .cns-dash .flagged-name {
+        font-size: 13px;
+        font-weight: 600;
+        color: #93000a;
+    }
+
+    .cns-dash .flagged-meta {
+        font-size: 12px;
+        color: #93000a;
+        margin-top: 2px;
+    }
+
+    .cns-dash .flagged-item .row-action {
+        color: #93000a;
+    }
+
+    .cns-dash .flagged-item .row-action-muted {
+        color: #b56a66;
+    }
+
+    /* ---------- drifting (amber) rows ---------- */
+    .cns-dash .drift-item {
+        background: #fffbf2;
+        border: 1px solid #f3c98a;
+        border-radius: 10px;
+        padding: 10px 12px;
+        margin-bottom: 8px;
+    }
+
+        .cns-dash .drift-item:last-child {
+            margin-bottom: 0;
+        }
+
+    .cns-dash .drift-name {
+        font-size: 13px;
+        font-weight: 600;
+        color: #7a4d00;
+    }
+
+    .cns-dash .drift-meta {
+        font-size: 12px;
+        color: #8a5a00;
+        margin-top: 2px;
+    }
+
+    .cns-dash .drift-item .row-action {
+        color: #8a5a00;
+    }
+
+    /* ---------- concerns ---------- */
+    .cns-dash .concern-row {
+        display: grid;
+        grid-template-columns: 120px 1fr 34px;
+        align-items: center;
+        gap: 10px;
+        margin-bottom: 10px;
+    }
+
+        .cns-dash .concern-row:last-child {
+            margin-bottom: 0;
+        }
+
+    .cns-dash .concern-label {
+        font-size: 12px;
+        color: #41493e;
+        font-weight: 500;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+    }
+
+    .cns-dash .concern-track {
+        background: #f0f3ec;
+        border-radius: 20px;
+        height: 12px;
+        overflow: hidden;
+    }
+
+    .cns-dash .concern-fill {
+        background: #1a7f74;
+        height: 100%;
+        border-radius: 20px;
+    }
+
+        .cns-dash .concern-fill.is-dominant {
+            background: #0f2e27;
+        }
+
+    .cns-dash .concern-count {
+        font-size: 12px;
+        font-weight: 600;
+        color: #191d18;
+        text-align: right;
+        font-family: 'Manrope', sans-serif;
+    }
+
+    .cns-dash .concern-callout {
+        margin-top: 12px;
+        padding: 10px 12px;
+        background: #f2f5ec;
+        border-radius: 10px;
+        font-size: 12px;
+        color: #41493e;
+        line-height: 1.5;
+    }
+
+    /* ---------- bar chart ---------- */
     .cns-dash .bar-chart {
         display: flex;
         align-items: flex-end;
@@ -156,38 +388,12 @@
         min-height: 3px;
     }
 
-    .cns-dash .bar-col.is-today .bar {
-        background: #0f2e27;
-    }
-
     .cns-dash .bar-label {
         font-size: 11px;
         color: #a3aa9e;
     }
 
-    .cns-dash .flagged-item {
-        background: #fdeceb;
-        border-radius: 10px;
-        padding: 10px 12px;
-        margin-bottom: 8px;
-    }
-
-        .cns-dash .flagged-item:last-child {
-            margin-bottom: 0;
-        }
-
-    .cns-dash .flagged-name {
-        font-size: 13px;
-        font-weight: 600;
-        color: #93000a;
-    }
-
-    .cns-dash .flagged-meta {
-        font-size: 12px;
-        color: #93000a;
-        margin-top: 2px;
-    }
-
+    /* ---------- quick actions ---------- */
     .cns-dash .quick-actions {
         display: flex;
         flex-direction: column;
@@ -218,12 +424,36 @@
             color: #1a7f74;
         }
 
-    .cns-dash .empty-note {
-        font-size: 13px;
-        color: #a3aa9e;
-        padding: 8px 0;
+    .cns-dash .picker-row {
+        display: flex;
+        gap: 8px;
     }
 
+        .cns-dash .picker-row input {
+            flex: 1;
+            font-size: 13px;
+            padding: 9px 12px;
+            border: 1px solid #e1e4db;
+            border-radius: 10px;
+            min-width: 0;
+        }
+
+    .cns-dash .btn-go {
+        background: #1a7f74;
+        color: #fff;
+        border: none;
+        border-radius: 10px;
+        padding: 9px 14px;
+        font-size: 13px;
+        font-weight: 600;
+        cursor: pointer;
+    }
+
+        .cns-dash .btn-go:hover {
+            background: #14655c;
+        }
+
+    /* ---------- filter bar ---------- */
     .cns-dash .filter-bar {
         display: flex;
         align-items: flex-end;
@@ -264,13 +494,41 @@
         margin: -6px 0 12px;
     }
 
+    .cns-dash .empty-note {
+        font-size: 13px;
+        color: #a3aa9e;
+        padding: 8px 0;
+        line-height: 1.6;
+    }
+
+        .cns-dash .empty-note a {
+            color: #1a7f74;
+            font-weight: 600;
+            text-decoration: none;
+        }
+
+            .cns-dash .empty-note a:hover {
+                text-decoration: underline;
+            }
+
+    .cns-dash .row-action:focus-visible,
+    .cns-dash .quick-action:focus-visible,
+    .cns-dash .btn-go:focus-visible {
+        outline: 2px solid #1a7f74;
+        outline-offset: 2px;
+    }
+
     @@media (max-width: 900px) {
         .cns-dash .stat-grid {
-            grid-template-columns: repeat(1, 1fr);
+            grid-template-columns: 1fr;
         }
 
         .cns-dash .lower-grid {
             grid-template-columns: 1fr;
+        }
+
+        .cns-dash .concern-row {
+            grid-template-columns: 100px 1fr 30px;
         }
     }
 </style>
@@ -279,25 +537,55 @@
     <h1>@(string.IsNullOrWhiteSpace(Model.CounselorName) ? "Welcome back" : $"Hi, {Model.CounselorName}")</h1>
     <p class="subtitle">Here's what's on your plate for @DateTime.Now.ToString("dddd, MMMM d")</p>
 
+    <!-- ============================ STAT CARDS ============================ -->
     <div class="stat-grid">
         <div class="stat-card">
-            <div class="stat-label"><span class="material-symbols-outlined" style="font-size:16px;"></span> Sessions today</div>
+            <div class="stat-label">Appointments today</div>
             <div class="stat-value">@Model.SessionsTodayCount</div>
+            <div class="stat-baseline">
+            </div>
+            @if (Model.SessionsTodayCount > 0)
+            {
+                <a href="#todays-schedule" class="stat-action">View schedule →</a>
+            }
+            else
+            {
+                <div class="stat-note">Nothing scheduled today.</div>
+            }
         </div>
-        <div class="stat-card">
-            <div class="stat-label"><span class="material-symbols-outlined" style="font-size:16px;"></span> Open cases</div>
-            <div class="stat-value">@Model.OpenCasesCount</div>
-        </div>
-        <div class="stat-card">
-            <div class="stat-label"><span class="material-symbols-outlined" style="font-size:16px;"></span> Pending requests</div>
+
+        <div class="stat-card @(Model.PendingRequestsCount > 0 ? "stat-card-attention" : "")">
+            <div class="stat-label">Pending requests</div>
             <div class="stat-value">@Model.PendingRequestsCount</div>
+            @if (Model.PendingRequestsCount > 0)
+            {
+                <div class="stat-baseline">
+                    Oldest has waited @Model.OldestPendingDays day@(Model.OldestPendingDays == 1 ? "" : "s")
+                </div>
+                <a asp-controller="Appointments" asp-action="Index" class="stat-action">Review now →</a>
+            }
+            else
+            {
+                <div class="stat-note">All caught up.</div>
+            }
+        </div>
+
+        <div class="stat-card">
+            <div class="stat-label">Completed appointments</div>
+            <div class="stat-value">@Model.CompletedAppointmentsCount</div>
+            <div class="stat-note">Total sessions marked completed.</div>
         </div>
     </div>
 
     <div class="lower-grid">
+        <!-- ========================= LEFT COLUMN ========================= -->
         <div>
-            <div class="panel" style="margin-bottom:20px;">
-                <div class="section-title">Today's schedule</div>
+            <!-- Today's schedule -->
+            <div class="panel" id="todays-schedule">
+                <div class="section-title">
+                    Today's schedule
+                    <span class="count-pill">@Model.TodaysAppointments.Count</span>
+                </div>
                 @if (Model.TodaysAppointments.Any())
                 {
                     foreach (var appt in Model.TodaysAppointments)
@@ -307,32 +595,141 @@
                             "Confirmed" => "status-confirmed",
                             "Pending" => "status-pending",
                             "Completed" => "status-completed",
+                            "Missed" => "status-missed",
                             _ => "status-pending"
                         };
-                        <div class="appt-item">
-                            <div>
-                                <div class="appt-name">@appt.FullName</div>
-                                <div class="appt-meta">
-                                    <span class="material-symbols-outlined" style="font-size:14px;"></span>
-                                    @appt.AppointmentDate.ToString("h:mm tt") &middot; @appt.AppointmentType
+                        <div class="row-item" data-appt="@appt.AppointmentId">
+                            <div class="row-item-split">
+                                <div>
+                                    <div class="row-name">
+                                        @appt.FullName
+                                        @if (appt.IsUnassigned)
+                                        {
+                                            <span class="tag-unassigned">Unassigned</span>
+                                        }
+                                    </div>
+                                    <div class="row-meta">
+                                        @appt.AppointmentDate.ToString("h:mm tt") &middot; @appt.AppointmentType
+                                    </div>
                                 </div>
+                                <span class="status-badge @statusClass">@appt.Status</span>
                             </div>
-                            <span class="status-badge @statusClass">@appt.Status</span>
+                            @if (appt.Status != "Completed" && appt.Status != "Missed")
+                            {
+                                <div class="row-actions">
+                                    @if (appt.StudentsID.HasValue)
+                                    {
+                                        <a class="row-action"
+                                           asp-controller="CaseNotes" asp-action="Create"
+                                           asp-route-studentId="@appt.StudentsID">Log session</a>
+                                    }
+                                    <button type="button" class="row-action"
+                                            onclick="gcamsSetStatus(@appt.AppointmentId, 'Completed', this)">
+                                        Mark completed
+                                    </button>
+                                    <button type="button" class="row-action row-action-muted"
+                                            onclick="gcamsSetStatus(@appt.AppointmentId, 'Missed', this)">
+                                        Mark missed
+                                    </button>
+                                </div>
+                            }
                         </div>
                     }
                 }
                 else
                 {
-                    <div class="empty-note">No appointments scheduled for today.</div>
+                    <div class="empty-note">
+                        Nothing booked today.
+                        <a asp-controller="Appointments" asp-action="Index">Open the appointment calendar</a>
+                        to add one.
+                    </div>
                 }
             </div>
 
-            <div class="panel">
+            <!-- Students drifting -->
+            <div class="panel" id="drifting-students">
+                <div class="section-title">
+                    Students drifting
+                    @if (Model.DriftingStudents.Any())
+                    {
+                        <span class="count-pill">@Model.DriftingStudents.Count</span>
+                    }
+                </div>
+                @if (Model.DriftingStudents.Any())
+                {
+                    <div class="row-meta" style="margin:-6px 0 12px;">
+                        Counseling started, no session in over 30 days, nothing scheduled.
+                    </div>
+                    foreach (var d in Model.DriftingStudents)
+                    {
+                        <div class="drift-item">
+                            <div class="drift-name">@d.StudentName</div>
+                            <div class="drift-meta">
+                                @d.GradeSection &middot;
+                                last seen @d.LastSessionDate.ToString("MMM d") (@d.DaysSinceLastSession days ago) &middot;
+                                @d.SessionCount session@(d.SessionCount == 1 ? "" : "s")
+                            </div>
+                            <div class="row-actions">
+                                <a class="row-action"
+                                   asp-controller="CaseNotes" asp-action="Create"
+                                   asp-route-studentId="@d.StudentsID">Log session</a>
+                                <a class="row-action"
+                                   asp-controller="Students" asp-action="Details"
+                                   asp-route-id="@d.StudentsID">Open record</a>
+                            </div>
+                        </div>
+                    }
+                }
+                else
+                {
+                    <div class="empty-note">Every student you've counseled has been seen in the last 30 days.</div>
+                }
+            </div>
+
+            <!-- Top concerns -->
+            <div class="panel" id="top-concerns">
+                <div class="section-title">Top concerns</div>
+                <div class="period-label" style="margin-top:-6px;">@Model.PeriodLabel</div>
+                @if (Model.TopConcerns.Any())
+                {
+                    var concernMax = Model.TopConcerns.Max(c => c.Count);
+                    var concernTotal = Model.TopConcerns.Sum(c => c.Count);
+                    var lead = Model.TopConcerns.First();
+                    var leadShare = concernTotal > 0 ? (int)Math.Round(100.0 * lead.Count / concernTotal) : 0;
+
+                    foreach (var c in Model.TopConcerns)
+                    {
+                        var pct = Math.Max(3, (int)(100.0 * c.Count / concernMax));
+                        <div class="concern-row">
+                            <span class="concern-label" title="@c.Category">@c.Category</span>
+                            <div class="concern-track">
+                                <div class="concern-fill @(c == lead ? "is-dominant" : "")" style="width:@(pct)%;"></div>
+                            </div>
+                            <span class="concern-count">@c.Count</span>
+                        </div>
+                    }
+
+                    if (leadShare >= 30)
+                    {
+                            <a asp-controller="Announcements" asp-action="Create" class="row-action">Post announcement →</a>
+                    }
+                }
+                else
+                {
+                    <div class="empty-note">
+                        No categorised sessions yet for @Model.PeriodLabel.
+                        Concerns appear here once case notes are saved with a category.
+                    </div>
+                }
+            </div>
+
+            <!-- Session history -->
+            <div class="panel" id="session-history">
                 <div class="section-title">Session history</div>
                 <form method="get" asp-action="Index" class="filter-bar">
                     <div class="filter-field">
-                        <label>Academic year</label>
-                        <select name="academicYear">
+                        <label for="ay-select">Academic year</label>
+                        <select id="ay-select" name="academicYear">
                             @foreach (var ay in Model.AcademicYearOptions)
                             {
                                 if (ay == Model.SelectedAcademicYear)
@@ -347,8 +744,8 @@
                         </select>
                     </div>
                     <div class="filter-field">
-                        <label>Month</label>
-                        <select name="month">
+                        <label for="month-select">Month</label>
+                        <select id="month-select" name="month">
                             @if (Model.SelectedMonth == null)
                             {
                                 <option value="" selected>All months</option>
@@ -393,31 +790,79 @@
             </div>
         </div>
 
+        <!-- ========================= RIGHT COLUMN ========================= -->
         <div>
-            <div class="panel" style="margin-bottom:20px;">
+            <!-- Quick actions -->
+            <div class="panel">
                 <div class="section-title">Quick actions</div>
                 <div class="quick-actions">
-                   @*  <a class="quick-action" asp-controller="CaseNotes" asp-action="Create">
-                        <span class="material-symbols-outlined"></span> New case note   
-                    </a> *@
-                    <a class="quick-action" asp-controller="Appointments" asp-action="Index">
-                        <span class="material-symbols-outlined"></span> View all appointments
-                    </a>
-                    <a class="quick-action" asp-controller="Students" asp-action="Index">
-                        <span class="material-symbols-outlined"></span> Student records
+                    <div>
+                        <div class="row-meta" style="margin-bottom:4px;">Log session</div>
+                        <div class="picker-row">
+                            <input type="text" id="student-picker" list="student-options"
+                                   placeholder="Find a student…" autocomplete="off"
+                                   aria-label="Find a student to log a session for">
+                            <button type="button" class="btn-go" onclick="gcamsLogSession()">Go</button>
+                        </div>
+                    </div>
+
+                    <div>
+                        <div class="row-meta" style="margin-bottom:4px;">Record an observation</div>
+                        <div class="picker-row">
+                            <input type="text" id="observation-picker" list="student-options"
+                                   placeholder="Find a student…" autocomplete="off"
+                                   aria-label="Find a student to record an observation for">
+                            <button type="button" class="btn-go" onclick="gcamsRecordObservation()">Go</button>
+                        </div>
+                    </div>
+
+                    <datalist id="student-options">
+                        @foreach (var s in Model.StudentPicker)
+                        {
+                            <option value="@s.Label" data-id="@s.StudentsID"></option>
+                        }
+                    </datalist>
+
+                    <a class="quick-action" asp-controller="Announcements" asp-action="Create">
+                        <span class="material-symbols-outlined"></span> Post an announcement
                     </a>
                 </div>
             </div>
 
-            <div class="panel">
-                <div class="section-title">Flagged follow-ups</div>
+            <!-- Flagged follow-ups -->
+            <div class="panel" id="flagged-followups">
+                <div class="section-title">
+                    Flagged follow-ups
+                    @if (Model.FlaggedCases.Any())
+                    {
+                        <span class="count-pill">@Model.FlaggedCases.Count</span>
+                    }
+                </div>
                 @if (Model.FlaggedCases.Any())
                 {
                     foreach (var fc in Model.FlaggedCases)
                     {
                         <div class="flagged-item">
                             <div class="flagged-name">@fc.StudentName</div>
-                            <div class="flagged-meta">Follow-up was due @fc.FollowUpDate.ToString("MMM d")</div>
+                            <div class="flagged-meta">
+                                Due @fc.FollowUpDate.ToString("MMM d") &middot;
+                                @fc.DaysOverdue day@(fc.DaysOverdue == 1 ? "" : "s") overdue
+                            </div>
+                            <div class="row-actions">
+                                @if (fc.StudentsID.HasValue)
+                                {
+                                    <a class="row-action"
+                                       asp-controller="CaseNotes" asp-action="Create"
+                                       asp-route-studentId="@fc.StudentsID">Log session</a>
+                                    <a class="row-action"
+                                       asp-controller="Students" asp-action="Details"
+                                       asp-route-id="@fc.StudentsID">Open record</a>
+                                }
+                                <button type="button" class="row-action row-action-muted"
+                                        onclick="gcamsSetStatus(@fc.AppointmentId, 'Completed', this)">
+                                    Mark handled
+                                </button>
+                            </div>
                         </div>
                     }
                 }
@@ -426,6 +871,100 @@
                     <div class="empty-note">No overdue follow-ups.</div>
                 }
             </div>
+
+            <!-- Recent observations -->
+            <div class="panel" id="recent-observations">
+                <div class="section-title">Recent observations</div>
+                @if (Model.RecentObservations.Any())
+                {
+                    foreach (var o in Model.RecentObservations)
+                    {
+                        <div class="row-item">
+                            <div class="row-name">
+                                @o.StudentName
+                                @if (o.IsRepeat)
+                                {
+                                    <span class="tag-repeat">Repeat</span>
+                                }
+                            </div>
+                            <div class="row-meta">
+                                @o.DateOfObserv.ToString("MMM d") &middot; @o.Place
+                            </div>
+                            <div class="row-meta">@o.Behavior</div>
+                            <div class="row-actions">
+                                <a class="row-action"
+                                   asp-controller="Students" asp-action="Details"
+                                   asp-route-id="@o.StudentsID">Open record</a>
+                                <a class="row-action"
+                                   asp-controller="CaseNotes" asp-action="Create"
+                                   asp-route-studentId="@o.StudentsID">Log session</a>
+                            </div>
+                        </div>
+                    }
+                }
+                else
+                {
+                    <div class="empty-note">
+                        No observations recorded yet.
+                        <a asp-controller="AnecRecs" asp-action="Create">Record one</a>.
+                    </div>
+                }
+            </div>
         </div>
     </div>
 </div>
+
+<script>
+    // Update an appointment's status from the dashboard, then drop the row.
+    async function gcamsSetStatus(appointmentId, newStatus, btn) {
+        const actions = btn.parentElement.querySelectorAll('button');
+        actions.forEach(b => b.disabled = true);
+
+        try {
+            const res = await fetch('/Appointments/UpdateStatus', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ AppointmentId: appointmentId, NewStatus: newStatus })
+            });
+
+            if (!res.ok) throw new Error(await res.text());
+
+            const row = btn.closest('.flagged-item, .row-item');
+            row.style.transition = 'opacity .2s';
+            row.style.opacity = '0';
+            setTimeout(() => { row.remove(); }, 200);
+        } catch (err) {
+            actions.forEach(b => b.disabled = false);
+            alert('Could not update that appointment. Please try again.');
+        }
+    }
+
+    // Resolve the picker text back to a student id, then open the case note form.
+    function gcamsLogSession() {
+        const input = document.getElementById('student-picker');
+        const match = Array.from(document.querySelectorAll('#student-options option'))
+            .find(o => o.value === input.value);
+
+        if (!match) {
+            input.focus();
+            alert('Pick a student from the list first.');
+            return;
+        }
+
+        window.location.href = '/CaseNotes/Create?studentId=' + match.dataset.id;
+    }
+        // Resolve the picker text back to a student id, then open the anecdotal record form.
+    function gcamsRecordObservation() {
+        const input = document.getElementById('observation-picker');
+        const match = Array.from(document.querySelectorAll('#student-options option'))
+            .find(o => o.value === input.value);
+
+        if (!match) {
+            input.focus();
+            alert('Pick a student from the list first.');
+            return;
+        }
+
+        window.location.href = '/AnecRecs/Create?studentId=' + match.dataset.id;
+    }
+</script>
