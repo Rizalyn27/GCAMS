@@ -1,0 +1,397 @@
+﻿.form-wrapper {
+    display: flex;
+    gap: 1.5rem;
+    align-items: flex-start;
+    max-width: 1200px; /* wide-desktop cap para hindi masyadong stretched sa malalaking screen */
+    margin: 0 auto;
+}
+
+/* ============ SIDEBAR ============ */
+.form-sidebar {
+    width: 200px;
+    flex-shrink: 0;
+    position: sticky;
+    top: 1rem;
+}
+
+.form-sidebar-inner {
+    display: flex;
+    flex-direction: column;
+}
+
+.form-sidebar .nav-link {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 14px;
+    border-radius: 8px;
+    font-size: 14px;
+    font-family: Inter;
+    color: #555;
+    text-decoration: none;
+    margin-bottom: 4px;
+    transition: background 0.15s;
+    white-space: nowrap;
+}
+
+    .form-sidebar .nav-link:hover {
+        background: #f0f0f0;
+        color: #222;
+    }
+
+    .form-sidebar .nav-link.active {
+        background: #e8f5e9; /* green-tint para tugma sa #1B5E20 brand, dati blue-ish */
+        color: #1B5E20;
+        font-weight: 600;
+    }
+
+    .form-sidebar .nav-link i {
+        font-size: 16px;
+    }
+
+.form-content {
+    flex: 1;
+    min-width: 0; /* CRITICAL: pumipigil sa grid/flex overflow bug sa Chrome/Edge kapag may long text/input */
+}
+
+.form-section {
+    background: #fff;
+    border: 1px solid #e5e7eb;
+    border-radius: 12px;
+    padding: 1.5rem;
+    margin-bottom: 1.5rem;
+    scroll-margin-top: 80px; /* para hindi matabunan ng sticky topbar 'yung anchor-scroll (#personal, #family, etc) */
+}
+
+.form-section-title {
+    font-size: 18px;
+    font-weight: 700;
+    font-family: 'Manrope', sans-serif;
+    color: #111;
+    margin-bottom: 1.25rem;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding-bottom: 0.75rem;
+    border-bottom: 1px solid #f0f0f0; /* subtle divider tulad ng Image 1/3/4 */
+}
+
+    .form-section-title i {
+        font-size: 18px;
+        color: #1B5E20; /* na-align sa green brand, dati blue #1a56db */
+    }
+
+/* ============ GRIDS ============ */
+.form-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem 1.5rem;
+}
+
+    .form-grid .full-width {
+        grid-column: 1 / -1;
+    }
+
+.form-grid-3 {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 1rem 1.5rem;
+}
+
+.field-label {
+    font-size: 13px;
+    font-family: 'Inter', sans-serif;
+    font-weight: 600;
+    color: #374151;
+    margin-bottom: 4px;
+    display: block;
+}
+
+.form-control, .form-select {
+    font-size: 14px;
+    font-family: 'Inter', sans-serif;
+    border-radius: 8px;
+    border: 1px solid #d1d5db;
+    padding: 9px 12px;
+    width: 100%;
+    color: #111;
+    box-sizing: border-box;
+    min-height: 40px; /* consistent height kahit select vs input, at mas madaling i-tap sa mobile */
+}
+
+    .form-control:focus, .form-select:focus {
+        border-color: #1B5E20;
+        outline: none;
+        box-shadow: 0 0 0 3px rgba(27, 94, 32, 0.12);
+    }
+
+.health-note {
+    background: #fffbeb;
+    border: 1px solid #fcd34d;
+    border-radius: 8px;
+    padding: 10px 14px;
+    font-size: 13px;
+    color: #92400e;
+    margin-bottom: 1rem;
+    display: flex;
+    align-items: flex-start;
+    gap: 8px;
+}
+
+/* ============ CONTACT ROWS ============ */
+.contact-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    align-items: center;
+    margin-bottom: 8px;
+}
+
+    .contact-row input,
+    .contact-row select {
+        flex: 1 1 140px;
+        min-width: 0;
+    }
+
+    .contact-row .remove-contact {
+        flex: 0 0 auto;
+    }
+
+/* ============ EDUCATION TABLE ============ */
+.edu-table-wrap {
+    width: 100%;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+}
+
+.edu-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 14px;
+    min-width: 480px; /* pumipigil ma-crush ang columns habang wala pang stacked mode (>575px) */
+}
+
+    .edu-table th {
+        font-size: 12px;
+        color: #6b7280;
+        font-weight: 600;
+        padding: 8px 10px;
+        border-bottom: 1px solid #e5e7eb;
+        text-align: left;
+        white-space: nowrap;
+    }
+
+    .edu-table td {
+        padding: 8px 10px;
+        border-bottom: 1px solid #f3f4f6;
+    }
+
+        .edu-table td input {
+            width: 100%;
+            border: none;
+            background: transparent;
+            font-size: 14px;
+            color: #111;
+            outline: none;
+            box-sizing: border-box;
+        }
+
+            .edu-table td input:focus {
+                background: #f9fafb;
+                border-radius: 4px;
+                padding: 2px 4px;
+            }
+
+        .edu-table td::before {
+            content: none;
+        }
+
+/* ============ FOOTER ============ */
+.form-footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1rem 0;
+    border-top: 1px solid #e5e7eb;
+    margin-top: 1rem;
+    flex-wrap: wrap;
+    gap: 10px;
+}
+
+.btn-save-draft {
+    background: #fff;
+    border: 1px solid #d1d5db;
+    border-radius: 8px;
+    padding: 10px 20px;
+    font-size: 14px;
+    font-weight: 500;
+    color: #374151;
+    cursor: pointer;
+    text-align: center;
+}
+
+.btn-save-changes {
+    background: #1B5E20;
+    border: none;
+    border-radius: 8px;
+    padding: 10px 22px;
+    font-size: 14px;
+    font-weight: 600;
+    color: #fff;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+}
+
+    .btn-save-changes:hover {
+        background: #164e1b; /* FIX: dating #1648c0 (blue) — hindi tugma sa green design system mo */
+    }
+
+.btn-save-draft:hover {
+    background: #f9fafb;
+}
+
+/* ============ RESPONSIVE BREAKPOINTS ============ */
+
+/* Small laptops / narrow desktop */
+@media (max-width: 1199px) {
+    .form-sidebar {
+        width: 180px;
+    }
+
+    .form-wrapper {
+        gap: 1rem;
+    }
+}
+
+/* Tablets landscape (iPad, etc.) */
+@media (max-width: 991px) {
+    .form-wrapper {
+        flex-direction: column;
+    }
+
+    .form-sidebar {
+        width: 100%;
+        position: sticky;
+        top: 0;
+        z-index: 20;
+        background: #fff;
+        border-bottom: 1px solid #e5e7eb;
+        padding: 8px 0;
+        margin-bottom: 4px;
+    }
+
+    .form-sidebar-inner {
+        flex-direction: row;
+        display: flex;
+        gap: 6px;
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+        scrollbar-width: thin;
+        padding-bottom: 2px;
+    }
+
+    .form-sidebar .nav-link {
+        margin-bottom: 0;
+        flex-shrink: 0;
+    }
+
+    .form-grid-3 {
+        grid-template-columns: 1fr 1fr;
+    }
+
+    .form-section {
+        padding: 1.25rem;
+    }
+}
+
+/* Tablets portrait */
+@media (max-width: 767px) {
+    .form-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .form-grid-3 {
+        grid-template-columns: 1fr;
+    }
+}
+
+/* Mobile phones */
+@media (max-width: 575px) {
+    .form-section {
+        padding: 1rem;
+        border-radius: 10px;
+    }
+
+    .form-section-title {
+        font-size: 16px;
+    }
+
+    .form-sidebar .nav-link {
+        font-size: 13px;
+        padding: 8px 12px;
+    }
+
+    .edu-table th {
+        display: none;
+    }
+
+    .edu-table, .edu-table tbody, .edu-table tr, .edu-table td {
+        display: block;
+        width: 100%;
+        min-width: 0;
+    }
+
+        .edu-table tr {
+            margin-bottom: 10px;
+            border: 1px solid #f3f4f6;
+            border-radius: 8px;
+            padding: 6px 8px;
+        }
+
+        .edu-table td {
+            border-bottom: none;
+            padding: 6px 4px;
+        }
+
+            .edu-table td[data-label]::before {
+                content: attr(data-label);
+                display: block;
+                font-size: 11px;
+                color: #6b7280;
+                margin-bottom: 2px;
+            }
+
+    .form-footer {
+        flex-direction: column-reverse;
+        align-items: stretch;
+    }
+
+        .form-footer > div {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            width: 100%;
+        }
+
+    .btn-save-draft, .btn-save-changes, input.btn-save-changes {
+        width: 100%;
+    }
+
+    .contact-row input, .contact-row select {
+        flex: 1 1 100%;
+    }
+
+    .contact-row .remove-contact {
+        margin-left: auto;
+    }
+}
+
+body {
+    font-family: 'Inter', sans-serif;
+}
+
+h1, h2, h3, h4, h5, h6 {
+    font-family: 'Manrope', sans-serif;
+}

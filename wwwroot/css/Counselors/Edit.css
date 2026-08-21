@@ -1,0 +1,130 @@
+﻿.form-wrapper {
+    display: flex;
+    gap: 1.5rem;
+    align-items: flex-start;
+}
+
+.form-sidebar {
+    width: 200px;
+    flex-shrink: 0;
+    position: sticky;
+    top: 1rem;
+}
+
+    .form-sidebar .nav-link {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        padding: 10px 14px;
+        border-radius: 8px;
+        font-size: 14px;
+        font-family: Inter;
+        color: #555;
+        text-decoration: none;
+        margin-bottom: 4px;
+        transition: background 0.15s;
+        white-space: nowrap;
+    }
+
+        .form-sidebar .nav-link:hover {
+            background: #f0f0f0;
+            color: #222;
+        }
+
+        .form-sidebar .nav-link.active {
+            background: #e8f5e9;
+            color: #1b6d24;
+            font-weight: 500;
+        }
+
+        .form-sidebar .nav-link i {
+            font-size: 16px;
+        }
+
+.form-content {
+    flex: 1;
+    min-width: 0;
+}
+
+.form-section {
+    background: #fff;
+    border: 1px solid #e5e7eb;
+    border-radius: 12px;
+    padding: 1.5rem;
+    margin-bottom: 1.5rem;
+    scroll-margin-top: 1rem;
+}
+
+.form-section-title {
+    font-size: 18px;
+    font-weight: 700;
+    font-family: 'Manrope', sans-serif;
+    color: #111;
+    margin-bottom: 1.25rem;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+    .form-section-title i {
+        font-size: 18px;
+        color: #1b6d24;
+    }
+
+.form-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+}
+
+    .form-grid .full-width {
+        grid-column: 1 / -1;
+    }
+
+.field-label {
+    font-size: 13px;
+    font-family: 'Inter', sans-serif;
+    font-weight: 500;
+    color: #6b7280;
+    margin-bottom: 4px;
+    display: block;
+}
+
+.form-control, .form-select {
+    font-size: 14px;
+    font-family: 'Inter', sans-serif;
+    border-radius: 8px;
+    border: 1px solid #d1d5db;
+    padding: 8px 12px;
+    width: 100%;
+    color: #111;
+    box-sizing: border-box;
+}
+
+    .form-control:focus, .form-select:focus {
+        border-color: #1b6d24;
+        outline: none;
+        box-shadow: 0 0 0 3px rgba(27, 109, 36, 0.1);
+    }
+
+/* Contact number rows */
+.contact-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.contact-label-select {
+    max-width: 200px;
+    flex-shrink: 0;
+}
+
+.form-footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1rem 0;
+    border-top: 1px solid #e5e7eb;
+    margin-top: 1rem;
+    flex-wrap: wrap;
+    gap:

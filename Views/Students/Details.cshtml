@@ -6,486 +6,41 @@
 
 <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
 <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet">
-
-<style>
-    .material-symbols-outlined {
-        font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
-        vertical-align: middle;
-    }
-
-    .profile-page * {
-        font-family: 'Inter', sans-serif;
-    }
-
-    .profile-page h1, .profile-page h2, .profile-page h3 {
-        font-family: 'Manrope', sans-serif;
-    }
-
-    .tab-btn {
-        padding-bottom: 12px;
-        padding-left: 4px;
-        padding-right: 4px;
-        font-weight: 600;
-        font-size: 14px;
-        border: none;
-        background: transparent;
-        color: #717a6d;
-        cursor: pointer;
-        border-bottom: 3px solid transparent;
-        transition: all 0.2s;
-        white-space: nowrap;
-    }
-
-        .tab-btn.active {
-            border-bottom: 3px solid #1b6d24;
-            color: #1b6d24;
-        }
-
-        .tab-btn:hover:not(.active) {
-            color: #1b6d24;
-        }
-
-    .tab-panel {
-        display: none;
-    }
-
-        .tab-panel.active {
-            display: block;
-        }
-
-    .field-label {
-        font-size: 11px;
-        font-weight: 600;
-        text-transform: uppercase;
-        letter-spacing: 0.06em;
-        color: #717a6d;
-        margin-bottom: 2px;
-    }
-
-    .field-value {
-        font-size: 15px;
-        color: #191d18;
-        font-weight: 500;
-    }
-
-        .field-value.empty {
-            color: #c0c9bb;
-            font-style: italic;
-            font-weight: 400;
-        }
-
-    .section-card {
-        background: #fff;
-        border-radius: 12px;
-        border: 1px solid rgba(192,201,187,0.3);
-        overflow: hidden;
-        margin-bottom: 20px;
-        box-shadow: 0 1px 3px rgba(0,0,0,0.04);
-    }
-
-    .section-header {
-        background: #f2f5ec;
-        padding: 14px 24px;
-        border-bottom: 1px solid rgba(192,201,187,0.3);
-        display: flex;
-        align-items: center;
-        gap: 8px;
-        font-family: 'Manrope', sans-serif;
-        font-size: 16px;
-        font-weight: 600;
-        color: #191d18;
-    }
-
-        .section-header .material-symbols-outlined {
-            color: #1b6d24;
-            font-size: 20px;
-        }
-
-    .section-body {
-        padding: 24px;
-        display: grid;
-        grid-template-columns: repeat(2, 1fr);
-        gap: 20px 32px;
-    }
-
-        .section-body.cols-3 {
-            grid-template-columns: repeat(3, 1fr);
-        }
-
-        .section-body.cols-1 {
-            grid-template-columns: 1fr;
-        }
-
-    .full-width {
-        grid-column: 1 / -1;
-    }
-
-    .profile-header-card {
-        background: #fff;
-        border-radius: 12px;
-        border: 1px solid rgba(192,201,187,0.2);
-        padding: 24px;
-        margin-bottom: 24px;
-        box-shadow: 0 1px 4px rgba(0,0,0,0.05);
-    }
-
-    .avatar-circle {
-        width: 80px;
-        height: 80px;
-        border-radius: 16px;
-        background: linear-gradient(135deg, #2e6b2f, #1b6d24);
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        font-family: 'Manrope', sans-serif;
-        font-size: 28px;
-        font-weight: 700;
-        color: white;
-        flex-shrink: 0;
-    }
-
-    .status-badge {
-        display: inline-flex;
-        align-items: center;
-        gap: 4px;
-        padding: 4px 12px;
-        border-radius: 999px;
-        font-size: 12px;
-        font-weight: 700;
-    }
-
-    .status-active {
-        background: #a0f499;
-        color: #004d08;
-    }
-
-    .status-inactive {
-        background: #e1e4db;
-        color: #41493e;
-    }
-
-    .breadcrumb-nav {
-        display: flex;
-        align-items: center;
-        gap: 6px;
-        font-size: 14px;
-        color: #717a6d;
-        margin-bottom: 20px;
-    }
-
-        .breadcrumb-nav a {
-            color: #717a6d;
-            text-decoration: none;
-        }
-
-            .breadcrumb-nav a:hover {
-                color: #1b6d24;
-            }
-
-        .breadcrumb-nav .current {
-            color: #1b6d24;
-            font-weight: 600;
-        }
-
-    .action-btn {
-        display: inline-flex;
-        align-items: center;
-        gap: 6px;
-        padding: 10px 20px;
-        border-radius: 10px;
-        font-size: 14px;
-        font-weight: 600;
-        cursor: pointer;
-        border: none;
-        transition: all 0.2s;
-        text-decoration: none;
-    }
-
-    .btn-outline {
-        background: rgba(192,201,187,0.15);
-        color: #41493e;
-    }
-
-        .btn-outline:hover {
-            background: rgba(192,201,187,0.3);
-            color: #191d18;
-        }
-
-    .btn-primary-green {
-        background: #1b6d24;
-        color: white;
-    }
-
-        .btn-primary-green:hover {
-            filter: brightness(1.1);
-            box-shadow: 0 2px 8px rgba(27,109,36,0.3);
-        }
-
-    .btn-danger {
-        background: #ffdad6;
-        color: #93000a;
-    }
-
-        .btn-danger:hover {
-            background: #ffb4ab;
-        }
-
-    .tabs-bar {
-        display: flex;
-        gap: 24px;
-        border-bottom: 1px solid rgba(192,201,187,0.3);
-        margin-top: 20px;
-        overflow-x: auto;
-    }
-
-    .info-pill {
-        display: inline-flex;
-        align-items: center;
-        gap: 4px;
-        background: #f2f5ec;
-        border-radius: 6px;
-        padding: 2px 10px;
-        font-size: 13px;
-        color: #41493e;
-        font-weight: 500;
-    }
-
-        .info-pill.id-pill {
-            color: #1b6d24;
-            font-family: monospace;
-            font-size: 13px;
-        }
-
-    .empty-state {
-        text-align: center;
-        padding: 32px 16px;
-        color: #717a6d;
-    }
-
-        .empty-state .material-symbols-outlined {
-            font-size: 36px;
-            color: #c0c9bb;
-            display: block;
-            margin-bottom: 8px;
-        }
-
-    /* Case notes table */
-    .cn-table {
-        width: 100%;
-        border-collapse: collapse;
-        background: #fff;
-        border-radius: 12px;
-        overflow: hidden;
-        border: 1px solid #e1e4db;
-    }
-
-        .cn-table thead tr {
-            background: #f8faf2;
-            border-bottom: 1px solid #e1e4db;
-        }
-
-        .cn-table thead th {
-            padding: 12px 16px;
-            font-size: 11px;
-            font-weight: 700;
-            text-transform: uppercase;
-            letter-spacing: 0.06em;
-            color: #717a6d;
-            text-align: left;
-        }
-
-        .cn-table tbody tr {
-            border-bottom: 1px solid #f2f5ec;
-            transition: background 0.15s;
-        }
-
-            .cn-table tbody tr:last-child {
-                border-bottom: none;
-            }
-
-            .cn-table tbody tr:hover {
-                background: #f8faf2;
-            }
-
-        .cn-table tbody td {
-            padding: 14px 16px;
-            font-size: 14px;
-            color: #191d18;
-            vertical-align: top;
-            max-width: 260px;
-        }
-
-    .cn-date {
-        font-weight: 600;
-        color: #191d18;
-        white-space: nowrap;
-    }
-
-    .cn-text {
-        color: #374151;
-        display: -webkit-box;
-        -webkit-line-clamp: 2;
-        -webkit-box-orient: vertical;
-        overflow: hidden;
-    }
-
-    .cn-actions {
-        display: flex;
-        align-items: center;
-        gap: 4px;
-    }
-
-    .cn-action-icon {
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        width: 32px;
-        height: 32px;
-        border-radius: 8px;
-        border: none;
-        background: transparent;
-        cursor: pointer;
-        color: #717a6d;
-        text-decoration: none;
-        transition: all 0.15s;
-    }
-
-        .cn-action-icon:hover {
-            background: #f2f5ec;
-            color: #1b6d24;
-        }
-
-    @@media (max-width: 768px) {
-        .section-body {
-            grid-template-columns: 1fr;
-        }
-
-            .section-body.cols-3 {
-                grid-template-columns: 1fr;
-            }
-
-        .profile-top-row {
-            flex-direction: column;
-        }
-
-        .action-buttons {
-            flex-direction: column;
-        }
-    }
-
-    .modal-overlay {
-        display: none;
-        position: fixed;
-        inset: 0;
-        background: rgba(25,29,24,0.5);
-        z-index: 1000;
-        align-items: center;
-        justify-content: center;
-        padding: 16px;
-    }
-
-        .modal-overlay.open {
-            display: flex;
-        }
-
-    .modal-box {
-        background: #fff;
-        border-radius: 12px;
-        max-width: 520px;
-        width: 100%;
-        max-height: 85vh;
-        overflow-y: auto;
-        box-shadow: 0 8px 30px rgba(0,0,0,0.2);
-        padding: 24px;
-    }
-
-    .modal-header {
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        margin-bottom: 12px;
-    }
-
-        .modal-header h3 {
-            font-family: 'Manrope', sans-serif;
-            font-size: 18px;
-            font-weight: 700;
-            color: #191d18;
-            margin: 0;
-        }
-
-    .modal-close {
-        border: none;
-        background: transparent;
-        font-size: 22px;
-        line-height: 1;
-        cursor: pointer;
-        color: #717a6d;
-    }
-
-    .modal-warning {
-        display: flex;
-        align-items: center;
-        gap: 8px;
-        background: #fff3e0;
-        color: #7a4a00;
-        font-size: 13px;
-        font-weight: 600;
-        padding: 10px 14px;
-        border-radius: 8px;
-        margin-bottom: 16px;
-    }
-
-    .modal-details {
-        display: flex;
-        flex-direction: column;
-        gap: 10px;
-        margin-bottom: 20px;
-        max-height: 300px;
-        overflow-y: auto;
-        padding-right: 4px;
-    }
-
-    .modal-row {
-        display: flex;
-        flex-direction: column;
-        gap: 2px;
-        border-bottom: 1px solid #f2f5ec;
-        padding-bottom: 8px;
-    }
-
-    .modal-label {
-        font-size: 11px;
-        font-weight: 600;
-        text-transform: uppercase;
-        letter-spacing: 0.06em;
-        color: #717a6d;
-    }
-
-    .modal-value {
-        font-size: 14px;
-        color: #191d18;
-    }
-
-    .modal-actions {
-        display: flex;
-        justify-content: flex-end;
-        gap: 10px;
-    }
-</style>
+<link rel="stylesheet" href="~/css/Students/Details.css" asp-append-version="true" />
+
+<!-- Top Navbar: back chevron + breadcrumb (left) / notifications + profile (right) -->
+<div class="top-navbar">
+    <div class="top-navbar-left">
+        <a asp-action="Index" class="back-chevron" title="Back to Students">
+            <span class="material-symbols-outlined">chevron_left</span>
+        </a>
+        <nav class="breadcrumb-nav">
+            <a asp-action="Index">Students</a>
+            <span class="material-symbols-outlined breadcrumb-sep">chevron_right</span>
+            <span class="current">Student Profile</span>
+        </nav>
+    </div>
+
+    <div class="top-navbar-right">
+        <button type="button" class="notif-btn" title="Notifications">
+            <span class="material-symbols-outlined">notifications</span>
+            <span class="notif-dot"></span>
+        </button>
+
+        <div class="navbar-divider"></div>
+
+        <!-- TODO: replace with actual logged-in counselor session data -->
+        <div class="profile-chip">
+            <div class="navbar-avatar">IF</div>
+            <div class="profile-info">
+                <div class="profile-name">Ms. Imee Flores</div>
+                <div class="profile-role">Head Counselor</div>
+            </div>
+        </div>
+    </div>
+</div>
 
 <div class="profile-page" style="max-width: 1100px; margin: 0 auto; padding: 24px 16px;">
-    <a asp-action="Index" class="action-btn btn-primary-green">
-        <span class="material-symbols-outlined" style="font-size:18px;"></span>
-        Back to List
-    </a>
-    <!-- Breadcrumb -->
-    <nav class="breadcrumb-nav">
-        <span class="material-symbols-outlined" style="font-size:16px;"></span>
-        <a asp-action="Index"></a>
-        <span class="material-symbols-outlined" style="font-size:16px; color:#c0c9bb;"></span>
-        <span class="current">Student Profile</span>
-    </nav>
 
     <!-- Profile Header Card -->
     <div class="profile-header-card">
@@ -543,14 +98,14 @@
                 {
                     <form asp-action="SoftDelete" asp-route-id="@Model.Student.StudentsID" method="post" style="display:inline;">
                         @Html.AntiForgeryToken()
-                        <button type="submit" class="action-btn btn-danger">Archive</button>
+                        <button type="submit" class="action-btn btn-danger" style="width:100%;">Archive</button>
                     </form>
                 }
                 else
                 {
                     <form asp-action="Restore" asp-route-id="@Model.Student.StudentsID" method="post" style="display:inline;">
                         @Html.AntiForgeryToken()
-                        <button type="submit" class="action-btn btn-primary-green">Restore</button>
+                        <button type="submit" class="action-btn btn-primary-green" style="width:100%;">Restore</button>
                     </form>
                 }
             </div>
@@ -1035,40 +590,41 @@
                 }
                 else
                 {
-                    <table class="cn-table">
-                        <thead>
-                            <tr>
-                                <th>Session Date</th>
-                                <th>Specific Goal</th>
-                                <th>Intervention</th>
-                                <th>Actions</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            @foreach (var note in Model.CaseNotes.OrderByDescending(n => n.SessionDate))
-                            {
+                    <div class="table-scroll">
+                        <table class="cn-table">
+                            <thead>
                                 <tr>
-                                    <td><span class="cn-date">@note.SessionDate.ToString("MMM dd, yyyy - h:mm tt")</span></td>
-                                    <td><span class="cn-text" title="@note.SpecificGoal">@note.SpecificGoal</span></td>
-                                    <td><span class="cn-text" title="@note.Interventions">@note.Interventions</span></td>
-                                    <td>
-                                        <div class="cn-actions">
-                                            <a asp-controller="CaseNotes" asp-action="Details" asp-route-id="@note.CasenoteId" asp-route-studentId="@Model.Student.StudentsID"
-                                               class="cn-action-icon" title="View Details">
-                                                <span class="material-symbols-outlined" style="font-size:18px;">👁</span>
-                                            </a>
-                                            <a asp-controller="CaseNotes" asp-action="Edit" asp-route-id="@note.CasenoteId" asp-route-studentId="@Model.Student.StudentsID"
-                                               class="cn-action-icon" title="Edit">
-                                                <span class="material-symbols-outlined" style="font-size:18px;">✏️</span>
-                                            </a>
-                                            
-                                        </div>
-                                    </td>
+                                    <th>Session Date</th>
+                                    <th>Specific Goal</th>
+                                    <th>Intervention</th>
+                                    <th>Actions</th>
                                 </tr>
-                            }
-                        </tbody>
-                    </table>
-                    
+                            </thead>
+                            <tbody>
+                                @foreach (var note in Model.CaseNotes.OrderByDescending(n => n.SessionDate))
+                                {
+                                    <tr>
+                                        <td><span class="cn-date">@note.SessionDate.ToString("MMM dd, yyyy - h:mm tt")</span></td>
+                                        <td><span class="cn-text" title="@note.SpecificGoal">@note.SpecificGoal</span></td>
+                                        <td><span class="cn-text" title="@note.Interventions">@note.Interventions</span></td>
+                                        <td>
+                                            <div class="cn-actions">
+                                                <a asp-controller="CaseNotes" asp-action="Details" asp-route-id="@note.CasenoteId" asp-route-studentId="@Model.Student.StudentsID"
+                                                   class="cn-action-icon" title="View Details">
+                                                    <span class="material-symbols-outlined" style="font-size:18px;">👁</span>
+                                                </a>
+                                                <a asp-controller="CaseNotes" asp-action="Edit" asp-route-id="@note.CasenoteId" asp-route-studentId="@Model.Student.StudentsID"
+                                                   class="cn-action-icon" title="Edit">
+                                                    <span class="material-symbols-outlined" style="font-size:18px;">✏️</span>
+                                                </a>
+
+                                            </div>
+                                        </td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
                 }
             </div>
         </div>
@@ -1097,39 +653,40 @@
                 }
                 else
                 {
-                    <table class="cn-table">
-                        <thead>
-                            <tr>
-                                <th>Observer/Evaluator</th>
-                                <th>Date of Observation</th>
-                                <th>Time of Observation</th>
-                                <th>Actions</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            @foreach (var note in Model.AnecRecs.OrderByDescending(n => n.AnecRecNo))
-                            {
+                    <div class="table-scroll">
+                        <table class="cn-table">
+                            <thead>
                                 <tr>
-                                    <td><span class="cn-text" title="@note.ObservedBy">@note.ObservedBy</span></td>
-                                    <td><span class="cn-date">@note.DateOfObserv.ToString("MMM dd, yyyy")</span></td>
-                                    <td><span class="cn-date">@note.DateOfObserv.ToString("h:mm tt")</span></td>
-                                    <td>
-                                        <div class="cn-actions">
-                                            <a asp-controller="AnecRecs" asp-action="Details" asp-route-id="@note.AnecRecsId" asp-route-studentId="@Model.Student.StudentsID"
-                                               class="cn-action-icon" title="View Details">
-                                                <span class="material-symbols-outlined" style="font-size:18px;">👁</span>
-                                            </a>
-                                            <a asp-controller="AnecRecs" asp-action="Edit" asp-route-id="@note.AnecRecsId" asp-route-studentId="@Model.Student.StudentsID"
-                                               class="cn-action-icon" title="Edit">
-                                                <span class="material-symbols-outlined" style="font-size:18px;">✏️</span>
-                                            </a>
-                                        </div>
-                                    </td>
+                                    <th>Observer/Evaluator</th>
+                                    <th>Date of Observation</th>
+                                    <th>Time of Observation</th>
+                                    <th>Actions</th>
                                 </tr>
-                            }
-                        </tbody>
-                    </table>
-
+                            </thead>
+                            <tbody>
+                                @foreach (var note in Model.AnecRecs.OrderByDescending(n => n.AnecRecNo))
+                                {
+                                    <tr>
+                                        <td><span class="cn-text" title="@note.ObservedBy">@note.ObservedBy</span></td>
+                                        <td><span class="cn-date">@note.DateOfObserv.ToString("MMM dd, yyyy")</span></td>
+                                        <td><span class="cn-date">@note.DateOfObserv.ToString("h:mm tt")</span></td>
+                                        <td>
+                                            <div class="cn-actions">
+                                                <a asp-controller="AnecRecs" asp-action="Details" asp-route-id="@note.AnecRecsId" asp-route-studentId="@Model.Student.StudentsID"
+                                                   class="cn-action-icon" title="View Details">
+                                                    <span class="material-symbols-outlined" style="font-size:18px;">👁</span>
+                                                </a>
+                                                <a asp-controller="AnecRecs" asp-action="Edit" asp-route-id="@note.AnecRecsId" asp-route-studentId="@Model.Student.StudentsID"
+                                                   class="cn-action-icon" title="Edit">
+                                                    <span class="material-symbols-outlined" style="font-size:18px;">✏️</span>
+                                                </a>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
                 }
             </div>
         </div>

@@ -1,393 +1,25 @@
 ﻿@{
     var isStudent = User.Identity?.IsAuthenticated == true && User.IsInRole("Student");
+    var isAdmin = User.IsInRole("Admin");
+    var portalLabel = isStudent ? "Student Portal" : isAdmin ? "Admin Portal" : "Counselor Portal";
+    var roleLabel = isStudent ? "Student" : isAdmin ? "Administrator" : "Counselor";
+    var currentController = ViewContext.RouteData.Values["controller"]?.ToString();
+    var currentAction = ViewContext.RouteData.Values["action"]?.ToString();
 }
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>@ViewData["Title"] - MVC_DenoyJabines</title>
+    <title>@ViewData["Title"] - CounselCare</title>
     <script type="importmap"></script>
     <link rel="stylesheet" href="@(Url.Content("~/lib/bootstrap/dist/css/bootstrap.min.css"))" />
     <link rel="stylesheet" href="@(Url.Content("~/css/site.css"))" />
     <link rel="stylesheet" href="@(Url.Content("~/MVC_DenoyJabines.styles.css"))" />
     <link href="https://fonts.googleapis.com/css2?family=Sora:wght@300;400;500;600;700&family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet" />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
-    <style>
-        :root {
-            --sidebar-bg: #1B5E20;
-            --sidebar-hover: #0f2e27;
-            --sidebar-active: #133d32;
-            --sidebar-border: rgba(255,255,255,0.06);
-            --sidebar-text: #ffffff;
-            --sidebar-heading: #ffffff;
-            --sidebar-label: #2e5248;
-            --sidebar-width: 240px;
-            --accent: #1a7f74;
-            --accent-soft: rgba(26,127,116,0.18);
-            --page-bg: #f0f7f4;
-            --topbar-bg: #ffffff;
-            --topbar-border: #d4ede6;
-            --ink: #0a1f1a;
-        }
-
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-        }
-
-        body {
-            font-family: Arial, Helvetica, sans-serif;
-            background: var(--page-bg);
-            color: var(--ink);
-            overflow-x: hidden;
-        }
-
-        .layout-wrapper {
-            display: flex;
-            min-height: 100vh;
-        }
-
-        .sidebar-account,
-        .sidebar-logout {
-            display: block;
-            width: 100%;
-            padding: 10px 12px;
-            border-radius: 10px;
-            font-size: 0.85rem;
-            font-weight: 500;
-            text-decoration: none;
-            text-align: left;
-            cursor: pointer;
-            transition: all 0.2s;
-            margin-bottom: 6px;
-            border: none;
-        }
-
-        .sidebar-account {
-            background: rgba(59, 91, 219, 0.1);
-            color: #3b5bdb;
-        }
-
-            .sidebar-account:hover {
-                background: rgba(59, 91, 219, 0.2);
-            }
-
-        .sidebar-logout {
-            background: rgba(229, 52, 74, 0.12);
-            color: #e5344a;
-            border: 1px solid rgba(229,52,74,0.25);
-        }
-
-            .sidebar-logout:hover {
-                background: #e5344a;
-                color: #ffffff;
-                border-color: #e5344a;
-            }
-
-        /* ── SIDEBAR ── */
-        .sidebar {
-            width: var(--sidebar-width);
-            background: var(--sidebar-bg);
-            min-height: 100vh;
-            display: flex;
-            flex-direction: column;
-            position: fixed;
-            top: 0;
-            left: 0;
-            z-index: 100;
-            transition: transform .3s ease;
-        }
-
-        .sidebar-brand {
-            padding: 24px 20px 20px;
-            border-bottom: 1px solid var(--sidebar-border);
-            margin-bottom: 8px;
-        }
-
-            .sidebar-brand h4 {
-                font-family: Arial, Helvetica, sans-serif;
-                font-size: 1.2rem;
-                font-weight: 400;
-                color: var(--sidebar-heading);
-                margin: 0;
-            }
-
-            .sidebar-brand span {
-                display: inline-block;
-                margin-bottom: 6px;
-                font-size: 0.65rem;
-                font-weight: 700;
-                letter-spacing: 0.12em;
-                text-transform: uppercase;
-                color: var(--accent);
-                background: var(--accent-soft);
-                padding: 2px 8px;
-                border-radius: 20px;
-            }
-
-        .sidebar-section-label {
-            font-size: 0.62rem;
-            font-weight: 700;
-            letter-spacing: 0.12em;
-            text-transform: uppercase;
-            color: var(--sidebar-label);
-            padding: 16px 20px 6px;
-        }
-
-        .sidebar-nav {
-            list-style: none;
-            padding: 0 10px;
-            margin: 0;
-        }
-
-            .sidebar-nav li a {
-                display: flex;
-                align-items: center;
-                gap: 10px;
-                padding: 10px 12px;
-                border-radius: 10px;
-                color: var(--sidebar-text);
-                text-decoration: none;
-                font-size: 0.85rem;
-                font-weight: 500;
-                transition: all .18s;
-                margin-bottom: 2px;
-            }
-
-                .sidebar-nav li a:hover {
-                    background: var(--sidebar-hover);
-                    color: #ffffff;
-                }
-
-                .sidebar-nav li a.active {
-                    background: var(--sidebar-active);
-                    color: #ffffff;
-                    border-left: 3px solid var(--accent);
-                }
-
-        .sidebar-footer {
-            margin-top: auto;
-            padding: 16px 10px;
-            border-top: 1px solid var(--sidebar-border);
-        }
-
-            .sidebar-footer form button {
-                width: 100%;
-                background: rgba(229,52,74,0.1);
-                color: #f87171;
-                border: 1px solid rgba(229,52,74,0.22);
-                border-radius: 10px;
-                padding: 10px;
-                font-family: Arial, Helvetica, sans-serif;
-                font-size: 0.82rem;
-                font-weight: 600;
-                cursor: pointer;
-                transition: all .18s;
-            }
-
-                .sidebar-footer form button:hover {
-                    background: #e5344a;
-                    color: #ffffff;
-                    border-color: #e5344a;
-                }
-
-        /* ── MAIN ── */
-        .main-content {
-            margin-left: var(--sidebar-width);
-            flex: 1;
-            min-height: 100vh;
-            display: flex;
-            flex-direction: column;
-        }
-
-        .topbar {
-            background: var(--topbar-bg);
-            border-bottom: 1px solid var(--topbar-border);
-            padding: 14px 28px;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            position: sticky;
-            top: 0;
-            z-index: 50;
-        }
-
-        .topbar-title {
-            font-family: Arial, Helvetica, sans-serif;
-            font-size: 1.1rem;
-            font-weight: 400;
-            color: var(--ink);
-        }
-
-        .topbar-badge {
-            font-size: 0.72rem;
-            font-weight: 700;
-            color: var(--accent);
-            background: rgba(26,127,116,0.1);
-            padding: 3px 10px;
-            border-radius: 20px;
-        }
-
-        .sidebar-toggle {
-            display: none;
-            background: none;
-            border: none;
-            cursor: pointer;
-            padding: 4px;
-            flex-direction: column;
-            gap: 5px;
-        }
-
-            .sidebar-toggle span {
-                display: block;
-                width: 22px;
-                height: 2px;
-                background: var(--ink);
-                border-radius: 2px;
-            }
-
-        .sidebar-overlay {
-            display: none;
-            position: fixed;
-            inset: 0;
-            background: rgba(0,0,0,0.4);
-            z-index: 99;
-        }
-
-            .sidebar-overlay.active {
-                display: block;
-            }
-
-        .page-body {
-            padding: 28px;
-            flex: 1;
-        }
-
-        /* ── NOTIFICATION BELL ── */
-        .notif-bell {
-            position: relative;
-            background: none;
-            border: none;
-            cursor: pointer;
-        }
-
-        .notif-badge {
-            display: none;
-            position: absolute;
-            top: -4px;
-            right: -4px;
-            background: #93000a;
-            color: #fff;
-            font-size: 11px;
-            font-weight: 700;
-            border-radius: 999px;
-            padding: 1px 6px;
-        }
-
-        .notif-dropdown {
-            display: none;
-            position: absolute;
-            right: 0;
-            top: 36px;
-            width: 320px;
-            max-height: 400px;
-            overflow-y: auto;
-            background: #fff;
-            border: 1px solid #e1e4db;
-            border-radius: 12px;
-            box-shadow: 0 4px 20px rgba(0,0,0,0.12);
-            z-index: 1000;
-            padding: 8px;
-        }
-
-        .notif-item {
-            padding: 10px 12px;
-            border-radius: 8px;
-            cursor: pointer;
-            margin-bottom: 4px;
-        }
-
-            .notif-item.unread {
-                background: #f2f5ec;
-            }
-
-        .notif-title {
-            font-weight: 600;
-            font-size: 13px;
-            color: #191d18;
-        }
-
-        .notif-message {
-            font-size: 12px;
-            color: #41493e;
-            margin-top: 2px;
-        }
-
-        .notif-time {
-            font-size: 11px;
-            color: #a3aa9e;
-            margin-top: 4px;
-        }
-
-        .notif-empty {
-            padding: 16px;
-            text-align: center;
-            color: #717a6d;
-            font-size: 13px;
-        }
-
-        /* ── RESPONSIVE ── */
-        @@media (max-width: 900px) {
-            .sidebar {
-                transform: translateX(-100%);
-            }
-
-                .sidebar.open {
-                    transform: translateX(0);
-                }
-
-            .main-content {
-                margin-left: 0;
-            }
-
-            .sidebar-toggle {
-                display: flex;
-            }
-        }
-
-        @@media (max-width: 500px) {
-            .page-body {
-                padding: 16px;
-            }
-        }
-
-        .notif-filters {
-            display: flex;
-            gap: 6px;
-            padding: 4px 4px 10px;
-            border-bottom: 1px solid #f2f5ec;
-            margin-bottom: 8px;
-            flex-wrap: wrap;
-        }
-
-        .notif-filter-btn {
-            background: none;
-            border: 1px solid #e1e4db;
-            border-radius: 999px;
-            padding: 4px 10px;
-            font-size: 12px;
-            color: #41493e;
-            cursor: pointer;
-        }
-
-            .notif-filter-btn.active {
-                background: #1b6d24;
-                border-color: #1b6d24;
-                color: #fff;
-            }
-    </style>
+    <link rel="stylesheet" href="~/css/Shared/Layout.css" asp-append-version="true" />
+    @await RenderSectionAsync("Styles", required: false)
 </head>
 <body>
 
@@ -395,23 +27,27 @@
 
         <aside class="sidebar" id="sidebar">
             <div class="sidebar-brand">
-                <span>@(isStudent ? "Student" : "Counselor")</span>
+                <img src="~/lib/images/logo.png" alt="CounselCare Logo" class="sidebar-logo" />
+                <div class="sidebar-brand-text">
+                    <h4>DSOSMNHS</h4>
+                    <small>Care Center</small>
+                </div>
             </div>
             <ul class="sidebar-nav">
                 @if (isStudent)
                 {
-                    <li><a asp-controller="Home" asp-action="Index">Dashboard</a></li>
-                    <li><a asp-controller="Appointments" asp-action="Create">Book Appointment</a></li>
-                    <li><a asp-controller="Appointments" asp-action="MyAppointments">My Appointments</a></li>
-
+                    <li><a asp-controller="Home" asp-action="Index" class="@(currentController == "Home" ? "active" : "")"><i class="fa-solid fa-grip"></i>Dashboard</a></li>
+                    <li><a asp-controller="Appointments" asp-action="Create" class="@(currentAction == "Create" ? "active" : "")"><i class="fa-regular fa-calendar-plus"></i>Book Appointment</a></li>
+                    <li><a asp-controller="Appointments" asp-action="MyAppointments" class="@(currentAction == "MyAppointments" ? "active" : "")"><i class="fa-regular fa-calendar-check"></i>My Appointments</a></li>
                 }
                 else
                 {
-                    <li><a asp-controller="Home" asp-action="Index">Dashboard</a></li>
-                    <li><a asp-controller="Students" asp-action="Index">Students</a></li>
-                    <li><a asp-controller="Counselors" asp-action="Index">Counselors</a></li>
-                    <li><a asp-controller="Appointments" asp-action="Index">Appointments</a></li>
-                    <li><a asp-controller="Announcements" asp-action="Index">Announcements</a></li>
+                    <li><a asp-controller="Home" asp-action="Index" class="@(currentController == "Home" ? "active" : "")"><i class="fa-solid fa-grip"></i>Dashboard</a></li>
+                    <li><a asp-controller="Students" asp-action="Index" class="@(currentController == "Students" ? "active" : "")"><i class="fa-solid fa-user-graduate"></i>Students</a></li>
+                    <li><a asp-controller="Counselors" asp-action="Index" class="@(currentController == "Counselors" ? "active" : "")"><i class="fa-solid fa-user-tie"></i>Counselors</a></li>
+                    <li><a asp-controller="Appointments" asp-action="Index" class="@(currentController == "Appointments" ? "active" : "")"><i class="fa-regular fa-calendar-days"></i>Appointments</a></li>
+                    @* No ResourcesController exists yet — pointing at Announcements. Change when you build it. *@
+                    <li><a asp-controller="Announcements" asp-action="Index" class="@(currentController == "Announcements" ? "active" : "")"><i class="fa-regular fa-folder-open"></i>Resources</a></li>
                 }
             </ul>
 
@@ -420,7 +56,7 @@
                 <div class="sidebar-footer">
                     <form asp-controller="Users" asp-action="Logout" method="post">
                         @Html.AntiForgeryToken()
-                        <button type="submit" class="sidebar-logout">Logout</button>
+                        <button type="submit"><i class="fa-solid fa-arrow-right-from-bracket"></i>Logout</button>
                     </form>
                 </div>
             }
@@ -430,30 +66,66 @@
 
         <div class="main-content">
             <div class="topbar">
-                <div style="display:flex;align-items:center;gap:14px;">
+                <div style="display:flex;align-items:center;gap:14px;min-width:0;">
                     <button class="sidebar-toggle" id="sidebarToggle" aria-label="Toggle menu">
                         <span></span><span></span><span></span>
                     </button>
-                    <div class="topbar-title">@ViewData["Title"]</div>
+                    @if (IsSectionDefined("Breadcrumb"))
+                    {
+                        @await RenderSectionAsync("Breadcrumb", required: false)
+                    }
+                    else
+                    {
+                        <div>
+                            <div class="topbar-title">@ViewData["Title"]</div>
+                            @if (ViewData["PageSubtitle"] != null)
+                            {
+                                <span class="topbar-sub">@ViewData["PageSubtitle"]</span>
+                            }
+                        </div>
+                    }
                 </div>
 
                 @if (User.Identity?.IsAuthenticated == true)
                 {
-                    <div style="position:relative; display:inline-block;">
-                        <button id="notif-bell" class="notif-bell">
-                            <i class="fa-regular fa-bell" style="font-size:24px; color:#41493e;"></i>
-                            <span id="notif-badge" class="notif-badge"></span>
-                        </button>
-                        <div id="notif-dropdown" class="notif-dropdown">
-                            <div class="notif-filters">
-                                <button class="notif-filter-btn active" data-filter="all">All</button>
-                                <button class="notif-filter-btn" data-filter="Announcement">Announcements</button>
-                                <button class="notif-filter-btn" data-filter="AppointmentReminder">Reminders</button>
-                                <button class="notif-filter-btn" data-filter="StatusUpdate">Updates</button>
+                    <div class="topbar-right">
+                        <div style="position:relative;">
+                            <button id="notif-bell" class="notif-bell" aria-label="Notifications">
+                                <i class="fa-regular fa-bell" style="font-size:20px; color:#41493e;"></i>
+                                <span id="notif-badge" class="notif-badge"></span>
+                            </button>
+
+                            <div id="notif-dropdown" class="notif-dropdown">
+                                <div class="notif-head">
+                                    <span class="notif-heading">Notifications</span>
+                                    <button type="button" class="notif-markall" id="notif-markall">
+                                        <i class="fa-solid fa-check-double"></i> Mark all read
+                                    </button>
+                                </div>
+
+                                <div class="notif-tabs">
+                                    <button type="button" class="notif-tab active" data-filter="all">All <span class="tab-count" id="count-all"></span></button>
+                                    <button type="button" class="notif-tab" data-filter="unread">Unread <span class="tab-count" id="count-unread"></span></button>
+                                    <button type="button" class="notif-tab" data-filter="announcement">Announcements <span class="tab-count" id="count-announcement"></span></button>
+                                </div>
+
+                                <div id="notif-list"></div>
+
+                                <div class="notif-foot">
+                                    <a asp-controller="Notifications" asp-action="Index">View all notifications</a>
+                                </div>
                             </div>
-                            <div id="notif-list"></div>
+                        </div>
+
+                        <div class="topbar-profile">
+                            <div class="profile-avatar">@(User.Identity?.Name?.Trim().Substring(0, 1).ToUpper() ?? "U")</div>
+                            <div>
+                                <div class="profile-name">@User.Identity?.Name</div>
+                                <div class="profile-role">@roleLabel</div>
+                            </div>
                         </div>
                     </div>
+
                     <form style="display:none;">@Html.AntiForgeryToken()</form>
                 }
             </div>
@@ -474,14 +146,20 @@
         const toggle = document.getElementById('sidebarToggle');
         const sidebar = document.getElementById('sidebar');
         const overlay = document.getElementById('sidebarOverlay');
+
+        function closeSidebar() {
+            sidebar.classList.remove('open');
+            overlay.classList.remove('active');
+        }
+
         toggle.addEventListener('click', () => {
             sidebar.classList.toggle('open');
             overlay.classList.toggle('active');
         });
-        overlay.addEventListener('click', () => {
-            sidebar.classList.remove('open');
-            overlay.classList.remove('active');
-        });
+        overlay.addEventListener('click', closeSidebar);
+        document.addEventListener('keydown', e => { if (e.key === 'Escape') closeSidebar(); });
+        // Tapping a nav link on mobile should close the drawer
+        sidebar.querySelectorAll('.sidebar-nav a').forEach(a => a.addEventListener('click', closeSidebar));
     </script>
 
     @if (User.Identity?.IsAuthenticated == true)
@@ -491,42 +169,92 @@
             const dropdown = document.getElementById('notif-dropdown');
             const badge = document.getElementById('notif-badge');
             const list = document.getElementById('notif-list');
-            const filterButtons = document.querySelectorAll('.notif-filter-btn');
             const token = () => document.querySelector('input[name="__RequestVerificationToken"]')?.value || '';
 
-            let allNotifications = [];
             let activeFilter = 'all';
+            let cached = [];
+
+            function escapeHtml(s) {
+                return String(s ?? '').replace(/[&<>"']/g, c => ({
+                    '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'
+                }[c]));
+            }
+
+            // "5 minutes ago" instead of a raw timestamp
+            function timeAgo(value) {
+                const then = new Date(value);
+                if (isNaN(then)) return '';
+
+                const secs = Math.floor((Date.now() - then.getTime()) / 1000);
+                if (secs < 60) return 'Just now';
+
+                const mins = Math.floor(secs / 60);
+                if (mins < 60) return `${mins} minute${mins === 1 ? '' : 's'} ago`;
+
+                const hrs = Math.floor(mins / 60);
+                if (hrs < 24) return `${hrs} hour${hrs === 1 ? '' : 's'} ago`;
+
+                const days = Math.floor(hrs / 24);
+                if (days < 7) return `${days} day${days === 1 ? '' : 's'} ago`;
+
+                return then.toLocaleDateString();
+            }
+
+            const isAnnouncement = n => String(n.type ?? '').toLowerCase() === 'announcement';
 
             function renderNotification(n) {
+                const tag = isAnnouncement(n) ? '<span class="notif-tag">Announcement</span>' : '';
                 return `
                     <div class="notif-item ${n.isRead ? '' : 'unread'}" onclick="markRead(${n.notificationId})">
-                        <div class="notif-title">${n.title}</div>
-                        <div class="notif-message">${n.message}</div>
-                        <div class="notif-time">${new Date(n.createdAt).toLocaleString()}</div>
+                        <span class="notif-icon"><i class="fa-regular fa-file-lines"></i></span>
+                        <div class="notif-body">
+                            <div class="notif-title">${escapeHtml(n.title)}${tag}</div>
+                            <div class="notif-message">${escapeHtml(n.message)}</div>
+                            <div class="notif-time">${timeAgo(n.createdAt)}</div>
+                        </div>
+                        <span class="notif-dot"></span>
                     </div>`;
             }
 
-            function renderList() {
-                const filtered = activeFilter === 'all'
-                    ? allNotifications
-                    : allNotifications.filter(n => n.type === activeFilter);
+            function paintCounts() {
+                const set = (id, value) => {
+                    const el = document.getElementById(id);
+                    el.textContent = value > 0 ? value : '';
+                    el.style.display = value > 0 ? 'inline-flex' : 'none';
+                };
+                set('count-all', cached.length);
+                set('count-unread', cached.filter(n => !n.isRead).length);
+                set('count-announcement', cached.filter(isAnnouncement).length);
+            }
 
-                list.innerHTML = filtered.length
-                    ? filtered.map(renderNotification).join('')
+            function paintList() {
+                const items =
+                    activeFilter === 'unread' ? cached.filter(n => !n.isRead) :
+                    activeFilter === 'announcement' ? cached.filter(isAnnouncement) :
+                    cached;
+
+                list.innerHTML = items.length
+                    ? items.map(renderNotification).join('')
                     : '<div class="notif-empty">No notifications</div>';
+
+                paintCounts();
             }
 
             async function fetchNotifications() {
-                const res = await fetch('/Notifications/GetUnread');
-                if (!res.ok) return;
+                try {
+                    const res = await fetch('/Notifications/GetUnread');
+                    if (!res.ok) return;
 
-                const { unreadCount, notifications } = await res.json();
+                    const { unreadCount, notifications } = await res.json();
+                    cached = notifications || [];
 
-                badge.style.display = unreadCount > 0 ? 'inline-block' : 'none';
-                badge.textContent = unreadCount;
+                    badge.style.display = unreadCount > 0 ? 'inline-block' : 'none';
+                    badge.textContent = unreadCount > 9 ? '9+' : unreadCount;
 
-                allNotifications = notifications;
-                renderList();
+                    paintList();
+                } catch (e) {
+                    // network hiccup — keep whatever is on screen
+                }
             }
 
             async function markRead(id) {
@@ -537,13 +265,25 @@
                 fetchNotifications();
             }
 
-            filterButtons.forEach(btn => {
-                btn.addEventListener('click', () => {
-                    filterButtons.forEach(b => b.classList.remove('active'));
-                    btn.classList.add('active');
-                    activeFilter = btn.dataset.filter;
-                    renderList();
+            document.querySelectorAll('.notif-tab').forEach(tab => {
+                tab.addEventListener('click', function () {
+                    document.querySelectorAll('.notif-tab').forEach(t => t.classList.remove('active'));
+                    this.classList.add('active');
+                    activeFilter = this.dataset.filter;
+                    paintList();
                 });
+            });
+
+            // Uses your existing MarkRead endpoint — no new controller action needed
+            document.getElementById('notif-markall').addEventListener('click', async () => {
+                const unread = cached.filter(n => !n.isRead);
+                await Promise.all(unread.map(n =>
+                    fetch(`/Notifications/MarkRead/${n.notificationId}`, {
+                        method: 'POST',
+                        headers: { 'RequestVerificationToken': token() }
+                    })
+                ));
+                fetchNotifications();
             });
 
             bell.addEventListener('click', () => {

@@ -7,232 +7,7 @@
 
 <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
 <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet">
-
-<style>
-    .material-symbols-outlined {
-        font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
-        vertical-align: middle;
-    }
-
-    .profile-page * {
-        font-family: 'Inter', sans-serif;
-    }
-
-    .profile-page h1, .profile-page h2, .profile-page h3 {
-        font-family: 'Manrope', sans-serif;
-    }
-
-    .field-label {
-        font-size: 11px;
-        font-weight: 600;
-        text-transform: uppercase;
-        letter-spacing: 0.06em;
-        color: #717a6d;
-        margin-bottom: 2px;
-    }
-
-    .field-value {
-        font-size: 15px;
-        color: #191d18;
-        font-weight: 500;
-    }
-
-        .field-value.empty {
-            color: #c0c9bb;
-            font-style: italic;
-            font-weight: 400;
-        }
-
-    .section-card {
-        background: #fff;
-        border-radius: 12px;
-        border: 1px solid rgba(192,201,187,0.3);
-        overflow: hidden;
-        margin-bottom: 20px;
-        box-shadow: 0 1px 3px rgba(0,0,0,0.04);
-    }
-
-    .section-header {
-        background: #f2f5ec;
-        padding: 14px 24px;
-        border-bottom: 1px solid rgba(192,201,187,0.3);
-        display: flex;
-        align-items: center;
-        gap: 8px;
-        font-family: 'Manrope', sans-serif;
-        font-size: 16px;
-        font-weight: 600;
-        color: #191d18;
-    }
-
-        .section-header .material-symbols-outlined {
-            color: #1b6d24;
-            font-size: 20px;
-        }
-
-    .section-body {
-        padding: 24px;
-        display: grid;
-        grid-template-columns: repeat(2, 1fr);
-        gap: 20px 32px;
-    }
-
-        .section-body.cols-3 {
-            grid-template-columns: repeat(3, 1fr);
-        }
-
-        .section-body.cols-4 {
-            grid-template-columns: repeat(4, 1fr);
-        }
-
-    .full-width {
-        grid-column: 1 / -1;
-    }
-
-    .profile-header-card {
-        background: #fff;
-        border-radius: 12px;
-        border: 1px solid rgba(192,201,187,0.2);
-        padding: 24px;
-        margin-bottom: 24px;
-        box-shadow: 0 1px 4px rgba(0,0,0,0.05);
-    }
-
-    .avatar-circle {
-        width: 80px;
-        height: 80px;
-        border-radius: 16px;
-        background: linear-gradient(135deg, #2e6b2f, #1b6d24);
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        font-family: 'Manrope', sans-serif;
-        font-size: 28px;
-        font-weight: 700;
-        color: white;
-        flex-shrink: 0;
-    }
-
-    .status-badge {
-        display: inline-flex;
-        align-items: center;
-        gap: 4px;
-        padding: 4px 12px;
-        border-radius: 999px;
-        font-size: 12px;
-        font-weight: 700;
-    }
-
-    .status-active {
-        background: #a0f499;
-        color: #004d08;
-    }
-
-    .status-inactive {
-        background: #e1e4db;
-        color: #41493e;
-    }
-
-    .breadcrumb-nav {
-        display: flex;
-        align-items: center;
-        gap: 6px;
-        font-size: 14px;
-        color: #717a6d;
-        margin-bottom: 20px;
-    }
-
-        .breadcrumb-nav a {
-            color: #717a6d;
-            text-decoration: none;
-        }
-
-            .breadcrumb-nav a:hover {
-                color: #1b6d24;
-            }
-
-        .breadcrumb-nav .current {
-            color: #1b6d24;
-            font-weight: 600;
-        }
-
-    .action-btn {
-        display: inline-flex;
-        align-items: center;
-        gap: 6px;
-        padding: 10px 20px;
-        border-radius: 10px;
-        font-size: 14px;
-        font-weight: 600;
-        cursor: pointer;
-        border: none;
-        transition: all 0.2s;
-        text-decoration: none;
-    }
-
-    .btn-outline {
-        background: rgba(192,201,187,0.15);
-        color: #41493e;
-    }
-
-        .btn-outline:hover {
-            background: rgba(192,201,187,0.3);
-            color: #191d18;
-        }
-
-    .btn-primary-green {
-        background: #1b6d24;
-        color: white;
-    }
-
-        .btn-primary-green:hover {
-            filter: brightness(1.1);
-            box-shadow: 0 2px 8px rgba(27,109,36,0.3);
-            color: white;
-        }
-
-    .btn-danger {
-        background: #ffdad6;
-        color: #93000a;
-    }
-
-        .btn-danger:hover {
-            background: #ffb4ab;
-            color: #93000a;
-        }
-
-    .info-pill {
-        display: inline-flex;
-        align-items: center;
-        gap: 4px;
-        background: #f2f5ec;
-        border-radius: 6px;
-        padding: 2px 10px;
-        font-size: 13px;
-        color: #41493e;
-        font-weight: 500;
-    }
-
-        .info-pill.id-pill {
-            color: #1b6d24;
-            font-family: monospace;
-            font-size: 13px;
-        }
-
-    @@media (max-width: 768px) {
-        .section-body, .section-body.cols-3, .section-body.cols-4 {
-            grid-template-columns: 1fr;
-        }
-
-        .profile-top-row {
-            flex-direction: column;
-        }
-
-        .action-buttons {
-            flex-direction: column;
-        }
-    }
-</style>
+<link rel="stylesheet" href="~/css/Counselors/Details.css" asp-append-version="true" />
 
 <div class="profile-page" style="max-width: 1100px; margin: 0 auto; padding: 24px 16px;">
 
@@ -241,7 +16,7 @@
         <span class="material-symbols-outlined" style="font-size:16px;"></span>
         <a asp-action="Index"></a>
         <span class="material-symbols-outlined" style="font-size:16px; color:#c0c9bb;"></span>
-        <span class="current">Counselor Profile</span>
+        <span class="current"></span>
     </nav>
 
     <!-- Profile Header Card -->
@@ -257,7 +32,7 @@
                         <h2 style="font-family:'Manrope',sans-serif; font-size:24px; font-weight:700; color:#002c06; margin:0;">
                             @Model.CounselorName
                         </h2>
-                        <div class="field-label">Employment Status</div>
+                        <div class="field-label"></div>
                         <div class="field-value">
                             <span class="info-pill" style="
                                 background: @(Model.EmploymentStatus == "Inactive" || Model.EmploymentStatus == "Retired" ? "#e1e4db" : "#a0f499");
@@ -294,7 +69,7 @@
                     <span class="material-symbols-outlined" style="font-size:18px;"></span>
                     Edit Record
                 </a>
-                
+
             </div>
 
         </div>
@@ -303,7 +78,7 @@
     <!-- Personal Information -->
     <div class="section-card">
         <div class="section-header">
-            <span class="material-symbols-outlined">person</span>
+            <span class="material-symbols-outlined"></span>
             Personal Information
         </div>
 
@@ -466,83 +241,4 @@
 
     </div>
 
-
-    <!-- Employment Details -->
-    <div class="section-card">
-
-        <div class="section-header">
-            <span class="material-symbols-outlined"></span>
-            Work Experience & Employment
-        </div>
-
-
-        <div class="section-body cols-3">
-
-
-            <div>
-                <div class="field-label">
-                    Employee Number
-                </div>
-
-                <div class="field-value">
-                    @Model.EmployeeNumber
-                </div>
-            </div>
-
-
-
-            <div>
-                <div class="field-label">
-                    Position / Designation
-                </div>
-
-                <div class="field-value">
-                    @Model.Position
-                </div>
-            </div>
-
-
-
-            <div>
-                <div class="field-label">
-                    Employment Status
-                </div>
-
-                <div class="field-value">
-                    <span class="info-pill">
-                        @Model.EmploymentStatus
-                    </span>
-                </div>
-            </div>
-
-
-
-            <div>
-                <div class="field-label">
-                    Work / School
-                </div>
-
-                <div class="field-value">
-                    @(Model.WorkSchool ?? "Not specified")
-                </div>
-            </div>
-
-
-
-            <div class="full-width">
-
-                <div class="field-label">
-                    Work Experience
-                </div>
-
-                <div class="field-value">
-                    @(Model.WorkExperience ?? "Not specified")
-                </div>
-
-            </div>
-
-
-        </div>
-
-    </div>
 </div>
