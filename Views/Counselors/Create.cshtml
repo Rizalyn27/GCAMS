@@ -1,401 +1,408 @@
-﻿@model GCAMS.Models.Counselor.Counselor
+﻿@using GCAMS.Models.Counselor
+@model GCAMS.Models.Counselor.Counselor
+@{
+    ViewData["Title"] = "Add New Counselor";
+    ViewData["PageSubtitle"] = "Register a counselor in the Care Center";
 
-<style>
-    @@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Manrope:wght@600;700&display=swap');
+    // Create (GET) returns View() with no model, so Model is null on a first visit
+    // and non-null only when a failed POST re-renders the form.
+    var contacts = (Model?.ContactNumbers != null && Model.ContactNumbers.Count > 0)
+        ? Model.ContactNumbers
+        : new List<CounselorContactNumber> { new CounselorContactNumber() };
 
-    .counselor-form-page {
-        width: 100%;
-        max-width: 100%;
-        padding: 24px 16px;
-    }
+    var contactTypes = new[]
+    {
+        "Personal Mobile Phone",
+        "Office Mobile Phone",
+        "Office Telephone",
+        "Home Mobile Phone",
+        "Home Telephone"
+    };
+}
 
-    .form-wrapper {
-        display: flex;
-        gap: 1.5rem;
-        align-items: flex-start;
-        width: 100%;
-    }
+@section Styles {
+    <link rel="stylesheet" href="~/css/Counselors/Create.css" asp-append-version="true" />
+}
 
-    .form-sidebar {
-        width: 200px;
-        flex-shrink: 0;
-        position: sticky;
-        top: 1rem;
-    }
+@section Breadcrumb {
+    <div class="crumb">
+        <a asp-controller="Counselors" asp-action="Index">Counselors</a>
+        <span class="crumb-sep">/</span>
+        <span class="crumb-current">Add New Counselor</span>
+    </div>
+}
 
-        .form-sidebar .nav-link {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            padding: 10px 14px;
-            border-radius: 8px;
-            font-size: 14px;
-            font-family: Inter;
-            color: #555;
-            text-decoration: none;
-            margin-bottom: 4px;
-            transition: background 0.15s;
-        }
+<div class="counselor-create-page" id="counselorCreatePage">
 
-            .form-sidebar .nav-link:hover {
-                background: #f0f0f0;
-                color: #222;
-            }
+    <h1 class="page-title">Counselor Registration</h1>
 
-            .form-sidebar .nav-link.active {
-                background: #e8f5e9;
-                color: #1b6d24;
-                font-weight: 500;
-            }
+    <div asp-validation-summary="ModelOnly" class="alert alert-danger"></div>
 
-            .form-sidebar .nav-link i {
-                font-size: 16px;
-            }
+    <div class="wiz-layout">
 
-    .form-content {
-        flex: 1;
-        min-width: 0;
-    }
+        <!-- ============ STEP RAIL ============ -->
+        <aside class="wiz-aside">
+            <nav class="wiz-rail" aria-label="Registration steps">
+                <button type="button" class="wiz-step-btn is-active" data-goto="0">
+                    <span class="wiz-badge">1</span>
+                    <span class="wiz-step-label">Personal Information</span>
+                </button>
+                <button type="button" class="wiz-step-btn" data-goto="1">
+                    <span class="wiz-badge">2</span>
+                    <span class="wiz-step-label">Professional Background</span>
+                </button>
+                <button type="button" class="wiz-step-btn" data-goto="2">
+                    <span class="wiz-badge">3</span>
+                    <span class="wiz-step-label">Employment Details</span>
+                </button>
+                <button type="button" class="wiz-step-btn" data-goto="3">
+                    <span class="wiz-badge">4</span>
+                    <span class="wiz-step-label">Review &amp; Submit</span>
+                </button>
+            </nav>
 
-    .form-section {
-        background: #fff;
-        border: 1px solid #e5e7eb;
-        border-radius: 12px;
-        padding: 1.5rem;
-        margin-bottom: 1.5rem;
-    }
-
-    .form-section-title {
-        font-size: 18px;
-        font-weight: 700;
-        font-family: 'Manrope', sans-serif;
-        color: #111;
-        margin-bottom: 1.25rem;
-        display: flex;
-        align-items: center;
-        gap: 8px;
-    }
-
-        .form-section-title i {
-            font-size: 18px;
-            color: #1b6d24;
-        }
-
-    .form-grid {
-        display: grid;
-        grid-template-columns: 1fr 1fr;
-        gap: 1rem;
-    }
-
-        .form-grid .full-width {
-            grid-column: 1 / -1;
-        }
-
-    .name-row {
-        display: grid;
-        grid-template-columns: 1fr 1fr 1fr;
-        gap: 1rem;
-    }
-
-    .field-label {
-        font-size: 13px;
-        font-family: 'Inter', sans-serif;
-        font-weight: 500;
-        color: #6b7280;
-        margin-bottom: 4px;
-        display: block;
-    }
-
-    .form-control, .form-select {
-        font-size: 14px;
-        font-family: 'Inter', sans-serif;
-        border-radius: 8px;
-        border: 1px solid #d1d5db;
-        padding: 8px 12px;
-        width: 100%;
-        color: #111;
-    }
-
-        .form-control:focus, .form-select:focus {
-            border-color: #1b6d24;
-            outline: none;
-            box-shadow: 0 0 0 3px rgba(27, 109, 36, 0.1);
-        }
-
-    .form-footer {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        padding: 1rem 0;
-        border-top: 1px solid #e5e7eb;
-        margin-top: 1rem;
-    }
-
-    .btn-cancel {
-        background: #fff;
-        border: 1px solid #d1d5db;
-        border-radius: 8px;
-        padding: 9px 20px;
-        font-size: 14px;
-        color: #374151;
-        cursor: pointer;
-        text-decoration: none;
-    }
-
-        .btn-cancel:hover {
-            background: #f9fafb;
-            color: #374151;
-        }
-
-    .btn-save {
-        background: #1b6d24;
-        border: none;
-        border-radius: 8px;
-        padding: 9px 20px;
-        font-size: 14px;
-        color: #fff;
-        cursor: pointer;
-    }
-
-        .btn-save:hover {
-            background: #155a1e;
-        }
-
-    @@media (max-width: 768px) {
-        .form-wrapper {
-            flex-direction: column;
-        }
-
-        .form-sidebar {
-            width: 100%;
-            position: static;
-        }
-
-        .form-grid {
-            grid-template-columns: 1fr;
-        }
-
-        .name-row {
-            grid-template-columns: 1fr;
-        }
-    }
-
-    body {
-        font-family: 'Inter', sans-serif;
-    }
-
-    h1, h2, h3, h4, h5, h6 {
-        font-family: 'Manrope', sans-serif;
-    }
-</style>
-
-<div class="counselor-form-page">
-    <div class="form-wrapper">
-
-        <!-- Sidebar -->
-        <div class="form-sidebar">
-            <a href="#personal" class="nav-link active">
-                <i class="bi bi-person-badge"></i> Personal Info
-            </a>
-            <a href="#professional" class="nav-link">
-                <i class="bi bi-briefcase"></i> Professional
-            </a>
-            <a href="#employment" class="nav-link">
-                <i class="bi bi-building"></i> Employment
-            </a>
-        </div>
-
-        <!-- Form Content -->
-        <form asp-action="Create" method="post" class="form-content">
-            <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
-
-            <!-- Personal Information -->
-            <div class="form-section" id="personal">
-                <div class="form-section-title">
-                    <i class="bi bi-person-badge"></i> Personal Information
+            <div class="wiz-progress">
+                <div class="wiz-progress-head">
+                    <span>Completion</span>
+                    <span id="wizPercentText">25%</span>
                 </div>
-                <div class="form-grid">
-                    <!-- Names lead the form: this is how counselors are identified and searched for -->
-                    <div class="full-width name-row">
-                        <div>
-                            <label class="field-label">Full Name</label>
-                            <input asp-for="CounselorName" class="form-control" />
-                            <span asp-validation-for="CounselorName" class="text-danger" style="font-size:12px;"></span>
+                <div class="progress" role="progressbar" aria-label="Form completion"
+                     aria-valuemin="0" aria-valuemax="100" aria-valuenow="25">
+                    <div class="progress-bar" id="wizPercentBar" style="width:25%"></div>
+                </div>
+            </div>
+        </aside>
+
+        <!-- ============ FORM ============ -->
+        <form asp-action="Create" method="post" class="wiz-form" id="counselorForm" novalidate>
+
+            <!-- ---------- STEP 1: PERSONAL ---------- -->
+            <section class="wiz-panel" data-step="0">
+                <div class="card sect-card">
+                    <div class="card-header sect-head">
+                        <i class="fa-regular fa-user"></i> Personal Information
+                    </div>
+                    <div class="card-body">
+                        <div class="row g-3">
+                            <div class="col-12 col-lg-7">
+                                <label asp-for="CounselorName" class="field-label">Full Name <span class="req">*</span></label>
+                                <input asp-for="CounselorName" class="form-control" placeholder="e.g. Maria Santos" autocomplete="off" />
+                                <span asp-validation-for="CounselorName" class="field-error"></span>
+                            </div>
+                            <div class="col-12 col-lg-5">
+                                <label asp-for="EmployeeNumber" class="field-label">
+                                    Employee Number <span class="req">*</span>
+                                    <button type="button" class="link-btn link-btn-sm" id="genEmpNo">Generate</button>
+                                </label>
+                                <input asp-for="EmployeeNumber" class="form-control field-soft" autocomplete="off" />
+                                <span asp-validation-for="EmployeeNumber" class="field-error"></span>
+                            </div>
+
+                            <div class="col-12 col-md-4">
+                                <label asp-for="Gender" class="field-label">Gender <span class="req">*</span></label>
+                                <select asp-for="Gender" class="form-select">
+                                    <option value="">Select gender</option>
+                                    <option value="Male">Male</option>
+                                    <option value="Female">Female</option>
+                                </select>
+                                <span asp-validation-for="Gender" class="field-error"></span>
+                            </div>
+                            <div class="col-8 col-md-5">
+                                <label asp-for="BirthDate" class="field-label">Birth Date <span class="req">*</span></label>
+                                <input asp-for="BirthDate" type="date" asp-format="{0:yyyy-MM-dd}" class="form-control" />
+                                <span asp-validation-for="BirthDate" class="field-error"></span>
+                            </div>
+                            <div class="col-4 col-md-3">
+                                <label class="field-label" for="counselorAge">Age</label>
+                                <input type="text" class="form-control field-soft" id="counselorAge" value="&#8212;" readonly tabindex="-1" />
+                            </div>
+
+                            <div class="col-12 col-md-6">
+                                <label asp-for="EmailAddress" class="field-label">Email Address <span class="req">*</span></label>
+                                <input asp-for="EmailAddress" class="form-control" placeholder="counselor@@school.edu" />
+                                <span asp-validation-for="EmailAddress" class="field-error"></span>
+                            </div>
+                            <div class="col-12 col-md-6">
+                                <label class="field-label">Contact Number</label>
+                                <div class="repeater" id="counselor-contacts" data-prefix="ContactNumbers">
+                                    @for (int i = 0; i < contacts.Count; i++)
+                                    {
+                                        <div class="contact-row">
+                                            <input name="ContactNumbers[@i].Number" value="@contacts[i].Number"
+                                                   class="form-control" placeholder="+63 917 123 4567" inputmode="tel" />
+                                            <select name="ContactNumbers[@i].Label" class="form-select contact-type">
+                                                <option value="">Select type</option>
+                                                @foreach (var t in contactTypes)
+                                                {
+                                                    <option value="@t" selected="@(contacts[i].Label == t)">@t</option>
+                                                }
+                                            </select>
+                                            <button type="button" class="btn-remove remove-contact" aria-label="Remove number">
+                                                <i class="fa-solid fa-xmark"></i>
+                                            </button>
+                                        </div>
+                                    }
+                                </div>
+                                <button type="button" class="link-btn add-contact" data-target="counselor-contacts">
+                                    <i class="fa-solid fa-plus"></i> Add another number
+                                </button>
+                            </div>
+
+                            <div class="col-12 col-md-6">
+                                <label asp-for="MaritalStatus" class="field-label">Marital Status <span class="req">*</span></label>
+                                <select asp-for="MaritalStatus" class="form-select">
+                                    <option value="">Select</option>
+                                    <option>Single</option>
+                                    <option>Married</option>
+                                    <option>Widowed</option>
+                                    <option>Separated</option>
+                                </select>
+                                <span asp-validation-for="MaritalStatus" class="field-error"></span>
+                            </div>
+                            <div class="col-12 col-md-6">
+                                <label asp-for="NumberOfChildren" class="field-label">No. of Children <span class="req">*</span></label>
+                                <input asp-for="NumberOfChildren" type="number" min="0" max="20" class="form-control" />
+                                <span asp-validation-for="NumberOfChildren" class="field-error"></span>
+                            </div>
+
+                            <div class="col-12">
+                                <label asp-for="Address" class="field-label">Address <span class="req">*</span></label>
+                                <textarea asp-for="Address" class="form-control" rows="2"
+                                          placeholder="Full residential address..."></textarea>
+                                <span asp-validation-for="Address" class="field-error"></span>
+                            </div>
                         </div>
                     </div>
-                    <div>
-                        <label class="field-label">Gender</label>
-                        <select asp-for="Gender" class="form-control">
-                            <option value="">Select</option>
-                            <option>Male</option>
-                            <option>Female</option>
-                        </select>
-                        <span asp-validation-for="Gender" class="text-danger" style="font-size:12px;"></span>
-                    </div>
-                    <div>
-                        <label class="field-label">Birth Date</label>
-                        <input asp-for="BirthDate" type="date" class="form-control" />
-                        <span asp-validation-for="BirthDate" class="text-danger" style="font-size:12px;"></span>
-                    </div>
-                    <div>
-                        <label class="field-label">Employee Number</label>
-                        <input asp-for="EmployeeNumber" class="form-control" />
-                        <span asp-validation-for="EmployeeNumber" class="text-danger" style="font-size:12px;"></span>
-                    </div>
-                    <div>
-                        <label class="field-label">Email Address</label>
-                        <input asp-for="EmailAddress" class="form-control" />
-                        <span asp-validation-for="EmailAddress" class="text-danger" style="font-size:12px;"></span>
-                    </div>
-                    <div>
-                        <label class="field-label">Marital Status</label>
-                        <select asp-for="MaritalStatus" class="form-control">
-                            <option value="">Select</option>
-                            <option>Single</option>
-                            <option>Married</option>
-                            <option>Widowed</option>
-                            <option>Separated</option>
-                        </select>
-                        <span asp-validation-for="MaritalStatus" class="text-danger" style="font-size:12px;"></span>
-                    </div>
-                    <div>
-                        <label class="field-label">No. of Children</label>
-                        <input asp-for="NumberOfChildren" type="number" min="0" max="20" class="form-control" />
-                        <span asp-validation-for="NumberOfChildren" class="text-danger" style="font-size:12px;"></span>
-                    </div>
-                    <div class="full-width">
-                        <label class="field-label">Address</label>
-                        <textarea asp-for="Address" class="form-control" rows="2"></textarea>
-                        <span asp-validation-for="Address" class="text-danger" style="font-size:12px;"></span>
-                    </div>
-                    <div class="full-width">
-                        <label class="field-label">Contact Numbers</label>
-                        <div id="counselor-contacts"></div>
-                        <button type="button" class="btn btn-sm btn-outline-secondary mt-1"
-                                onclick="addContact('counselor-contacts', 'ContactNumbers')">
-                            + Add Number
-                        </button>
-                    </div>
                 </div>
-            </div>
+            </section>
 
-            <!-- Professional Background -->
-            <div class="form-section" id="professional">
-                <div class="form-section-title">
-                    <i class="bi bi-briefcase-fill"></i> Professional Background
-                </div>
-                <div class="form-grid">
-                    <div>
-                        <label class="field-label">College</label>
-                        <input asp-for="College" class="form-control" />
-                        <span asp-validation-for="College" class="text-danger" style="font-size:12px;"></span>
+            <!-- ---------- STEP 2: PROFESSIONAL ---------- -->
+            <section class="wiz-panel" data-step="1" hidden>
+                <div class="card sect-card">
+                    <div class="card-header sect-head">
+                        <i class="fa-solid fa-graduation-cap"></i> Professional Background
                     </div>
-                    <div>
-                        <label class="field-label">Course</label>
-                        <input asp-for="CollegeCourse" class="form-control" list="courseList" />
-                        <datalist id="courseList">
-                            <option value="AB Psychology"></option>
-                            <option value="BA Psychology"></option>
-                            <option value="BS Psychology"></option>
-                            <option value="BS Guidance and Counseling"></option>
-                            <option value="Bachelor of Secondary Education"></option>
-                            <option value="Bachelor of Elementary Education"></option>
-                        </datalist>
-                        <span asp-validation-for="CollegeCourse" class="text-danger"></span>
-                    </div>
-                    <div>
-                        <label class="field-label">Post Graduate Studies</label>
-                        <input asp-for="PostGraduateStudies" class="form-control" list="postGradList" />
-                        <datalist id="postGradList">
-                            <option value="Master's Degree"></option>
-                            <option value="Doctorate Degree"></option>
-                            <option value="Graduate Diploma"></option>
-                            <option value="Certificate Program"></option>
-                        </datalist>
-                        <span asp-validation-for="PostGraduateStudies" class="text-danger"></span>
-                    </div>
-                    <div>
-                        <label class="field-label">Post Graduate Course</label>
-                        <input asp-for="PostGraduateCourse" class="form-control" list="postGradCourseList" />
-                        <datalist id="postGradCourseList">
-                            <option value="Master of Arts in Education major in Guidance and Counseling"></option>
-                            <option value="Master of Arts in Psychology"></option>
-                            <option value="Master of Science in Psychology"></option>
-                            <option value="Doctor of Philosophy in Psychology"></option>
-                        </datalist>
-                        <span asp-validation-for="PostGraduateCourse" class="text-danger"></span>
-                    </div>
-                    <div>
-                        <label class="field-label">PRC License</label>
-                        <input asp-for="PRCLicense" class="form-control" list="prcList" />
-                        <datalist id="prcList">
-                            <option value="Psychometrician"></option>
-                            <option value="Guidance Counselor"></option>
-                            <option value="Psychologist"></option>
-                            <option value="Professional Teacher"></option>
-                        </datalist>
-                        <span asp-validation-for="PRCLicense" class="text-danger"></span>
-                    </div>
-                    <div>
-                        <label class="field-label">PRC License</label>
-                        <input asp-for="PRCLicense" class="form-control" list="prcList" />
-                        <datalist id="prcList">
-                            <option value="Psychometrician"></option>
-                            <option value="Guidance Counselor"></option>
-                            <option value="Psychologist"></option>
-                            <option value="Professional Teacher"></option>
-                        </datalist>
-                        <span asp-validation-for="PRCLicense" class="text-danger"></span>
-                    </div>
-                    <div class="full-width">
-                        <label class="field-label">Work Experience</label>
-                        <textarea asp-for="WorkExperience" class="form-control" rows="2"></textarea>
-                        <span asp-validation-for="WorkExperience" class="text-danger" style="font-size:12px;"></span>
-                    </div>
-                    <div class="full-width">
-                        <label class="field-label">Work/School</label>
-                        <input asp-for="WorkSchool" class="form-control" />
-                        <span asp-validation-for="WorkSchool" class="text-danger" style="font-size:12px;">
-                            Don Sergio Osmeña Sr. Memorial National High School
-                        </span>
-                    </div>
-                </div>
-            </div>
+                    <div class="card-body">
 
-            <!-- Employment Details -->
-            <div class="form-section" id="employment">
-                <div class="form-section-title">
-                    <i class="bi bi-building"></i> Employment Details
-                </div>
-                <div class="form-grid">
-                    <div>
-                        <label class="field-label">Position</label>
-                        <input asp-for="Position" class="form-control" />
-                        <span asp-validation-for="Position" class="text-danger" style="font-size:12px;"></span>
-                    </div>
-                    <div>
-                        <label class="field-label">Employment Status</label>
-                        <select asp-for="EmploymentStatus" class="form-control">
-                            <option value="">Select</option>
-                            <option>Permanent</option>
-                            <option>Full-Time</option>
-                            <option>Contractual</option>
-                            <option>Part-Time</option>
-                            <option>Substitute</option>
-                            <option>Retired</option>
-                            <option>Inactive</option>
-                        </select>
-                        <span asp-validation-for="EmploymentStatus" class="text-danger" style="font-size:12px;"></span>
-                    </div>
-                </div>
-            </div>
+                        <div class="sub-head">Education</div>
+                        <div class="row g-3 mb-4">
+                            <div class="col-12 col-md-6">
+                                <label asp-for="College" class="field-label">College/University Attended</label>
+                                <input asp-for="College" class="form-control" />
+                                <span asp-validation-for="College" class="field-error"></span>
+                            </div>
+                            <div class="col-12 col-md-6">
+                                <label asp-for="CollegeCourse" class="field-label">Course</label>
+                                <input asp-for="CollegeCourse" class="form-control" list="courseList" />
+                                <datalist id="courseList">
+                                    <option value="AB Psychology"></option>
+                                    <option value="BA Psychology"></option>
+                                    <option value="BS Psychology"></option>
+                                    <option value="BS Guidance and Counseling"></option>
+                                    <option value="Bachelor of Secondary Education"></option>
+                                    <option value="Bachelor of Elementary Education"></option>
+                                </datalist>
+                                <span asp-validation-for="CollegeCourse" class="field-error"></span>
+                            </div>
+                            <div class="col-12 col-md-6">
+                                <label asp-for="PostGraduateStudies" class="field-label">Post Graduate Studies</label>
+                                <input asp-for="PostGraduateStudies" class="form-control" list="postGradList" />
+                                <datalist id="postGradList">
+                                    <option value="Master's Degree"></option>
+                                    <option value="Doctorate Degree"></option>
+                                    <option value="Graduate Diploma"></option>
+                                    <option value="Certificate Program"></option>
+                                </datalist>
+                                <span asp-validation-for="PostGraduateStudies" class="field-error"></span>
+                            </div>
+                            <div class="col-12 col-md-6">
+                                <label asp-for="PostGraduateCourse" class="field-label">Post Graduate Course</label>
+                                <input asp-for="PostGraduateCourse" class="form-control" list="postGradCourseList" />
+                                <datalist id="postGradCourseList">
+                                    <option value="Master of Arts in Education major in Guidance and Counseling"></option>
+                                    <option value="Master of Arts in Psychology"></option>
+                                    <option value="Master of Science in Psychology"></option>
+                                    <option value="Doctor of Philosophy in Psychology"></option>
+                                </datalist>
+                                <span asp-validation-for="PostGraduateCourse" class="field-error"></span>
+                            </div>
+                        </div>
 
-            <!-- Footer -->
-            <div class="form-footer">
-                <small class="text-muted">🔒 Privacy Protected • Sys.Logged</small>
-                <div style="display:flex; gap:10px;">
-                    <a asp-action="Index" class="btn-cancel">Cancel</a>
-                    <input type="submit" value="Add Counselor" class="btn-save" />
+                        <div class="sub-head">Licenses</div>
+                        <div class="row g-3 mb-4">
+                            <div class="col-12 col-md-6">
+                                <label asp-for="PRCLicense" class="field-label">PRC License</label>
+                                <input asp-for="PRCLicense" class="form-control" list="prcList" />
+                                <datalist id="prcList">
+                                    <option value="Psychometrician"></option>
+                                    <option value="Guidance Counselor"></option>
+                                    <option value="Psychologist"></option>
+                                    <option value="Professional Teacher"></option>
+                                </datalist>
+                                <span asp-validation-for="PRCLicense" class="field-error"></span>
+                            </div>
+                            <div class="col-12 col-md-6">
+                                <label asp-for="PRCLicense2" class="field-label">
+                                    Second PRC License <span class="opt">(optional)</span>
+                                </label>
+                                <input asp-for="PRCLicense2" class="form-control" list="prcList2" />
+                                <datalist id="prcList2">
+                                    <option value="Psychometrician"></option>
+                                    <option value="Guidance Counselor"></option>
+                                    <option value="Psychologist"></option>
+                                    <option value="Professional Teacher"></option>
+                                </datalist>
+                                <span asp-validation-for="PRCLicense2" class="field-error"></span>
+                            </div>
+                        </div>
+
+                        <div class="sub-head">Experience</div>
+                        <div class="row g-3">
+                            <div class="col-12">
+                                <label asp-for="WorkExperience" class="field-label">Work Experience</label>
+                                <textarea asp-for="WorkExperience" class="form-control" rows="3"
+                                          placeholder="Previous roles, institutions and years served..."></textarea>
+                                <span asp-validation-for="WorkExperience" class="field-error"></span>
+                            </div>
+                            <div class="col-12">
+                                <label asp-for="WorkSchool" class="field-label">Work/School</label>
+                                <input asp-for="WorkSchool" class="form-control" />
+                                <span asp-validation-for="WorkSchool" class="field-error"></span>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+            </section>
+
+            <!-- ---------- STEP 3: EMPLOYMENT ---------- -->
+            <section class="wiz-panel" data-step="2" hidden>
+                <div class="card sect-card">
+                    <div class="card-header sect-head">
+                        <i class="fa-regular fa-building"></i> Employment Details
+                    </div>
+                    <div class="card-body">
+                        <div class="row g-3">
+                            <div class="col-12 col-md-6">
+                                <label asp-for="Position" class="field-label">Position/Designation <span class="req">*</span></label>
+                                <input asp-for="Position" class="form-control" list="positionList" placeholder="e.g. Guidance Counselor II" />
+                                <datalist id="positionList">
+                                    <option value="Guidance Counselor I"></option>
+                                    <option value="Guidance Counselor II"></option>
+                                    <option value="Guidance Counselor III"></option>
+                                    <option value="Guidance Advocate"></option>
+                                    <option value="Guidance Coordinator"></option>
+                                    <option value="Registered Psychometrician"></option>
+                                </datalist>
+                                <span asp-validation-for="Position" class="field-error"></span>
+                            </div>
+                            <div class="col-12 col-md-6">
+                                <label asp-for="EmploymentStatus" class="field-label">Employment Status <span class="req">*</span></label>
+                                <select asp-for="EmploymentStatus" class="form-select">
+                                    <option value="">Select</option>
+                                    <option>Permanent</option>
+                                    <option>Full-Time</option>
+                                    <option>Contractual</option>
+                                    <option>Part-Time</option>
+                                    <option>Substitute</option>
+                                    <option>Retired</option>
+                                    <option>Inactive</option>
+                                </select>
+                                <span asp-validation-for="EmploymentStatus" class="field-error"></span>
+                            </div>
+                        </div>
+
+                        <div class="account-note">
+                            <i class="fa-solid fa-circle-info"></i>
+                            <span>
+                                Saving this record also creates the counselor's login account using the
+                                email address above. They will be asked to set a new password on first sign-in.
+                            </span>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- ---------- STEP 4: REVIEW ---------- -->
+            <section class="wiz-panel" data-step="3" hidden>
+                <div class="card sect-card">
+                    <div class="card-header sect-head">
+                        <i class="fa-regular fa-circle-check"></i> Review &amp; Submit
+                    </div>
+                    <div class="card-body">
+                        <p class="review-intro">
+                            Please check the details below before adding this counselor.
+                            You can jump back to any section to make changes.
+                        </p>
+
+                        <div class="review-block">
+                            <div class="review-block-head">
+                                <h3>Personal Information</h3>
+                                <button type="button" class="link-btn" data-goto="0"><i class="fa-regular fa-pen-to-square"></i> Edit</button>
+                            </div>
+                            <div class="review-grid">
+                                <div class="rev-item"><span class="rev-key">Full Name</span><span class="rev-val" data-src="CounselorName"></span></div>
+                                <div class="rev-item"><span class="rev-key">Employee Number</span><span class="rev-val" data-src="EmployeeNumber"></span></div>
+                                <div class="rev-item"><span class="rev-key">Gender</span><span class="rev-val" data-src="Gender"></span></div>
+                                <div class="rev-item"><span class="rev-key">Birth Date</span><span class="rev-val" data-src="BirthDate"></span></div>
+                                <div class="rev-item"><span class="rev-key">Age</span><span class="rev-val" data-src="counselorAge"></span></div>
+                                <div class="rev-item"><span class="rev-key">Email</span><span class="rev-val" data-src="EmailAddress"></span></div>
+                                <div class="rev-item"><span class="rev-key">Contact Number</span><span class="rev-val" data-contacts="counselor-contacts"></span></div>
+                                <div class="rev-item"><span class="rev-key">Marital Status</span><span class="rev-val" data-src="MaritalStatus"></span></div>
+                                <div class="rev-item"><span class="rev-key">No. of Children</span><span class="rev-val" data-src="NumberOfChildren"></span></div>
+                                <div class="rev-item"><span class="rev-key">Address</span><span class="rev-val" data-src="Address"></span></div>
+                            </div>
+                        </div>
+
+                        <div class="review-block">
+                            <div class="review-block-head">
+                                <h3>Professional Background</h3>
+                                <button type="button" class="link-btn" data-goto="1"><i class="fa-regular fa-pen-to-square"></i> Edit</button>
+                            </div>
+                            <div class="review-grid">
+                                <div class="rev-item"><span class="rev-key">College/University</span><span class="rev-val" data-src="College"></span></div>
+                                <div class="rev-item"><span class="rev-key">Course</span><span class="rev-val" data-src="CollegeCourse"></span></div>
+                                <div class="rev-item"><span class="rev-key">Post Graduate Studies</span><span class="rev-val" data-src="PostGraduateStudies"></span></div>
+                                <div class="rev-item"><span class="rev-key">Post Graduate Course</span><span class="rev-val" data-src="PostGraduateCourse"></span></div>
+                                <div class="rev-item"><span class="rev-key">PRC License</span><span class="rev-val" data-src="PRCLicense"></span></div>
+                                <div class="rev-item"><span class="rev-key">Second PRC License</span><span class="rev-val" data-src="PRCLicense2"></span></div>
+                                <div class="rev-item"><span class="rev-key">Work Experience</span><span class="rev-val" data-src="WorkExperience"></span></div>
+                                <div class="rev-item"><span class="rev-key">Work/School</span><span class="rev-val" data-src="WorkSchool"></span></div>
+                            </div>
+                        </div>
+
+                        <div class="review-block">
+                            <div class="review-block-head">
+                                <h3>Employment Details</h3>
+                                <button type="button" class="link-btn" data-goto="2"><i class="fa-regular fa-pen-to-square"></i> Edit</button>
+                            </div>
+                            <div class="review-grid">
+                                <div class="rev-item"><span class="rev-key">Position/Designation</span><span class="rev-val" data-src="Position"></span></div>
+                                <div class="rev-item"><span class="rev-key">Employment Status</span><span class="rev-val" data-src="EmploymentStatus"></span></div>
+                            </div>
+                        </div>
+
+                        <div class="confirm-box form-check">
+                            <input class="form-check-input" type="checkbox" id="confirmAccuracy" />
+                            <label class="form-check-label" for="confirmAccuracy">
+                                I confirm the information above is accurate to the best of my knowledge,
+                                and that a Care Center login account may be created for this counselor.
+                            </label>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- ---------- FOOTER ---------- -->
+            <div class="wiz-footer">
+                <small class="privacy-note">
+                    <i class="fa-solid fa-lock"></i> Privacy Protected &amp; Encrypted
+                </small>
+                <div class="wiz-actions">
+                    <a asp-action="Index" class="btn btn-shell">Cancel</a>
+                    <button type="button" class="btn btn-shell" id="wizBack" hidden>Back</button>
+                    <button type="button" class="btn btn-brand" id="wizNext">Next</button>
+                    <button type="submit" class="btn btn-brand" id="wizSubmit" hidden>Add Counselor</button>
                 </div>
             </div>
 
@@ -403,56 +410,19 @@
     </div>
 </div>
 
-<script>
-    const links = document.querySelectorAll('.form-sidebar .nav-link');
-    const sections = document.querySelectorAll('.form-section');
-
-    const observer = new IntersectionObserver((entries) => {
-        entries.forEach(entry => {
-            if (entry.isIntersecting) {
-                links.forEach(l => l.classList.remove('active'));
-                const active = document.querySelector(`.nav-link[href="#${entry.target.id}"]`);
-                if (active) active.classList.add('active');
-            }
-        });
-    }, { threshold: 0.3 });
-
-    sections.forEach(s => observer.observe(s));
-
-    links.forEach(link => {
-        link.addEventListener('click', e => {
-            e.preventDefault();
-            document.querySelector(link.getAttribute('href')).scrollIntoView({ behavior: 'smooth' });
-        });
-    });
-
-    function addContact(containerId, prefix) {
-        const container = document.getElementById(containerId);
-        const index = container.querySelectorAll('.contact-row').length;
-        const row = document.createElement('div');
-        row.className = 'contact-row input-group mb-2';
-        row.innerHTML = `
-            <input name="${prefix}[${index}].Number" class="form-control" placeholder="Number" />
-            <select name="${prefix}[${index}].Label" class="form-control" style="max-width:200px;">
-                <option value="">Select type</option>
-                <option value="Office Telephone">Office Telephone</option>
-                <option value="Office Mobile Phone">Office Mobile Phone</option>
-                <option value="Home Telephone">Home Telephone</option>
-                <option value="Home Mobile Phone">Home Mobile Phone</option>
-                <option value="Personal Mobile Phone">Personal Mobile Phone</option>
-            </select>
-            <button type="button" class="btn btn-sm btn-outline-danger ms-1 remove-contact">✕</button>`;
-        container.appendChild(row);
-    }
-
-    document.addEventListener('click', e => {
-        const btn = e.target.closest('.remove-contact');
-        if (btn) btn.closest('.contact-row').remove();
-    });
-</script>
-
 @section Scripts {
-    @{
-        await Html.RenderPartialAsync("_ValidationScriptsPartial");
-    }
+    <partial name="_ValidationScriptsPartial" />
+    <script src="~/js/record-wizard.js" asp-append-version="true"></script>
+    <script>
+        GcamsWizard.init({
+            page: 'counselorCreatePage',
+            form: 'counselorForm',
+            birthdayField: 'BirthDate',
+            ageField: 'counselorAge',
+            idField: 'EmployeeNumber',
+            idPrefix: 'EMP',
+            generateBtn: 'genEmpNo',
+            confirmBox: 'confirmAccuracy'
+        });
+    </script>
 }
