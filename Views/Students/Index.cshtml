@@ -2,154 +2,166 @@
 
 @{
     ViewData["Title"] = "Students";
-    ViewData["PageSubtitle"] = $"{Model.Count()} registered students";
+    ViewData["PageSubtitle"] = $"{Model.Count()} registered student{(Model.Count() == 1 ? "" : "s")}";
 }
 
 @section Styles {
-    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200&display=swap" rel="stylesheet" />
     <link rel="stylesheet" href="~/css/Students/Index.css" asp-append-version="true" />
 }
 
-@section Breadcrumb {
-    <nav class="breadcrumb-nav" aria-label="Breadcrumb">
-        <a asp-action="Index">Students</a>
-        <span class="crumb-sep">/</span>
-        <span class="current">Student Management</span>
-    </nav>
-}
+<div class="students-page">
 
-<div class="student-page">
-
-    <!-- Header actions -->
-    <div class="page-header">
-        <div class="header-actions">
-            <button type="button" class="btn-import" data-bs-toggle="modal" data-bs-target="#importModal">
-                <span class="material-symbols-outlined">upload_file</span>
-                Import Excel
-            </button>
-            <a asp-action="Create" class="btn-add">
-                <span class="material-symbols-outlined">person_add</span>
-                Add New Student
-            </a>
-        </div>
+    <!-- ================= Toolbar ================= -->
+    <div class="page-toolbar d-flex flex-wrap align-items-center justify-content-end gap-2 mb-3">
+        <button type="button" class="btn btn-ghost" data-bs-toggle="modal" data-bs-target="#importModal">
+            <i class="fa-solid fa-file-arrow-up"></i>
+            <span>Import Excel</span>
+        </button>
+        <a asp-action="Create" class="btn btn-brand">
+            <i class="fa-solid fa-user-plus"></i>
+            <span>Add New Student</span>
+        </a>
     </div>
 
     @if (TempData["Success"] != null)
     {
-        <div class="alert-success">
-            <span class="material-symbols-outlined">check_circle</span>
-            @TempData["Success"]
+        <div class="alert alert-success alert-dismissible fade show d-flex align-items-center gap-2" role="alert">
+            <i class="fa-solid fa-circle-check"></i>
+            <div>@TempData["Success"]</div>
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
         </div>
     }
     @if (TempData["Error"] != null)
     {
-        <div class="alert-danger">
-            <span class="material-symbols-outlined">error</span>
-            @TempData["Error"]
+        <div class="alert alert-danger alert-dismissible fade show d-flex align-items-center gap-2" role="alert">
+            <i class="fa-solid fa-circle-exclamation"></i>
+            <div>@TempData["Error"]</div>
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
         </div>
     }
 
-    <!-- Filter Bar -->
-    <div class="filter-bar">
-        <div class="search-box">
-            <span class="material-symbols-outlined">search</span>
-            <input type="text" id="studentSearch" placeholder="Search students by name or ID" />
+    <!-- ================= Panel ================= -->
+    <div class="content-panel">
+
+        <!-- Filters -->
+        <div class="filter-bar d-flex flex-wrap align-items-center gap-2 mb-3">
+            <div class="search-box">
+                <i class="fa-solid fa-magnifying-glass" aria-hidden="true"></i>
+                <input type="search" id="studentSearch" class="form-control border-0 shadow-none p-0"
+                       placeholder="Search students by name or ID" aria-label="Search students by name or ID" />
+            </div>
+
+            <select id="gradeFilter" class="form-select filter-select" aria-label="Filter by grade level">
+                <option value="">All Grades</option>
+                @foreach (var grade in Model.Select(s => s.GradeLevel)
+                                .Where(g => !string.IsNullOrWhiteSpace(g))
+                                .Distinct()
+                                .OrderBy(g => g))
+                {
+                    <option value="@grade.ToLower()">@grade</option>
+                }
+            </select>
+
+            <select id="sectionFilter" class="form-select filter-select" aria-label="Filter by section">
+                <option value="">All Sections</option>
+                @foreach (var sec in Model.Select(s => s.Section)
+                                .Where(s => !string.IsNullOrWhiteSpace(s))
+                                .Distinct()
+                                .OrderBy(s => s))
+                {
+                    <option value="@sec.ToLower()">@sec</option>
+                }
+            </select>
+
+            <select id="statusFilter" class="form-select filter-select filter-extra" aria-label="Filter by status">
+                <option value="">All Status</option>
+                <option value="true">Active</option>
+                <option value="false">Archived</option>
+            </select>
+
+            <button type="button" class="filter-toggle" id="filterToggle"
+                    aria-expanded="false" aria-controls="statusFilter" aria-label="More filters">
+                <i class="fa-solid fa-sliders" aria-hidden="true"></i>
+            </button>
         </div>
 
-        <select id="gradeFilter" class="filter-select" aria-label="Filter by grade level">
-            <option value="">All Grades</option>
-            @foreach (var gradeLevel in Model.Select(s => s.GradeLevel).Distinct().OrderBy(s => s))
-            {
-                <option value="@gradeLevel?.ToLower()">@gradeLevel</option>
-            }
-        </select>
-
-        <select id="sectionFilter" class="filter-select" aria-label="Filter by section">
-            <option value="">All Sections</option>
-            @foreach (var sec in Model.Select(s => s.Section).Distinct().OrderBy(s => s))
-            {
-                <option value="@sec?.ToLower()">@sec</option>
-            }
-        </select>
-
-        <select id="statusFilter" class="filter-select filter-extra" aria-label="Filter by status">
-            <option value="">All Status</option>
-            <option value="true">Active</option>
-            <option value="false">Inactive</option>
-        </select>
-
-        <button type="button" class="filter-toggle" id="filterToggle" aria-expanded="false" aria-label="More filters">
-            <span class="material-symbols-outlined">tune</span>
-        </button>
-    </div>
-
-    <!-- Table -->
-    <div class="table-card">
-        <div class="table-scroll">
-            <table class="student-table" id="studentTable">
-                <thead>
-                    <tr>
-                        <th>Student ID</th>
-                        <th>Full Name</th>
-                        <th>Email</th>
-                        <th>Grade</th>
-                        <th>Section</th>
-                        <th>Actions</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    @foreach (var item in Model)
-                    {
-                        <tr data-active="@item.IsActive.ToString().ToLower()">
-                            <td data-label="Student ID"><span class="student-id">@item.StuID</span></td>
-                            <td data-label="Full Name"><span class="student-name">@item.StuName</span></td>
-                            <td data-label="Email"><span class="student-email">@item.Email</span></td>
-                            <td data-label="Grade"><span class="grade-pill">@item.GradeLevel</span></td>
-                            <td data-label="Section">@item.Section</td>
-                            <td data-label="Actions">
-                                <div class="action-icons">
-                                    <a asp-action="Details" asp-route-id="@item.StudentsID" class="action-icon" title="View Details">
-                                        <span class="material-symbols-outlined">visibility</span>
-                                    </a>
-                                    <a asp-action="Edit" asp-route-id="@item.StudentsID" class="action-icon" title="Edit">
-                                        <span class="material-symbols-outlined">edit</span>
-                                    </a>
-                                    @if (item.IsActive)
-                                    {
-                                        <form asp-action="SoftDelete" asp-route-id="@item.StudentsID" method="post" class="archive-form">
-                                            @Html.AntiForgeryToken()
-                                            <button type="submit" class="action-icon danger" title="Archive Student">
-                                                <span class="material-symbols-outlined">archive</span>
-                                            </button>
-                                        </form>
-                                    }
-                                    else
-                                    {
-                                        <form asp-action="Restore" asp-route-id="@item.StudentsID" method="post" class="archive-form">
-                                            @Html.AntiForgeryToken()
-                                            <button type="submit" class="action-icon restore" title="Restore Student">
-                                                <span class="material-symbols-outlined">restore</span>
-                                            </button>
-                                        </form>
-                                    }
-                                </div>
-                            </td>
+        <!-- Table -->
+        <div class="table-card">
+            <div class="table-responsive table-scroll">
+                <table class="table table-hover gcams-table align-middle mb-0" id="studentTable">
+                    <thead>
+                        <tr>
+                            <th scope="col">Student ID</th>
+                            <th scope="col">Full Name</th>
+                            <th scope="col">Email</th>
+                            <th scope="col">Grade</th>
+                            <th scope="col">Section</th>
+                            <th scope="col" class="th-actions">Actions</th>
                         </tr>
-                    }
-                </tbody>
-            </table>
-        </div>
+                    </thead>
+                    <tbody>
+                        @foreach (var item in Model)
+                        {
+                            <tr data-name="@item.StuName?.ToLower()"
+                                data-stuid="@item.StuID?.ToLower()"
+                                data-grade="@item.GradeLevel?.ToLower()"
+                                data-section="@item.Section?.ToLower()"
+                                data-active="@item.IsActive.ToString().ToLower()">
+                                <td data-label="Student ID"><span class="cell-id">@item.StuID</span></td>
+                                <td data-label="Full Name"><span class="cell-name">@item.StuName</span></td>
+                                <td data-label="Email"><span class="cell-muted">@item.Email</span></td>
+                                <td data-label="Grade"><span class="grade-pill">@item.GradeLevel</span></td>
+                                <td data-label="Section">@item.Section</td>
+                                <td data-label="Actions">
+                                    <div class="action-icons">
+                                        <a asp-action="Details" asp-route-id="@item.StudentsID"
+                                           class="action-icon" title="View details" aria-label="View details">
+                                            <i class="fa-regular fa-eye"></i>
+                                        </a>
+                                        <a asp-action="Edit" asp-route-id="@item.StudentsID"
+                                           class="action-icon" title="Edit" aria-label="Edit">
+                                            <i class="fa-solid fa-pen"></i>
+                                        </a>
+                                        @if (item.IsActive)
+                                        {
+                                            <form asp-action="SoftDelete" asp-route-id="@item.StudentsID" method="post" class="inline-form">
+                                                @Html.AntiForgeryToken()
+                                                <button type="submit" class="action-icon danger" title="Archive student" aria-label="Archive student">
+                                                    <i class="fa-solid fa-box-archive"></i>
+                                                </button>
+                                            </form>
+                                        }
+                                        else
+                                        {
+                                            <form asp-action="Restore" asp-route-id="@item.StudentsID" method="post" class="inline-form">
+                                                @Html.AntiForgeryToken()
+                                                <button type="submit" class="action-icon restore" title="Restore student" aria-label="Restore student">
+                                                    <i class="fa-solid fa-rotate-left"></i>
+                                                </button>
+                                            </form>
+                                        }
+                                    </div>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
 
-        <!-- Table Footer -->
-        <div class="table-footer">
-            <span class="showing-text" id="showingText"></span>
-            <div class="pagination" id="pagination"></div>
+            <div class="empty-state d-none" id="emptyState">
+                <i class="fa-solid fa-user-graduate"></i>
+                <p class="mb-0">No students match your filters.</p>
+            </div>
+
+            <div class="table-footer d-flex flex-wrap align-items-center justify-content-between gap-2">
+                <span class="showing-text" id="showingText"></span>
+                <ul class="pagination gcams-pagination mb-0" id="pagination"></ul>
+            </div>
         </div>
     </div>
-
 </div>
 
-<!-- Import Modal -->
+<!-- ================= Import Modal ================= -->
 <div class="modal fade" id="importModal" tabindex="-1" aria-labelledby="importModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content">
@@ -160,14 +172,13 @@
             <form asp-action="Import" method="post" enctype="multipart/form-data">
                 @Html.AntiForgeryToken()
                 <div class="modal-body">
-                    <div class="mb-3">
-                        <label class="form-label">Select Excel File (.xlsx)</label>
-                        <input type="file" name="file" accept=".xlsx" class="form-control" required />
-                    </div>
+                    <label for="importFile" class="form-label">Select Excel file (.xlsx)</label>
+                    <input type="file" id="importFile" name="file" accept=".xlsx" class="form-control" required />
+                    <div class="form-text">The first row is treated as the header and is skipped. Duplicate student IDs are ignored.</div>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                    <input type="submit" value="Upload & Import" class="btn btn-success" />
+                    <button type="button" class="btn btn-light" data-bs-dismiss="modal">Cancel</button>
+                    <button type="submit" class="btn btn-brand">Upload &amp; Import</button>
                 </div>
             </form>
         </div>
@@ -181,25 +192,30 @@
             let currentPage = 1;
             let visibleRows = [];
 
-            const rows = Array.from(document.querySelectorAll('#studentTable tbody tr'));
+            const table = document.getElementById('studentTable');
+            const rows = Array.from(table.querySelectorAll('tbody tr'));
+            const searchInput = document.getElementById('studentSearch');
+            const gradeFilter = document.getElementById('gradeFilter');
+            const sectionFilter = document.getElementById('sectionFilter');
+            const statusFilter = document.getElementById('statusFilter');
+            const filterBar = document.querySelector('.filter-bar');
+            const filterToggle = document.getElementById('filterToggle');
+            const emptyState = document.getElementById('emptyState');
+            const showingText = document.getElementById('showingText');
+            const pagination = document.getElementById('pagination');
 
             function applyFilters() {
-                const query = document.getElementById('studentSearch').value.toLowerCase().trim();
-                const grade = document.getElementById('gradeFilter').value.toLowerCase();
-                const selectedSection = document.getElementById('sectionFilter').value.toLowerCase();
-                const status = document.getElementById('statusFilter').value;
+                const query = searchInput.value.toLowerCase().trim();
+                const grade = gradeFilter.value.toLowerCase();
+                const section = sectionFilter.value.toLowerCase();
+                const status = statusFilter.value;
 
                 visibleRows = rows.filter(function (row) {
-                    const stuId = row.cells[0]?.textContent.trim().toLowerCase() || '';
-                    const name = row.cells[1]?.textContent.trim().toLowerCase() || '';
-                    const rowGrade = row.cells[3]?.textContent.trim().toLowerCase() || '';
-                    const rowSec = row.cells[4]?.textContent.trim().toLowerCase() || '';
-                    const rowActive = (row.getAttribute('data-active') || '').trim();
-
-                    return (!query || name.includes(query) || stuId.includes(query))
-                        && (!grade || rowGrade === grade)
-                        && (!selectedSection || rowSec === selectedSection)
-                        && (!status || rowActive === status);
+                    const d = row.dataset;
+                    return (!query || (d.name || '').includes(query) || (d.stuid || '').includes(query))
+                        && (!grade || d.grade === grade)
+                        && (!section || d.section === section)
+                        && (!status || d.active === status);
                 });
 
                 currentPage = 1;
@@ -207,42 +223,51 @@
             }
 
             function renderPage() {
+                const total = visibleRows.length;
+                const totalPages = Math.max(1, Math.ceil(total / pageSize));
+                if (currentPage > totalPages) currentPage = totalPages;
+
                 const start = (currentPage - 1) * pageSize;
                 const end = start + pageSize;
 
-                rows.forEach(r => r.style.display = 'none');
-                visibleRows.slice(start, end).forEach(r => r.style.display = '');
+                rows.forEach(r => r.classList.add('d-none'));
+                visibleRows.slice(start, end).forEach(r => r.classList.remove('d-none'));
 
-                const total = visibleRows.length;
-                const showing = Math.min(end, total);
-                document.getElementById('showingText').textContent =
-                    total === 0 ? 'No students found' :
-                        `Showing ${start + 1} - ${showing} of ${total} student${total !== 1 ? 's' : ''}`;
+                emptyState.classList.toggle('d-none', total !== 0);
+
+                showingText.textContent = total === 0
+                    ? 'No students found'
+                    : `Showing ${start + 1} - ${Math.min(end, total)} of ${total} student${total !== 1 ? 's' : ''}`;
 
                 renderPagination(total);
             }
 
-            function renderPagination(total) {
-                const totalPages = Math.ceil(total / pageSize);
-                const pg = document.getElementById('pagination');
-                pg.innerHTML = '';
+            function pageItem(label, page, { active = false, disabled = false, ariaLabel = null } = {}) {
+                const li = document.createElement('li');
+                li.className = 'page-item' + (active ? ' active' : '') + (disabled ? ' disabled' : '');
 
-                function btn(label, page, isActive, isDisabled, isArrow) {
-                    const b = document.createElement('button');
-                    b.type = 'button';
-                    b.className = 'page-btn' + (isActive ? ' active' : '') + (isArrow ? ' arrow' : '');
-                    b.innerHTML = label;
-                    b.disabled = isDisabled;
-                    if (!isDisabled && !isActive) {
-                        b.onclick = () => { currentPage = page; renderPage(); };
-                    }
-                    return b;
+                const btn = document.createElement('button');
+                btn.type = 'button';
+                btn.className = 'page-link';
+                btn.innerHTML = label;
+                btn.disabled = disabled;
+                if (ariaLabel) btn.setAttribute('aria-label', ariaLabel);
+                if (!disabled && !active) {
+                    btn.addEventListener('click', function () { currentPage = page; renderPage(); });
                 }
 
-                const prevIcon = '<span class="material-symbols-outlined">chevron_left</span>';
-                const nextIcon = '<span class="material-symbols-outlined">chevron_right</span>';
+                li.appendChild(btn);
+                return li;
+            }
 
-                pg.appendChild(btn(prevIcon, currentPage - 1, false, currentPage === 1, true));
+            function renderPagination(total) {
+                const totalPages = Math.ceil(total / pageSize);
+                pagination.innerHTML = '';
+                if (totalPages <= 1) return;
+
+                pagination.appendChild(pageItem(
+                    '<i class="fa-solid fa-chevron-left"></i>', currentPage - 1,
+                    { disabled: currentPage === 1, ariaLabel: 'Previous page' }));
 
                 const pages = [];
                 if (totalPages <= 7) {
@@ -255,39 +280,36 @@
                     pages.push(totalPages);
                 }
 
-                pages.forEach(p => {
+                pages.forEach(function (p) {
                     if (p === '...') {
-                        const s = document.createElement('span');
-                        s.className = 'page-gap';
-                        s.textContent = '...';
-                        pg.appendChild(s);
+                        const li = document.createElement('li');
+                        li.className = 'page-item disabled';
+                        li.innerHTML = '<span class="page-link page-gap">&hellip;</span>';
+                        pagination.appendChild(li);
                     } else {
-                        pg.appendChild(btn(p, p, p === currentPage, false, false));
+                        pagination.appendChild(pageItem(p, p, { active: p === currentPage }));
                     }
                 });
 
-                pg.appendChild(btn(nextIcon, currentPage + 1, false, currentPage === totalPages || totalPages === 0, true));
+                pagination.appendChild(pageItem(
+                    '<i class="fa-solid fa-chevron-right"></i>', currentPage + 1,
+                    { disabled: currentPage === totalPages, ariaLabel: 'Next page' }));
             }
-
-            // Status sits behind the filter button, like the design
-            const filterBar = document.querySelector('.filter-bar');
-            const filterToggle = document.getElementById('filterToggle');
-            const statusSelect = document.getElementById('statusFilter');
 
             filterToggle.addEventListener('click', function () {
                 const open = filterBar.classList.toggle('show-extra');
                 this.setAttribute('aria-expanded', open ? 'true' : 'false');
-                if (open) { statusSelect.focus(); }
+                if (open) statusFilter.focus();
             });
 
             function paintFilterState() {
-                filterToggle.classList.toggle('has-filter', statusSelect.value !== '');
+                filterToggle.classList.toggle('has-filter', statusFilter.value !== '');
             }
 
-            document.getElementById('studentSearch').addEventListener('input', applyFilters);
-            document.getElementById('gradeFilter').addEventListener('change', applyFilters);
-            document.getElementById('sectionFilter').addEventListener('change', applyFilters);
-            document.getElementById('statusFilter').addEventListener('change', function () {
+            searchInput.addEventListener('input', applyFilters);
+            gradeFilter.addEventListener('change', applyFilters);
+            sectionFilter.addEventListener('change', applyFilters);
+            statusFilter.addEventListener('change', function () {
                 paintFilterState();
                 applyFilters();
             });

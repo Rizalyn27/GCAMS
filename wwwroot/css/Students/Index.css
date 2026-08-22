@@ -1,201 +1,131 @@
 ﻿/* ==========================================================================
-   Index.css — Students page
+   Index.css — Students list page
    Path: wwwroot/css/Students/Index.css
-   Shell chrome (sidebar, topbar, notifications) lives in app-shell.css
+
+   Only page-level styling lives here. The app shell (sidebar, topbar,
+   notifications) is styled by wwwroot/css/Shared/Layout.css, and generic
+   components come from Bootstrap 5.
+
+   NOTE: this is a plain .css file, so media queries use a SINGLE @.
    ========================================================================== */
 
-.student-page {
-    font-family: 'Inter', 'Manrope', sans-serif;
-    color: #2b2f27;
+.students-page {
+    --brand: #1b6d24;
+    --brand-dark: #175c1e;
+    --brand-soft: #eef2ea;
+    --ink: #23291f;
+    --muted: #8a938a;
+    --line: #eceff0;
+    --panel: #fbfcfa;
+    color: var(--ink);
     max-width: 1160px;
     margin: 0 auto;
-    padding: 0 0 8px; /* .page-body in the layout already provides the padding */
     width: 100%;
 }
 
-/* ---------- Page Header ---------- */
-.page-header {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 12px;
-    margin-bottom: 22px;
-    flex-wrap: wrap;
-}
-
-/* Breadcrumb — rendered into the layout topbar via @section Breadcrumb */
-.breadcrumb-nav {
-    display: flex;
-    align-items: center;
-    gap: 6px;
-    font-size: 13px;
-    color: #8a938a;
-    min-width: 0;
-}
-
-    .breadcrumb-nav a {
-        color: #8a938a;
-        text-decoration: none;
+    /* ---------- Toolbar buttons ---------- */
+    .students-page .btn-brand,
+    .students-page .btn-ghost {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        font-size: 14px;
+        font-weight: 600;
+        padding: 10px 18px;
+        border-radius: 10px;
+        white-space: nowrap;
     }
 
-        .breadcrumb-nav a:hover {
-            color: #1b6d24;
+    .students-page .btn-brand {
+        background: var(--brand);
+        border: 1px solid var(--brand);
+        color: #fff;
+        box-shadow: 0 1px 3px rgba(27, 109, 36, .25);
+    }
+
+        .students-page .btn-brand:hover,
+        .students-page .btn-brand:focus {
+            background: var(--brand-dark);
+            border-color: var(--brand-dark);
+            color: #fff;
         }
 
-    .breadcrumb-nav .crumb-sep {
-        color: #c3ccc0;
+    .students-page .btn-ghost {
+        background: #fff;
+        border: 1px solid #d7ded2;
+        color: #3a4a35;
     }
 
-    .breadcrumb-nav .current {
-        color: #1b6d24;
-        font-weight: 600;
-    }
+        .students-page .btn-ghost:hover,
+        .students-page .btn-ghost:focus {
+            background: #f3f6f1;
+            color: var(--brand-dark);
+        }
 
-.header-actions {
+/* ---------- Panel that wraps filters + table ---------- */
+.content-panel {
+    background: var(--panel);
+    border: 1px solid var(--line);
+    border-radius: 16px;
+    padding: 18px;
+}
+
+/* ---------- Filter bar ---------- */
+.search-box {
     display: flex;
     align-items: center;
     gap: 10px;
-    margin-left: auto;
-    flex-wrap: wrap;
-}
-
-.btn-import,
-.btn-add {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    gap: 8px;
-    font-family: 'Manrope', sans-serif;
-    font-weight: 600;
-    font-size: 14px;
-    padding: 10px 18px;
-    border-radius: 10px;
-    border: 1px solid transparent;
-    cursor: pointer;
-    text-decoration: none;
-    transition: background .15s ease, box-shadow .15s ease;
-    white-space: nowrap;
-}
-
-    .btn-import .material-symbols-outlined,
-    .btn-add .material-symbols-outlined {
-        font-size: 18px;
-    }
-
-.btn-import {
-    background: #fff;
-    border-color: #d7ded2;
-    color: #3a4a35;
-}
-
-    .btn-import:hover {
-        background: #f3f6f1;
-    }
-
-.btn-add {
-    background: #1b6d24;
-    color: #fff;
-    box-shadow: 0 1px 3px rgba(27, 109, 36, .25);
-}
-
-    .btn-add:hover {
-        background: #175c1e;
-        color: #fff;
-    }
-
-/* ---------- Alerts ---------- */
-.alert-success,
-.alert-danger {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    padding: 12px 16px;
-    border-radius: 10px;
-    font-size: 14px;
-    margin-bottom: 16px;
-}
-
-    .alert-success .material-symbols-outlined,
-    .alert-danger .material-symbols-outlined {
-        font-size: 18px;
-    }
-
-.alert-success {
-    background: #e7f6e9;
-    color: #1b6d24;
-    border: 1px solid #bfe3c4;
-}
-
-.alert-danger {
-    background: #fdecec;
-    color: #b3261e;
-    border: 1px solid #f3c6c4;
-}
-
-/* ---------- Filter Bar ---------- */
-.filter-bar {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    margin-bottom: 18px;
-    flex-wrap: wrap;
-}
-
-.search-box {
     flex: 1 1 260px;
     min-width: 200px;
-    display: flex;
-    align-items: center;
-    gap: 10px;
     background: #fff;
     border: 1px solid #e5eae1;
     border-radius: 999px;
-    padding: 10px 18px;
+    padding: 9px 18px;
 }
 
-    .search-box .material-symbols-outlined {
-        font-size: 20px;
+    .search-box i {
+        font-size: 15px;
         color: #9aa396;
+        flex-shrink: 0;
     }
 
-    .search-box input {
-        border: none;
-        outline: none;
-        flex: 1;
-        font-size: 14px;
-        font-family: 'Inter', sans-serif;
-        color: #2b2f27;
+    .search-box .form-control {
         background: transparent;
+        font-size: 14px;
+        color: var(--ink);
         min-width: 0;
+        height: auto;
     }
 
-        .search-box input::placeholder {
+        .search-box .form-control::placeholder {
             color: #9aa396;
         }
 
-.filter-select {
-    appearance: none;
-    -webkit-appearance: none;
-    background: #fff url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6' viewBox='0 0 10 6'%3E%3Cpath d='M1 1l4 4 4-4' stroke='%23516249' stroke-width='1.5' fill='none' fill-rule='evenodd'/%3E%3C/svg%3E") no-repeat right 14px center;
-    border: 1px solid #e5eae1;
-    border-radius: 999px;
-    padding: 10px 34px 10px 18px;
-    font-size: 14px;
-    font-weight: 500;
-    font-family: 'Inter', sans-serif;
-    color: #3a4a35;
-    cursor: pointer;
-    min-width: 130px;
-    flex: 0 1 150px;
-}
-
-    .filter-select:focus,
     .search-box:focus-within {
-        outline: none;
-        border-color: #1b6d24;
+        border-color: var(--brand);
     }
 
-/* Status lives behind the filter button until it is opened */
+.students-page .filter-select {
+    flex: 0 1 160px;
+    min-width: 140px;
+    width: auto;
+    border: 1px solid #e5eae1;
+    border-radius: 999px;
+    padding: 9px 36px 9px 18px;
+    font-size: 14px;
+    font-weight: 500;
+    color: #3a4a35;
+    background-position: right 14px center;
+    cursor: pointer;
+}
+
+    .students-page .filter-select:focus {
+        border-color: var(--brand);
+        box-shadow: none;
+    }
+
+/* Status filter sits behind the sliders button on wide screens */
 .filter-extra {
     display: none;
 }
@@ -225,92 +155,89 @@
     }
 
     .filter-toggle:focus-visible {
-        outline: 2px solid #1b6d24;
+        outline: 2px solid var(--brand);
         outline-offset: 2px;
     }
 
-    .filter-toggle .material-symbols-outlined {
-        font-size: 20px;
-    }
-
-    /* A dot marks that a status filter is actually applied */
     .filter-toggle.has-filter {
-        color: #1b6d24;
-        border-color: #1b6d24;
+        color: var(--brand);
+        border-color: var(--brand);
     }
 
         .filter-toggle.has-filter::after {
             content: "";
             position: absolute;
-            top: 8px;
-            right: 9px;
-            width: 7px;
-            height: 7px;
-            background: #1b6d24;
+            top: 7px;
+            right: 8px;
+            width: 8px;
+            height: 8px;
+            background: var(--brand);
             border: 1.5px solid #fff;
             border-radius: 50%;
         }
 
-/* ---------- Table Card ---------- */
+/* ---------- Table card ---------- */
 .table-card {
     background: #fff;
-    border: 1px solid #eceff0;
+    border: 1px solid var(--line);
     border-radius: 14px;
     box-shadow: 0 1px 3px rgba(0, 0, 0, .03);
     overflow: hidden;
 }
 
-/* Horizontal scroll instead of a squashed table on medium screens */
 .table-scroll {
-    overflow-x: auto;
+    border-radius: 14px 14px 0 0;
 }
 
-.student-table {
-    width: 100%;
-    border-collapse: collapse;
-    min-width: 720px;
+.gcams-table {
+    --bs-table-hover-bg: #fafcf9;
+    --bs-table-hover-color: var(--ink);
+    margin-bottom: 0;
+    min-width: 760px;
 }
 
-    .student-table thead th {
+    .gcams-table thead th {
         background: #fafbfa;
         text-align: left;
         font-size: 11px;
         letter-spacing: .06em;
         text-transform: uppercase;
-        color: #8a938a;
+        color: var(--muted);
         font-weight: 700;
         padding: 13px 20px;
         border-bottom: 1px solid #eef1ee;
         white-space: nowrap;
     }
 
-    .student-table tbody td {
+    .gcams-table tbody td {
         padding: 15px 20px;
         font-size: 14px;
+        color: var(--ink);
         border-bottom: 1px solid #f2f4f1;
         vertical-align: middle;
+        background-color: transparent;
     }
 
-    .student-table tbody tr:last-child td {
+    .gcams-table tbody tr:last-child td {
         border-bottom: none;
     }
 
-    .student-table tbody tr:hover {
-        background: #fafcf9;
+    .gcams-table .th-actions {
+        text-align: left;
     }
 
-.student-id {
+.cell-id {
     color: #7c857a;
     font-size: 13px;
 }
 
-.student-name {
+.cell-name {
     font-weight: 600;
-    color: #23291f;
+    color: var(--ink);
 }
 
-.student-email {
-    color: #8a938a;
+.cell-muted {
+    color: var(--muted);
     word-break: break-word;
 }
 
@@ -325,14 +252,14 @@
     white-space: nowrap;
 }
 
-/* ---------- Action Icons ---------- */
+/* ---------- Row actions ---------- */
 .action-icons {
     display: flex;
     align-items: center;
     gap: 4px;
 }
 
-.archive-form {
+.inline-form {
     display: inline-flex;
     margin: 0;
 }
@@ -343,22 +270,19 @@
     justify-content: center;
     width: 34px;
     height: 34px;
+    font-size: 14px;
     border-radius: 8px;
     border: none;
     background: transparent;
     color: #6c7768;
     cursor: pointer;
     text-decoration: none;
-    transition: background .15s ease;
+    transition: background .15s ease, color .15s ease;
 }
 
-    .action-icon .material-symbols-outlined {
-        font-size: 19px;
-    }
-
     .action-icon:hover {
-        background: #eef2ea;
-        color: #1b6d24;
+        background: var(--brand-soft);
+        color: var(--brand);
     }
 
     .action-icon.danger:hover {
@@ -367,134 +291,146 @@
     }
 
     .action-icon.restore {
-        color: #1b6d24;
+        color: var(--brand);
     }
 
-/* ---------- Table Footer / Pagination ---------- */
+    .action-icon:focus-visible {
+        outline: 2px solid var(--brand);
+        outline-offset: 1px;
+    }
+
+/* ---------- Empty state ---------- */
+.empty-state {
+    padding: 44px 20px;
+    text-align: center;
+    color: var(--muted);
+    font-size: 14px;
+    border-top: 1px solid #f2f4f1;
+}
+
+    .empty-state i {
+        display: block;
+        font-size: 26px;
+        margin-bottom: 10px;
+        color: #c3ccc0;
+    }
+
+/* ---------- Footer / pagination ---------- */
 .table-footer {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
     padding: 13px 20px;
     background: #fafbfa;
     border-top: 1px solid #eef1ee;
-    flex-wrap: wrap;
-    gap: 12px;
 }
 
 .showing-text {
     font-size: 13px;
-    color: #8a938a;
+    color: var(--muted);
 }
 
-.pagination {
-    display: flex;
-    align-items: center;
+.gcams-pagination {
+    --bs-pagination-color: #6c7768;
+    --bs-pagination-bg: transparent;
+    --bs-pagination-border-width: 0;
+    --bs-pagination-border-color: transparent;
+    --bs-pagination-hover-color: var(--ink);
+    --bs-pagination-hover-bg: var(--brand-soft);
+    --bs-pagination-focus-bg: var(--brand-soft);
+    --bs-pagination-focus-box-shadow: none;
+    --bs-pagination-active-bg: var(--brand);
+    --bs-pagination-active-color: #fff;
+    --bs-pagination-active-border-color: var(--brand);
+    --bs-pagination-disabled-bg: transparent;
+    --bs-pagination-disabled-color: #b9c2b6;
+    --bs-pagination-padding-x: .6rem;
+    --bs-pagination-padding-y: .3rem;
+    --bs-pagination-font-size: 13px;
     gap: 4px;
     flex-wrap: wrap;
 }
 
-.page-btn {
-    min-width: 32px;
-    height: 32px;
-    padding: 0 8px;
-    border: none;
-    background: transparent;
-    border-radius: 8px;
-    font-size: 13px;
-    font-weight: 500;
-    color: #6c7768;
-    cursor: pointer;
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-}
-
-    .page-btn .material-symbols-outlined {
-        font-size: 17px;
+    /* .page-item is in the selector so these outrank Bootstrap's
+       .page-item:first-child / :not(:first-child) radius + margin rules. */
+    .gcams-pagination .page-item .page-link {
+        min-width: 32px;
+        height: 32px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 8px;
+        margin-left: 0;
+        font-weight: 500;
     }
 
-    .page-btn:hover:not(:disabled) {
-        background: #eef2ea;
-    }
-
-    .page-btn.active {
-        background: #1b6d24;
-        color: #fff;
+    .gcams-pagination .page-item.active .page-link {
         font-weight: 700;
     }
 
-    .page-btn.arrow {
-        color: #8a938a;
+    .gcams-pagination .page-gap {
+        background: transparent;
     }
-
-    .page-btn:disabled {
-        opacity: .4;
-        cursor: not-allowed;
-    }
-
-.page-gap {
-    padding: 0 4px;
-    color: #717a6d;
-    font-size: 13px;
-}
 
 /* ---------- Modal ---------- */
 #importModal .modal-content {
-    border-radius: 14px;
     border: none;
+    border-radius: 14px;
 }
 
 #importModal .modal-header {
     border-bottom: 1px solid #eef1eb;
 }
 
-#importModal .btn-success {
-    background: #1b6d24;
-    border-color: #1b6d24;
+#importModal .modal-footer {
+    border-top: 1px solid #eef1eb;
 }
 
-    #importModal .btn-success:hover {
+#importModal .btn-brand {
+    background: var(--brand, #1b6d24);
+    border: 1px solid var(--brand, #1b6d24);
+    color: #fff;
+    font-weight: 600;
+    border-radius: 10px;
+}
+
+    #importModal .btn-brand:hover {
         background: #175c1e;
         border-color: #175c1e;
+        color: #fff;
     }
 
 /* ==========================================================================
    RESPONSIVE
    ========================================================================== */
 
-/* Tablet / small laptop */
 @media (max-width: 1024px) {
-
-    .student-table thead th,
-    .student-table tbody td {
+    .gcams-table thead th,
+    .gcams-table tbody td {
         padding: 12px 14px;
         font-size: 13px;
     }
 }
 
-/* Tablet portrait / large phones */
 @media (max-width: 768px) {
-    .page-header {
-        align-items: flex-start;
+    .content-panel {
+        padding: 14px;
+        border-radius: 14px;
     }
 
-    .header-actions {
-        width: 100%;
+    .page-toolbar {
+        justify-content: stretch !important;
     }
 
-    .btn-import,
-    .btn-add {
+    .students-page .btn-brand,
+    .students-page .btn-ghost {
         flex: 1 1 auto;
     }
 
     .filter-bar {
         flex-direction: column;
-        align-items: stretch;
+        align-items: stretch !important;
     }
 
     .search-box,
-    .filter-select {
+    .students-page .filter-select {
         width: 100%;
         min-width: 0;
         flex: 1 1 auto;
@@ -510,14 +446,19 @@
     }
 
     .table-footer {
-        flex-direction: column;
-        align-items: center;
+        justify-content: center !important;
         text-align: center;
     }
 }
 
-/* Mobile — the table becomes stacked cards */
+/* Phones — the table collapses into stacked cards */
 @media (max-width: 600px) {
+    .content-panel {
+        background: transparent;
+        border: none;
+        padding: 0;
+    }
+
     .table-card {
         background: transparent;
         border: none;
@@ -530,35 +471,31 @@
         overflow-x: visible;
     }
 
-    .student-table {
+    .gcams-table {
         min-width: 0;
     }
 
-        .student-table thead {
+        .gcams-table thead {
             display: none;
         }
 
-        .student-table,
-        .student-table tbody,
-        .student-table tr,
-        .student-table td {
+        .gcams-table,
+        .gcams-table tbody,
+        .gcams-table tr,
+        .gcams-table td {
             display: block;
             width: 100%;
         }
 
-            .student-table tbody tr {
+            .gcams-table tbody tr {
                 background: #fff;
-                border: 1px solid #eceff0;
+                border: 1px solid var(--line);
                 border-radius: 12px;
                 margin-bottom: 12px;
                 padding: 6px 16px;
             }
 
-                .student-table tbody tr:hover {
-                    background: #fff;
-                }
-
-            .student-table tbody td {
+            .gcams-table tbody td {
                 display: flex;
                 justify-content: space-between;
                 align-items: center;
@@ -568,64 +505,46 @@
                 text-align: right;
             }
 
-                .student-table tbody td:last-child {
+                .gcams-table tbody td:last-child {
                     border-bottom: none;
                 }
 
-                .student-table tbody td::before {
+                .gcams-table tbody td::before {
                     content: attr(data-label);
                     font-weight: 700;
                     font-size: 11px;
                     text-transform: uppercase;
                     letter-spacing: .05em;
-                    color: #8a938a;
+                    color: var(--muted);
                     text-align: left;
                     flex-shrink: 0;
                 }
 
-                .student-table tbody td[data-label="Actions"] {
+                .gcams-table tbody td[data-label="Actions"] {
                     justify-content: flex-end;
                 }
 
-                    .student-table tbody td[data-label="Actions"]::before {
+                    .gcams-table tbody td[data-label="Actions"]::before {
                         display: none;
                     }
-
-    .action-icons {
-        justify-content: flex-end;
-        width: 100%;
-    }
 
     .table-footer {
         background: transparent;
         border-top: none;
-        padding: 14px 0 0;
+        padding: 6px 0 0;
     }
 
-    #importModal .modal-dialog {
-        margin: 10px;
+    .empty-state {
+        background: #fff;
+        border: 1px solid var(--line);
+        border-radius: 12px;
     }
 }
 
-/* Extra small phones */
 @media (max-width: 400px) {
-    .btn-import,
-    .btn-add {
+    .students-page .btn-brand,
+    .students-page .btn-ghost {
         font-size: 13px;
-        padding: 10px 14px;
-    }
-
-    .page-btn {
-        min-width: 28px;
-        height: 28px;
-        font-size: 12px;
-    }
-
-    .student-table tbody td::before {
-        font-size: 10px;
-    }
-
-    .student-table tbody td {
-        font-size: 13px;
+        padding: 10px 12px;
     }
 }

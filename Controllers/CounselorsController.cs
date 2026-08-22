@@ -28,7 +28,15 @@ namespace GCAMS.Controllers
         // ===================================================================
         public async Task<IActionResult> Index()
         {
-            return View(await _context.Counselors.ToListAsync());
+            // ContactNumbers is eager-loaded because the list page shows a
+            // "Contact" column; without the Include it would always be empty.
+            var counselors = await _context.Counselors
+                .Include(c => c.ContactNumbers)
+                .AsNoTracking()
+                .OrderBy(c => c.CounselorName)
+                .ToListAsync();
+
+            return View(counselors);
         }
 
         // ===================================================================

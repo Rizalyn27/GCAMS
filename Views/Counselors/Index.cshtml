@@ -1,221 +1,258 @@
 ﻿@model IEnumerable<GCAMS.Models.Counselor.Counselor>
 
 @{
-    ViewData["Title"] = "Counselor Management";
+    ViewData["Title"] = "Counselor";
+    ViewData["PageSubtitle"] = $"{Model.Count()} registered counselor{(Model.Count() == 1 ? "" : "s")}";
+
+    // Statuses that read as "no longer serving" get the muted pill.
+    var inactiveStatuses = new[] { "inactive", "retired", "resigned", "terminated" };
 }
 
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
-<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="~/css/Counselors/Index.css" asp-append-version="true" />
+@section Styles {
+    <link rel="stylesheet" href="~/css/Counselors/Index.css" asp-append-version="true" />
+}
 
+<div class="counselors-page">
 
-<div class="counselor-page" style="max-width: 1100px; margin: 0 auto; padding: 24px 16px;">
-
-    <!-- Breadcrumb -->
-    <div class="page-breadcrumb">
-        <span>Counselors</span>
-        <span class="material-symbols-outlined" style="font-size:14px;"></span>
-        <span class="current">Counselor Management</span>
-    </div>
-
-    <!-- Header -->
-    <div class="page-header">
-        <a asp-action="Create" class="btn-add">
-            <span class="material-symbols-outlined" style="font-size:18px;"></span>
-            Add New Counselor
+    <!-- ================= Toolbar ================= -->
+    <div class="page-toolbar d-flex flex-wrap align-items-center justify-content-end gap-2 mb-3">
+        <a asp-action="Create" class="btn btn-brand">
+            <i class="fa-solid fa-user-plus"></i>
+            <span>Add New Counselor</span>
         </a>
     </div>
 
     @if (TempData["Success"] != null)
     {
-        <div class="alert-success">
-            <span class="material-symbols-outlined" style="font-size:16px; vertical-align:middle; margin-right:6px;"></span>
-            @TempData["Success"]
+        <div class="alert alert-success alert-dismissible fade show d-flex align-items-center gap-2" role="alert">
+            <i class="fa-solid fa-circle-check"></i>
+            <div>@TempData["Success"]</div>
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
         </div>
     }
     @if (TempData["Error"] != null)
     {
-        <div class="alert-danger">
-            <span class="material-symbols-outlined" style="font-size:16px; vertical-align:middle; margin-right:6px;">   </span>
-            @TempData["Error"]
+        <div class="alert alert-danger alert-dismissible fade show d-flex align-items-center gap-2" role="alert">
+            <i class="fa-solid fa-circle-exclamation"></i>
+            <div>@TempData["Error"]</div>
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
         </div>
     }
 
-    <!-- Filter Bar -->
-    <div class="filter-bar">
-        <div class="search-box">
-            <span class="material-symbols-outlined"></span>
-            <input type="text" id="counselorSearch" placeholder="Search by name or employee number" />
+    <!-- ================= Panel ================= -->
+    <div class="content-panel">
+
+        <!-- Filters -->
+        <div class="filter-bar d-flex flex-wrap align-items-center gap-2 mb-3">
+            <div class="search-box">
+                <i class="fa-solid fa-magnifying-glass" aria-hidden="true"></i>
+                <input type="search" id="counselorSearch" class="form-control border-0 shadow-none p-0"
+                       placeholder="Filter by Name or ID" aria-label="Filter counselors by name or ID" />
+            </div>
+
+            <select id="positionFilter" class="form-select filter-select" aria-label="Filter by position">
+                <option value="">All Positions</option>
+                @foreach (var pos in Model.Select(c => c.Position)
+                                .Where(p => !string.IsNullOrWhiteSpace(p))
+                                .Distinct()
+                                .OrderBy(p => p))
+                {
+                    <option value="@pos.ToLower()">@pos</option>
+                }
+            </select>
+
+            <select id="statusFilter" class="form-select filter-select" aria-label="Filter by employment status">
+                <option value="">All Status</option>
+                @foreach (var status in Model.Select(c => c.EmploymentStatus)
+                                .Where(s => !string.IsNullOrWhiteSpace(s))
+                                .Distinct()
+                                .OrderBy(s => s))
+                {
+                    <option value="@status.ToLower()">@status</option>
+                }
+            </select>
         </div>
 
-        <select id="positionFilter" class="filter-select">
-            <option value="">All Positions</option>
-            @foreach (var pos in Model.Select(c => c.Position).Distinct().OrderBy(p => p))
-            {
-                <option value="@pos?.ToLower()">@pos</option>
-            }
-        </select>
+        <!-- Table -->
+        <div class="table-card">
+            <div class="table-responsive table-scroll">
+                <table class="table table-hover gcams-table align-middle mb-0" id="counselorTable">
+                    <thead>
+                        <tr>
+                            <th scope="col">Counselor ID</th>
+                            <th scope="col">Full Name</th>
+                            <th scope="col">Contact</th>
+                            <th scope="col">Email</th>
+                            <th scope="col">Position</th>
+                            <th scope="col">Status</th>
+                            <th scope="col" class="th-actions">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var item in Model)
+                        {
+                            var status = item.EmploymentStatus ?? string.Empty;
+                            var isInactive = inactiveStatuses.Contains(status.Trim().ToLower());
+                            var contacts = item.ContactNumbers != null && item.ContactNumbers.Any()
+                            ? string.Join(", ", item.ContactNumbers.Select(c => c.Number))
+                            : "—";
 
-        <select id="statusFilter" class="filter-select">
-            <option value="">All Status</option>
-            <option value="Permanent">Permanent</option>
-            <option value="Full-Time">Full-Time</option>
-            <option value="Contractual">Contractual</option>
-            <option value="Part-Time">Part-Time</option>
-            <option value="Substitute">Substitute</option>
-            <option value="Retired">Retired</option>
-            <option value="Inactive">Inactive</option>
-        </select>
+                            <tr data-name="@item.CounselorName?.ToLower()"
+                                data-empno="@item.EmployeeNumber?.ToLower()"
+                                data-position="@item.Position?.ToLower()"
+                                data-status="@status.ToLower()">
+                                <td data-label="Counselor ID"><span class="cell-id">@item.EmployeeNumber</span></td>
+                                <td data-label="Full Name"><span class="cell-name">@item.CounselorName</span></td>
+                                <td data-label="Contact"><span class="cell-muted">@contacts</span></td>
+                                <td data-label="Email"><span class="cell-muted">@item.EmailAddress</span></td>
+                                <td data-label="Position">@item.Position</td>
+                                <td data-label="Status">
+                                    <span class="status-pill @(isInactive ? "is-inactive" : "is-active")">
+                                        <span class="status-dot" aria-hidden="true"></span>@status
+                                    </span>
+                                </td>
+                                <td data-label="Actions">
+                                    <div class="action-icons">
+                                        <a asp-action="Details" asp-route-id="@item.CounselorID"
+                                           class="action-icon" title="View details" aria-label="View details">
+                                            <i class="fa-regular fa-eye"></i>
+                                        </a>
+                                        <a asp-action="Edit" asp-route-id="@item.CounselorID"
+                                           class="action-icon" title="Edit" aria-label="Edit">
+                                            <i class="fa-solid fa-pen"></i>
+                                        </a>
+                                    </div>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="empty-state d-none" id="emptyState">
+                <i class="fa-solid fa-user-tie"></i>
+                <p class="mb-0">No counselors match your filters.</p>
+            </div>
+
+            <div class="table-footer d-flex flex-wrap align-items-center justify-content-between gap-2">
+                <span class="showing-text" id="showingText"></span>
+                <ul class="pagination gcams-pagination mb-0" id="pagination"></ul>
+            </div>
+        </div>
     </div>
-
-    <!-- Table -->
-    <table class="counselor-table" id="counselorTable">
-        <thead>
-            <tr>
-                <th>Employee No.</th>
-                <th>Full Name</th>
-                <th>Contact</th>
-                <th>Email</th>
-                <th>Position</th>
-                <th>Status</th>
-                <th>Actions</th>
-            </tr>
-        </thead>
-        <tbody>
-            @foreach (var item in Model)
-            {
-                <tr data-position="@item.Position?.ToLower()"
-                    data-active="@item.EmploymentStatus.ToString().ToLower()">
-                    <td><span class="emp-id">@item.EmployeeNumber</span></td>
-                    <td><span class="counselor-name">@item.CounselorName</span></td>
-                    <td><span style="font-size:13px; color:#717a6d;">@string.Join(", ", item.ContactNumbers.Select(c => c.Number))</span></td>
-                    <td><span class="counselor-email">@item.EmailAddress</span></td>
-                    <td><span class="status-pill pill-position">@item.Position</span></td>
-                    <td>
-                        <span class="status-pill" style="
-                            background: @(item.EmploymentStatus == "Inactive" || item.EmploymentStatus == "Retired" ? "#e1e4db" : "#dcfce7");
-                            color: @(item.EmploymentStatus == "Inactive" || item.EmploymentStatus == "Retired" ? "#41493e" : "#166534");">
-                            @item.EmploymentStatus
-                        </span>
-                    </td>
-                    <td>
-                        <div class="action-icons">
-                            <a asp-action="Details" asp-route-id="@item.CounselorID" class="action-icon" title="View Details">
-                                <span class="material-symbols-outlined">👁</span>
-                            </a>
-                            <a asp-action="Edit" asp-route-id="@item.CounselorID" class="action-icon" title="Edit">
-                                <span class="material-symbols-outlined">✏️</span>
-                            </a>
-                           
-                        </div>
-                    </td>
-                </tr>
-            }
-        </tbody>
-    </table>
-
-    <!-- Table Footer -->
-    <div class="table-footer">
-        <span class="showing-text" id="showingText"></span>
-        <div class="pagination" id="pagination"></div>
-    </div>
-
 </div>
 
-<script>
-    const pageSize = 10;
-    let currentPage = 1;
-    let visibleRows = [];
+@section Scripts {
+    <script>
+        (function () {
+            const pageSize = 10;
+            let currentPage = 1;
+            let visibleRows = [];
 
-    function applyFilters() {
-        const query    = document.getElementById('counselorSearch').value.toLowerCase().trim();
-        const position = document.getElementById('positionFilter').value.toLowerCase();
-        const status   = document.getElementById('statusFilter').value.toLowerCase();
+            const table = document.getElementById('counselorTable');
+            const rows = Array.from(table.querySelectorAll('tbody tr'));
+            const searchInput = document.getElementById('counselorSearch');
+            const positionFilter = document.getElementById('positionFilter');
+            const statusFilter = document.getElementById('statusFilter');
+            const emptyState = document.getElementById('emptyState');
+            const showingText = document.getElementById('showingText');
+            const pagination = document.getElementById('pagination');
 
-        visibleRows = [];
+            function applyFilters() {
+                const query = searchInput.value.toLowerCase().trim();
+                const position = positionFilter.value.toLowerCase();
+                const status = statusFilter.value.toLowerCase();
 
-        document.querySelectorAll('#counselorTable tbody tr').forEach(function (row) {
-            const empNo   = row.cells[0]?.textContent.trim().toLowerCase() || '';
-            const name    = row.cells[1]?.textContent.trim().toLowerCase() || '';
-            const rowPos  = (row.getAttribute('data-position') || '').trim();
-            const rowStat = (row.getAttribute('data-active') || '').trim();
+                visibleRows = rows.filter(function (row) {
+                    const d = row.dataset;
+                    return (!query || (d.name || '').includes(query) || (d.empno || '').includes(query))
+                        && (!position || d.position === position)
+                        && (!status || d.status === status);
+                });
 
-            const matchesSearch   = !query    || name.includes(query) || empNo.includes(query);
-            const matchesPosition = !position || rowPos === position;
-            const matchesStatus   = !status   || rowStat === status;
-
-            if (matchesSearch && matchesPosition && matchesStatus) {
-                visibleRows.push(row);
+                currentPage = 1;
+                renderPage();
             }
-            row.style.display = 'none';
-        });
 
-        currentPage = 1;
-        renderPage();
-    }
+            function renderPage() {
+                const total = visibleRows.length;
+                const totalPages = Math.max(1, Math.ceil(total / pageSize));
+                if (currentPage > totalPages) currentPage = totalPages;
 
-    function renderPage() {
-        const start = (currentPage - 1) * pageSize;
-        const end   = start + pageSize;
+                const start = (currentPage - 1) * pageSize;
+                const end = start + pageSize;
 
-        document.querySelectorAll('#counselorTable tbody tr').forEach(r => r.style.display = 'none');
-        visibleRows.slice(start, end).forEach(r => r.style.display = '');
+                rows.forEach(r => r.classList.add('d-none'));
+                visibleRows.slice(start, end).forEach(r => r.classList.remove('d-none'));
 
-        const total   = visibleRows.length;
-        const showing = Math.min(end, total);
-        document.getElementById('showingText').textContent =
-            total === 0 ? 'No counselors found' :
-            `Showing ${start + 1} - ${showing} of ${total} counselor${total !== 1 ? 's' : ''}`;
+                emptyState.classList.toggle('d-none', total !== 0);
 
-        renderPagination(total);
-    }
+                showingText.textContent = total === 0
+                    ? 'No counselors found'
+                    : `Showing ${start + 1} - ${Math.min(end, total)} of ${total} counselor${total !== 1 ? 's' : ''}`;
 
-    function renderPagination(total) {
-        const totalPages = Math.ceil(total / pageSize);
-        const pg = document.getElementById('pagination');
-        pg.innerHTML = '';
-
-        function btn(label, page, isActive, isDisabled, isArrow) {
-            const b = document.createElement('button');
-            b.className = 'page-btn' + (isActive ? ' active' : '') + (isArrow ? ' arrow' : '');
-            b.innerHTML = label;
-            b.disabled = isDisabled;
-            if (!isDisabled && !isActive) {
-                b.onclick = () => { currentPage = page; renderPage(); };
+                renderPagination(total);
             }
-            return b;
-        }
 
-        pg.appendChild(btn('<span class="material-symbols-outlined" style="font-size:16px;"><</span>', currentPage - 1, false, currentPage === 1, true));
+            function pageItem(label, page, { active = false, disabled = false, ariaLabel = null } = {}) {
+                const li = document.createElement('li');
+                li.className = 'page-item' + (active ? ' active' : '') + (disabled ? ' disabled' : '');
 
-        const pages = [];
-        if (totalPages <= 7) {
-            for (let i = 1; i <= totalPages; i++) pages.push(i);
-        } else {
-            pages.push(1);
-            if (currentPage > 3) pages.push('...');
-            for (let i = Math.max(2, currentPage - 1); i <= Math.min(totalPages - 1, currentPage + 1); i++) pages.push(i);
-            if (currentPage < totalPages - 2) pages.push('...');
-            pages.push(totalPages);
-        }
+                const btn = document.createElement('button');
+                btn.type = 'button';
+                btn.className = 'page-link';
+                btn.innerHTML = label;
+                btn.disabled = disabled;
+                if (ariaLabel) btn.setAttribute('aria-label', ariaLabel);
+                if (!disabled && !active) {
+                    btn.addEventListener('click', function () { currentPage = page; renderPage(); });
+                }
 
-        pages.forEach(p => {
-            if (p === '...') {
-                const s = document.createElement('span');
-                s.textContent = '...';
-                s.style.cssText = 'padding:0 4px; color:#717a6d; font-size:13px;';
-                pg.appendChild(s);
-            } else {
-                pg.appendChild(btn(p, p, p === currentPage, false, false));
+                li.appendChild(btn);
+                return li;
             }
-        });
 
-        pg.appendChild(btn('<span class="material-symbols-outlined" style="font-size:16px;">></span>', currentPage + 1, false, currentPage === totalPages || totalPages === 0, true));
-    }
+            function renderPagination(total) {
+                const totalPages = Math.ceil(total / pageSize);
+                pagination.innerHTML = '';
+                if (totalPages <= 1) return;
 
-    document.getElementById('counselorSearch').addEventListener('input', applyFilters);
-    document.getElementById('positionFilter').addEventListener('change', applyFilters);
-    document.getElementById('statusFilter').addEventListener('change', applyFilters);
+                pagination.appendChild(pageItem(
+                    '<i class="fa-solid fa-chevron-left"></i>', currentPage - 1,
+                    { disabled: currentPage === 1, ariaLabel: 'Previous page' }));
 
-    applyFilters();
-</script>
+                const pages = [];
+                if (totalPages <= 7) {
+                    for (let i = 1; i <= totalPages; i++) pages.push(i);
+                } else {
+                    pages.push(1);
+                    if (currentPage > 3) pages.push('...');
+                    for (let i = Math.max(2, currentPage - 1); i <= Math.min(totalPages - 1, currentPage + 1); i++) pages.push(i);
+                    if (currentPage < totalPages - 2) pages.push('...');
+                    pages.push(totalPages);
+                }
+
+                pages.forEach(function (p) {
+                    if (p === '...') {
+                        const li = document.createElement('li');
+                        li.className = 'page-item disabled';
+                        li.innerHTML = '<span class="page-link page-gap">&hellip;</span>';
+                        pagination.appendChild(li);
+                    } else {
+                        pagination.appendChild(pageItem(p, p, { active: p === currentPage }));
+                    }
+                });
+
+                pagination.appendChild(pageItem(
+                    '<i class="fa-solid fa-chevron-right"></i>', currentPage + 1,
+                    { disabled: currentPage === totalPages, ariaLabel: 'Next page' }));
+            }
+
+            searchInput.addEventListener('input', applyFilters);
+            positionFilter.addEventListener('change', applyFilters);
+            statusFilter.addEventListener('change', applyFilters);
+
+            applyFilters();
+        })();
+    </script>
+}
