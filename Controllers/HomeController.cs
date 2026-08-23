@@ -20,6 +20,7 @@ namespace GCAMS.Controllers
             _context = context;
         }
 
+
         public async Task<IActionResult> Index(string? academicYear, int? month)
         {
             var username = User.Identity?.Name;
@@ -71,6 +72,10 @@ namespace GCAMS.Controllers
             {
                 ViewBag.CounselorDashboard =
                     await BuildCounselorDashboardAsync(username, academicYear, month);
+            }
+            else if (User.IsInRole("Student"))
+            {
+                ViewBag.StudentDashboard = await BuildStudentDashboardAsync(username);
             }
 
             return View();
@@ -483,6 +488,103 @@ namespace GCAMS.Controllers
 
             return vm;
         }
+
+
+        private async Task<StudentDashboardViewModel> BuildStudentDashboardAsync(string? username)
+        {
+            var vm = new StudentDashboardViewModel();
+            var now = DateTime.Now;
+
+            // Students sign in with their StuID — same lookup Appointments uses.
+            var student = await _context.Students
+                .FirstOrDefaultAsync(s => s.StuID == username);
+
+            if (student == null)
+                return vm;   // view renders a safe "no record linked" state
+
+            vm.StudentName = student.StuName ?? string.Empty;
+
+            vm.GradeSection = string.Join(" · ", new[] { student.GradeLevel, student.Section }
+                .Where(x => !string.IsNullOrWhiteSpace(x)));
+
+            vm.Greeting = now.Hour < 12 ? "Good morning"
+                        : now.Hour < 18 ? "Good afternoon"
+                                        : "Good evening";
+
+            // ------------------------------------------------------------------
+            // Next appointment — the one thing a student opens this page for.
+            // Confirmed and Pending both count: a pending request is still the
+            // next thing happening, it just needs a different message.
+            // ------------------------------------------------------------------
+            var next = await _context.Appointments
+                .Where(a => a.StudentsID == student.StudentsID
+                         && a.AppointmentDate >= now
+                         && (a.Status == "Confirmed" || a.Status == "Pending"))
+                .OrderBy(a => a.AppointmentDate)
+                .Select(a => new UpcomingAppointmentItem
+                {
+                    AppointmentId = a.AppointmentID,
+                    AppointmentType = a.AppointmentType,
+                    AppointmentDate = a.AppointmentDate,
+                    Status = a.Status
+                })
+                .FirstOrDefaultAsync();
+
+            if (next != null)
+            {
+                // Computed after materialising — EF can't translate date subtraction.
+                next.DaysUntil = (int)(next.AppointmentDate.Date - now.Date).TotalDays;
+
+                var created = await _context.Appointments
+                    .Where(a => a.AppointmentID == next.AppointmentId)
+                    .Select(a => a.CreatedAt)
+                    .FirstOrDefaultAsync();
+
+                next.DaysWaiting = (int)(now.Date - created.Date).TotalDays;
+
+                vm.UpcomingAppointment = next;
+                vm.HasPendingRequest = next.Status == "Pending";
+            }
+
+            // ------------------------------------------------------------------
+            // Small history counts — context for the greeting, not a metric.
+            // ------------------------------------------------------------------
+            vm.TotalAppointments = await _context.Appointments
+                .CountAsync(a => a.StudentsID == student.StudentsID);
+
+            vm.CompletedSessions = await _context.Appointments
+                .CountAsync(a => a.StudentsID == student.StudentsID && a.Status == "Completed");
+
+            // ------------------------------------------------------------------
+            // Announcements — newest three. "View all" drops to the full feed
+            // further down the same page.
+            // ------------------------------------------------------------------
+            vm.RecentAnnouncements = await _context.Announcements
+                .OrderByDescending(a => a.CreatedAt)
+                .Take(3)
+                .Select(a => new StudentAnnouncementItem
+                {
+                    AnnouncementId = a.AnnouncementId,
+                    Title = a.Title,
+                    Message = a.Message,
+                    CreatedAt = a.CreatedAt
+                })
+                .ToListAsync();
+
+            // Anything from the last 3 days gets a "New" tag.
+            var newCutoff = now.Date.AddDays(-3);
+            foreach (var a in vm.RecentAnnouncements)
+                a.IsNew = a.CreatedAt >= newCutoff;
+
+            vm.UnreadAnnouncementCount = await _context.Notifs
+                .CountAsync(n => n.RecipientUsername == username
+                              && n.Type == NotificationType.Announcement
+                              && !n.IsRead);
+
+            return vm;
+        }
+
+
         public IActionResult AccessDenied()
         {
             return View();

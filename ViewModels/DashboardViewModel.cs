@@ -131,4 +131,52 @@
         public List<string> PeriodChartLabels { get; set; } = new();
         public List<int> PeriodChartCounts { get; set; } = new();
     }
+
+
+    public class UpcomingAppointmentItem
+    {
+        public int AppointmentId { get; set; }
+        public string AppointmentType { get; set; } = string.Empty;
+        public DateTime AppointmentDate { get; set; }
+        public string Status { get; set; } = string.Empty;
+
+        /// <summary>0 = today, 1 = tomorrow, etc. Drives the "in 2 days" line.</summary>
+        public int DaysUntil { get; set; }
+
+        /// <summary>How long a Pending request has been waiting, so the student
+        /// isn't left wondering whether anyone saw it.</summary>
+        public int DaysWaiting { get; set; }
+    }
+
+    public class StudentAnnouncementItem
+    {
+        public int AnnouncementId { get; set; }
+        public string Title { get; set; } = string.Empty;
+        public string Message { get; set; } = string.Empty;
+        public DateTime CreatedAt { get; set; }
+        public bool IsNew { get; set; }
+    }
+
+    public class StudentDashboardViewModel
+    {
+        public string StudentName { get; set; } = string.Empty;
+        public string GradeSection { get; set; } = string.Empty;
+
+        /// <summary>"Good morning" / "Good afternoon" / "Good evening".</summary>
+        public string Greeting { get; set; } = "Hello";
+
+        public UpcomingAppointmentItem? UpcomingAppointment { get; set; }
+
+        /// <summary>True when a request is in with no reply yet — changes the
+        /// card from "you're booked" to "we've got your request".</summary>
+        public bool HasPendingRequest { get; set; }
+
+        public int TotalAppointments { get; set; }
+        public int CompletedSessions { get; set; }
+
+        public List<StudentAnnouncementItem> RecentAnnouncements { get; set; } = new();
+        public int UnreadAnnouncementCount { get; set; }
+    }
+
+
 }

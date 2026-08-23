@@ -1,0 +1,408 @@
+﻿@model GCAMS.ViewModels.StudentDashboardViewModel
+
+@*
+    Student dashboard. Built on the Bootstrap grid already loaded in _Layout,
+    so it reflows on its own: cards stack on phones, sit side by side from
+    the md breakpoint up.
+*@
+
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+
+<style>
+    .stu-dash {
+        font-family: 'Inter', sans-serif;
+        color: #191d18;
+    }
+
+        /* ---------- greeting ---------- */
+        .stu-dash .greeting-card {
+            background: linear-gradient(135deg, #1a7f74 0%, #1b6d24 100%);
+            color: #fff;
+            border-radius: 16px;
+            padding: 22px 24px;
+            margin-bottom: 20px;
+        }
+
+            .stu-dash .greeting-card h1 {
+                font-family: 'Manrope', sans-serif;
+                font-size: 24px;
+                font-weight: 700;
+                margin: 0 0 4px;
+                color: #fff;
+            }
+
+            .stu-dash .greeting-card p {
+                margin: 0;
+                font-size: 14px;
+                opacity: 0.9;
+            }
+
+        /* ---------- shared card ---------- */
+        .stu-dash .card-panel {
+            background: #fff;
+            border: 1px solid #e1e4db;
+            border-radius: 14px;
+            padding: 20px 22px;
+            margin-bottom: 20px;
+            height: 100%;
+        }
+
+        .stu-dash .card-eyebrow {
+            font-family: 'Inter', sans-serif;
+            font-size: 11px;
+            font-weight: 700;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+            color: #717a6d;
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 8px;
+        }
+
+        /* ---------- upcoming appointment ---------- */
+        .stu-dash .appt-type {
+            font-family: 'Manrope', sans-serif;
+            font-size: 19px;
+            font-weight: 700;
+            margin-bottom: 4px;
+        }
+
+        .stu-dash .appt-when {
+            font-size: 15px;
+            color: #41493e;
+            margin-bottom: 4px;
+        }
+
+        .stu-dash .appt-countdown {
+            font-size: 13px;
+            font-weight: 600;
+            color: #1a7f74;
+            margin-bottom: 14px;
+        }
+
+        .stu-dash .appt-pending {
+            color: #8a5a00;
+        }
+
+        .stu-dash .badge-status {
+            font-size: 11px;
+            font-weight: 700;
+            letter-spacing: 0.04em;
+            text-transform: uppercase;
+            border-radius: 20px;
+            padding: 3px 10px;
+            white-space: nowrap;
+        }
+
+        .stu-dash .badge-confirmed {
+            color: #1b6d24;
+            background: #e3f6e6;
+        }
+
+        .stu-dash .badge-pending {
+            color: #8a5a00;
+            background: #fdf1d6;
+        }
+
+        /* ---------- buttons ---------- */
+        .stu-dash .btn-gc {
+            display: inline-block;
+            font-family: 'Inter', sans-serif;
+            font-size: 14px;
+            font-weight: 600;
+            border-radius: 10px;
+            padding: 10px 18px;
+            text-decoration: none;
+            text-align: center;
+            border: 1px solid transparent;
+            cursor: pointer;
+        }
+
+        .stu-dash .btn-gc-primary {
+            background: #1b6d24;
+            color: #fff;
+        }
+
+            .stu-dash .btn-gc-primary:hover {
+                background: #16591e;
+                color: #fff;
+            }
+
+        .stu-dash .btn-gc-outline {
+            background: #fff;
+            color: #1a7f74;
+            border-color: #cfd8ca;
+        }
+
+            .stu-dash .btn-gc-outline:hover {
+                background: #f2f5ec;
+                color: #1a7f74;
+            }
+
+        .stu-dash .btn-gc:focus-visible {
+            outline: 2px solid #1a7f74;
+            outline-offset: 2px;
+        }
+
+        /* ---------- announcements ---------- */
+        .stu-dash .ann-item {
+            padding: 12px 0;
+            border-bottom: 1px solid #f2f5ec;
+        }
+
+            .stu-dash .ann-item:last-child {
+                border-bottom: none;
+                padding-bottom: 0;
+            }
+
+        .stu-dash .ann-title {
+            font-family: 'Manrope', sans-serif;
+            font-size: 15px;
+            font-weight: 700;
+            margin-bottom: 2px;
+        }
+
+        .stu-dash .ann-date {
+            font-size: 12px;
+            color: #a3aa9e;
+            margin-bottom: 4px;
+        }
+
+        .stu-dash .ann-excerpt {
+            font-size: 13px;
+            color: #41493e;
+            line-height: 1.5;
+            margin: 0;
+        }
+
+        .stu-dash .tag-new {
+            font-size: 10px;
+            font-weight: 700;
+            letter-spacing: 0.06em;
+            text-transform: uppercase;
+            color: #1b6d24;
+            background: #e3f6e6;
+            border-radius: 4px;
+            padding: 1px 6px;
+            margin-left: 6px;
+            vertical-align: middle;
+        }
+
+        .stu-dash .link-more {
+            font-size: 13px;
+            font-weight: 600;
+            color: #1a7f74;
+            text-decoration: none;
+        }
+
+            .stu-dash .link-more:hover {
+                text-decoration: underline;
+                color: #1a7f74;
+            }
+
+        .stu-dash .empty-note {
+            font-size: 14px;
+            color: #717a6d;
+            margin: 0;
+        }
+
+    /* Phones: full-width buttons are much easier to hit. */
+    @@media (max-width: 575.98px) {
+        .stu-dash .greeting-card h1 {
+            font-size: 21px;
+        }
+
+        .stu-dash .card-panel {
+            padding: 18px;
+        }
+
+        .stu-dash .btn-gc {
+            display: block;
+            width: 100%;
+        }
+    }
+</style>
+
+<div class="stu-dash">
+
+    <!-- ======================= GREETING ======================= -->
+    <div class="greeting-card">
+        <h1>
+            @Model.Greeting@(string.IsNullOrWhiteSpace(Model.StudentName)
+                        ? "!"
+                        : $", {Model.StudentName.Split(' ')[0]}!")
+        </h1>
+        <p>
+            @if (Model.UpcomingAppointment != null && !Model.HasPendingRequest)
+            {
+                <text>You have a session coming up. Everything you need is below.</text>
+            }
+            else if (Model.HasPendingRequest)
+            {
+                <text>Your request is with the guidance office. We'll let you know as soon as it's confirmed.</text>
+            }
+            else
+            {
+                <text>How can we help you today?</text>
+            }
+        </p>
+    </div>
+
+    <div class="row g-3">
+
+        <!-- ================= UPCOMING APPOINTMENT ================= -->
+        <div class="col-12 col-lg-7">
+            <div class="card-panel">
+                <div class="card-eyebrow">
+                    <span>Upcoming appointment</span>
+                    @if (Model.UpcomingAppointment != null)
+                    {
+                        <span class="badge-status @(Model.HasPendingRequest ? "badge-pending" : "badge-confirmed")">
+                            @Model.UpcomingAppointment.Status
+                        </span>
+                    }
+                </div>
+
+                @if (Model.UpcomingAppointment != null)
+                {
+                    var appt = Model.UpcomingAppointment;
+
+                    <div class="appt-type">@appt.AppointmentType</div>
+
+                    <div class="appt-when">
+                        @appt.AppointmentDate.ToString("MMMM d") &bull;
+                        @appt.AppointmentDate.ToString("h:mm tt")
+                    </div>
+
+                    @if (Model.HasPendingRequest)
+                    {
+                        <div class="appt-countdown appt-pending">
+                            @if (appt.DaysWaiting <= 0)
+                            {
+                                <text>Requested today &mdash; waiting for confirmation</text>
+                            }
+                            else
+                            {
+                                <text>
+                                    Requested @appt.DaysWaiting day@(appt.DaysWaiting == 1 ? "" : "s") ago
+                                    &mdash; waiting for confirmation
+                                </text>
+                            }
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="appt-countdown">
+                            @if (appt.DaysUntil == 0)
+                            {
+                                <text>That's today</text>
+                            }
+                            else if (appt.DaysUntil == 1)
+                            {
+                                <text>That's tomorrow</text>
+                            }
+                            else
+                            {
+                                <text>In @appt.DaysUntil days</text>
+                            }
+                        </div>
+                    }
+
+                    <a class="btn-gc btn-gc-primary"
+                       asp-controller="Appointments" asp-action="Details"
+                       asp-route-appointmentid="@appt.AppointmentId">
+                        View appointment
+                    </a>
+                }
+                else
+                {
+                    <p class="empty-note mb-3">
+                        You don't have anything booked. If you'd like to talk to a
+                        counselor, you can request a time here.
+                    </p>
+                    <a class="btn-gc btn-gc-primary"
+                       asp-controller="Appointments" asp-action="Create">
+                        Book an appointment
+                    </a>
+                }
+            </div>
+        </div>
+
+        <!-- ==================== QUICK ACTIONS ==================== -->
+        <div class="col-12 col-lg-5">
+            <div class="card-panel">
+                <div class="card-eyebrow"><span>Quick actions</span></div>
+
+                <div class="d-flex flex-column flex-sm-row flex-lg-column gap-2">
+                    <a class="btn-gc btn-gc-primary flex-fill"
+                       asp-controller="Appointments" asp-action="Create">
+                        Book appointment
+                    </a>
+                    <a class="btn-gc btn-gc-outline flex-fill"
+                       asp-controller="Appointments" asp-action="MyAppointments">
+                        My appointments
+                    </a>
+                </div>
+
+                @if (Model.CompletedSessions > 0)
+                {
+                    <p class="empty-note mt-3 mb-0" style="font-size:13px;">
+                        You've completed @Model.CompletedSessions
+                        session@(Model.CompletedSessions == 1 ? "" : "s") so far.
+                    </p>
+                }
+            </div>
+        </div>
+
+        <!-- ==================== ANNOUNCEMENTS ==================== -->
+        <div class="col-12">
+            <div class="card-panel">
+                <div class="card-eyebrow">
+                    <span>
+                        Announcements
+                        @if (Model.UnreadAnnouncementCount > 0)
+                        {
+                            <span class="tag-new">@Model.UnreadAnnouncementCount new</span>
+                        }
+                    </span>
+                    @if (Model.RecentAnnouncements.Any())
+                    {
+                        <a href="#activity-feed" class="link-more">View all &rarr;</a>
+                    }
+                </div>
+
+                @if (Model.RecentAnnouncements.Any())
+                {
+                    foreach (var ann in Model.RecentAnnouncements)
+                    {
+                        <div class="ann-item">
+                            <div class="ann-title">
+                                @ann.Title
+                                @if (ann.IsNew)
+                                {
+                                    <span class="tag-new">New</span>
+                                }
+                    </div>
+                    <div class="ann-date">@ann.CreatedAt.ToString("MMM d, yyyy")</div>
+                    <p class="ann-excerpt">
+                        @(ann.Message.Length > 160
+                                                ? ann.Message.Substring(0, 160) + "…"
+                                                : ann.Message)
+                    </p>
+                </div>
+                                }
+                }
+                else
+                {
+                    <p class="empty-note">
+                        Nothing posted yet. Announcements from the guidance office
+                        will appear here.
+                    </p>
+                }
+            </div>
+        </div>
+
+    </div>
+</div>

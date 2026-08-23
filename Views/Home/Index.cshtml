@@ -148,11 +148,14 @@ else if (User.IsInRole("Counselor") && ViewBag.CounselorDashboard is GCAMS.ViewM
 }
 else if (User.IsInRole("Student"))
 {
-    <p>Welcome! Use the sidebar to book an appointment or view your upcoming sessions.</p>
+    @if (ViewBag.StudentDashboard is GCAMS.ViewModels.StudentDashboardViewModel studentVm)
+    {
+        @await Html.PartialAsync("_StudentDashboard", studentVm)
+    }
 
-    @* The feed lives here, inside the student branch. Students have no dashboard
-       and no bell menu, so this is their only view of announcements and updates. *@
-    @await Html.PartialAsync("_ActivityFeed")
+    <div id="activity-feed">
+        @await Html.PartialAsync("_ActivityFeed")
+    </div>
 }
 
 @if (popups != null && popups.Any())
