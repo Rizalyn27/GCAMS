@@ -1,130 +1,510 @@
-﻿.form-wrapper {
-    display: flex;
-    gap: 1.5rem;
-    align-items: flex-start;
+﻿/* ==========================================================================
+   GCAMS — Counselors / Edit
+   Scoped under .counselor-edit so the shared topbar + sidebar stay untouched.
+   ========================================================================== */
+
+.counselor-edit {
+    --brand: #1B5E20;
+    --brand-dark: #14471a;
+    --brand-tint: #e8f2e9;
+    --ink: #101913;
+    --muted: #6b7280;
+    --line: #e5e7eb;
+    --surface: #ffffff;
+    --danger: #b3261e;
+    max-width: 1180px;
 }
 
-.form-sidebar {
-    width: 200px;
-    flex-shrink: 0;
-    position: sticky;
-    top: 1rem;
-}
-
-    .form-sidebar .nav-link {
-        display: flex;
-        align-items: center;
-        gap: 8px;
-        padding: 10px 14px;
-        border-radius: 8px;
-        font-size: 14px;
-        font-family: Inter;
-        color: #555;
-        text-decoration: none;
-        margin-bottom: 4px;
-        transition: background 0.15s;
-        white-space: nowrap;
-    }
-
-        .form-sidebar .nav-link:hover {
-            background: #f0f0f0;
-            color: #222;
-        }
-
-        .form-sidebar .nav-link.active {
-            background: #e8f5e9;
-            color: #1b6d24;
-            font-weight: 500;
-        }
-
-        .form-sidebar .nav-link i {
-            font-size: 16px;
-        }
-
-.form-content {
-    flex: 1;
-    min-width: 0;
-}
-
-.form-section {
-    background: #fff;
-    border: 1px solid #e5e7eb;
-    border-radius: 12px;
-    padding: 1.5rem;
-    margin-bottom: 1.5rem;
-    scroll-margin-top: 1rem;
-}
-
-.form-section-title {
-    font-size: 18px;
-    font-weight: 700;
-    font-family: 'Manrope', sans-serif;
-    color: #111;
-    margin-bottom: 1.25rem;
+/* ---------- breadcrumb ---------- */
+.breadcrumb-nav {
+    font-size: .875rem;
+    color: #717a6d;
     display: flex;
     align-items: center;
-    gap: 8px;
+    gap: .4rem;
+    flex-wrap: wrap;
 }
 
-    .form-section-title i {
-        font-size: 18px;
-        color: #1b6d24;
+    .breadcrumb-nav a {
+        color: #717a6d;
+        text-decoration: none;
     }
 
-.form-grid {
+        .breadcrumb-nav a:hover {
+            color: #1B5E20;
+            text-decoration: underline;
+        }
+
+    .breadcrumb-nav .sep {
+        color: #c2c9c0;
+    }
+
+    .breadcrumb-nav .current {
+        color: #1B5E20;
+        font-weight: 600;
+    }
+
+/* ---------- page header ---------- */
+.edit-page-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    flex-wrap: wrap;
+    margin: .25rem 0 1.25rem;
+}
+
+.edit-title {
+    font-family: 'Manrope', 'Inter', sans-serif;
+    font-size: 1.75rem;
+    font-weight: 800;
+    color: var(--ink);
+    margin: 0;
+    letter-spacing: -.01em;
+}
+
+.emp-chip {
+    background: var(--brand-tint);
+    color: var(--brand);
+    border: 1px solid #cfe3d2;
+    border-radius: 99px;
+    padding: .3rem .8rem;
+    font-size: .8rem;
+    font-weight: 700;
+    letter-spacing: .02em;
+}
+
+/* ---------- layout ---------- */
+.profile-grid {
     display: grid;
-    grid-template-columns: 1fr 1fr;
+    grid-template-columns: 250px minmax(0, 1fr);
+    gap: 1.5rem;
+    align-items: start;
+}
+
+.profile-aside {
+    position: sticky;
+    top: 1rem;
+    display: flex;
+    flex-direction: column;
     gap: 1rem;
 }
 
-    .form-grid .full-width {
-        grid-column: 1 / -1;
-    }
-
-.field-label {
-    font-size: 13px;
-    font-family: 'Inter', sans-serif;
-    font-weight: 500;
-    color: #6b7280;
-    margin-bottom: 4px;
-    display: block;
+/* ---------- section nav ---------- */
+.section-card {
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: 14px;
+    padding: .5rem;
+    display: flex;
+    flex-direction: column;
+    gap: .125rem;
 }
 
-.form-control, .form-select {
-    font-size: 14px;
-    font-family: 'Inter', sans-serif;
-    border-radius: 8px;
-    border: 1px solid #d1d5db;
-    padding: 8px 12px;
-    width: 100%;
-    color: #111;
-    box-sizing: border-box;
-}
-
-    .form-control:focus, .form-select:focus {
-        border-color: #1b6d24;
-        outline: none;
-        box-shadow: 0 0 0 3px rgba(27, 109, 36, 0.1);
-    }
-
-/* Contact number rows */
-.contact-row {
+.section-item {
     display: flex;
     align-items: center;
-    gap: 8px;
+    gap: .65rem;
+    padding: .7rem .75rem;
+    border-radius: 10px;
+    font-size: .9rem;
+    font-weight: 500;
+    color: #4b5563;
+    text-decoration: none;
+    transition: background .15s, color .15s;
+    white-space: nowrap;
 }
 
-.contact-label-select {
-    max-width: 200px;
-    flex-shrink: 0;
+    .section-item i {
+        font-size: 1rem;
+        color: #9aa79c;
+    }
+
+    .section-item:hover {
+        background: #f5f6f5;
+        color: var(--ink);
+    }
+
+    .section-item.is-active {
+        background: var(--brand-tint);
+        color: var(--brand);
+        font-weight: 600;
+    }
+
+        .section-item.is-active i {
+            color: var(--brand);
+        }
+
+    .section-item:focus-visible {
+        outline: 2px solid var(--brand);
+        outline-offset: 2px;
+    }
+
+/* ---------- completion meter ---------- */
+.completion-card {
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: 14px;
+    padding: 1rem 1.1rem;
 }
 
-.form-footer {
+.completion-head {
     display: flex;
     justify-content: space-between;
+    align-items: baseline;
+    font-size: .85rem;
+    color: var(--muted);
+    margin-bottom: .6rem;
+}
+
+    .completion-head strong {
+        color: var(--ink);
+        font-weight: 700;
+    }
+
+.completion-track {
+    height: 7px;
+    border-radius: 99px;
+    background: #eceeec;
+    overflow: hidden;
+}
+
+.completion-bar {
+    height: 100%;
+    background: var(--brand);
+    border-radius: 99px;
+    transition: width .3s ease;
+}
+
+/* ---------- form cards ---------- */
+.profile-body {
+    display: flex;
+    flex-direction: column;
+    gap: 1.25rem;
+}
+
+.profile-section {
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: 14px;
+    padding: 1.6rem;
+    scroll-margin-top: 90px; /* clears the sticky topbar on anchor jumps */
+}
+
+.section-head {
+    margin-bottom: 1.4rem;
+    padding-bottom: .9rem;
+    border-bottom: 1px solid #f1f3f1;
+}
+
+    .section-head h2 {
+        font-family: 'Manrope', 'Inter', sans-serif;
+        font-size: 1.1rem;
+        font-weight: 700;
+        color: var(--ink);
+        margin: 0 0 .25rem;
+        display: flex;
+        align-items: center;
+        gap: .5rem;
+    }
+
+        .section-head h2 i {
+            color: var(--brand);
+            font-size: 1rem;
+        }
+
+    .section-head p {
+        margin: 0;
+        font-size: .8125rem;
+        color: var(--muted);
+    }
+
+/* ---------- fields ---------- */
+.counselor-edit .form-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 1.15rem 1.5rem;
+}
+
+.counselor-edit .full-width {
+    grid-column: 1 / -1;
+}
+
+.counselor-edit .field-label {
+    display: block;
+    font-size: .825rem;
+    font-weight: 600;
+    color: #374151;
+    margin-bottom: .35rem;
+}
+
+.counselor-edit .field-error {
+    display: block;
+    font-size: .75rem;
+    color: var(--danger);
+    margin-top: .25rem;
+}
+
+.counselor-edit .form-control,
+.counselor-edit .form-select {
+    font-size: .875rem;
+    border-radius: 9px;
+    border: 1px solid #d6dad6;
+    padding: .55rem .75rem;
+    min-height: 42px;
+    color: var(--ink);
+    background-color: #fff;
+    width: 100%;
+}
+
+    .counselor-edit .form-control::placeholder {
+        color: #a8b0a8;
+    }
+
+    .counselor-edit .form-control:focus,
+    .counselor-edit .form-select:focus {
+        border-color: var(--brand);
+        box-shadow: 0 0 0 3px rgba(27, 94, 32, .12);
+        outline: none;
+    }
+
+    /* employee number reads as an identifier, not free text */
+    .counselor-edit .form-control.is-identifier {
+        background: #f6faf6;
+        font-weight: 600;
+        letter-spacing: .02em;
+        color: var(--brand);
+    }
+
+.counselor-edit textarea.form-control {
+    min-height: 92px;
+    resize: vertical;
+}
+
+.counselor-edit .input-validation-error {
+    border-color: var(--danger);
+}
+
+/* ---------- contact rows ---------- */
+.contact-list {
+    display: flex;
+    flex-direction: column;
+    gap: .5rem;
+}
+
+.contact-row {
+    display: flex;
+    gap: .5rem;
+    align-items: stretch;
+}
+
+    .contact-row .contact-number {
+        flex: 1 1 auto;
+        min-width: 0;
+    }
+
+    .contact-row .contact-label {
+        flex: 0 1 230px;
+        min-width: 0;
+    }
+
+.btn-remove {
+    flex: 0 0 auto;
+    width: 42px;
+    border: 1px solid #f0c8c4;
+    background: #fdecea;
+    color: var(--danger);
+    border-radius: 9px;
+    cursor: pointer;
+    display: inline-flex;
     align-items: center;
-    padding: 1rem 0;
-    border-top: 1px solid #e5e7eb;
-    margin-top: 1rem;
+    justify-content: center;
+}
+
+    .btn-remove:hover {
+        background: #f9d9d5;
+    }
+
+.btn-add-line {
+    margin-top: .6rem;
+    background: none;
+    border: 0;
+    padding: 0;
+    color: var(--brand);
+    font-size: .85rem;
+    font-weight: 600;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: .35rem;
+}
+
+    .btn-add-line:hover {
+        text-decoration: underline;
+    }
+
+/* ---------- footer ---------- */
+.profile-foot {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
     flex-wrap: wrap;
-    gap:
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: 14px;
+    padding: 1rem 1.25rem;
+}
+
+.privacy-note {
+    font-size: .78rem;
+    color: var(--muted);
+    display: inline-flex;
+    align-items: center;
+    gap: .35rem;
+}
+
+.foot-actions {
+    display: flex;
+    gap: .6rem;
+    align-items: center;
+}
+
+.btn-cancel {
+    background: #fff;
+    border: 1px solid #d6dad6;
+    border-radius: 9px;
+    padding: .55rem 1.3rem;
+    font-size: .875rem;
+    font-weight: 500;
+    color: #374151;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    cursor: pointer;
+}
+
+    .btn-cancel:hover {
+        background: #f7f8f7;
+        color: var(--ink);
+    }
+
+.btn-save {
+    background: var(--brand);
+    border: 1px solid var(--brand);
+    border-radius: 9px;
+    padding: .55rem 1.35rem;
+    font-size: .875rem;
+    font-weight: 600;
+    color: #fff;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: .4rem;
+}
+
+    .btn-save:hover {
+        background: var(--brand-dark);
+        border-color: var(--brand-dark);
+    }
+
+    .btn-save:focus-visible,
+    .btn-cancel:focus-visible {
+        outline: 2px solid var(--brand);
+        outline-offset: 2px;
+    }
+
+/* ==========================================================================
+   RESPONSIVE
+   ========================================================================== */
+
+@media (max-width: 1199.98px) {
+    .profile-grid {
+        grid-template-columns: 215px minmax(0, 1fr);
+        gap: 1.15rem;
+    }
+}
+
+/* Tablet — section nav becomes a horizontal scroller */
+@media (max-width: 991.98px) {
+    .profile-grid {
+        grid-template-columns: minmax(0, 1fr);
+    }
+
+    .profile-aside {
+        position: sticky;
+        top: 0;
+        z-index: 5;
+    }
+
+    .section-card {
+        flex-direction: row;
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+        scrollbar-width: thin;
+    }
+
+    .section-item {
+        flex: 0 0 auto;
+    }
+
+    .profile-section {
+        padding: 1.25rem;
+    }
+}
+
+@media (max-width: 767.98px) {
+    .edit-title {
+        font-size: 1.45rem;
+    }
+
+    .counselor-edit .form-grid {
+        grid-template-columns: minmax(0, 1fr);
+    }
+}
+
+@media (max-width: 575.98px) {
+    .profile-section {
+        padding: 1rem;
+        border-radius: 12px;
+    }
+
+    .section-item span {
+        font-size: .8125rem;
+    }
+
+    .contact-row {
+        flex-wrap: wrap;
+    }
+
+        .contact-row .contact-number,
+        .contact-row .contact-label {
+            flex: 1 1 100%;
+        }
+
+        .contact-row .btn-remove {
+            margin-left: auto;
+        }
+
+    .profile-foot {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .foot-actions {
+        flex-direction: column-reverse;
+        width: 100%;
+    }
+
+        .foot-actions > * {
+            width: 100%;
+            justify-content: center;
+        }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .completion-bar,
+    .section-item {
+        transition: none;
+    }
+}
