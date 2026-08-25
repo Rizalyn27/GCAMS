@@ -120,9 +120,12 @@ namespace GCAMS.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("AnecRecsId,StuName,DateOfObserv,ObservedBy,Place,PeopleInvolved,SceneMood,StudentBehavior,ObserverRecs")] AnecRecs anecRecs, int? studentId)
+        public async Task<IActionResult> Edit(int id, [Bind("AnecRecsId,StudentsID,StuName,DateOfObserv,ObservedBy,Place,PeopleInvolved,SceneMood,StudentBehavior,ObserverRecs")] AnecRecs anecRecs, int? studentId)
         {
             if (id != anecRecs.AnecRecsId) return NotFound();
+
+            if (anecRecs.StudentsID == 0 && studentId.HasValue)
+                anecRecs.StudentsID = studentId.Value;
 
             if (ModelState.IsValid)
             {

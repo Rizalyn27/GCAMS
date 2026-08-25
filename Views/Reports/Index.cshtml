@@ -1,0 +1,1132 @@
+﻿@model GCAMS.ViewModels.Reports.ReportsPageViewModel
+@{
+    ViewData["Title"] = "Reports";
+    Layout = "_Layout";
+
+    var inv = System.Globalization.CultureInfo.InvariantCulture;
+    var months = System.Globalization.CultureInfo.CurrentCulture.DateTimeFormat;
+}
+
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+<style>
+    .rpt * {
+        font-family: 'Inter', sans-serif;
+    }
+
+    .rpt h1, .rpt h2, .rpt h3 {
+        font-family: 'Manrope', sans-serif;
+    }
+
+    .rpt {
+        max-width: 1100px;
+        margin: 0 auto;
+        padding: 24px 16px;
+        color: #191d18;
+        font-size: 14px;
+    }
+
+        /* ---------- header card ---------- */
+        .rpt .head-card {
+            background: #fff;
+            border-radius: 12px;
+            border: 1px solid rgba(192,201,187,0.2);
+            padding: 24px;
+            margin-bottom: 24px;
+            box-shadow: 0 1px 4px rgba(0,0,0,0.05);
+        }
+
+        .rpt .head-top {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            gap: 20px;
+            flex-wrap: wrap;
+        }
+
+        .rpt h1 {
+            font-size: 24px;
+            font-weight: 700;
+            color: #002c06;
+            margin: 0 0 4px;
+        }
+
+        .rpt .lede {
+            font-size: 13.5px;
+            color: #717a6d;
+            margin: 0;
+            max-width: 60ch;
+            line-height: 1.5;
+        }
+
+        /* ---------- filter bar ---------- */
+        .rpt .filters {
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
+            align-items: flex-end;
+            margin-top: 18px;
+            padding-top: 18px;
+            border-top: 1px solid rgba(192,201,187,0.3);
+        }
+
+        .rpt .field {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+        }
+
+            .rpt .field label {
+                font-size: 11px;
+                font-weight: 600;
+                color: #717a6d;
+                letter-spacing: .06em;
+                text-transform: uppercase;
+            }
+
+            .rpt .field select {
+                font-size: 13px;
+                color: #41493e;
+                padding: 8px 10px;
+                border: 1px solid #d1d5db;
+                border-radius: 8px;
+                background: #fff;
+                min-width: 145px;
+            }
+
+        /* ---------- buttons ---------- */
+        .rpt .btn-r {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 9px 18px;
+            border-radius: 10px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            border: none;
+            text-decoration: none;
+            transition: all .2s;
+            white-space: nowrap;
+        }
+
+        .rpt .btn-green {
+            background: #1b6d24;
+            color: #fff;
+        }
+
+            .rpt .btn-green:hover {
+                filter: brightness(1.1);
+                color: #fff;
+            }
+
+        .rpt .btn-ghost {
+            background: rgba(192,201,187,0.15);
+            color: #41493e;
+        }
+
+            .rpt .btn-ghost:hover {
+                background: rgba(192,201,187,0.3);
+                color: #191d18;
+            }
+
+        /* ---------- tabs (same pattern as the student profile) ---------- */
+        .rpt .tabs-bar {
+            display: flex;
+            gap: 24px;
+            border-bottom: 1px solid rgba(192,201,187,0.3);
+            margin-top: 20px;
+            overflow-x: auto;
+        }
+
+        .rpt .tab-btn {
+            padding: 0 4px 12px;
+            font-weight: 600;
+            font-size: 14px;
+            border: none;
+            background: transparent;
+            color: #717a6d;
+            cursor: pointer;
+            border-bottom: 3px solid transparent;
+            transition: all .2s;
+            white-space: nowrap;
+        }
+
+            .rpt .tab-btn.active {
+                border-bottom-color: #1b6d24;
+                color: #1b6d24;
+            }
+
+            .rpt .tab-btn:hover:not(.active) {
+                color: #1b6d24;
+            }
+
+        .rpt .tab-count {
+            display: inline-block;
+            margin-left: 5px;
+            font-size: 11px;
+            font-weight: 700;
+            background: #ffdad6;
+            color: #93000a;
+            border-radius: 10px;
+            padding: 1px 7px;
+        }
+
+        .rpt .tab-panel {
+            display: none;
+        }
+
+            .rpt .tab-panel.active {
+                display: block;
+            }
+
+        /* ---------- section card ---------- */
+        .rpt .section-card {
+            background: #fff;
+            border-radius: 12px;
+            border: 1px solid rgba(192,201,187,0.3);
+            overflow: hidden;
+            margin-bottom: 20px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.04);
+        }
+
+        .rpt .section-header {
+            background: #f2f5ec;
+            padding: 14px 24px;
+            border-bottom: 1px solid rgba(192,201,187,0.3);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-family: 'Manrope', sans-serif;
+            font-size: 16px;
+            font-weight: 600;
+            color: #191d18;
+            flex-wrap: wrap;
+        }
+
+        .rpt .section-body {
+            padding: 24px;
+        }
+
+        /* ---------- decision line ---------- */
+        .rpt .decision {
+            background: #f8faf2;
+            border-left: 3px solid #1b6d24;
+            border-radius: 0 8px 8px 0;
+            padding: 12px 15px;
+            font-size: 13px;
+            color: #41493e;
+            line-height: 1.55;
+            margin-bottom: 20px;
+        }
+
+            .rpt .decision b {
+                font-family: 'Manrope', sans-serif;
+                color: #191d18;
+            }
+
+        /* ---------- KPI strip ---------- */
+        .rpt .strip {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 12px;
+            margin-bottom: 20px;
+        }
+
+        .rpt .kpi {
+            background: #f8faf2;
+            border: 1px solid #e1e4db;
+            border-radius: 10px;
+            padding: 13px 15px;
+        }
+
+            .rpt .kpi.warn {
+                background: #fff3e0;
+                border-color: #f0dcb0;
+            }
+
+            .rpt .kpi .k {
+                font-size: 11px;
+                font-weight: 600;
+                color: #717a6d;
+                text-transform: uppercase;
+                letter-spacing: .06em;
+                margin-bottom: 5px;
+            }
+
+            .rpt .kpi .v {
+                font-family: 'Manrope', sans-serif;
+                font-size: 23px;
+                font-weight: 700;
+                line-height: 1;
+            }
+
+            .rpt .kpi.warn .v {
+                color: #7a4a00;
+            }
+
+            .rpt .kpi .n {
+                font-size: 11.5px;
+                color: #717a6d;
+                margin-top: 4px;
+            }
+
+        /* ---------- table (reuses the cn-table look) ---------- */
+        .rpt .tablewrap {
+            overflow-x: auto;
+        }
+
+        .rpt table {
+            width: 100%;
+            border-collapse: collapse;
+            border: 1px solid #e1e4db;
+            border-radius: 12px;
+            overflow: hidden;
+            min-width: 620px;
+        }
+
+        .rpt thead tr {
+            background: #f8faf2;
+            border-bottom: 1px solid #e1e4db;
+        }
+
+        .rpt thead th {
+            padding: 12px 16px;
+            font-size: 11px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: .06em;
+            color: #717a6d;
+            text-align: left;
+            white-space: nowrap;
+        }
+
+        .rpt tbody tr {
+            border-bottom: 1px solid #f2f5ec;
+            transition: background .15s;
+        }
+
+            .rpt tbody tr:last-child {
+                border-bottom: none;
+            }
+
+            .rpt tbody tr:hover {
+                background: #f8faf2;
+            }
+
+        .rpt tbody td {
+            padding: 14px 16px;
+            font-size: 14px;
+            color: #41493e;
+            vertical-align: top;
+        }
+
+        .rpt td.name {
+            font-weight: 600;
+            color: #191d18;
+        }
+
+        .rpt td.num {
+            font-variant-numeric: tabular-nums;
+        }
+
+        .rpt .sub {
+            display: block;
+            font-size: 11.5px;
+            color: #a3aa9e;
+            margin-top: 2px;
+            font-weight: 400;
+        }
+
+        /* ---------- pills ---------- */
+        .rpt .pill {
+            display: inline-block;
+            font-size: 11px;
+            font-weight: 700;
+            border-radius: 999px;
+            padding: 3px 10px;
+            white-space: nowrap;
+        }
+
+        .rpt .p-ok {
+            background: #a0f499;
+            color: #004d08;
+        }
+
+        .rpt .p-warn {
+            background: #fff3e0;
+            color: #7a4a00;
+        }
+
+        .rpt .p-bad {
+            background: #ffdad6;
+            color: #93000a;
+        }
+
+        .rpt .p-flat {
+            background: #e1e4db;
+            color: #41493e;
+        }
+
+        /* ---------- row actions ---------- */
+        .rpt .acts {
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+
+            .rpt .acts a, .rpt .acts button {
+                font-size: 12.5px;
+                font-weight: 600;
+                color: #1b6d24;
+                background: none;
+                border: none;
+                padding: 0;
+                cursor: pointer;
+                text-decoration: none;
+            }
+
+                .rpt .acts a:hover, .rpt .acts button:hover {
+                    text-decoration: underline;
+                }
+
+            .rpt .acts .muted {
+                color: #717a6d;
+            }
+
+        /* ---------- bars ---------- */
+        .rpt .barcell {
+            display: flex;
+            align-items: center;
+            gap: 9px;
+            min-width: 160px;
+        }
+
+        .rpt .bartrack {
+            flex: 1;
+            height: 7px;
+            background: #e1e4db;
+            border-radius: 4px;
+            overflow: hidden;
+            min-width: 65px;
+        }
+
+        .rpt .barfill {
+            height: 100%;
+            background: #6aa96f;
+            border-radius: 4px;
+        }
+
+            .rpt .barfill.lead {
+                background: #1b6d24;
+            }
+
+        /* ---------- empty / footer ---------- */
+        .rpt .empty-state {
+            text-align: center;
+            padding: 34px 16px;
+            color: #717a6d;
+            line-height: 1.6;
+        }
+
+        .rpt .foot {
+            margin-top: 16px;
+            padding-top: 14px;
+            border-top: 1px solid #f2f5ec;
+            font-size: 12px;
+            color: #a3aa9e;
+            display: flex;
+            justify-content: space-between;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+
+    @@media (max-width: 768px) {
+        .rpt .filters {
+            flex-direction: column;
+            align-items: stretch;
+        }
+
+        .rpt .field select {
+            width: 100%;
+        }
+    }
+
+    @@media print {
+        .rpt .filters, .rpt .tabs-bar, .rpt .acts, .rpt .btn-r {
+            display: none !important;
+        }
+
+        .rpt .tab-panel {
+            display: block !important;
+            page-break-after: always;
+        }
+
+        .rpt .section-card {
+            border: none;
+            box-shadow: none;
+        }
+    }
+</style>
+
+<div class="rpt">
+
+    <!-- ============ HEADER + SHARED FILTERS ============ -->
+    <div class="head-card">
+        <div class="head-top">
+            <div>
+                <h1>Reports</h1>
+                
+            </div>
+        </div>
+
+        <form method="get" class="filters" id="filterForm">
+            <input type="hidden" name="tab" id="tabField" value="@Model.ActiveTab" />
+
+            <div class="field">
+                <label>Academic year</label>
+                <select id="YearFilter" name="AcademicYear">
+                    @foreach (var ay in Model.Filter.AcademicYearOptions)
+                    {
+                        <option value="@ay" selected="@(ay == Model.Filter.AcademicYear)">@ay</option>
+                    }
+                </select>
+            </div>
+
+            <div class="field">
+                <label>Month</label>
+                <select id="MonthFilter"  name="Month">
+                    <option value="">All months</option>
+                    @for (int m = 1; m <= 12; m++)
+                    {
+                        <option value="@m" selected="@(Model.Filter.Month == m)">@months.GetMonthName(m)</option>
+                    }
+                </select>
+            </div>
+
+            <div class="field">
+                <label>Grade level</label>
+                <select id="GradeFilter" name="GradeLevel">
+                    <option value="">All grades</option>
+                    @foreach (var g in Model.Filter.GradeLevelOptions)
+                    {
+                        <option value="@g" selected="@(g == Model.Filter.GradeLevel)">@g</option>
+                    }
+                </select>
+            </div>
+@* 
+            @if (Model.Filter.CanChooseCounselor)
+            {
+                <div class="field">
+                    <label>Counselor</label>
+                    <select name="CounselorId">
+                        <option value="">All counselors</option>
+                        @foreach (var c in Model.Filter.CounselorOptions)
+                        {
+                            <option value="@c.Id" selected="@(Model.Filter.CounselorId == c.Id)">@c.Name</option>
+                        }
+                    </select>
+                </div>
+            } *@
+
+@*             <button type="submit" class="btn-r btn-green">Apply</button>
+ *@        </form>
+
+        <!-- ============ TABS ============ -->
+        <div class="tabs-bar">
+            <button class="tab-btn" data-tab="summary" onclick="switchTab('summary', this)">
+                Counseling Summary
+            </button>
+            <button class="tab-btn" data-tab="followup" onclick="switchTab('followup', this)">
+                Follow-up Reports
+                
+            </button>
+            @* <button class="tab-btn" data-tab="drift" onclick="switchTab('drift', this)">
+                Students Drifting
+                @if (Model.Drift.Rows.Any())
+                {
+                    <span class="tab-count">@Model.Drift.Rows.Count</span>
+                }
+            </button> *@
+            <button class="tab-btn" data-tab="incidents" onclick="switchTab('incidents', this)">
+                Behavioral Incidents
+            </button>
+            @if (Model.IsAdmin)
+            {
+                <button class="tab-btn" data-tab="utilisation" onclick="switchTab('utilisation', this)">
+                    Appointments
+                </button>
+                <button class="tab-btn" data-tab="workload" onclick="switchTab('workload', this)">
+                    Counselor Workload
+                </button>
+                
+            }
+        </div>
+    </div>
+
+
+    <!-- ============ TAB 1: COUNSELING SUMMARY ============ -->
+    <div id="tab-summary" class="tab-panel">
+        <div class="section-card">
+            <div class="section-header">
+                @Model.Summary.Title
+                <a class="btn-r btn-ghost" style="margin-left:auto; padding:6px 14px; font-size:13px;"
+                   asp-action="Export" asp-route-report="summary"
+                   asp-route-AcademicYear="@Model.Filter.AcademicYear"
+                   asp-route-Month="@Model.Filter.Month"
+                   asp-route-GradeLevel="@Model.Filter.GradeLevel"></a>
+            </div>
+            <div class="section-body">
+
+                <div class="strip">
+                    @foreach (var k in Model.Summary.Kpis)
+                    {
+                        <div class="kpi @(k.IsWarning ? "warn" : "")">
+                            <div class="k">@k.Label</div>
+                            <div class="v">@k.Value</div>
+                            @if (!string.IsNullOrWhiteSpace(k.Note))
+                            {
+                                <div class="n">@k.Note</div>
+                            }
+                        </div>
+                    }
+                </div>
+
+                @if (Model.Summary.Rows.Any())
+                {
+                    <div class="tablewrap">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Concern category</th>
+                                    <th>Share of load</th>
+                                    <th>Sessions</th>
+                                    <th>Students</th>
+                                    <th>Action</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var r in Model.Summary.Rows)
+                                {
+                                    <tr>
+                                        <td class="name">@r.Category</td>
+                                        <td>
+                                            <div class="barcell">
+                                                <div class="bartrack">
+                                                    <div class="barfill @(r.IsLead ? "lead" : "")" style="width:@r.SharePercent.ToString(inv)%"></div>
+                                                </div>
+                                                <span class="num">@r.SharePercent%</span>
+                                            </div>
+                                        </td>
+                                        <td class="num">@r.Sessions</td>
+                                        <td class="num">@r.Students</td>
+                                        <td>
+                                            <div class="acts">
+                                                <a asp-controller="Announcements" asp-action="Create">Post announcement</a>
+                                                <a class="muted" asp-controller="Appointments" asp-action="Index">View sessions</a>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                }
+                else
+                {
+                    <div class="empty-state">
+                        No sessions with a concern category in this period.<br />
+                        Case notes saved before the category field was added won't appear here.
+                    </div>
+                }
+
+                <div class="foot">
+                    <span>@Model.Summary.SourceNote</span>
+                    <span>@Model.PeriodLabel &middot; generated @Model.GeneratedAt.ToString("MMM d, yyyy h:mm tt")</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ============ TAB 2: FOLLOW-UP COMPLIANCE ============ -->
+    <div id="tab-followup" class="tab-panel">
+        <div class="section-card">
+            <div class="section-header">
+                @Model.FollowUp.Title
+                <a class="btn-r btn-ghost" style="margin-left:auto; padding:6px 14px; font-size:13px;"
+                   asp-action="Export" asp-route-report="followup"
+                   asp-route-AcademicYear="@Model.Filter.AcademicYear"
+                   asp-route-Month="@Model.Filter.Month"></a>
+            </div>
+            <div class="section-body">
+
+                <div class="strip">
+                    @foreach (var k in Model.FollowUp.Kpis)
+                    {
+                        <div class="kpi @(k.IsWarning ? "warn" : "")">
+                            <div class="k">@k.Label</div>
+                            <div class="v">@k.Value</div>
+                            @if (!string.IsNullOrWhiteSpace(k.Note))
+                            {
+                                <div class="n">@k.Note</div>
+                            }
+                        </div>
+                    }
+                </div>
+
+                @if (Model.FollowUp.Rows.Any())
+                {
+                    <div class="tablewrap">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Student</th>
+                                    <th>Due</th>
+                                    <th>Overdue</th>
+                                    <th>Sessions</th>
+                                    @if (Model.IsAdmin)
+                                    {
+                                        <th>Counselor</th>
+                                    }
+                                    <th>Action</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var r in Model.FollowUp.Rows)
+                                {
+                                    <tr>
+                                        <td class="name">
+                                            @r.StudentName
+                                            @if (!string.IsNullOrWhiteSpace(r.GradeSection))
+                                            {
+                                                <span class="sub">@r.GradeSection</span>
+                                            }
+                                        </td>
+                                        <td>@r.DueDate.ToString("MMM d, yyyy")</td>
+                                        <td>
+                                            <span class="pill @(r.DaysOverdue > 14 ? "p-bad" : "p-warn")">
+                                                @r.DaysOverdue day@(r.DaysOverdue == 1 ? "" : "s")
+                                            </span>
+                                        </td>
+                                        <td class="num">@r.SessionCount</td>
+                                        @if (Model.IsAdmin)
+                                        {
+                                            <td>@r.CounselorName</td>
+                                        }
+                                        <td>
+                                            <div class="acts">
+                                                @if (r.StudentsID.HasValue)
+                                                {
+                                                    <a asp-controller="CaseNotes" asp-action="Create"
+                                                       asp-route-studentId="@r.StudentsID">Log session</a>
+                                                    <a asp-controller="Students" asp-action="Details"
+                                                       asp-route-id="@r.StudentsID">Open record</a>
+                                                }
+                                                <button type="button" class="muted"
+                                                        onclick="resolveFollowUp(@r.AppointmentId, this)">
+                                                    Mark handled
+                                                </button>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                }
+                else
+                {
+                    <div class="empty-state">
+                        No overdue follow-ups. Every follow-up scheduled in this period was
+                        completed or called off.
+                    </div>
+                }
+
+                <div class="foot">
+                    <span>@Model.FollowUp.SourceNote</span>
+                    <span>@Model.PeriodLabel &middot; generated @Model.GeneratedAt.ToString("MMM d, yyyy h:mm tt")</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ============ TAB 3: DRIFTING STUDENTS ============ -->
+    <div id="tab-drift" class="tab-panel">
+        <div class="section-card">
+            <div class="section-header">
+                @Model.Drift.Title
+                <a class="btn-r btn-ghost" style="margin-left:auto; padding:6px 14px; font-size:13px;"
+                   asp-action="Export" asp-route-report="drift"
+                   asp-route-GradeLevel="@Model.Filter.GradeLevel"></a>
+            </div>
+            <div class="section-body">
+
+                <div class="strip">
+                    @foreach (var k in Model.Drift.Kpis)
+                    {
+                        <div class="kpi @(k.IsWarning ? "warn" : "")">
+                            <div class="k">@k.Label</div>
+                            <div class="v">@k.Value</div>
+                            @if (!string.IsNullOrWhiteSpace(k.Note))
+                            {
+                                <div class="n">@k.Note</div>
+                            }
+                        </div>
+                    }
+                </div>
+
+                @if (Model.Drift.Rows.Any())
+                {
+                    <div class="tablewrap">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Student</th>
+                                    <th>Last session</th>
+                                    <th>Gap</th>
+                                    <th>Sessions</th>
+                                    <th>Last concern</th>
+                                    <th>Action</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var r in Model.Drift.Rows)
+                                {
+                                    <tr>
+                                        <td class="name">
+                                            @r.StudentName
+                                            <span class="sub">@r.GradeSection</span>
+                                        </td>
+                                        <td>@r.LastSessionDate.ToString("MMM d, yyyy")</td>
+                                        <td>
+                                            <span class="pill @(r.DaysSince > 60 ? "p-bad" : "p-warn")">@r.DaysSince days</span>
+                                        </td>
+                                        <td class="num">@r.SessionCount</td>
+                                        <td>@r.LastConcern</td>
+                                        <td>
+                                            <div class="acts">
+                                                <a asp-controller="CaseNotes" asp-action="Create"
+                                                   asp-route-studentId="@r.StudentsID">Log session</a>
+                                                <a asp-controller="Students" asp-action="Details"
+                                                   asp-route-id="@r.StudentsID">Open record</a>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                }
+                else
+                {
+                    <div class="empty-state">
+                        Nobody is drifting. Every student with counselling history has either
+                        been seen recently or has something booked.
+                    </div>
+                }
+
+                <div class="foot">
+                    <span>@Model.Drift.SourceNote</span>
+                    <span>generated @Model.GeneratedAt.ToString("MMM d, yyyy h:mm tt")</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ============ TAB 4: BEHAVIORAL INCIDENTS ============ -->
+    <div id="tab-incidents" class="tab-panel">
+        <div class="section-card">
+            <div class="section-header">
+                @Model.Incidents.Title
+                <a class="btn-r btn-ghost" style="margin-left:auto; padding:6px 14px; font-size:13px;"
+                   asp-action="Export" asp-route-report="incidents"
+                   asp-route-AcademicYear="@Model.Filter.AcademicYear"
+                   asp-route-Month="@Model.Filter.Month"></a>
+            </div>
+            <div class="section-body">
+
+                <div class="strip">
+                    @foreach (var k in Model.Incidents.Kpis)
+                    {
+                        <div class="kpi @(k.IsWarning ? "warn" : "")">
+                            <div class="k">@k.Label</div>
+                            <div class="v">@k.Value</div>
+                            @if (!string.IsNullOrWhiteSpace(k.Note))
+                            {
+                                <div class="n">@k.Note</div>
+                            }
+                        </div>
+                    }
+                </div>
+
+                @if (Model.Incidents.Rows.Any())
+                {
+                    <div class="tablewrap">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Student Involved</th>
+                                    <th>Location</th>
+                                    <th>Records</th>
+                                    <th>Action</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var r in Model.Incidents.Rows)
+                                {
+                                    <tr>
+                                        <td class="name">@r.StudentName</td>
+                                        <td>@r.Place</td>
+                                        <td class="num">@r.Incidents</td>
+                                        <td>
+                                            <div class="acts">
+                                                <a asp-controller="Students" asp-action="Details" asp-route-id="@r.StudentsID" asp-route-tab="health">View Records</a>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                }
+                <div class="foot">
+                    <span>@Model.Incidents.SourceNote</span>
+                    <span>@Model.PeriodLabel &middot; generated @Model.GeneratedAt.ToString("MMM d, yyyy h:mm tt")</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    @if (Model.IsAdmin && Model.Utilisation != null && Model.Workload != null && Model.Audit != null)
+    {
+        <!-- ============ TAB 5: APPOINTMENT UTILISATION ============ -->
+        <div id="tab-utilisation" class="tab-panel">
+            <div class="section-card">
+                <div class="section-header">
+                    @Model.Utilisation.Title
+                    <a class="btn-r btn-ghost" style="margin-left:auto; padding:6px 14px; font-size:13px;"
+                       asp-action="Export" asp-route-report="utilisation"
+                       asp-route-AcademicYear="@Model.Filter.AcademicYear"
+                       asp-route-Month="@Model.Filter.Month"></a>
+                </div>
+                <div class="section-body">
+
+                    <div class="strip">
+                        @foreach (var k in Model.Utilisation.Kpis)
+                        {
+                            <div class="kpi @(k.IsWarning ? "warn" : "")">
+                                <div class="k">@k.Label</div>
+                                <div class="v">@k.Value</div>
+                                @if (!string.IsNullOrWhiteSpace(k.Note))
+                                {
+                                    <div class="n">@k.Note</div>
+                                }
+                            </div>
+                        }
+                    </div>
+
+                    @if (Model.Utilisation.Rows.Any())
+                    {
+                        <div class="tablewrap">
+                            <table>
+                                <thead>
+                                    <tr><th>Status</th><th>Count</th><th>Notes</th><th>Action</th></tr>
+                                </thead>
+                                <tbody>
+                                    @foreach (var r in Model.Utilisation.Rows)
+                                    {
+                                        <tr>
+                                            <td class="name">@r.Status</td>
+                                            <td class="num">@r.Count</td>
+                                            <td>
+                                                
+                                                    @r.Note
+                                                
+                                            </td>
+                                            <td>
+                                                <div class="acts">
+                                                    <a asp-controller="Appointments" asp-action="Index">View list</a>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="empty-state">No appointments in this period.</div>
+                    }
+
+                    <div class="foot">
+                        <span>@Model.Utilisation.SourceNote</span>
+                        <span>@Model.PeriodLabel &middot; generated @Model.GeneratedAt.ToString("MMM d, yyyy h:mm tt")</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ============ TAB 6: COUNSELOR WORKLOAD ============ -->
+        <div id="tab-workload" class="tab-panel">
+            <div class="section-card">
+                <div class="section-header">
+                    @Model.Workload.Title
+                    <a class="btn-r btn-ghost" style="margin-left:auto; padding:6px 14px; font-size:13px;"
+                       asp-action="Export" asp-route-report="workload"
+                       asp-route-AcademicYear="@Model.Filter.AcademicYear"></a>
+                </div>
+                <div class="section-body">
+
+                    <div class="strip">
+                        @foreach (var k in Model.Workload.Kpis)
+                        {
+                            <div class="kpi @(k.IsWarning ? "warn" : "")">
+                                <div class="k">@k.Label</div>
+                                <div class="v">@k.Value</div>
+                                @if (!string.IsNullOrWhiteSpace(k.Note))
+                                {
+                                    <div class="n">@k.Note</div>
+                                }
+                            </div>
+                        }
+                    </div>
+
+                    @if (Model.Workload.Rows.Any())
+                    {
+                        <div class="tablewrap">
+                            <table>
+                                <thead>
+                                    <tr>
+                                        <th>Counselor</th>
+                                        <th>Share of open cases</th>
+                                        <th>Sessions</th>
+                                        <th>Open cases</th>
+                                        <th>Overdue</th>
+                                        <th>Action</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach (var r in Model.Workload.Rows)
+                                    {
+                                        <tr>
+                                            <td class="name">
+                                                @r.CounselorName
+                                                @if (!string.IsNullOrWhiteSpace(r.Position))
+                                                {
+                                                    <span class="sub">@r.Position</span>
+                                                }
+                                            </td>
+                                            <td>
+                                                @if (r.CounselorId.HasValue)
+                                                {
+                                                    <div class="barcell">
+                                                        <div class="bartrack">
+                                                            <div class="barfill @(r.IsLead ? "lead" : "")" style="width:@r.SharePercent.ToString(inv)%"></div>
+                                                        </div>
+                                                        <span class="num">@r.SharePercent%</span>
+                                                    </div>
+                                                }
+                                                else
+                                                {
+                                                    <span>&mdash;</span>
+                                                }
+                                            </td>
+                                            <td class="num">@(r.CounselorId.HasValue? r.Sessions.ToString() : "—")</td>
+                                            <td class="num">@r.OpenCases</td>
+                                            <td>
+                                                @if (!r.CounselorId.HasValue)
+                                                {
+                                                    <span class="pill p-warn">Needs assigning</span>
+                                                }
+                                                else if (r.Overdue > 0)
+                                                {
+                                                    <span class="pill p-bad">@r.Overdue</span>
+                                                }
+                                                else
+                                                {
+                                                    <span class="pill p-ok">0</span>
+                                                }
+                                            </td>
+                                            <td>
+                                                <div class="acts">
+                                                    <a asp-controller="Appointments" asp-action="Index">
+                                                        @(r.CounselorId.HasValue ? "View caseload" : "Assign now")
+                                                    </a>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="empty-state">No active counselors on record.</div>
+                    }
+
+                    <div class="foot">
+                        <span>@Model.Workload.SourceNote</span>
+                        <span>@Model.PeriodLabel &middot; generated @Model.GeneratedAt.ToString("MMM d, yyyy h:mm tt")</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    }
+
+</div>
+
+<script>
+    let visibleRows = [];
+            document.querySelectorAll('#YearFilter, #MonthFilter, #GradeFilter').forEach(function (el) {
+        el.addEventListener('change', function () {
+            document.getElementById('filterForm').submit();
+        });
+    });
+
+    function switchTab(name, btn) {
+        document.querySelectorAll('.rpt .tab-panel').forEach(p => p.classList.remove('active'));
+        document.querySelectorAll('.rpt .tab-btn').forEach(b => b.classList.remove('active'));
+
+        const panel = document.getElementById('tab-' + name);
+        if (panel) panel.classList.add('active');
+        if (btn) btn.classList.add('active');
+
+        // Carry the open tab through the next Apply so the filter form
+        // doesn't bounce the user back to tab one.
+        const field = document.getElementById('tabField');
+        if (field) field.value = name;
+    }
+
+    async function  olveFollowUp(id, btn) {
+        btn.disabled = true;
+        try {
+            const res = await fetch('/Appointments/UpdateStatus', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ AppointmentId: id, NewStatus: 'Completed' })
+            });
+            if (res.ok) {
+                btn.closest('tr').remove();
+            } else {
+                btn.disabled = false;
+                alert('Could not update that follow-up. Please try again.');
+            }
+        } catch {
+            btn.disabled = false;
+            alert('Could not reach the server. Please try again.');
+        }
+    }
+
+    // Open whichever tab the server said, defaulting to the first.
+    document.addEventListener('DOMContentLoaded', function () {
+        const wanted = '@Model.ActiveTab';
+        let btn = document.querySelector('.rpt .tab-btn[data-tab="' + wanted + '"]');
+        if (!btn) btn = document.querySelector('.rpt .tab-btn');
+        if (btn) switchTab(btn.dataset.tab, btn);
+    });
+
+       
+</script>
