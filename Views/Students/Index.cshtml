@@ -1,510 +1,170 @@
 ﻿@model IEnumerable<GCAMS.Models.Students.Students>
 
 @{
-    ViewData["Title"] = "Student Management";
-    var pagedList = Model.ToList();
-    int pageSize = 10;
-    int totalStudents = pagedList.Count;
+    ViewData["Title"] = "Students";
+    ViewData["PageSubtitle"] = $"{Model.Count()} registered student{(Model.Count() == 1 ? "" : "s")}";
 }
 
-<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
-<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet">
+@section Styles {
+    <link rel="stylesheet" href="~/css/Students/Index.css" asp-append-version="true" />
+}
 
-<style>
-    .material-symbols-outlined {
-        font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
-        vertical-align: middle;
-    }
+<div class="students-page">
 
-    .student-page * {
-        font-family: 'Inter', sans-serif;
-    }
-
-    .page-breadcrumb {
-        font-size: 13px;
-        color: #717a6d;
-        margin-bottom: 16px;
-        display: flex;
-        align-items: center;
-        gap: 4px;
-    }
-
-        .page-breadcrumb a {
-            color: #717a6d;
-            text-decoration: none;
-        }
-
-        .page-breadcrumb .current {
-            color: #191d18;
-            font-weight: 700;
-        }
-
-    .page-header {
-        display: flex;
-        justify-content: flex-end;
-        align-items: center;
-        margin-bottom: 20px;
-    }
-
-    .btn-add {
-        display: inline-flex;
-        align-items: center;
-        gap: 8px;
-        background: #1b6d24;
-        color: white;
-        padding: 10px 20px;
-        border-radius: 10px;
-        font-size: 14px;
-        font-weight: 600;
-        text-decoration: none;
-        border: none;
-        cursor: pointer;
-        transition: all 0.2s;
-    }
-
-        .btn-add:hover {
-            filter: brightness(1.1);
-            color: white;
-            box-shadow: 0 2px 8px rgba(27,109,36,0.3);
-        }
-
-    .btn-import {
-        display: inline-flex;
-        align-items: center;
-        gap: 8px;
-        background: #fff;
-        color: #1b6d24;
-        padding: 10px 20px;
-        border-radius: 10px;
-        font-size: 14px;
-        font-weight: 600;
-        text-decoration: none;
-        border: 1.5px solid #1b6d24;
-        cursor: pointer;
-        transition: all 0.2s;
-        margin-right: 10px;
-    }
-
-        .btn-import:hover {
-            background: #f2f5ec;
-        }
-
-    .filter-bar {
-        display: flex;
-        align-items: center;
-        gap: 12px;
-        margin-bottom: 20px;
-        flex-wrap: wrap;
-    }
-
-    .search-box {
-        display: flex;
-        align-items: center;
-        gap: 8px;
-        background: #fff;
-        border: 1.5px solid #e1e4db;
-        border-radius: 10px;
-        padding: 9px 14px;
-        flex: 1;
-        min-width: 200px;
-        max-width: 320px;
-        transition: border-color 0.2s;
-    }
-
-        .search-box:focus-within {
-            border-color: #1b6d24;
-        }
-
-        .search-box input {
-            border: none;
-            outline: none;
-            background: transparent;
-            font-size: 14px;
-            color: #191d18;
-            width: 100%;
-        }
-
-            .search-box input::placeholder {
-                color: #b0b8ac;
-            }
-
-        .search-box .material-symbols-outlined {
-            color: #b0b8ac;
-            font-size: 18px;
-        }
-
-    .filter-select {
-        display: flex;
-        align-items: center;
-        gap: 6px;
-        background: #fff;
-        border: 1.5px solid #e1e4db;
-        border-radius: 10px;
-        padding: 9px 14px;
-        font-size: 14px;
-        font-weight: 500;
-        color: #191d18;
-        cursor: pointer;
-        appearance: none;
-        -webkit-appearance: none;
-        background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%23717a6d' stroke-width='2'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");
-        background-repeat: no-repeat;
-        background-position: right 10px center;
-        padding-right: 32px;
-        transition: border-color 0.2s;
-    }
-
-        .filter-select:focus {
-            outline: none;
-            border-color: #1b6d24;
-        }
-
-    .filter-icon-btn {
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        width: 40px;
-        height: 40px;
-        background: #fff;
-        border: 1.5px solid #e1e4db;
-        border-radius: 10px;
-        cursor: pointer;
-        color: #717a6d;
-        transition: all 0.2s;
-        margin-left: auto;
-    }
-
-        .filter-icon-btn:hover {
-            border-color: #1b6d24;
-            color: #1b6d24;
-        }
-
-    .student-table {
-        width: 100%;
-        border-collapse: collapse;
-        background: #fff;
-        border-radius: 12px;
-        overflow: hidden;
-        border: 1px solid #e1e4db;
-    }
-
-        .student-table thead tr {
-            background: #f8faf2;
-            border-bottom: 1px solid #e1e4db;
-        }
-
-        .student-table thead th {
-            padding: 12px 16px;
-            font-size: 11px;
-            font-weight: 700;
-            text-transform: uppercase;
-            letter-spacing: 0.06em;
-            color: #717a6d;
-            text-align: left;
-        }
-
-        .student-table tbody tr {
-            border-bottom: 1px solid #f2f5ec;
-            transition: background 0.15s;
-        }
-
-            .student-table tbody tr:last-child {
-                border-bottom: none;
-            }
-
-            .student-table tbody tr:hover {
-                background: #f8faf2;
-            }
-
-        .student-table tbody td {
-            padding: 14px 16px;
-            font-size: 14px;
-            color: #191d18;
-            vertical-align: middle;
-        }
-
-    .student-id {
-        font-family: monospace;
-        font-size: 12px;
-        color: #717a6d;
-        font-weight: 600;
-    }
-
-    .student-name {
-        font-weight: 600;
-        color: #191d18;
-    }
-
-    .student-email {
-        color: #717a6d;
-        font-size: 13px;
-    }
-
-    .grade-pill {
-        display: inline-block;
-        background: #dbeafe;
-        color: #1e40af;
-        padding: 3px 10px;
-        border-radius: 999px;
-        font-size: 12px;
-        font-weight: 600;
-    }
-
-    .action-icons {
-        display: flex;
-        align-items: center;
-        gap: 4px;
-    }
-
-    .action-icon {
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        width: 32px;
-        height: 32px;
-        border-radius: 8px;
-        border: none;
-        background: transparent;
-        cursor: pointer;
-        color: #717a6d;
-        text-decoration: none;
-        transition: all 0.15s;
-    }
-
-        .action-icon:hover {
-            background: #f2f5ec;
-            color: #1b6d24;
-        }
-
-        .action-icon.danger:hover {
-            background: #ffdad6;
-            color: #93000a;
-        }
-
-        .action-icon .material-symbols-outlined {
-            font-size: 18px;
-        }
-
-    .table-footer {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        margin-top: 16px;
-        flex-wrap: wrap;
-        gap: 12px;
-    }
-
-    .showing-text {
-        font-size: 13px;
-        color: #717a6d;
-    }
-
-    .pagination {
-        display: flex;
-        align-items: center;
-        gap: 4px;
-        list-style: none;
-        margin: 0;
-        padding: 0;
-    }
-
-    .page-btn {
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        width: 32px;
-        height: 32px;
-        border-radius: 8px;
-        border: none;
-        background: transparent;
-        font-size: 13px;
-        font-weight: 500;
-        color: #717a6d;
-        cursor: pointer;
-        transition: all 0.15s;
-    }
-
-        .page-btn:hover {
-            background: #f2f5ec;
-            color: #191d18;
-        }
-
-        .page-btn.active {
-            background: #1b6d24;
-            color: white;
-            font-weight: 700;
-        }
-
-        .page-btn:disabled {
-            opacity: 0.35;
-            cursor: default;
-        }
-
-        .page-btn.arrow {
-            color: #717a6d;
-        }
-
-    .alert-success {
-        background: #dcfce7;
-        color: #166534;
-        border: 1px solid #bbf7d0;
-        border-radius: 10px;
-        padding: 12px 16px;
-        margin-bottom: 16px;
-        font-size: 14px;
-    }
-
-    .alert-danger {
-        background: #ffdad6;
-        color: #93000a;
-        border: 1px solid #ffb4ab;
-        border-radius: 10px;
-        padding: 12px 16px;
-        margin-bottom: 16px;
-        font-size: 14px;
-    }
-
-    .archive-form {
-        display: inline;
-    }
-</style>
-
-<div class="student-page" style="max-width: 1100px; margin: 0 auto; padding: 24px 16px;">
-
-    <!-- Breadcrumb -->
-    <div class="page-breadcrumb">
-        <span>Students</span>
-        <span class="material-symbols-outlined" style="font-size:14px;">></span>
-        <span class="current">Student Management</span>
-    </div>
-
-    <!-- Header -->
-    <div class="page-header">
-        <button type="button" class="btn-import" data-bs-toggle="modal" data-bs-target="#importModal">
-            <span class="material-symbols-outlined" style="font-size:18px;"></span>
-            Import Excel
+    <!-- ================= Toolbar ================= -->
+    <div class="page-toolbar d-flex flex-wrap align-items-center justify-content-end gap-2 mb-3">
+        <button type="button" class="btn btn-ghost" data-bs-toggle="modal" data-bs-target="#importModal">
+            <i class="fa-solid fa-file-arrow-up"></i>
+            <span>Import Excel</span>
         </button>
-        <a asp-action="Create" class="btn-add">
-            <span class="material-symbols-outlined" style="font-size:18px;"></span>
-            Add New Student
+        <a asp-action="Create" class="btn btn-brand">
+            <i class="fa-solid fa-user-plus"></i>
+            <span>Add New Student</span>
         </a>
     </div>
 
     @if (TempData["Success"] != null)
     {
-        <div class="alert-success">
-            <span class="material-symbols-outlined" style="font-size:16px; vertical-align:middle; margin-right:6px;"></span>
-            @TempData["Success"]
+        <div class="alert alert-success alert-dismissible fade show d-flex align-items-center gap-2" role="alert">
+            <i class="fa-solid fa-circle-check"></i>
+            <div>@TempData["Success"]</div>
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
         </div>
     }
     @if (TempData["Error"] != null)
     {
-        <div class="alert-danger">
-            <span class="material-symbols-outlined" style="font-size:16px; vertical-align:middle; margin-right:6px;">error</span>
-            @TempData["Error"]
+        <div class="alert alert-danger alert-dismissible fade show d-flex align-items-center gap-2" role="alert">
+            <i class="fa-solid fa-circle-exclamation"></i>
+            <div>@TempData["Error"]</div>
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
         </div>
     }
 
-    <!-- Filter Bar -->
-    <div class="filter-bar">
-        <div class="search-box">
-            <span class="material-symbols-outlined"></span>
-            <input type="text" id="studentSearch" placeholder="Search students by name or ID" />
+    <!-- ================= Panel ================= -->
+    <div class="content-panel">
+
+        <!-- Filters -->
+        <div class="filter-bar d-flex flex-wrap align-items-center gap-2 mb-3">
+            <div class="search-box">
+                <i class="fa-solid fa-magnifying-glass" aria-hidden="true"></i>
+                <input type="search" id="studentSearch" class="form-control border-0 shadow-none p-0"
+                       placeholder="Search students by name or ID" aria-label="Search students by name or ID" />
+            </div>
+
+            <select id="gradeFilter" class="form-select filter-select" aria-label="Filter by grade level">
+                <option value="">All Grades</option>
+                @foreach (var grade in Model.Select(s => s.GradeLevel)
+                                .Where(g => !string.IsNullOrWhiteSpace(g))
+                                .Distinct()
+                                .OrderBy(g => g))
+                {
+                    <option value="@grade.ToLower()">@grade</option>
+                }
+            </select>
+
+            <select id="sectionFilter" class="form-select filter-select" aria-label="Filter by section">
+                <option value="">All Sections</option>
+                @foreach (var sec in Model.Select(s => s.Section)
+                                .Where(s => !string.IsNullOrWhiteSpace(s))
+                                .Distinct()
+                                .OrderBy(s => s))
+                {
+                    <option value="@sec.ToLower()">@sec</option>
+                }
+            </select>
+
+            <select id="statusFilter" class="form-select filter-select filter-extra" aria-label="Filter by status">
+                <option value="">All Status</option>
+                <option value="true">Active</option>
+                <option value="false">Archived</option>
+            </select>
+
         </div>
 
-        <!--Grade Level Filter-->
-        <select id="gradeFilter" class="filter-select">
-            <option value="">All Grades</option>
+        <!-- Table -->
+        <div class="table-card">
+            <div class="table-responsive table-scroll">
+                <table class="table table-hover gcams-table align-middle mb-0" id="studentTable">
+                    <thead>
+                        <tr>
+                            <th scope="col">Student ID</th>
+                            <th scope="col">Full Name</th>
+                            <th scope="col">Email</th>
+                            <th scope="col">Grade</th>
+                            <th scope="col">Section</th>
+                            <th scope="col" class="th-actions">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var item in Model)
+                        {
+                            <tr data-name="@item.StuName?.ToLower()"
+                                data-stuid="@item.StuID?.ToLower()"
+                                data-grade="@item.GradeLevel?.ToLower()"
+                                data-section="@item.Section?.ToLower()"
+                                data-active="@item.IsActive.ToString().ToLower()">
+                                <td data-label="Student ID"><span class="cell-id">@item.StuID</span></td>
+                                <td data-label="Full Name"><span class="cell-name">@item.StuName</span></td>
+                                <td data-label="Email"><span class="cell-muted">@item.Email</span></td>
+                                <td data-label="Grade"><span class="grade-pill">@item.GradeLevel</span></td>
+                                <td data-label="Section">@item.Section</td>
+                                <td data-label="Actions">
+                                    <div class="action-icons">
+                                        <a asp-action="Details" asp-route-id="@item.StudentsID"
+                                           class="action-icon" title="View details" aria-label="View details">
+                                            <i class="fa-regular fa-eye"></i>
+                                        </a>
+                                        <a asp-action="Edit" asp-route-id="@item.StudentsID"
+                                           class="action-icon" title="Edit" aria-label="Edit">
+                                            <i class="fa-solid fa-pen"></i>
+                                        </a>
+                                        @if (item.IsActive)
+                                        {
+                                            <form asp-action="SoftDelete" asp-route-id="@item.StudentsID" method="post" class="inline-form">
+                                                @Html.AntiForgeryToken()
+                                                <button type="submit" class="action-icon danger" title="Archive student" aria-label="Archive student">
+                                                    <i class="fa-solid fa-box-archive"></i>
+                                                </button>
+                                            </form>
+                                        }
+                                        else
+                                        {
+                                            <form asp-action="Restore" asp-route-id="@item.StudentsID" method="post" class="inline-form">
+                                                @Html.AntiForgeryToken()
+                                                <button type="submit" class="action-icon restore" title="Restore student" aria-label="Restore student">
+                                                    <i class="fa-solid fa-rotate-left"></i>
+                                                </button>
+                                            </form>
+                                        }
+                                    </div>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+            <!-- Table Footer -->
+            <div class="table-footer">
+                <span class="showing-text" id="showingText"></span>
+                <div class="pagination" id="pagination"></div>
+            </div>
 
-            @foreach (var gradeLevel in Model.Select(s => s.GradeLevel).Distinct().OrderBy(s => s))
-            {
-                <option value="@gradeLevel?.ToLower()">@gradeLevel</option>
-            }
-        </select>
+            <div class="empty-state d-none" id="emptyState">
+                <i class="fa-solid fa-user-graduate"></i>
+                <p class="mb-0">No students match your filters.</p>
+            </div>
 
-        <!--Section Filter-->
-        <select id="sectionFilter" class="filter-select">
-            <option value="">All Sections</option>
-            @foreach (var sec in Model.Select(s => s.Section).Distinct().OrderBy(s => s))
-            {
-                <option value="@sec?.ToLower()">@sec</option>
-            }
-        </select>
-
-        <!--Status Filter-->
-        <select id="statusFilter" class="filter-select">
-            <option value="">All Status</option>
-            <option value="true">Active</option>
-            <option value="false">Inactive</option>
-        </select>
-
+            <div class="table-footer d-flex flex-wrap align-items-center justify-content-between gap-2">
+                <span class="showing-text" id="showingText"></span>
+                <ul class="pagination gcams-pagination mb-0" id="pagination"></ul>
+            </div>
+        </div>
     </div>
-
-    <!-- Table -->
-    <table class="student-table" id="studentTable">
-        <thead>
-            <tr>
-                <th>Student ID</th>
-                <th>Full Name</th>
-                <th>Email</th>
-                <th>Grade</th>
-                <th>Section</th>
-                <th>Actions</th>
-            </tr>
-        </thead>
-        <tbody>
-            @foreach (var item in Model)
-            {
-                <tr data-active="@item.IsActive.ToString().ToLower()">
-                    <td><span class="student-id">@item.StuID</span></td>
-                    <td><span class="student-name">@item.StuName</span></td>
-                    <td><span class="student-email">@item.Email</span></td>
-                    <td><span class="grade-pill">@item.GradeLevel</span></td>
-                    <td>@item.Section</td>
-                    <td>
-                        <div class="action-icons">
-                            <a asp-action="Details" asp-route-id="@item.StudentsID" class="action-icon" title="View Details">
-                                <span class="material-symbols-outlined">👁</span>
-                            </a>
-                            <a asp-action="Edit" asp-route-id="@item.StudentsID" class="action-icon" title="Edit">
-                                <span class="material-symbols-outlined">✏️</span>
-                            </a>
-                            @if (item.IsActive)
-                            {
-                                <form asp-action="SoftDelete" asp-route-id="@item.StudentsID" method="post" class="archive-form">
-                                    @Html.AntiForgeryToken()
-                                    <button type="submit" class="action-icon danger" title="Archive Student">
-                                        <span class="material-symbols-outlined" style="font-size:18px;">🗑</span>
-                                    </button>
-                                </form>
-                            }
-                            else
-                            {
-                                <form asp-action="Restore" asp-route-id="@item.StudentsID" method="post" class="archive-form">
-                                     @Html.AntiForgeryToken()
-                                    <button type="submit" class="action-icon" title="Restore Student" style="color:#1b6d24;">
-                                        <span class="material-symbols-outlined" style="font-size:18px;">↺</span>
-                                    </button>
-                                </form>
-                            }
-                        </div>
-                    </td>
-                </tr>
-            }
-        </tbody>
-    </table>
-
-    <!-- Table Footer -->
-    <div class="table-footer">
-        <span class="showing-text" id="showingText"></span>
-        <div class="pagination" id="pagination"></div>
-    </div>
-
 </div>
 
-<!-- Import Modal -->
+<!-- ================= Import Modal ================= -->
 <div class="modal fade" id="importModal" tabindex="-1" aria-labelledby="importModalLabel" aria-hidden="true">
-    <div class="modal-dialog">
+    <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content">
             <div class="modal-header">
                 <h5 class="modal-title" id="importModalLabel">Import Students from Excel</h5>
@@ -513,117 +173,150 @@
             <form asp-action="Import" method="post" enctype="multipart/form-data">
                 @Html.AntiForgeryToken()
                 <div class="modal-body">
-                    <div class="mb-3">
-                        <label class="form-label">Select Excel File (.xlsx)</label>
-                        <input type="file" name="file" accept=".xlsx" class="form-control" required />
-                    </div>
+                    <label for="importFile" class="form-label">Select Excel file (.xlsx)</label>
+                    <input type="file" id="importFile" name="file" accept=".xlsx" class="form-control" required />
+                    <div class="form-text">The first row is treated as the header and is skipped. Duplicate student IDs are ignored.</div>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                    <input type="submit" value="Upload & Import" class="btn btn-success" />
+                    <button type="button" class="btn btn-light" data-bs-dismiss="modal">Cancel</button>
+                    <button type="submit" class="btn btn-brand">Upload &amp; Import</button>
                 </div>
             </form>
         </div>
     </div>
 </div>
 
-<script>
-    const pageSize = 10;
-    let currentPage = 1;
-    let visibleRows = [];
-        function applyFilters() {
-        const query           = document.getElementById('studentSearch').value.toLowerCase().trim();
-        const grade           = document.getElementById('gradeFilter').value.toLowerCase();
-        const selectedSection = document.getElementById('sectionFilter').value.toLowerCase();
-        const status          = document.getElementById('statusFilter').value;
+@section Scripts {
+    <script>
+        (function () {
+            const pageSize = 10;
+            let currentPage = 1;
+            let visibleRows = [];
 
-        visibleRows = [];
+            const table = document.getElementById('studentTable');
+            const rows = Array.from(table.querySelectorAll('tbody tr'));
+            const searchInput = document.getElementById('studentSearch');
+            const gradeFilter = document.getElementById('gradeFilter');
+            const sectionFilter = document.getElementById('sectionFilter');
+            const statusFilter = document.getElementById('statusFilter');
+            const filterBar = document.querySelector('.filter-bar');
+            const filterToggle = document.getElementById('filterToggle');
+            const emptyState = document.getElementById('emptyState');
+            const showingText = document.getElementById('showingText');
+            const pagination = document.getElementById('pagination');
 
-        document.querySelectorAll('#studentTable tbody tr').forEach(function (row) {
-            const stuId     = row.cells[0]?.textContent.trim().toLowerCase() || '';
-            const name      = row.cells[1]?.textContent.trim().toLowerCase() || '';
-            const rowGrade  = row.cells[3]?.textContent.trim().toLowerCase() || '';
-            const rowSec    = row.cells[4]?.textContent.trim().toLowerCase() || '';
-            const rowActive = (row.getAttribute('data-active') || '').trim();
+            function applyFilters() {
+                const query = searchInput.value.toLowerCase().trim();
+                const grade = gradeFilter.value.toLowerCase();
+                const section = sectionFilter.value.toLowerCase();
+                const status = statusFilter.value;
 
-            const matchesSearch  = !query           || name.includes(query) || stuId.includes(query);
-            const matchesGrade   = !grade           || rowGrade === grade;
-            const matchesSection = !selectedSection || rowSec === selectedSection;
-            const matchesStatus  = !status          || rowActive === status; 
+                visibleRows = rows.filter(function (row) {
+                    const d = row.dataset;
+                    return (!query || (d.name || '').includes(query) || (d.stuid || '').includes(query))
+                        && (!grade || d.grade === grade)
+                        && (!section || d.section === section)
+                        && (!status || d.active === status);
+                });
 
-            if (matchesSearch && matchesGrade && matchesSection && matchesStatus) {
-                visibleRows.push(row);
+                currentPage = 1;
+                renderPage();
             }
-            row.style.display = 'none';
-        });
 
-        currentPage = 1;
-        renderPage();
-    }
+            function renderPage() {
+                const total = visibleRows.length;
+                const totalPages = Math.max(1, Math.ceil(total / pageSize));
+                if (currentPage > totalPages) currentPage = totalPages;
 
-    function renderPage() {
-        const start = (currentPage - 1) * pageSize;
-        const end   = start + pageSize;
+                const start = (currentPage - 1) * pageSize;
+                const end = start + pageSize;
 
-        document.querySelectorAll('#studentTable tbody tr').forEach(r => r.style.display = 'none');
-        visibleRows.slice(start, end).forEach(r => r.style.display = '');
+                rows.forEach(r => r.classList.add('d-none'));
+                visibleRows.slice(start, end).forEach(r => r.classList.remove('d-none'));
 
-        const total = visibleRows.length;
-        const showing = Math.min(end, total);
-        document.getElementById('showingText').textContent =
-            total === 0 ? 'No students found' :
-            `Showing ${start + 1} - ${showing} of ${total} student${total !== 1 ? 's' : ''}`;
+                emptyState.classList.toggle('d-none', total !== 0);
 
-        renderPagination(total);
-    }
+                showingText.textContent = total === 0
+                    ? 'No students found'
+                    : `Showing ${start + 1} - ${Math.min(end, total)} of ${total} student${total !== 1 ? 's' : ''}`;
 
-    function renderPagination(total) {
-        const totalPages = Math.ceil(total / pageSize);
-        const pg = document.getElementById('pagination');
-        pg.innerHTML = '';
-
-        function btn(label, page, isActive, isDisabled, isArrow) {
-            const b = document.createElement('button');
-            b.className = 'page-btn' + (isActive ? ' active' : '') + (isArrow ? ' arrow' : '');
-            b.innerHTML = label;
-            b.disabled = isDisabled;
-            if (!isDisabled && !isActive) {
-                b.onclick = () => { currentPage = page; renderPage(); };
+                renderPagination(total);
             }
-            return b;
-        }
 
-        pg.appendChild(btn('<span class="material-symbols-outlined" style="font-size:16px;"><</span>', currentPage - 1, false, currentPage === 1, true));
+            function pageItem(label, page, { active = false, disabled = false, ariaLabel = null } = {}) {
+                const li = document.createElement('li');
+                li.className = 'page-item' + (active ? ' active' : '') + (disabled ? ' disabled' : '');
 
-        const pages = [];
-        if (totalPages <= 7) {
-            for (let i = 1; i <= totalPages; i++) pages.push(i);
-        } else {
-            pages.push(1);
-            if (currentPage > 3) pages.push('...');
-            for (let i = Math.max(2, currentPage - 1); i <= Math.min(totalPages - 1, currentPage + 1); i++) pages.push(i);
-            if (currentPage < totalPages - 2) pages.push('...');
-            pages.push(totalPages);
-        }
+                const btn = document.createElement('button');
+                btn.type = 'button';
+                btn.className = 'page-link';
+                btn.innerHTML = label;
+                btn.disabled = disabled;
+                if (ariaLabel) btn.setAttribute('aria-label', ariaLabel);
+                if (!disabled && !active) {
+                    btn.addEventListener('click', function () { currentPage = page; renderPage(); });
+                }
 
-        pages.forEach(p => {
-            if (p === '...') {
-                const s = document.createElement('span');
-                s.textContent = '...';
-                s.style.cssText = 'padding:0 4px; color:#717a6d; font-size:13px;';
-                pg.appendChild(s);
-            } else {
-                pg.appendChild(btn(p, p, p === currentPage, false, false));
+                li.appendChild(btn);
+                return li;
             }
-        });
 
-        pg.appendChild(btn('<span class="material-symbols-outlined" style="font-size:16px;">></span>', currentPage + 1, false, currentPage === totalPages || totalPages === 0, true));
-    }
+            function renderPagination(total) {
+                const totalPages = Math.ceil(total / pageSize);
+                pagination.innerHTML = '';
+                if (totalPages <= 1) return;
 
-    document.getElementById('studentSearch').addEventListener('input', applyFilters);
-    document.getElementById('gradeFilter').addEventListener('change', applyFilters);
-    document.getElementById('sectionFilter').addEventListener('change', applyFilters);
-    document.getElementById('statusFilter').addEventListener('change', applyFilters);
+                pagination.appendChild(pageItem(
+                    '<i class="fa-solid fa-chevron-left"></i>', currentPage - 1,
+                    { disabled: currentPage === 1, ariaLabel: 'Previous page' }));
 
-    applyFilters();
-</script>
+                const pages = [];
+                if (totalPages <= 7) {
+                    for (let i = 1; i <= totalPages; i++) pages.push(i);
+                } else {
+                    pages.push(1);
+                    if (currentPage > 3) pages.push('...');
+                    for (let i = Math.max(2, currentPage - 1); i <= Math.min(totalPages - 1, currentPage + 1); i++) pages.push(i);
+                    if (currentPage < totalPages - 2) pages.push('...');
+                    pages.push(totalPages);
+                }
+
+                pages.forEach(function (p) {
+                    if (p === '...') {
+                        const li = document.createElement('li');
+                        li.className = 'page-item disabled';
+                        li.innerHTML = '<span class="page-link page-gap">&hellip;</span>';
+                        pagination.appendChild(li);
+                    } else {
+                        pagination.appendChild(pageItem(p, p, { active: p === currentPage }));
+                    }
+                });
+
+                pagination.appendChild(pageItem(
+                    '<i class="fa-solid fa-chevron-right"></i>', currentPage + 1,
+                    { disabled: currentPage === totalPages, ariaLabel: 'Next page' }));
+            }
+
+            filterToggle.addEventListener('click', function () {
+                const open = filterBar.classList.toggle('show-extra');
+                this.setAttribute('aria-expanded', open ? 'true' : 'false');
+                if (open) statusFilter.focus();
+            });
+
+            function paintFilterState() {
+                filterToggle.classList.toggle('has-filter', statusFilter.value !== '');
+            }
+
+            searchInput.addEventListener('input', applyFilters);
+            gradeFilter.addEventListener('change', applyFilters);
+            sectionFilter.addEventListener('change', applyFilters);
+            statusFilter.addEventListener('change', function () {
+                paintFilterState();
+                applyFilters();
+            });
+
+            paintFilterState();
+            applyFilters();
+        })();
+    </script>
+}
