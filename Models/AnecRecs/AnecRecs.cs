@@ -19,7 +19,7 @@ namespace GCAMS.Models.AnecRecs
         public string? StuName { get; set; }
 
         [Required]
-        public DateTime DateOfObserv { get; set; }
+        public DateTime DateOfObserv { get; set; } = DateTime.Now;
 
         [Required]
         [MaxLength(100)]

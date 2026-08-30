@@ -195,6 +195,7 @@
     <form asp-action="Edit" method="post" class="form-content">
         <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
         <input type="hidden" asp-for="AnecRecsId" />
+        <input type="hidden" asp-for="StudentsID" />
         <input type="hidden" name="studentId" value="@ViewBag.StudentsID" />
 
         <div class="form-section" id="observation">
@@ -214,7 +215,9 @@
                 </div>
                 <div>
                     <label class="field-label">Date of Observation</label>
-                    <input asp-for="DateOfObserv" class="form-control" />
+                    <input asp-for="DateOfObserv" class="form-control" type="datetime-local"
+                           step="3600"
+                           max="@DateTime.Now.ToString("yyyy-MM-ddTHH:00")" />
                     <span asp-validation-for="DateOfObserv" class="text-danger" style="font-size:12px;"></span>
                 </div>
                 <div class="full-width">

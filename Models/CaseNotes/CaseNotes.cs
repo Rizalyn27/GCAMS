@@ -13,12 +13,17 @@ namespace GCAMS.Models.CaseNotes
 
         public static readonly string[] ConcernCategories =
         {
-            "Academic",
-            "Behavioral",
-            "Family",
-            "Career",
-            "Personal/Social",
-            "Health"
+            "Academic Concern",
+            "Behavioral Concern",
+            "Personal/Emotional Concern",
+            "Family-Related Concern",
+            "Peer Relationship",
+            "Career Guidance",
+            "Health/Physical Concern",
+            "Bullying Report",
+            "Crisis/Urgent Concern",
+            "Follow-up Session",
+            "Other"
         };
 
         //Primary Key

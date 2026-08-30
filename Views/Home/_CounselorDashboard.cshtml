@@ -542,10 +542,7 @@
         <div class="stat-card">
             <div class="stat-label">Appointments today</div>
             <div class="stat-value">@Model.SessionsTodayCount</div>
-            @if (Model.AvgSessionsPerDay > 0)
-            {
-                <div class="stat-baseline">You average @Model.AvgSessionsPerDay.ToString("0.#") a day</div>
-            }
+            
             @if (Model.SessionsTodayCount > 0)
             {
                 <a href="#todays-schedule" class="stat-action">View schedule →</a>
@@ -562,7 +559,6 @@
             @if (Model.PendingRequestsCount > 0)
             {
                 <div class="stat-baseline">
-                    Oldest has waited @Model.OldestPendingDays day@(Model.OldestPendingDays == 1 ? "" : "s")
                 </div>
                 <a asp-controller="Appointments" asp-action="Index" class="stat-action">Review now →</a>
             }
@@ -577,9 +573,6 @@
             <div class="stat-value">@Model.FlaggedCases.Count</div>
             @if (Model.FlaggedCases.Any())
             {
-                <div class="stat-baseline">
-                    Most overdue: @Model.MostOverdueDays day@(Model.MostOverdueDays == 1 ? "" : "s")
-                </div>
                 <a href="#flagged-followups" class="stat-action">View overdue →</a>
             }
             else
@@ -659,7 +652,7 @@
             </div>
 
             <!-- Students drifting -->
-            <div class="panel" id="drifting-students">
+@*             <div class="panel" id="drifting-students">
                 <div class="section-title">
                     Students drifting
                     @if (Model.DriftingStudents.Any())
@@ -697,7 +690,7 @@
                     <div class="empty-note">Every student you've counseled has been seen in the last 30 days.</div>
                 }
             </div>
-
+ *@
             <!-- Top concerns -->
             <div class="panel" id="top-concerns">
                 <div class="section-title">Top concerns</div>
@@ -719,11 +712,6 @@
                             </div>
                             <span class="concern-count">@c.Count</span>
                         </div>
-                    }
-
-                    if (leadShare >= 30)
-                    {
-                            <a asp-controller="Announcements" asp-action="Create" class="row-action">Post announcement →</a>
                     }
                 }
                 else
@@ -841,7 +829,7 @@
                 </div>
             </div>
 
-            <!-- Flagged follow-ups -->
+            <!-- Flagged follow-ups -->@* 
             <div class="panel" id="flagged-followups">
                 <div class="section-title">
                     Flagged follow-ups
@@ -882,7 +870,7 @@
                 {
                     <div class="empty-note">No overdue follow-ups.</div>
                 }
-            </div>
+            </div *@>
 
             <!-- Recent observations -->
             <div class="panel" id="recent-observations">
