@@ -1,6 +1,7 @@
 ﻿@{
     var isStudent = User.Identity?.IsAuthenticated == true && User.IsInRole("Student");
     var isAdmin = User.IsInRole("Admin");
+    var isCounselor = User.IsInRole("Counselor");
     var portalLabel = isStudent ? "Student Portal" : isAdmin ? "Admin Portal" : "Counselor Portal";
     var roleLabel = isStudent ? "Student" : isAdmin ? "Administrator" : "Counselor";
     var currentController = ViewContext.RouteData.Values["controller"]?.ToString();
@@ -40,16 +41,23 @@
                     <li><a asp-controller="Appointments" asp-action="Create" class="@(currentAction == "Create" ? "active" : "")"><i class="fa-regular fa-calendar-plus"></i>Book Appointment</a></li>
                     <li><a asp-controller="Appointments" asp-action="MyAppointments" class="@(currentAction == "MyAppointments" ? "active" : "")"><i class="fa-regular fa-calendar-check"></i>My Appointments</a></li>
                 }
-                else
+                @if (isAdmin)
                 {
                     <li><a asp-controller="Home" asp-action="Index" class="@(currentController == "Home" ? "active" : "")"><i class="fa-solid fa-grip"></i>Dashboard</a></li>
                     <li><a asp-controller="Students" asp-action="Index" class="@(currentController == "Students" ? "active" : "")"><i class="fa-solid fa-user-graduate"></i>Students</a></li>
                     <li><a asp-controller="Counselors" asp-action="Index" class="@(currentController == "Counselors" ? "active" : "")"><i class="fa-solid fa-user-tie"></i>Counselors</a></li>
-                    <li><a asp-controller="Appointments" asp-action="Index" class="@(currentController == "Appointments" ? "active" : "")"><i class="fa-regular fa-calendar-days"></i>Appointments</a></li>
-                    <li><a asp-controller="Announcements" asp-action="Index" class="@(currentController == "Announcements" ? "active" : "")"><i class="fa-solid fa-bullhorn"></i>Announcements</a></li>
-                    <li><a asp-controller="ActivityLogs" asp-action="Index" class="@(currentController == "ActivityLogs" ? "active" : "")"><i class="fa-solid fa-clock-rotate-left"></i>Activity Log</a></li>
+                    <li><a asp-controller="Activity" asp-action="Index" class="@(currentController == "ActivityLogs" ? "active" : "")"><i class="fa-solid fa-clock-rotate-left"></i>Activity Log</a></li>
                     <li><a asp-controller="Reports" asp-action="Index" class="@(currentController == "Reports" ? "active" : "")"><i class="fa-solid fa-chart-column"></i>Reports</a></li>
                 }
+                @if (isCounselor)
+                {
+                    <li><a asp-controller="Home" asp-action="Index" class="@(currentController == "Home" ? "active" : "")"><i class="fa-solid fa-grip"></i>Dashboard</a></li>
+                    <li><a asp-controller="Students" asp-action="Index" class="@(currentController == "Students" ? "active" : "")"><i class="fa-solid fa-user-graduate"></i>Students</a></li>
+                    <li><a asp-controller="Appointments" asp-action="Index" class="@(currentController == "Appointments" ? "active" : "")"><i class="fa-regular fa-calendar-days"></i>Appointments</a></li>
+                    <li><a asp-controller="Announcements" asp-action="Index" class="@(currentController == "Announcements" ? "active" : "")"><i class="fa-solid fa-bullhorn"></i>Announcements</a></li>
+                    <li><a asp-controller="Reports" asp-action="Index" class="@(currentController == "Reports" ? "active" : "")"><i class="fa-solid fa-chart-column"></i>Reports</a></li>
+                }
+                
             </ul>
 
             @if (User.Identity?.IsAuthenticated == true)

@@ -129,8 +129,8 @@ namespace GCAMS.Controllers
                         headers = new[] { "Student", "Location", "Records" };
                         rows = m.Rows.Select(r => new[]
                         {
-                        r.StudentName, r.Place, r.Incidents.ToString()
-                         }).ToList();
+                            r.StudentName, r.Place, r.Incidents.ToString()
+                        }).ToList();
                         break;
                     }
 

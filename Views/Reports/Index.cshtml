@@ -476,7 +476,13 @@
         <div class="head-top">
             <div>
                 <h1>Reports</h1>
-                
+                <p class="lede">
+                    Each report summarises one part of the guidance record and ends in
+                    something you can act on.
+                    @(Model.IsAdmin
+                                        ? "You're seeing school-wide figures across all counselors."
+                                        : "You're seeing your own caseload.")
+                </p>
             </div>
         </div>
 
@@ -485,7 +491,7 @@
 
             <div class="field">
                 <label>Academic year</label>
-                <select id="YearFilter" name="AcademicYear">
+                <select name="AcademicYear">
                     @foreach (var ay in Model.Filter.AcademicYearOptions)
                     {
                         <option value="@ay" selected="@(ay == Model.Filter.AcademicYear)">@ay</option>
@@ -495,7 +501,7 @@
 
             <div class="field">
                 <label>Month</label>
-                <select id="MonthFilter"  name="Month">
+                <select name="Month">
                     <option value="">All months</option>
                     @for (int m = 1; m <= 12; m++)
                     {
@@ -506,7 +512,7 @@
 
             <div class="field">
                 <label>Grade level</label>
-                <select id="GradeFilter" name="GradeLevel">
+                <select name="GradeLevel">
                     <option value="">All grades</option>
                     @foreach (var g in Model.Filter.GradeLevelOptions)
                     {
@@ -514,7 +520,7 @@
                     }
                 </select>
             </div>
-@* 
+
             @if (Model.Filter.CanChooseCounselor)
             {
                 <div class="field">
@@ -527,10 +533,10 @@
                         }
                     </select>
                 </div>
-            } *@
+            }
 
-@*             <button type="submit" class="btn-r btn-green">Apply</button>
- *@        </form>
+            <button type="submit" class="btn-r btn-green">Apply</button>
+        </form>
 
         <!-- ============ TABS ============ -->
         <div class="tabs-bar">
@@ -538,16 +544,9 @@
                 Counseling Summary
             </button>
             <button class="tab-btn" data-tab="followup" onclick="switchTab('followup', this)">
-                Follow-up Reports
+                Follow-up Compliance
                 
             </button>
-            @* <button class="tab-btn" data-tab="drift" onclick="switchTab('drift', this)">
-                Students Drifting
-                @if (Model.Drift.Rows.Any())
-                {
-                    <span class="tab-count">@Model.Drift.Rows.Count</span>
-                }
-            </button> *@
             <button class="tab-btn" data-tab="incidents" onclick="switchTab('incidents', this)">
                 Behavioral Incidents
             </button>
@@ -602,7 +601,7 @@
                                     <th>Share of load</th>
                                     <th>Sessions</th>
                                     <th>Students</th>
-                                    <th>Action</th>
+                                    <th>Most affected</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -621,11 +620,13 @@
                                         <td class="num">@r.Sessions</td>
                                         <td class="num">@r.Students</td>
                                         <td>
-                                            <div class="acts">
-                                                <a asp-controller="Announcements" asp-action="Create">Post announcement</a>
-                                                <a class="muted" asp-controller="Appointments" asp-action="Index">View sessions</a>
-                                            </div>
+                                            @r.TopGradeLevel
+                                            @if (r.TopGradeCount > 0)
+                                            {
+                                                <span class="sub">@r.TopGradeCount of @r.Sessions sessions</span>
+                                            }
                                         </td>
+                                        
                                     </tr>
                                 }
                             </tbody>
@@ -688,7 +689,6 @@
                                     {
                                         <th>Counselor</th>
                                     }
-                                    <th>Action</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -713,21 +713,7 @@
                                         {
                                             <td>@r.CounselorName</td>
                                         }
-                                        <td>
-                                            <div class="acts">
-                                                @if (r.StudentsID.HasValue)
-                                                {
-                                                    <a asp-controller="CaseNotes" asp-action="Create"
-                                                       asp-route-studentId="@r.StudentsID">Log session</a>
-                                                    <a asp-controller="Students" asp-action="Details"
-                                                       asp-route-id="@r.StudentsID">Open record</a>
-                                                }
-                                                <button type="button" class="muted"
-                                                        onclick="resolveFollowUp(@r.AppointmentId, this)">
-                                                    Mark handled
-                                                </button>
-                                            </div>
-                                        </td>
+                                        
                                     </tr>
                                 }
                             </tbody>
@@ -786,7 +772,6 @@
                                     <th>Gap</th>
                                     <th>Sessions</th>
                                     <th>Last concern</th>
-                                    <th>Action</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -803,14 +788,7 @@
                                         </td>
                                         <td class="num">@r.SessionCount</td>
                                         <td>@r.LastConcern</td>
-                                        <td>
-                                            <div class="acts">
-                                                <a asp-controller="CaseNotes" asp-action="Create"
-                                                   asp-route-studentId="@r.StudentsID">Log session</a>
-                                                <a asp-controller="Students" asp-action="Details"
-                                                   asp-route-id="@r.StudentsID">Open record</a>
-                                            </div>
-                                        </td>
+                                        
                                     </tr>
                                 }
                             </tbody>
@@ -868,7 +846,6 @@
                                     <th>Student Involved</th>
                                     <th>Location</th>
                                     <th>Records</th>
-                                    <th>Action</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -878,17 +855,18 @@
                                         <td class="name">@r.StudentName</td>
                                         <td>@r.Place</td>
                                         <td class="num">@r.Incidents</td>
-                                        <td>
-                                            <div class="acts">
-                                                <a asp-controller="Students" asp-action="Details" asp-route-id="@r.StudentsID" asp-route-tab="health">View Records</a>
-                                            </div>
-                                        </td>
+                                        
                                     </tr>
                                 }
                             </tbody>
                         </table>
                     </div>
                 }
+                else
+                {
+                    <div class="empty-state">No anecdotal records logged in this period.</div>
+                }
+
                 <div class="foot">
                     <span>@Model.Incidents.SourceNote</span>
                     <span>@Model.PeriodLabel &middot; generated @Model.GeneratedAt.ToString("MMM d, yyyy h:mm tt")</span>
@@ -930,7 +908,7 @@
                         <div class="tablewrap">
                             <table>
                                 <thead>
-                                    <tr><th>Status</th><th>Count</th><th>Notes</th><th>Action</th></tr>
+                                    <tr><th>Status</th><th>Count</th><th>Notes</th></tr>
                                 </thead>
                                 <tbody>
                                     @foreach (var r in Model.Utilisation.Rows)
@@ -939,15 +917,9 @@
                                             <td class="name">@r.Status</td>
                                             <td class="num">@r.Count</td>
                                             <td>
-                                                
-                                                    @r.Note
-                                                
+                                                @r.Note
                                             </td>
-                                            <td>
-                                                <div class="acts">
-                                                    <a asp-controller="Appointments" asp-action="Index">View list</a>
-                                                </div>
-                                            </td>
+                                            
                                         </tr>
                                     }
                                 </tbody>
@@ -1003,7 +975,6 @@
                                         <th>Sessions</th>
                                         <th>Open cases</th>
                                         <th>Overdue</th>
-                                        <th>Action</th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -1048,13 +1019,7 @@
                                                     <span class="pill p-ok">0</span>
                                                 }
                                             </td>
-                                            <td>
-                                                <div class="acts">
-                                                    <a asp-controller="Appointments" asp-action="Index">
-                                                        @(r.CounselorId.HasValue ? "View caseload" : "Assign now")
-                                                    </a>
-                                                </div>
-                                            </td>
+                                            
                                         </tr>
                                     }
                                 </tbody>
@@ -1079,13 +1044,6 @@
 </div>
 
 <script>
-    let visibleRows = [];
-            document.querySelectorAll('#YearFilter, #MonthFilter, #GradeFilter').forEach(function (el) {
-        el.addEventListener('change', function () {
-            document.getElementById('filterForm').submit();
-        });
-    });
-
     function switchTab(name, btn) {
         document.querySelectorAll('.rpt .tab-panel').forEach(p => p.classList.remove('active'));
         document.querySelectorAll('.rpt .tab-btn').forEach(b => b.classList.remove('active'));
@@ -1100,25 +1058,6 @@
         if (field) field.value = name;
     }
 
-    async function  olveFollowUp(id, btn) {
-        btn.disabled = true;
-        try {
-            const res = await fetch('/Appointments/UpdateStatus', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ AppointmentId: id, NewStatus: 'Completed' })
-            });
-            if (res.ok) {
-                btn.closest('tr').remove();
-            } else {
-                btn.disabled = false;
-                alert('Could not update that follow-up. Please try again.');
-            }
-        } catch {
-            btn.disabled = false;
-            alert('Could not reach the server. Please try again.');
-        }
-    }
 
     // Open whichever tab the server said, defaulting to the first.
     document.addEventListener('DOMContentLoaded', function () {
@@ -1127,6 +1066,4 @@
         if (!btn) btn = document.querySelector('.rpt .tab-btn');
         if (btn) switchTab(btn.dataset.tab, btn);
     });
-
-       
 </script>

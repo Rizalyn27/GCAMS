@@ -199,9 +199,13 @@ namespace GCAMS.Services
                     Label = "Top concern",
                     Value = lead?.Category ?? "—",
                     Note = lead == null ? "No sessions yet" : $"{lead.SharePercent}% of all sessions",
-                    //IsWarning = lead != null && lead.SharePercent >= 30
+                    IsWarning = lead != null && lead.SharePercent >= 30
                 },
-               
+                new()
+                {
+                    Label = "Avg per week",
+                    Value = (report.TotalSessions / weeks).ToString("0.#")
+                }
             };
 
             report.SourceNote += $" · {report.TotalSessions} rows";
@@ -306,6 +310,10 @@ namespace GCAMS.Services
             var resolved = await scheduled
                 .CountAsync(a => a.Status == "Completed");
 
+            var completedOnTime = report.TotalScheduled - report.TotalOverdue;
+            var avgDaysOverdue = rows.Any() ? rows.Average(r => r.DaysOverdue) : 0;
+            var chronicCount = rows.Count(r => r.DaysOverdue > 14);
+
             report.Kpis = new List<ReportKpi>
             {
                 new()
@@ -313,19 +321,30 @@ namespace GCAMS.Services
                     Label = "Overdue follow-ups",
                     Value = report.TotalOverdue.ToString("N0"),
                     Note = $"of {report.TotalScheduled} scheduled",
-                    //IsWarning = report.TotalOverdue > 0
+                    IsWarning = report.TotalOverdue > 0
                 },
-                
                 new()
                 {
-                    Label = "Longest overdue",
-                    Value = worst == null ? "—" : $"{worst.DaysOverdue} day(s)",
-                    Note = worst?.StudentName,
-                    IsWarning = worst != null && worst.DaysOverdue > 14
+                    Label = "Completed on time",
+                    Value = $"{completedOnTime} of {report.TotalScheduled}",
+                    Note = report.TotalScheduled == 0 ? null : $"{report.CompliancePercent}%",
+                    IsWarning = report.CompliancePercent < 90
                 },
-                new() { Label = "Completed", Value = resolved.ToString("N0"), Note = label }
+                new()
+                {
+                    Label = "Avg days overdue",
+                    Value = rows.Any() ? $"{avgDaysOverdue:0.#}" : "—",
+                    Note = rows.Any() ? $"across {rows.Count} case{(rows.Count == 1 ? "" : "s")}" : "none overdue",
+                    IsWarning = avgDaysOverdue > 7
+                },
+                new()
+                {
+                    Label = "Chronic (14+ days)",
+                    Value = chronicCount.ToString("N0"),
+                    Note = chronicCount > 0 ? "needs escalation" : "none",
+                    IsWarning = chronicCount > 0
+                }
             };
-
             report.SourceNote += $" and status is Missed, Pending or Confirmed · {report.TotalOverdue} rows";
             return report;
         }
@@ -672,11 +691,12 @@ namespace GCAMS.Services
             {
                 new() { Label = "Requests received", Value = report.TotalRequests.ToString("N0"), Note = label },
 
-                new()
+               new()
                 {
-                    Label = "Missed Appointments",
+                    Label = "Missed",
                     Value = (report.Rows.FirstOrDefault(r => r.Status == "Missed")?.Count ?? 0).ToString("N0"),
-                    //IsWarning = missedShare >= 10
+                    Note = $"{missedShare}%",
+                    IsWarning = missedShare >= 10
                 },
                 new() { Label = "Peak day", Value = report.PeakDay }
             };
@@ -758,17 +778,6 @@ namespace GCAMS.Services
                               && a.AppointmentDate >= now
                               && a.Status != "Cancelled" && a.Status != "Rejected");
 
-            //if (report.UnassignedAppointments > 0)
-            //{
-            //    rows.Add(new WorkloadRow
-            //    {
-            //        CounselorId = null,
-            //        CounselorName = "Unassigned",
-            //        Position = "No counselor set",
-            //        OpenCases = report.UnassignedAppointments
-            //    });
-            //}
-
             report.Rows = rows;
             report.ActiveCounselors = rows.Count(r => r.CounselorId.HasValue);
 
@@ -792,7 +801,7 @@ namespace GCAMS.Services
                 {
                     Label = "Busiest",
                     Value = busiest?.CounselorName ?? "—",
-                    //IsWarning = busiest != null && busiest.SharePercent >= 50
+                    IsWarning = busiest != null && busiest.SharePercent >= 50
                 },
                 new()
                 {

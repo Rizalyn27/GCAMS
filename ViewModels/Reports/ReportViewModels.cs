@@ -13,7 +13,7 @@ namespace GCAMS.ViewModels.Reports
         [Display(Name = "Grade level")]
         public string? GradeLevel { get; set; }
 
-        [Display(Name = "Counselor")]
+        [Display(Name = "Counselor")]   
         public int? CounselorId { get; set; }
 
         [Display(Name = "Overdue by")]
@@ -183,7 +183,7 @@ namespace GCAMS.ViewModels.Reports
     // =================================================================
     public class WorkloadRow
     {
-        public int? CounselorId { get; set; }        // null = the Unassigned row
+        public int? CounselorId { get; set; }
         public string CounselorName { get; set; } = string.Empty;
         public string Position { get; set; } = string.Empty;
         public int Sessions { get; set; }
