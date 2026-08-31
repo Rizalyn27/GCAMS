@@ -1,599 +1,178 @@
 ﻿@model GCAMS.ViewModels.CounselorDashboardViewModel
 
-<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
-<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet">
-
-<style>
-    .cns-dash * {
-        font-family: 'Inter', sans-serif;
-    }
-
-    .cns-dash .material-symbols-outlined {
-        font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
-        vertical-align: middle;
-    }
-
-    .cns-dash h1 {
-        font-family: 'Manrope', sans-serif;
-        font-size: 22px;
-        font-weight: 700;
-        color: #191d18;
-        margin-bottom: 4px;
-    }
-
-    .cns-dash .subtitle {
-        color: #717a6d;
-        font-size: 14px;
-        margin-bottom: 24px;
-    }
-
-    /* ---------- stat cards ---------- */
-    .cns-dash .stat-grid {
-        display: grid;
-        grid-template-columns: repeat(3, 1fr);
-        gap: 16px;
-        margin-bottom: 24px;
-    }
-
-    .cns-dash .stat-card {
-        background: #fff;
-        border: 1px solid #e1e4db;
-        border-radius: 14px;
-        padding: 18px 20px;
-    }
-
-    .cns-dash .stat-card-attention {
-        border-color: #f3c98a;
-        background: #fffbf2;
-    }
-
-    .cns-dash .stat-label {
-        font-size: 13px;
-        color: #717a6d;
-        margin-bottom: 8px;
-        display: flex;
-        align-items: center;
-        gap: 6px;
-    }
-
-    .cns-dash .stat-value {
-        font-size: 26px;
-        font-weight: 700;
-        color: #191d18;
-        font-family: 'Manrope', sans-serif;
-    }
-
-    .cns-dash .stat-baseline {
-        font-size: 12px;
-        color: #717a6d;
-        margin-top: 4px;
-    }
-
-    .cns-dash .stat-note {
-        margin-top: 8px;
-        font-size: 12px;
-        color: #a3aa9e;
-    }
-
-    .cns-dash .stat-action {
-        display: inline-block;
-        margin-top: 8px;
-        font-size: 12px;
-        font-weight: 600;
-        color: #1a7f74;
-        text-decoration: none;
-    }
-
-        .cns-dash .stat-action:hover {
-            text-decoration: underline;
-        }
-
-    /* ---------- layout ---------- */
-    .cns-dash .panel {
-        background: #fff;
-        border: 1px solid #e1e4db;
-        border-radius: 14px;
-        padding: 18px 20px;
-        margin-bottom: 20px;
-    }
-
-        .cns-dash .panel:last-child {
-            margin-bottom: 0;
-        }
-
-    .cns-dash .lower-grid {
-        display: grid;
-        grid-template-columns: 1.3fr 1fr;
-        gap: 20px;
-        align-items: start;
-    }
-
-    .cns-dash .section-title {
-        font-size: 16px;
-        font-weight: 700;
-        color: #191d18;
-        margin-bottom: 12px;
-        font-family: 'Manrope', sans-serif;
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-    }
-
-        .cns-dash .section-title .count-pill {
-            font-family: 'Inter', sans-serif;
-            font-size: 11px;
-            font-weight: 600;
-            color: #717a6d;
-            background: #f0f3ec;
-            border-radius: 20px;
-            padding: 2px 9px;
-        }
-
-    /* ---------- generic list row ---------- */
-    .cns-dash .row-item {
-        border: 1px solid #e1e4db;
-        border-radius: 12px;
-        padding: 12px 14px;
-        margin-bottom: 10px;
-    }
-
-        .cns-dash .row-item:last-child {
-            margin-bottom: 0;
-        }
-
-    .cns-dash .row-item-split {
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        gap: 12px;
-    }
-
-    .cns-dash .row-name {
-        font-size: 14px;
-        font-weight: 600;
-        color: #191d18;
-    }
-
-    .cns-dash .row-meta {
-        font-size: 12px;
-        color: #717a6d;
-        margin-top: 2px;
-    }
-
-    .cns-dash .row-actions {
-        display: flex;
-        gap: 12px;
-        margin-top: 8px;
-        flex-wrap: wrap;
-    }
-
-    .cns-dash .row-action {
-        font-size: 12px;
-        font-weight: 600;
-        color: #1a7f74;
-        background: none;
-        border: none;
-        padding: 0;
-        cursor: pointer;
-        text-decoration: none;
-        font-family: 'Inter', sans-serif;
-    }
-
-        .cns-dash .row-action:hover {
-            text-decoration: underline;
-            color: #14655c;
-        }
-
-    .cns-dash .row-action-muted {
-        color: #717a6d;
-    }
-
-    .cns-dash .row-action:disabled {
-        opacity: .5;
-        cursor: default;
-        text-decoration: none;
-    }
-
-    /* ---------- status badges ---------- */
-    .cns-dash .status-badge {
-        font-size: 11px;
-        font-weight: 600;
-        padding: 3px 10px;
-        border-radius: 20px;
-        white-space: nowrap;
-    }
-
-    .cns-dash .status-confirmed {
-        color: #0f6b1f;
-        background: #e3f6e6;
-    }
-
-    .cns-dash .status-pending {
-        color: #8a5a00;
-        background: #fdf1d6;
-    }
-
-    .cns-dash .status-completed {
-        color: #41493e;
-        background: #f0f3ec;
-    }
-
-    .cns-dash .status-missed {
-        color: #93000a;
-        background: #fdeceb;
-    }
-
-    .cns-dash .tag-unassigned {
-        font-size: 10px;
-        font-weight: 600;
-        color: #8a5a00;
-        background: #fdf1d6;
-        border-radius: 4px;
-        padding: 1px 6px;
-        margin-left: 6px;
-    }
-
-    .cns-dash .tag-repeat {
-        font-size: 10px;
-        font-weight: 600;
-        color: #93000a;
-        background: #fdeceb;
-        border-radius: 4px;
-        padding: 1px 6px;
-        margin-left: 6px;
-    }
-
-    /* ---------- flagged (red) rows ---------- */
-    .cns-dash .flagged-item {
-        background: #fdeceb;
-        border: 1px solid #f7d5d3;
-        border-radius: 10px;
-        padding: 10px 12px;
-        margin-bottom: 8px;
-    }
-
-        .cns-dash .flagged-item:last-child {
-            margin-bottom: 0;
-        }
-
-    .cns-dash .flagged-name {
-        font-size: 13px;
-        font-weight: 600;
-        color: #93000a;
-    }
-
-    .cns-dash .flagged-meta {
-        font-size: 12px;
-        color: #93000a;
-        margin-top: 2px;
-    }
-
-    .cns-dash .flagged-item .row-action {
-        color: #93000a;
-    }
-
-    .cns-dash .flagged-item .row-action-muted {
-        color: #b56a66;
-    }
-
-    /* ---------- drifting (amber) rows ---------- */
-    .cns-dash .drift-item {
-        background: #fffbf2;
-        border: 1px solid #f3c98a;
-        border-radius: 10px;
-        padding: 10px 12px;
-        margin-bottom: 8px;
-    }
-
-        .cns-dash .drift-item:last-child {
-            margin-bottom: 0;
-        }
-
-    .cns-dash .drift-name {
-        font-size: 13px;
-        font-weight: 600;
-        color: #7a4d00;
-    }
-
-    .cns-dash .drift-meta {
-        font-size: 12px;
-        color: #8a5a00;
-        margin-top: 2px;
-    }
-
-    .cns-dash .drift-item .row-action {
-        color: #8a5a00;
-    }
-
-    /* ---------- concerns ---------- */
-    .cns-dash .concern-row {
-        display: grid;
-        grid-template-columns: 120px 1fr 34px;
-        align-items: center;
-        gap: 10px;
-        margin-bottom: 10px;
-    }
-
-        .cns-dash .concern-row:last-child {
-            margin-bottom: 0;
-        }
-
-    .cns-dash .concern-label {
-        font-size: 12px;
-        color: #41493e;
-        font-weight: 500;
-        overflow: hidden;
-        text-overflow: ellipsis;
-        white-space: nowrap;
-    }
-
-    .cns-dash .concern-track {
-        background: #f0f3ec;
-        border-radius: 20px;
-        height: 12px;
-        overflow: hidden;
-    }
-
-    .cns-dash .concern-fill {
-        background: #1a7f74;
-        height: 100%;
-        border-radius: 20px;
-    }
-
-        .cns-dash .concern-fill.is-dominant {
-            background: #0f2e27;
-        }
-
-    .cns-dash .concern-count {
-        font-size: 12px;
-        font-weight: 600;
-        color: #191d18;
-        text-align: right;
-        font-family: 'Manrope', sans-serif;
-    }
-
-    .cns-dash .concern-callout {
-        margin-top: 12px;
-        padding: 10px 12px;
-        background: #f2f5ec;
-        border-radius: 10px;
-        font-size: 12px;
-        color: #41493e;
-        line-height: 1.5;
-    }
-
-    /* ---------- bar chart ---------- */
-    .cns-dash .bar-chart {
-        display: flex;
-        align-items: flex-end;
-        gap: 12px;
-        height: 100px;
-        margin-top: 8px;
-    }
-
-    .cns-dash .bar-col {
-        flex: 1;
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        gap: 6px;
-        height: 100%;
-        justify-content: flex-end;
-    }
-
-    .cns-dash .bar {
-        width: 100%;
-        background: #1a7f74;
-        border-radius: 4px 4px 0 0;
-        min-height: 3px;
-    }
-
-    .cns-dash .bar-label {
-        font-size: 11px;
-        color: #a3aa9e;
-    }
-
-    /* ---------- quick actions ---------- */
-    .cns-dash .quick-actions {
-        display: flex;
-        flex-direction: column;
-        gap: 8px;
-    }
-
-    .cns-dash .quick-action {
-        display: flex;
-        align-items: center;
-        gap: 8px;
-        border: 1px solid #e1e4db;
-        border-radius: 10px;
-        padding: 10px 14px;
-        font-size: 13px;
-        font-weight: 600;
-        color: #191d18;
-        text-decoration: none;
-        transition: background 0.15s;
-    }
-
-        .cns-dash .quick-action:hover {
-            background: #f2f5ec;
-            color: #191d18;
-        }
-
-        .cns-dash .quick-action .material-symbols-outlined {
-            font-size: 18px;
-            color: #1a7f74;
-        }
-
-    .cns-dash .picker-row {
-        display: flex;
-        gap: 8px;
-    }
-
-        .cns-dash .picker-row input {
-            flex: 1;
-            font-size: 13px;
-            padding: 9px 12px;
-            border: 1px solid #e1e4db;
-            border-radius: 10px;
-            min-width: 0;
-        }
-
-    .cns-dash .btn-go {
-        background: #1a7f74;
-        color: #fff;
-        border: none;
-        border-radius: 10px;
-        padding: 9px 14px;
-        font-size: 13px;
-        font-weight: 600;
-        cursor: pointer;
-    }
-
-        .cns-dash .btn-go:hover {
-            background: #14655c;
-        }
-
-    /* ---------- filter bar ---------- */
-    .cns-dash .filter-bar {
-        display: flex;
-        align-items: flex-end;
-        gap: 12px;
-        margin-bottom: 14px;
-        flex-wrap: wrap;
-    }
-
-    .cns-dash .filter-field label {
-        display: block;
-        font-size: 12px;
-        color: #717a6d;
-        margin-bottom: 4px;
-    }
-
-    .cns-dash .filter-field select {
-        font-size: 13px;
-        padding: 7px 10px;
-        border: 1px solid #e1e4db;
-        border-radius: 8px;
-        min-width: 140px;
-    }
-
-    .cns-dash .btn-apply {
-        background: #1a7f74;
-        color: #fff;
-        border: none;
-        border-radius: 8px;
-        padding: 8px 16px;
-        font-size: 13px;
-        font-weight: 600;
-        cursor: pointer;
-    }
-
-    .cns-dash .period-label {
-        font-size: 12px;
-        color: #a3aa9e;
-        margin: -6px 0 12px;
-    }
-
-    .cns-dash .empty-note {
-        font-size: 13px;
-        color: #a3aa9e;
-        padding: 8px 0;
-        line-height: 1.6;
-    }
-
-        .cns-dash .empty-note a {
-            color: #1a7f74;
-            font-weight: 600;
-            text-decoration: none;
-        }
-
-            .cns-dash .empty-note a:hover {
-                text-decoration: underline;
-            }
-
-    .cns-dash .row-action:focus-visible,
-    .cns-dash .quick-action:focus-visible,
-    .cns-dash .btn-go:focus-visible {
-        outline: 2px solid #1a7f74;
-        outline-offset: 2px;
-    }
-
-    @@media (max-width: 900px) {
-        .cns-dash .stat-grid {
-            grid-template-columns: 1fr;
-        }
-
-        .cns-dash .lower-grid {
-            grid-template-columns: 1fr;
-        }
-
-        .cns-dash .concern-row {
-            grid-template-columns: 100px 1fr 30px;
-        }
-    }
-</style>
+@{
+    ViewData["Title"] = "Dashboard";
+
+    var now = DateTime.Now;
+    var hour = now.Hour;
+    var partOfDay = hour < 12 ? "morning" : hour < 18 ? "afternoon" : "evening";
+    var greetName = string.IsNullOrWhiteSpace(Model.CounselorName) ? "there" : Model.CounselorName;
+
+    // Everything below is derived from TodaysAppointments — no new model fields.
+    var doneToday = Model.TodaysAppointments.Count(a => a.Status == "Completed");
+    var missedToday = Model.TodaysAppointments.Count(a => a.Status == "Missed");
+    var laterToday = Model.TodaysAppointments.Count(a =>
+        a.Status != "Completed" && a.Status != "Missed" && a.AppointmentDate > now);
+
+    var nextAppointment = Model.TodaysAppointments
+        .Where(a => a.Status != "Completed" && a.Status != "Missed" && a.AppointmentDate > now)
+        .OrderBy(a => a.AppointmentDate)
+        .FirstOrDefault();
+
+    var minutesToNext = nextAppointment == null
+        ? 0
+        : (int)Math.Round((nextAppointment.AppointmentDate - now).TotalMinutes);
+
+    var sessionWord = Model.SessionsTodayCount == 1 ? "session" : "sessions";
+    var followUpWord = Model.FlaggedCases.Count == 1 ? "follow-up that's" : "follow-ups that are";
+}
+
+    <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="~/css/Home/CounselorDashboard.css" asp-append-version="true" />
 
 <div class="cns-dash">
-    <h1>@(string.IsNullOrWhiteSpace(Model.CounselorName) ? "Welcome back" : $"Hi, {Model.CounselorName}")</h1>
-    <p class="subtitle">Here's what's on your plate for @DateTime.Now.ToString("dddd, MMMM d")</p>
+
+    <header class="dash-head">
+        <div class="dash-head-main">
+            <h1>Good @partOfDay, @greetName</h1>
+            <p class="subtitle">
+                @if (Model.SessionsTodayCount == 0 && !Model.FlaggedCases.Any())
+                {
+                    <text>Nothing scheduled and nothing overdue.</text>
+                }
+                else
+                {
+                    <text>@Model.SessionsTodayCount @sessionWord today</text>
+                    @if (Model.FlaggedCases.Any())
+                    {
+                        <text> and @Model.FlaggedCases.Count @followUpWord past due</text>
+                    }
+                    <text>.</text>
+                }
+                @now.ToString("dddd, d MMMM yyyy").
+            </p>
+        </div>
+
+        @if (nextAppointment != null)
+        {
+            <div class="dash-head-now">
+                <span class="live-dot"></span>
+                @now.ToString("h:mm tt") ·
+                @if (minutesToNext < 60)
+                {
+                    <text>next session in @minutesToNext min</text>
+                }
+                else
+                {
+                    <text>next session at @nextAppointment.AppointmentDate.ToString("h:mm tt")</text>
+                }
+            </div>
+        }
+    </header>
 
     <!-- ============================ STAT CARDS ============================ -->
     <div class="stat-grid">
+
         <div class="stat-card">
-            <div class="stat-label">Appointments today</div>
+            <div class="stat-label">
+                <span class="material-symbols-outlined"></span>
+                Sessions today
+            </div>
             <div class="stat-value">@Model.SessionsTodayCount</div>
-            
+            <div class="stat-note">
+                @if (Model.SessionsTodayCount == 0)
+                {
+                    <text>Nothing scheduled today</text>
+                }
+                else
+                {
+                    var parts = new List<string>();
+                    if (doneToday > 0) { parts.Add($"{doneToday} done"); }
+                    if (laterToday > 0) { parts.Add($"{laterToday} later"); }
+                    if (missedToday > 0) { parts.Add($"{missedToday} missed"); }
+                    @(parts.Any() ? string.Join(" · ", parts) : "All wrapped up")
+                }
+            </div>
             @if (Model.SessionsTodayCount > 0)
             {
-                <a href="#todays-schedule" class="stat-action">View schedule →</a>
-            }
-            else
-            {
-                <div class="stat-note">Nothing scheduled today.</div>
+                <a href="#todays-schedule" class="stat-action">
+                    Open today <span class="material-symbols-outlined"></span>
+                </a>
             }
         </div>
 
         <div class="stat-card @(Model.PendingRequestsCount > 0 ? "stat-card-attention" : "")">
-            <div class="stat-label">Pending requests</div>
+            <div class="stat-label">
+                <span class="material-symbols-outlined"></span>
+                Requests to answer
+            </div>
             <div class="stat-value">@Model.PendingRequestsCount</div>
+            <div class="stat-note @(Model.PendingRequestsCount > 0 ? "stat-note-warn" : "")">
+                @(Model.PendingRequestsCount > 0 ? "Waiting on your decision" : "All caught up")
+            </div>
             @if (Model.PendingRequestsCount > 0)
             {
-                <div class="stat-baseline">
-                </div>
-                <a asp-controller="Appointments" asp-action="Index" class="stat-action">Review now →</a>
-            }
-            else
-            {
-                <div class="stat-note">All caught up.</div>
+                <a asp-controller="Appointments" asp-action="Index" class="stat-action">
+                    Review requests <span class="material-symbols-outlined"></span>
+                </a>
             }
         </div>
 
         <div class="stat-card @(Model.FlaggedCases.Any() ? "stat-card-attention" : "")">
-            <div class="stat-label">Follow-ups overdue</div>
+            <div class="stat-label">
+                <span class="material-symbols-outlined"></span>
+                Follow-ups overdue
+            </div>
             <div class="stat-value">@Model.FlaggedCases.Count</div>
+            <div class="stat-note @(Model.FlaggedCases.Any() ? "stat-note-warn" : "")">
+                @if (!Model.FlaggedCases.Any())
+                {
+                    <text>Nothing overdue</text>
+                }
+                else if (Model.FlaggedCases.Count == 1)
+                {
+                    @Model.FlaggedCases.First().StudentName
+                }
+                else
+                {
+                    @($"{Model.FlaggedCases.First().StudentName} and {Model.FlaggedCases.Count - 1} more")
+                }
+            </div>
             @if (Model.FlaggedCases.Any())
             {
-                <a href="#flagged-followups" class="stat-action">View overdue →</a>
-            }
-            else
-            {
-                <div class="stat-note">Nothing overdue.</div>
+                <a href="#flagged-followups" class="stat-action">
+                    See follow-ups <span class="material-symbols-outlined"></span>
+                </a>
             }
         </div>
+
     </div>
 
     <div class="lower-grid">
+
         <!-- ========================= LEFT COLUMN ========================= -->
-        <div>
+        <div class="dash-col">
+
             <!-- Today's schedule -->
             <div class="panel" id="todays-schedule">
                 <div class="section-title">
-                    Today's schedule
-                    <span class="count-pill">@Model.TodaysAppointments.Count</span>
+                    <span>
+                        Today's schedule
+                        <span class="count-pill">@Model.TodaysAppointments.Count</span>
+                    </span>
+                    <a asp-controller="Appointments" asp-action="Index" class="row-link">
+                        Open the calendar <span class="material-symbols-outlined"></span>
+                    </a>
                 </div>
+                <p class="panel-sub">@now.ToString("dddd, d MMMM")</p>
+
                 @if (Model.TodaysAppointments.Any())
                 {
-                    foreach (var appt in Model.TodaysAppointments)
+                    var nowMarkerShown = false;
+                    var index = 0;
+
+                    foreach (var appt in Model.TodaysAppointments.OrderBy(a => a.AppointmentDate))
                     {
                         var statusClass = appt.Status switch
                         {
@@ -603,41 +182,54 @@
                             "Missed" => "status-missed",
                             _ => "status-pending"
                         };
-                        <div class="row-item" data-appt="@appt.AppointmentId">
-                            <div class="row-item-split">
-                                <div>
-                                    <div class="row-name">
+
+                        if (!nowMarkerShown && index > 0 && appt.AppointmentDate > now)
+                        {
+                            nowMarkerShown = true;
+                            <div class="now-marker"><span>Now @now.ToString("h:mm tt")</span></div>
+                        }
+                        index++;
+
+                        <div class="slot" data-appt="@appt.AppointmentId">
+                            <div class="slot-time">
+                                <span class="slot-hour">@appt.AppointmentDate.ToString("h:mm")</span>
+                                <span class="slot-ampm">@appt.AppointmentDate.ToString("tt")</span>
+                            </div>
+
+                            <div class="slot-card @statusClass">
+                                <div class="slot-body">
+                                    <div class="slot-name">
                                         @appt.FullName
                                         @if (appt.IsUnassigned)
                                         {
                                             <span class="tag-unassigned">Unassigned</span>
                                         }
                                     </div>
-                                    <div class="row-meta">
-                                        @appt.AppointmentDate.ToString("h:mm tt") &middot; @appt.AppointmentType
+                                    <div class="slot-meta">
+                                        @appt.AppointmentType · @appt.Status
                                     </div>
                                 </div>
-                                <span class="status-badge @statusClass">@appt.Status</span>
+
+                                @if (appt.Status != "Completed" && appt.Status != "Missed")
+                                {
+                                    <div class="slot-actions">
+                                        @if (appt.StudentsID.HasValue)
+                                        {
+                                            <a class="btn-slot"
+                                               asp-controller="CaseNotes" asp-action="Create"
+                                               asp-route-studentId="@appt.StudentsID">Log session</a>
+                                        }
+                                        <button type="button" class="row-action"
+                                                onclick="gcamsSetStatus(@appt.AppointmentId, 'Completed', this)">
+                                            Mark completed
+                                        </button>
+                                        <button type="button" class="row-action row-action-muted"
+                                                onclick="gcamsSetStatus(@appt.AppointmentId, 'Missed', this)">
+                                            Mark missed
+                                        </button>
+                                    </div>
+                                }
                             </div>
-                            @if (appt.Status != "Completed" && appt.Status != "Missed")
-                            {
-                                <div class="row-actions">
-                                    @if (appt.StudentsID.HasValue)
-                                    {
-                                        <a class="row-action"
-                                           asp-controller="CaseNotes" asp-action="Create"
-                                           asp-route-studentId="@appt.StudentsID">Log session</a>
-                                    }
-                                    <button type="button" class="row-action"
-                                            onclick="gcamsSetStatus(@appt.AppointmentId, 'Completed', this)">
-                                        Mark completed
-                                    </button>
-                                    <button type="button" class="row-action row-action-muted"
-                                            onclick="gcamsSetStatus(@appt.AppointmentId, 'Missed', this)">
-                                        Mark missed
-                                    </button>
-                                </div>
-                            }
                         </div>
                     }
                 }
@@ -651,67 +243,46 @@
                 }
             </div>
 
-            <!-- Students drifting -->
-@*             <div class="panel" id="drifting-students">
-                <div class="section-title">
-                    Students drifting
-                    @if (Model.DriftingStudents.Any())
-                    {
-                        <span class="count-pill">@Model.DriftingStudents.Count</span>
-                    }
-                </div>
-                @if (Model.DriftingStudents.Any())
-                {
-                    <div class="row-meta" style="margin:-6px 0 12px;">
-                        Counseling started, no session in over 30 days, nothing scheduled.
-                    </div>
-                    foreach (var d in Model.DriftingStudents)
-                    {
-                        <div class="drift-item">
-                            <div class="drift-name">@d.StudentName</div>
-                            <div class="drift-meta">
-                                @d.GradeSection &middot;
-                                last seen @d.LastSessionDate.ToString("MMM d") (@d.DaysSinceLastSession days ago) &middot;
-                                @d.SessionCount session@(d.SessionCount == 1 ? "" : "s")
-                            </div>
-                            <div class="row-actions">
-                                <a class="row-action"
-                                   asp-controller="CaseNotes" asp-action="Create"
-                                   asp-route-studentId="@d.StudentsID">Log session</a>
-                                <a class="row-action"
-                                   asp-controller="Students" asp-action="Details"
-                                   asp-route-id="@d.StudentsID">Open record</a>
-                            </div>
-                        </div>
-                    }
-                }
-                else
-                {
-                    <div class="empty-note">Every student you've counseled has been seen in the last 30 days.</div>
-                }
-            </div>
- *@
             <!-- Top concerns -->
             <div class="panel" id="top-concerns">
-                <div class="section-title">Top concerns</div>
-                <div class="period-label" style="margin-top:-6px;">@Model.PeriodLabel</div>
+                <div class="section-title">What students are coming in for</div>
+                @{
+                    var concernTotal = Model.TopConcerns.Any() ? Model.TopConcerns.Sum(c => c.Count) : 0;
+                    var uncategorised = Math.Max(0, Model.SessionsInPeriod - concernTotal);
+                }
+                <p class="panel-sub">
+                    Your sessions in @Model.PeriodLabel, by category
+                    @if (Model.TopConcerns.Any())
+                    {
+                        <text> · @concernTotal categorised of @Model.SessionsInPeriod</text>
+                    }
+                </p>
+
                 @if (Model.TopConcerns.Any())
                 {
                     var concernMax = Model.TopConcerns.Max(c => c.Count);
-                    var concernTotal = Model.TopConcerns.Sum(c => c.Count);
                     var lead = Model.TopConcerns.First();
-                    var leadShare = concernTotal > 0 ? (int)Math.Round(100.0 * lead.Count / concernTotal) : 0;
 
                     foreach (var c in Model.TopConcerns)
                     {
                         var pct = Math.Max(3, (int)(100.0 * c.Count / concernMax));
                         <div class="concern-row">
-                            <span class="concern-label" title="@c.Category">@c.Category</span>
+                            <div class="concern-head">
+                                <span class="concern-label" title="@c.Category">@c.Category</span>
+                                <span class="concern-count">@c.Count</span>
+                            </div>
                             <div class="concern-track">
                                 <div class="concern-fill @(c == lead ? "is-dominant" : "")" style="width:@(pct)%;"></div>
                             </div>
-                            <span class="concern-count">@c.Count</span>
                         </div>
+                    }
+
+                    if (uncategorised > 0)
+                    {
+                        <p class="panel-foot">
+                            @uncategorised session@(uncategorised == 1 ? "" : "s") @(uncategorised == 1 ? "has" : "have")
+                            no category yet. Categories are set when a case note is saved.
+                        </p>
                     }
                 }
                 else
@@ -725,7 +296,9 @@
 
             <!-- Session history -->
             <div class="panel" id="session-history">
-                <div class="section-title">Session history</div>
+                <div class="section-title">Your session history</div>
+                <p class="panel-sub">How many sessions you held each month</p>
+
                 <form method="get" asp-action="Index" class="filter-bar">
                     <div class="filter-field">
                         <label for="ay-select">Academic year</label>
@@ -769,10 +342,17 @@
                         </select>
                     </div>
                     <button type="submit" class="btn-apply">Apply</button>
+                    <a asp-action="Index" class="btn-reset">Reset</a>
                 </form>
 
-                <div class="stat-value" style="font-size:20px; margin-bottom:2px;">@Model.SessionsInPeriod sessions</div>
-                <div class="period-label">@Model.PeriodLabel</div>
+                <div class="showing-row">
+                    <span class="showing-label">Showing</span>
+                    <span class="chip">AY @Model.SelectedAcademicYear</span>
+                    <span class="chip">
+                        @(Model.SelectedMonth == null ? "All months" : new DateTime(2000, Model.SelectedMonth.Value, 1).ToString("MMMM"))
+                    </span>
+                    <span class="showing-count">· @Model.SessionsInPeriod session@(Model.SessionsInPeriod == 1 ? "" : "s")</span>
+                </div>
 
                 @{
                     var periodMax = Math.Max(1, Model.PeriodChartCounts.DefaultIfEmpty(0).Max());
@@ -780,64 +360,86 @@
                 <div class="bar-chart">
                     @for (int i = 0; i < Model.PeriodChartCounts.Count; i++)
                     {
-                        var pct = Math.Max(4, (int)(100.0 * Model.PeriodChartCounts[i] / periodMax));
+                        var count = Model.PeriodChartCounts[i];
+                        var pct = count == 0 ? 0 : Math.Max(6, (int)(100.0 * count / periodMax));
+                        var isPeak = count > 0 && count == periodMax;
+
                         <div class="bar-col">
-                            <div class="bar" style="height:@(pct)%;" title="@Model.PeriodChartCounts[i] sessions"></div>
-                            <span class="bar-label">@Model.PeriodChartLabels[i]</span>
+                            <span class="bar-value @(count == 0 ? "is-zero" : "")">@count</span>
+                            <div class="bar-slot">
+                                @if (count == 0)
+                                {
+                                    <div class="bar is-zero"></div>
+                                }
+                                else
+                                {
+                                    <div class="bar" style="height:@(pct)%;" title="@count sessions"></div>
+                                }
+                            </div>
+                            <span class="bar-label @(isPeak ? "is-peak" : "")">@Model.PeriodChartLabels[i]</span>
                         </div>
                     }
                 </div>
+
+                <p class="panel-foot">Months with a flat line had no sessions.</p>
             </div>
         </div>
 
         <!-- ========================= RIGHT COLUMN ========================= -->
-        <div>
-            <!-- Quick actions -->
+        <div class="dash-col">
+
+            <!-- Start a task -->
             <div class="panel">
-                <div class="section-title">Quick actions</div>
-                <div class="quick-actions">
-                    <div>
-                        <div class="row-meta" style="margin-bottom:4px;">Log session</div>
-                        <div class="picker-row">
-                            <input type="text" id="student-picker" list="student-options"
-                                   placeholder="Find a student…" autocomplete="off"
-                                   aria-label="Find a student to log a session for">
-                            <button type="button" class="btn-go" onclick="gcamsLogSession()">Go</button>
-                        </div>
+                <div class="section-title">Start a task</div>
+                <p class="panel-sub">Pick the student first, then the form opens filled in</p>
+
+                <div class="task-block">
+                    <div class="task-name">Write a case note</div>
+                    <div class="task-hint">Private record of what was discussed in a session.</div>
+                    <div class="picker-row">
+                        <input type="text" id="student-picker" list="student-options"
+                               placeholder="Type a name or ID no" autocomplete="off"
+                               aria-label="Find a student to log a session for">
+                        <button type="button" class="btn-go" onclick="gcamsLogSession()">Open</button>
                     </div>
-
-                    <div>
-                        <div class="row-meta" style="margin-bottom:4px;">Record an observation</div>
-                        <div class="picker-row">
-                            <input type="text" id="observation-picker" list="student-options"
-                                   placeholder="Find a student…" autocomplete="off"
-                                   aria-label="Find a student to record an observation for">
-                            <button type="button" class="btn-go" onclick="gcamsRecordObservation()">Go</button>
-                        </div>
-                    </div>
-
-                    <datalist id="student-options">
-                        @foreach (var s in Model.StudentPicker)
-                        {
-                            <option value="@s.Label" data-id="@s.StudentsID"></option>
-                        }
-                    </datalist>
-
-                    <a class="quick-action" asp-controller="Announcements" asp-action="Create">
-                        <span class="material-symbols-outlined"></span> Post an announcement
-                    </a>
                 </div>
+
+                <div class="task-block">
+                    <div class="task-name">Record an observation</div>
+                    <div class="task-hint">Short anecdotal entry no session needed.</div>
+                    <div class="picker-row">
+                        <input type="text" id="observation-picker" list="student-options"
+                               placeholder="Type a name or LRN" autocomplete="off"
+                               aria-label="Find a student to record an observation for">
+                        <button type="button" class="btn-go" onclick="gcamsRecordObservation()">Open</button>
+                    </div>
+                </div>
+
+                <datalist id="student-options">
+                    @foreach (var s in Model.StudentPicker)
+                    {
+                        <option value="@s.Label" data-id="@s.StudentsID"></option>
+                    }
+                </datalist>
+
+                <a class="quick-action" asp-controller="Announcements" asp-action="Create">
+                    <span class="material-symbols-outlined"></span> Post an announcement
+                </a>
             </div>
 
-            <!-- Flagged follow-ups -->@* 
+            <!-- Flagged follow-ups -->
             <div class="panel" id="flagged-followups">
                 <div class="section-title">
-                    Flagged follow-ups
-                    @if (Model.FlaggedCases.Any())
-                    {
-                        <span class="count-pill">@Model.FlaggedCases.Count</span>
-                    }
+                    <span>
+                        Flagged follow-ups
+                        @if (Model.FlaggedCases.Any())
+                        {
+                            <span class="count-pill count-pill-warn">@Model.FlaggedCases.Count</span>
+                        }
+                    </span>
                 </div>
+                <p class="panel-sub">Sessions marked for a follow-up that's now past due</p>
+
                 @if (Model.FlaggedCases.Any())
                 {
                     foreach (var fc in Model.FlaggedCases)
@@ -845,7 +447,7 @@
                         <div class="flagged-item">
                             <div class="flagged-name">@fc.StudentName</div>
                             <div class="flagged-meta">
-                                Due @fc.FollowUpDate.ToString("MMM d") &middot;
+                                Due @fc.FollowUpDate.ToString("MMM d") ·
                                 @fc.DaysOverdue day@(fc.DaysOverdue == 1 ? "" : "s") overdue
                             </div>
                             <div class="row-actions">
@@ -870,27 +472,27 @@
                 {
                     <div class="empty-note">No overdue follow-ups.</div>
                 }
-            </div *@>
+            </div>
 
             <!-- Recent observations -->
             <div class="panel" id="recent-observations">
                 <div class="section-title">Recent observations</div>
+                <p class="panel-sub">Short notes you logged outside a formal session</p>
+
                 @if (Model.RecentObservations.Any())
                 {
                     foreach (var o in Model.RecentObservations)
                     {
-                        <div class="row-item">
-                            <div class="row-name">
+                        <div class="obs-item">
+                            <div class="obs-name">
                                 @o.StudentName
                                 @if (o.IsRepeat)
                                 {
                                     <span class="tag-repeat">Repeat</span>
                                 }
                             </div>
-                            <div class="row-meta">
-                                @o.DateOfObserv.ToString("MMM d") &middot; @o.Place
-                            </div>
-                            <div class="row-meta">@o.Behavior</div>
+                            <div class="obs-meta">@o.DateOfObserv.ToString("MMM d") · @o.Place</div>
+                            <div class="obs-text">@o.Behavior</div>
                             <div class="row-actions">
                                 <a class="row-action"
                                    asp-controller="Students" asp-action="Details"
@@ -904,9 +506,10 @@
                 }
                 else
                 {
-                    <div class="empty-note">
-                        No observations recorded yet.
-                        <a asp-controller="AnecRecs" asp-action="Create">Record one</a>.
+                    <div class="obs-empty">
+                        <span class="material-symbols-outlined"></span>
+                        <div class="obs-empty-title">No observations yet this year</div>
+                        <a class="btn-solid" asp-controller="AnecRecs" asp-action="Create">Record your first observation</a>
                     </div>
                 }
             </div>
@@ -914,57 +517,60 @@
     </div>
 </div>
 
-<script>
-    // Update an appointment's status from the dashboard, then drop the row.
-    async function gcamsSetStatus(appointmentId, newStatus, btn) {
-        const actions = btn.parentElement.querySelectorAll('button');
-        actions.forEach(b => b.disabled = true);
+@section Scripts {
+    <script>
+        // Update an appointment's status from the dashboard, then drop the row.
+        async function gcamsSetStatus(appointmentId, newStatus, btn) {
+            const actions = btn.parentElement.querySelectorAll('button');
+            actions.forEach(b => b.disabled = true);
 
-        try {
-            const res = await fetch('/Appointments/UpdateStatus', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ AppointmentId: appointmentId, NewStatus: newStatus })
-            });
+            try {
+                const res = await fetch('/Appointments/UpdateStatus', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ AppointmentId: appointmentId, NewStatus: newStatus })
+                });
 
-            if (!res.ok) throw new Error(await res.text());
+                if (!res.ok) throw new Error(await res.text());
 
-            const row = btn.closest('.flagged-item, .row-item');
-            row.style.transition = 'opacity .2s';
-            row.style.opacity = '0';
-            setTimeout(() => { row.remove(); }, 200);
-        } catch (err) {
-            actions.forEach(b => b.disabled = false);
-            alert('Could not update that appointment. Please try again.');
-        }
-    }
-
-    // Resolve the picker text back to a student id, then open the case note form.
-    function gcamsLogSession() {
-        const input = document.getElementById('student-picker');
-        const match = Array.from(document.querySelectorAll('#student-options option'))
-            .find(o => o.value === input.value);
-
-        if (!match) {
-            input.focus();
-            alert('Pick a student from the list first.');
-            return;
+                const row = btn.closest('.flagged-item, .slot');
+                row.style.transition = 'opacity .2s';
+                row.style.opacity = '0';
+                setTimeout(() => { row.remove(); }, 200);
+            } catch (err) {
+                actions.forEach(b => b.disabled = false);
+                alert('Could not update that appointment. Please try again.');
+            }
         }
 
-        window.location.href = '/CaseNotes/Create?studentId=' + match.dataset.id;
-    }
-        // Resolve the picker text back to a student id, then open the anecdotal record form.
-    function gcamsRecordObservation() {
-        const input = document.getElementById('observation-picker');
-        const match = Array.from(document.querySelectorAll('#student-options option'))
-            .find(o => o.value === input.value);
+        // Resolve the picker text back to a student id, then open the case note form.
+        function gcamsLogSession() {
+            const input = document.getElementById('student-picker');
+            const match = Array.from(document.querySelectorAll('#student-options option'))
+                .find(o => o.value === input.value);
 
-        if (!match) {
-            input.focus();
-            alert('Pick a student from the list first.');
-            return;
+            if (!match) {
+                input.focus();
+                alert('Pick a student from the list first.');
+                return;
+            }
+
+            window.location.href = '/CaseNotes/Create?studentId=' + match.dataset.id;
         }
 
-        window.location.href = '/AnecRecs/Create?studentId=' + match.dataset.id;
-    }
-</script>
+        // Same, for the anecdotal record form.
+        function gcamsRecordObservation() {
+            const input = document.getElementById('observation-picker');
+            const match = Array.from(document.querySelectorAll('#student-options option'))
+                .find(o => o.value === input.value);
+
+            if (!match) {
+                input.focus();
+                alert('Pick a student from the list first.');
+                return;
+            }
+
+            window.location.href = '/AnecRecs/Create?studentId=' + match.dataset.id;
+        }
+    </script>
+}
