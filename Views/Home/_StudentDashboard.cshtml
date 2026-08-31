@@ -1,0 +1,290 @@
+﻿@model GCAMS.ViewModels.StudentDashboardViewModel
+
+@{
+    ViewData["Title"] = "Dashboard";
+
+    var firstName = string.IsNullOrWhiteSpace(Model.StudentName)
+        ? ""
+        : Model.StudentName.Split(' ')[0];
+
+    var appt = Model.UpcomingAppointment;
+}
+
+
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="~/css/Home/StudentDashboard.css" asp-append-version="true" />
+
+
+<div class="stu-dash">
+
+    <!-- ======================= GREETING ======================= -->
+    <header class="stu-head">
+        <h1>@Model.Greeting@(string.IsNullOrWhiteSpace(firstName) ? "!" : $", {firstName}")</h1>
+        <p class="stu-lead">
+            @if (appt != null && !Model.HasPendingRequest)
+            {
+                <text>
+                    You have one session coming up on @appt.AppointmentDate.ToString("dddd").
+                    Everything you've booked and everything the guidance office has posted is on this page.
+                </text>
+            }
+            else if (Model.HasPendingRequest)
+            {
+                <text>
+                    Your request is with the guidance office. We'll let you know here as soon as it's confirmed.
+                </text>
+            }
+            else
+            {
+                <text>
+                    Nothing is booked right now. You can request a time below, and everything
+                    the guidance office posts will show up on this page.
+                </text>
+            }
+        </p>
+    </header>
+
+    <div class="stu-grid">
+
+        <!-- ==================== MAIN COLUMN ==================== -->
+        <div class="stu-main">
+
+            <!-- Next session -->
+            <section class="panel panel-feature">
+                @if (appt != null)
+                {
+                    <div class="panel-eyebrow @(Model.HasPendingRequest ? "is-pending" : "")">
+                        <span class="dot"></span>
+                        @(Model.HasPendingRequest ? "Waiting for confirmation" : "Your next session")
+                    </div>
+
+                    <h2 class="session-when">
+                        @appt.AppointmentDate.ToString("dddd, d MMMM") · @appt.AppointmentDate.ToString("h:mm tt")
+                    </h2>
+
+                    <p class="session-meta">
+                        @if (Model.HasPendingRequest)
+                        {
+                            if (appt.DaysWaiting <= 0)
+                            {
+                                <text>Requested today</text>
+                            }
+                            else
+                            {
+                                <text>Requested @appt.DaysWaiting day@(appt.DaysWaiting == 1 ? "" : "s") ago</text>
+                            }
+                        }
+                        else if (appt.DaysUntil == 0)
+                        {
+                            <text>That's today</text>
+                        }
+                        else if (appt.DaysUntil == 1)
+                        {
+                            <text>That's tomorrow</text>
+                        }
+                        else
+                        {
+                            <text>In @appt.DaysUntil days</text>
+                        }
+                        · @appt.AppointmentType
+                    </p>
+
+                    @if (Model.HasPendingRequest)
+                    {
+                        <div class="notice notice-pending">
+                            <span class="material-symbols-outlined">hourglass_top</span>
+                            <div>
+                                A counselor still has to confirm this time. Most requests are
+                                answered within a school day, and you'll see the change here.
+                            </div>
+                        </div>
+                    }
+
+                    <div class="btn-row">
+                        <a class="btn-gc btn-gc-primary"
+                           asp-controller="Appointments" asp-action="Details"
+                           asp-route-appointmentid="@appt.AppointmentId">
+                            View this session
+                        </a>
+                        <a class="btn-gc btn-gc-outline"
+                           asp-controller="Appointments" asp-action="MyAppointments">
+                            All my appointments
+                        </a>
+                    </div>
+                }
+                else
+                {
+                    <div class="panel-eyebrow"><span class="dot dot-quiet"></span> Nothing booked</div>
+
+                    <h2 class="session-when">No sessions coming up</h2>
+                    <p class="session-meta">
+                        If you'd like to talk to a counselor, you can ask for a time
+                        and they'll confirm it here.
+                    </p>
+
+                    <div class="btn-row">
+                        <a class="btn-gc btn-gc-primary"
+                           asp-controller="Appointments" asp-action="Create">
+                            Book an appointment
+                        </a>
+                        <a class="btn-gc btn-gc-outline"
+                           asp-controller="Appointments" asp-action="MyAppointments">
+                            All my appointments
+                        </a>
+                    </div>
+                }
+            </section>
+
+            <!-- Book another session -->
+            @if (appt != null)
+            {
+                <section class="panel">
+                    <div class="panel-head">
+                        <h2 class="panel-title">Book another session</h2>
+                        <a asp-controller="Appointments" asp-action="Create" class="link-more">
+                            See all times <span class="material-symbols-outlined">chevron_right</span>
+                        </a>
+                    </div>
+                    <p class="panel-sub">Pick a time that works for you. You can change or cancel it later.</p>
+
+                    <a class="btn-gc btn-gc-primary"
+                       asp-controller="Appointments" asp-action="Create">
+                        Request a time
+                    </a>
+                </section>
+            }
+
+            <!-- What happens after you book -->
+            <section class="panel">
+                <h2 class="panel-title">What happens after you book</h2>
+                <p class="panel-sub">So you know what to expect the first time</p>
+
+                <div class="steps">
+                    <div class="step">
+                        <span class="step-num">1</span>
+                        <div class="step-name">You pick a time</div>
+                        <p class="step-text">
+                            Your counselor gets the request. Most are confirmed within a school day.
+                        </p>
+                    </div>
+                    <div class="step">
+                        <span class="step-num">2</span>
+                        <div class="step-name">You get a reminder</div>
+                        <p class="step-text">
+                            A notification here the day before, with the room number and how long it runs.
+                        </p>
+                    </div>
+                    <div class="step">
+                        <span class="step-num">3</span>
+                        <div class="step-name">You talk, and that's it</div>
+                        <p class="step-text">
+                            Just a conversation. You choose what to share, and you can stop any time.
+                        </p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Announcements -->
+            <section class="panel" id="activity-feed">
+                <div class="panel-head">
+                    <h2 class="panel-title">
+                        Announcements
+                        @if (Model.UnreadAnnouncementCount > 0)
+                        {
+                            <span class="tag-new">@Model.UnreadAnnouncementCount new</span>
+                        }
+                    </h2>
+                </div>
+                <p class="panel-sub">Posted by the guidance office</p>
+
+                @if (Model.RecentAnnouncements.Any())
+                {
+                    foreach (var ann in Model.RecentAnnouncements)
+                    {
+                        <article class="ann-item">
+                            <div class="ann-title">
+                                @ann.Title
+                                @if (ann.IsNew)
+                                {
+                                    <span class="tag-new">New</span>
+                                }
+                            </div>
+                            <div class="ann-date">@ann.CreatedAt.ToString("MMM d, yyyy")</div>
+                            <p class="ann-excerpt">
+                                @(ann.Message.Length > 160 ? ann.Message.Substring(0, 160) + "…" : ann.Message)
+                            </p>
+                        </article>
+                    }
+                }
+                else
+                {
+                    <p class="empty-note">
+                        Nothing posted yet. Announcements from the guidance office will appear here.
+                    </p>
+                }
+            </section>
+
+        </div>
+
+        <!-- ==================== SIDE COLUMN ==================== -->
+        <aside class="stu-side">
+
+            <section class="panel">
+                <h2 class="panel-title">Other ways to get help</h2>
+                <p class="panel-sub">If booking a session isn't what you need right now</p>
+
+                <div class="help-card help-card-urgent">
+                    <div class="help-head">
+                        <span class="material-symbols-outlined">warning</span>
+                        I need to talk to someone today
+                    </div>
+                    <p class="help-text">
+                        Walk in to the Guidance Office any time during school hours. You don't
+                        need an appointment, and you don't need a reason ready.
+                    </p>
+                </div>
+
+                <div class="help-card">
+                    <div class="help-head">
+                        <span class="material-symbols-outlined">campaign</span>
+                        Check the announcements
+                    </div>
+                    <p class="help-text">
+                        Schedules, requirements and reminders from the guidance office are
+                        posted further down this page.
+                    </p>
+                </div>
+
+                @if (Model.CompletedSessions > 0)
+                {
+                    <p class="side-note">
+                        You've completed @Model.CompletedSessions
+                        session@(Model.CompletedSessions == 1 ? "" : "s") so far.
+                    </p>
+                }
+            </section>
+
+            <section class="panel">
+                <h2 class="panel-title">Who can see this</h2>
+                <p class="panel-sub">The question most students ask first</p>
+
+                <ul class="privacy-list">
+                    <li>
+                        <span class="material-symbols-outlined">lock</span>
+                        <div>What you talk about <strong>stays between you and your counselor</strong>. It isn't shared with your teachers or classmates.</div>
+                    </li>
+                    <li>
+                        <span class="material-symbols-outlined">visibility_off</span>
+                        <div>Your parents are not notified when you book a session.</div>
+                    </li>
+                    <li>
+                        <span class="material-symbols-outlined">warning</span>
+                        <div>The one exception: if someone is in danger, your counselor has to involve an adult who can help. They'll tell you first.</div>
+                    </li>
+                </ul>
+            </section>
+
+        </aside>
+    </div>
+</div>

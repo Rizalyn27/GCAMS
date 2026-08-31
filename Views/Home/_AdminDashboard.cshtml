@@ -1,0 +1,288 @@
+﻿@model GCAMS.ViewModels.AdminDashboardViewModel
+
+@{
+    ViewData["Title"] = "Dashboard";
+
+    // Greeting — derived from the signed-in user and the clock, no model change.
+    var hour = DateTime.Now.Hour;
+    var partOfDay = hour < 12 ? "morning" : hour < 18 ? "afternoon" : "evening";
+    var displayName = User.Identity?.Name ?? "there";
+
+    // Monday-first week, so index 0 of WeeklyAppointmentCounts lines up with Monday.
+    var today = DateTime.Today;
+    var mondayOffset = ((int)today.DayOfWeek + 6) % 7;
+    var weekStart = today.AddDays(-mondayOffset);
+    var weekEnd = weekStart.AddDays(6);
+
+    var totalUsers = Model.StudentUserCount + Model.CounselorUserCount + Model.AdminUserCount;
+
+    Func<string, string> initials = value =>
+    {
+        if (string.IsNullOrWhiteSpace(value)) return "?";
+        var parts = value.Split(new[] { ' ', '.', '_', '@' }, StringSplitOptions.RemoveEmptyEntries);
+        return parts.Length >= 2
+            ? $"{char.ToUpper(parts[0][0])}{char.ToUpper(parts[1][0])}"
+            : char.ToUpper(parts[0][0]).ToString();
+    };
+
+    Func<int, int> share = count => totalUsers == 0 ? 0 : (int)Math.Round(100.0 * count / totalUsers);
+}
+
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="~/css/Home/AdminDashboard.css" asp-append-version="true" />
+
+<div class="admin-dash">
+
+    <header class="dash-head">
+        <h1>Good @partOfDay, @displayName</h1>
+        <p class="subtitle">
+            Here's what the Care Center needs from you on @today.ToString("dddd, d MMMM yyyy").
+        </p>
+    </header>
+
+    <!-- ===================== TOP STATS ===================== -->
+    <div class="stat-grid">
+
+        <div class="stat-card">
+            <div class="stat-label">
+                <span class="material-symbols-outlined"></span>
+                Active students
+            </div>
+            <div class="stat-value">@Model.TotalActiveStudents.ToString("N0")</div>
+            <div class="stat-note">@(Model.TotalActiveStudents == 0 ? "No student records yet" : "Currently enrolled and not archived")</div>
+            <a asp-controller="Students" asp-action="Index" class="stat-action">
+                Manage students <span class="material-symbols-outlined"></span>
+            </a>
+        </div>
+
+        <div class="stat-card @(Model.ActiveCounselors == 0 ? "stat-card-attention" : "")">
+            <div class="stat-label">
+                <span class="material-symbols-outlined"></span>
+                Active counselors
+            </div>
+            <div class="stat-value">@Model.ActiveCounselors.ToString("N0")</div>
+            @if (Model.ActiveCounselors == 0)
+            {
+                <div class="stat-note stat-note-warn">Students can't book yet</div>
+            }
+            else
+            {
+                <div class="stat-note">Available to take appointments</div>
+            }
+            <a asp-controller="Counselors" asp-action="@(Model.ActiveCounselors == 0 ? "Create" : "Index")" class="stat-action">
+                @(Model.ActiveCounselors == 0 ? "Add the first counselor" : "Manage counselors")
+                <span class="material-symbols-outlined"></span>
+            </a>
+        </div>
+
+        <div class="stat-card">
+            <div class="stat-label">
+                <span class="material-symbols-outlined"></span>
+                Sessions this week
+            </div>
+            <div class="stat-value">@Model.AppointmentsThisWeek.ToString("N0")</div>
+            <div class="stat-note">@weekStart.ToString("d MMM") – @weekEnd.ToString("d MMM")</div>
+            <a asp-controller="Appointments" asp-action="Index" class="stat-action">
+                Open the calendar <span class="material-symbols-outlined"></span>
+            </a>
+        </div>
+
+    </div>
+
+    <div class="lower-grid">
+
+        <!-- ===================== LEFT COLUMN ===================== -->
+        <div class="dash-col">
+
+            <div class="panel">
+                <div class="section-title">
+                    This week's schedule
+                    <a asp-controller="Appointments" asp-action="Index" class="row-action">
+                        Open the calendar <span class="material-symbols-outlined"></span>
+                    </a>
+                </div>
+                <p class="panel-sub">
+                    @weekStart.ToString("d MMMM") – @weekEnd.ToString("d MMMM yyyy")
+                </p>
+
+                <div class="week-strip">
+                    @for (int i = 0; i < 7; i++)
+                    {
+                        var date = weekStart.AddDays(i);
+                        var count = Model.WeeklyAppointmentCounts[i];
+                        var isToday = date == today;
+                        var isWeekend = i >= 5;
+
+                        <div class="day-cell @(isToday ? "is-today" : "") @(isWeekend ? "is-weekend" : "")">
+                            <div class="day-name">@date.ToString("ddd").ToUpper()</div>
+                            <div class="day-number">@date.Day</div>
+                            @if (isToday)
+                            {
+                                <div class="day-tag">Today</div>
+                            }
+                            <div class="day-count @(count == 0 ? "is-none" : "")">
+                                @if (count > 0)
+                                {
+                                    @count
+                                    <text> </text>
+
+                                    @(count == 1 ? "session" : "sessions")
+                                }
+                                else if (isWeekend)
+                                {
+                                    <text>Closed</text>
+                                }
+                                else
+                                {
+                                    <text>—</text>
+                                }
+                            </div>
+                        </div>
+                    }
+                </div>
+            </div>
+
+            <div class="panel">
+                <div class="section-title">
+                    Recent activity
+                    <a asp-controller="Activity" asp-action="Index" class="row-action">
+                        Full log <span class="material-symbols-outlined"></span>
+                    </a>
+                </div>
+
+                @if (Model.RecentActivity.Any())
+                {
+                    foreach (var item in Model.RecentActivity)
+                    {
+                        <div class="activity-item">
+                            <span class="activity-icon material-symbols-outlined"></span>
+                            <div>
+                                <div class="activity-text">@item.Text</div>
+                                <div class="activity-time">@item.Timestamp.ToString("MMM d, h:mm tt")</div>
+                            </div>
+                        </div>
+                    }
+                }
+                else
+                {
+                    <div class="empty-note">No recent activity yet.</div>
+                }
+            </div>
+
+        </div>
+
+        <!-- ===================== RIGHT COLUMN ===================== -->
+        <div class="dash-col">
+
+            @* Account and record administration only. Case notes, anecdotal
+               records and announcements are counselor work, not offered here. *@
+            <div class="panel">
+                <div class="section-title">Start a task</div>
+                <p class="panel-sub">The four things admins do most</p>
+
+                <div class="quick-actions">
+                    <a class="quick-action" asp-controller="Students" asp-action="Create">
+                        <span class="qa-icon material-symbols-outlined"></span>
+                        <span class="qa-text">Add a student</span>
+                        <span class="material-symbols-outlined qa-chevron"></span>
+                    </a>
+                    <a class="quick-action" asp-controller="Counselors" asp-action="Create">
+                        <span class="qa-icon material-symbols-outlined"></span>
+                        <span class="qa-text">Add a counselor</span>
+                        <span class="material-symbols-outlined qa-chevron"></span>
+                    </a>
+                    <a class="quick-action" asp-controller="Students" asp-action="Index">
+                        <span class="qa-icon material-symbols-outlined"></span>
+                        <span class="qa-text">Import students from Excel</span>
+                        <span class="material-symbols-outlined qa-chevron"></span>
+                    </a>
+                    <a class="quick-action" asp-controller="Activity" asp-action="Index">
+                        <span class="qa-icon material-symbols-outlined"></span>
+                        <span class="qa-text">Review the activity log</span>
+                        <span class="material-symbols-outlined qa-chevron"></span>
+                    </a>
+                </div>
+            </div>
+
+            <div class="panel">
+                <div class="section-title">
+                    Waiting to sign in
+                    @if (Model.PendingSetupAccounts.Any())
+                    {
+                        <span class="count-pill">@Model.PendingSetupAccounts.Count</span>
+                    }
+                </div>
+                <p class="panel-sub">Accounts created but never used</p>
+
+                @if (Model.PendingSetupAccounts.Any())
+                {
+                    foreach (var (username, role) in Model.PendingSetupAccounts)
+                    {
+                        <div class="pending-item">
+                            <div class="pending-avatar">@initials(username)</div>
+                            <div class="pending-body">
+                                <div class="pending-name">@username</div>
+                                <div class="pending-role">@role</div>
+                            </div>
+                            <span class="badge-pending">Not logged in</span>
+                        </div>
+                    }
+                }
+                else
+                {
+                    <div class="empty-note">All accounts have completed setup.</div>
+                }
+            </div>
+
+            <div class="panel">
+                <div class="section-title">Who's in the system</div>
+                <p class="panel-sub">@totalUsers.ToString("N0") @(totalUsers == 1 ? "account" : "accounts") in total</p>
+
+                <div class="dist-row">
+                    <div class="dist-labels">
+                        <span>Students</span>
+                        <span class="dist-figures">
+                            <span class="dist-pct">@(Model.StudentUserCount == 0 ? "none yet" : share(Model.StudentUserCount) + "%")</span>
+                            <strong>@Model.StudentUserCount</strong>
+                        </span>
+                    </div>
+                    <div class="dist-bar-track">
+                        <div class="dist-bar-fill" style="width:@(share(Model.StudentUserCount))%;"></div>
+                    </div>
+                </div>
+
+                <div class="dist-row">
+                    <div class="dist-labels">
+                        <span>Counselors</span>
+                        <span class="dist-figures">
+                            <span class="dist-pct">@(Model.CounselorUserCount == 0 ? "none yet" : share(Model.CounselorUserCount) + "%")</span>
+                            <strong>@Model.CounselorUserCount</strong>
+                        </span>
+                    </div>
+                    <div class="dist-bar-track">
+                        <div class="dist-bar-fill" style="width:@(share(Model.CounselorUserCount))%;"></div>
+                    </div>
+                </div>
+
+                <div class="dist-row">
+                    <div class="dist-labels">
+                        <span>Administrators</span>
+                        <span class="dist-figures">
+                            <span class="dist-pct">@(Model.AdminUserCount == 0 ? "none yet" : share(Model.AdminUserCount) + "%")</span>
+                            <strong>@Model.AdminUserCount</strong>
+                        </span>
+                    </div>
+                    <div class="dist-bar-track">
+                        <div class="dist-bar-fill" style="width:@(share(Model.AdminUserCount))%;"></div>
+                    </div>
+                </div>
+
+                <p class="dist-foot">
+                    Counts match the numbers at the top of this page. Archived records aren't included.
+                </p>
+            </div>
+
+        </div>
+    </div>
+</div>
