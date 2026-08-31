@@ -1,0 +1,67 @@
+﻿<div id="ChatArea" style="border: 1px solid #ccc; padding: 10px; height: 300px; overflow-y: Auto; ">
+    <div><strong>CareBot:</strong>Hello I am CareBot, the Care Center Chatbot!</div>
+</div>
+
+<div style="margin-top: 10px; display: flex; gap: 5px">
+    <textarea id="UserMessage"
+              rows="2"
+              placeholder="Type Mesasge..."
+              style="flex: 1; resize: none; padding: 5px;">
+    </textarea>
+    <button id="SendBtn" style="padding: 5px 15px;">Send</button>
+
+</div>
+
+<script>
+        document.addEventListener('DOMContentLoaded', () => {
+        const ChatArea = document.getElementById('ChatArea');
+        const UserMessage = document.getElementById('UserMessage');
+        const SendBtn = document.getElementById('SendBtn');
+
+        SendBtn.addEventListener('click', SendMessage);
+
+
+        //Enter to send message
+        UserMessage.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter' && !e.shiftKey) {
+                e.preventDefault();
+                SendMessage();
+            }
+        });
+
+        function SendMessage() {
+            const Message = UserMessage.value.trim();
+            if (Message === '') return;
+
+            ChatArea.innerHTML += `<div><strong>You:</strong> ${Message}</div>`;
+            UserMessage.value = '';
+
+            const typingIndicator = document.createElement('div');
+            typingIndicator.id = 'typing-indicator';
+            typingIndicator.innerHTML = '<strong>Bot:</strong> Typing...';
+            ChatArea.appendChild(typingIndicator);
+            ChatArea.scrollTop = ChatArea.scrollHeight;
+
+            fetch('/ChatBot/SendMessage', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ Message })
+            })
+            .then(res => res.json())
+            .then(data => {
+                const indicator = document.getElementById('typing-indicator');
+                if (indicator) indicator.remove();
+
+                ChatArea.innerHTML += `<div><strong>Bot: </strong>${data.answer}</div>`;
+                ChatArea.scrollTop = ChatArea.scrollHeight;
+            })
+            .catch(() => {
+                const indicator = document.getElementById('typing-indicator');
+                if (indicator) indicator.remove();
+
+                ChatArea.innerHTML += '<div><strong>Bot: </strong>Error</div>';
+                ChatArea.scrollTop = ChatArea.scrollHeight;
+            });
+        }
+    });
+</script>
