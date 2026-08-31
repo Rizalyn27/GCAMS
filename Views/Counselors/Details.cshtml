@@ -1,0 +1,244 @@
+﻿@model GCAMS.Models.Counselor.Counselor
+
+@{
+    ViewData["Title"] = "Counselor Profile";
+    Layout = "_Layout";
+}
+
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="~/css/Counselors/Details.css" asp-append-version="true" />
+
+<div class="profile-page" style="max-width: 1100px; margin: 0 auto; padding: 24px 16px;">
+
+    <!-- Breadcrumb -->
+    <nav class="breadcrumb-nav">
+        <span class="material-symbols-outlined" style="font-size:16px;"></span>
+        <a asp-action="Index"></a>
+        <span class="material-symbols-outlined" style="font-size:16px; color:#c0c9bb;"></span>
+        <span class="current"></span>
+    </nav>
+
+    <!-- Profile Header Card -->
+    <div class="profile-header-card">
+        <div class="profile-top-row" style="display:flex; justify-content:space-between; align-items:flex-start; gap:20px; flex-wrap:wrap;">
+
+            <div style="display:flex; align-items:center; gap:20px;">
+                <div class="avatar-circle">
+                    @Model.CounselorName.Substring(0, 1).ToUpper()
+                </div>
+                <div>
+                    <div style="display:flex; align-items:center; gap:10px; flex-wrap:wrap; margin-bottom:6px;">
+                        <h2 style="font-family:'Manrope',sans-serif; font-size:24px; font-weight:700; color:#002c06; margin:0;">
+                            @Model.CounselorName
+                        </h2>
+                        <div class="field-label"></div>
+                        <div class="field-value">
+                            <span class="info-pill" style="
+                                background: @(Model.EmploymentStatus == "Inactive" || Model.EmploymentStatus == "Retired" ? "#e1e4db" : "#a0f499");
+                                color: @(Model.EmploymentStatus == "Inactive" || Model.EmploymentStatus == "Retired" ? "#41493e" : "#004d08");">
+                                @Model.EmploymentStatus
+                            </span>
+                        </div>
+                    </div>
+                    <div style="display:flex; align-items:center; gap:8px; flex-wrap:wrap;">
+                        <span class="info-pill id-pill">
+                            <span class="material-symbols-outlined" style="font-size:13px;"></span>
+                            @Model.EmployeeNumber
+                        </span>
+                        @if (!string.IsNullOrEmpty(Model.EmailAddress))
+                        {
+                            <span style="color:#c0c9bb;">•</span>
+                            <span style="font-size:13px; color:#717a6d;">@Model.EmailAddress</span>
+                        }
+                        @if (!string.IsNullOrEmpty(Model.Gender))
+                        {
+                            <span style="color:#c0c9bb;">•</span>
+                            <span style="font-size:13px; color:#717a6d;">@Model.Gender</span>
+                        }
+                    </div>
+                </div>
+            </div>
+
+            <div class="action-buttons" style="display:flex; gap:10px; flex-wrap:wrap; align-items:center;">
+                <a asp-action="Index" class="action-btn btn-outline">
+                    <span class="material-symbols-outlined" style="font-size:18px;"></span>
+                    Back to List
+                </a>
+                <a asp-action="Edit" asp-route-id="@Model.CounselorID" class="action-btn btn-outline">
+                    <span class="material-symbols-outlined" style="font-size:18px;"></span>
+                    Edit Record
+                </a>
+
+            </div>
+
+        </div>
+    </div>
+
+    <!-- Personal Information -->
+    <div class="section-card">
+        <div class="section-header">
+            <span class="material-symbols-outlined"></span>
+            Personal Information
+        </div>
+
+        <div class="section-body cols-3">
+
+            <div>
+                <div class="field-label">Full Name</div>
+                <div class="field-value">@Model.CounselorName</div>
+            </div>
+
+            <div>
+                <div class="field-label">Gender</div>
+                <div class="field-value">@Model.Gender</div>
+            </div>
+
+            <div>
+                <div class="field-label">Birth Date</div>
+                <div class="field-value">
+                    @Model.BirthDate.ToString("MMMM dd, yyyy")
+                </div>
+            </div>
+
+            <div>
+                <div class="field-label">Marital Status</div>
+                <div class="field-value">
+                    @Model.MaritalStatus
+                </div>
+            </div>
+
+
+            <div>
+                <div class="field-label">Number of Children</div>
+                <div class="field-value">
+                    @Model.NumberOfChildren
+                </div>
+            </div>
+
+
+            <div>
+                <div class="field-label">Email Address</div>
+                <div class="field-value">
+                    @Model.EmailAddress
+                </div>
+            </div>
+
+
+            <div class="full-width">
+                <div class="field-label">Address</div>
+                <div class="field-value">
+                    @Model.Address
+                </div>
+            </div>
+
+
+            <div class="full-width">
+                <div class="field-label">Contact Numbers</div>
+
+                @if (Model.ContactNumbers == null || !Model.ContactNumbers.Any())
+                {
+                    <div class="field-value empty">
+                        Not specified
+                    </div>
+                }
+                else
+                {
+                    foreach (var contact in Model.ContactNumbers)
+                    {
+                        <div class="field-value">
+                            @contact.Number
+
+                            @if (!string.IsNullOrEmpty(contact.Label))
+                            {
+                                <span class="info-pill">
+                                    @contact.Label
+                                </span>
+                            }
+                        </div>
+                    }
+                }
+            </div>
+
+        </div>
+    </div>
+
+
+    <!-- Professional Background -->
+    <div class="section-card">
+
+        <div class="section-header">
+            <span class="material-symbols-outlined"></span>
+            Educational Background
+        </div>
+
+
+        <div class="section-body cols-2">
+
+
+            <div>
+                <div class="field-label">College</div>
+                <div class="field-value">
+                    @(Model.College ?? "Not specified")
+                </div>
+            </div>
+
+
+            <div>
+                <div class="field-label">College Course</div>
+                <div class="field-value">
+                    @(Model.CollegeCourse ?? "Not specified")
+                </div>
+            </div>
+
+
+            <div>
+                <div class="field-label">Post Graduate Studies</div>
+                <div class="field-value">
+                    @(Model.PostGraduateStudies ?? "Not specified")
+                </div>
+            </div>
+
+
+            <div>
+                <div class="field-label">Post Graduate Course</div>
+                <div class="field-value">
+                    @(Model.PostGraduateCourse ?? "Not specified")
+                </div>
+            </div>
+
+
+        </div>
+
+    </div>
+
+    <div class="section-card">
+
+        <div class="section-header">
+            <span class="material-symbols-outlined"></span>
+            Professional License
+        </div>
+
+
+        <div class="section-body cols-2">
+
+            <div>
+                <div class="field-label">PRC License</div>
+                <div class="field-value">
+                    @(Model.PRCLicense ?? "Not specified")
+                </div>
+            </div>
+
+
+            <div>
+                <div class="field-label">PRC License 2</div>
+                <div class="field-value">
+                    @(Model.PRCLicense2 ?? "Not specified")
+                </div>
+            </div>
+
+        </div>
+
+    </div>
+
+</div>

@@ -1,0 +1,130 @@
+﻿@model GCAMS.Models.Announcements.Announcement
+@{
+    ViewData["Title"] = "New Announcement";
+}
+
+<style>
+    @@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Manrope:wght@600;700&display=swap');
+
+    .form-card {
+        background: #fff;
+        border: 1px solid #e5e7eb;
+        border-radius: 12px;
+        padding: 1.5rem;
+        margin-bottom: 1.25rem;
+    }
+
+    .form-section-title {
+        font-family: 'Manrope', sans-serif;
+        font-size: 15px;
+        font-weight: 700;
+        color: #111;
+        margin-bottom: 1rem;
+    }
+
+    .field-label {
+        font-size: 13px;
+        font-family: 'Inter', sans-serif;
+        font-weight: 500;
+        color: #6b7280;
+        margin-bottom: 4px;
+        display: block;
+    }
+
+    .form-control {
+        font-size: 14px;
+        font-family: 'Inter', sans-serif;
+        border-radius: 8px;
+        border: 1px solid #d1d5db;
+        padding: 8px 12px;
+        width: 100%;
+        color: #111;
+    }
+
+        .form-control:focus {
+            border-color: #1a56db;
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(26,86,219,0.1);
+        }
+
+    .form-footer {
+        display: flex;
+        gap: 8px;
+        padding-top: 1rem;
+        border-top: 1px solid #e5e7eb;
+        margin-top: 0.5rem;
+    }
+
+    .btn-save {
+        background: #1B5E20;
+        border: none;
+        border-radius: 8px;
+        padding: 9px 20px;
+        font-size: 14px;
+        font-family: 'Inter', sans-serif;
+        color: #fff;
+        cursor: pointer;
+    }
+
+        .btn-save:hover {
+            background: #1648c0;
+        }
+
+    .btn-cancel {
+        background: #fff;
+        border: 1px solid #d1d5db;
+        border-radius: 8px;
+        padding: 9px 20px;
+        font-size: 14px;
+        font-family: 'Inter', sans-serif;
+        color: #374151;
+        text-decoration: none;
+    }
+
+        .btn-cancel:hover {
+            background: #f9fafb;
+            text-decoration: none;
+        }
+
+    .page-title {
+        font-family: 'Manrope', sans-serif;
+        font-size: 22px;
+        font-weight: 700;
+        color: #111;
+        margin-bottom: 1.5rem;
+    }
+</style>
+
+<div class="container-lg py-4" style="max-width: 720px;">
+    <p class="page-title">New Announcement</p>
+
+    <form asp-action="Create">
+        <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
+
+        <div class="form-card">
+            <div class="form-section-title">Announcement</div>
+            <div class="mb-3">
+                <label asp-for="Title" class="field-label"></label>
+                <input asp-for="Title" class="form-control" />
+                <span asp-validation-for="Title" class="text-danger" style="font-size:12px;"></span>
+            </div>
+            <div>
+                <label asp-for="Message" class="field-label"></label>
+                <textarea asp-for="Message" class="form-control" rows="5"></textarea>
+                <span asp-validation-for="Message" class="text-danger" style="font-size:12px;"></span>
+                <small class="field-label" style="color:#6b7280; text-transform:none; font-weight:400;">This will be sent to all students.</small>
+            </div>
+        </div>
+
+        <div class="form-footer">
+            <button type="submit" class="btn-save">Post announcement</button>
+            <a asp-action="Index" class="btn-cancel">Cancel</a>
+        </div>
+    </form>
+</div>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}

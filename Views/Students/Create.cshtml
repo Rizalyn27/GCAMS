@@ -1,278 +1,733 @@
-﻿@model GCAMS.Models.Students
-
+﻿@using GCAMS.ViewModels
+@model GCAMS.ViewModels.StudentFormViewModel
 @{
-    ViewData["Title"] = "Create";
+    ViewData["Title"] = "Add New Student";
+    ViewData["PageSubtitle"] = "Register a student record in the Care Center";
+
+    // The GET action hands us an empty view model, so the contact repeaters would
+    // render zero rows. One blank row is friendlier and still posts nothing —
+    // the controller already filters out whitespace-only numbers.
+    var studentContacts = Model.StudentContacts.Count > 0
+        ? Model.StudentContacts
+        : new List<ContactEntry> { new ContactEntry() };
+    var fatherContacts = Model.FatherContacts.Count > 0
+        ? Model.FatherContacts
+        : new List<ContactEntry> { new ContactEntry { Label = "Father" } };
+    var motherContacts = Model.MotherContacts.Count > 0
+        ? Model.MotherContacts
+        : new List<ContactEntry> { new ContactEntry { Label = "Mother" } };
+    var emergencyContacts = Model.EmergencyContacts.Count > 0
+        ? Model.EmergencyContacts
+        : new List<ContactEntry> { new ContactEntry() };
+
+    var contactTypes = new[]
+
+    {
+        "Personal Mobile Phone",
+        "Home Mobile Phone",
+        "Home Telephone",
+        "Office Mobile Phone",
+        "Office Telephone"
+    };
+
+    var currentYear = DateTime.Now.Year;
+    var yearRange = $"{currentYear}-{currentYear + 1}";
 }
 
-<h1>Create</h1>
+@section Styles {
+    <link rel="stylesheet" href="~/css/Students/Create.css" asp-append-version="true" />
+}
 
-<h4>Students</h4>
-<hr />
-<div class="row">
-    <div class="col-md-4">
-        <form asp-action="Create">
-            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-            <div class="form-group">
-                <label asp-for="FName" class="control-label"></label>
-                <input asp-for="FName" class="form-control" />
-                <span asp-validation-for="FName" class="text-danger"></span>
+@section Breadcrumb {
+    <div class="crumb">
+        <a asp-controller="Students" asp-action="Index">Students</a>
+        <span class="crumb-sep">/</span>
+        <span class="crumb-current">Add New Student</span>
+    </div>
+}
+
+<div class="student-create-page" id="studentCreatePage">
+
+    <h1 class="page-title">Student Registration</h1>
+
+    <div asp-validation-summary="ModelOnly" class="alert alert-danger" id="serverSummary"></div>
+
+    <div class="wiz-layout">
+
+        <!-- ============ STEP RAIL ============ -->
+        <aside class="wiz-aside">
+            <nav class="wiz-rail" id="wizRail" aria-label="Registration steps">
+                <button type="button" class="wiz-step-btn is-active" data-goto="0">
+                    <span class="wiz-badge">1</span>
+                    <span class="wiz-step-label">Personal Information</span>
+                </button>
+                <button type="button" class="wiz-step-btn" data-goto="1">
+                    <span class="wiz-badge">2</span>
+                    <span class="wiz-step-label">Family Background</span>
+                </button>
+                <button type="button" class="wiz-step-btn" data-goto="2">
+                    <span class="wiz-badge">3</span>
+                    <span class="wiz-step-label">Educational History</span>
+                </button>
+                <button type="button" class="wiz-step-btn" data-goto="3">
+                    <span class="wiz-badge">4</span>
+                    <span class="wiz-step-label">Health &amp; Wellness</span>
+                </button>
+                <button type="button" class="wiz-step-btn" data-goto="4">
+                    <span class="wiz-badge">5</span>
+                    <span class="wiz-step-label">Emergency Contact</span>
+                </button>
+                <button type="button" class="wiz-step-btn" data-goto="5">
+                    <span class="wiz-badge">6</span>
+                    <span class="wiz-step-label">Review &amp; Submit</span>
+                </button>
+            </nav>
+
+            <div class="wiz-progress">
+                <div class="wiz-progress-head">
+                    <span>Completion</span>
+                    <span id="wizPercentText">17%</span>
+                </div>
+                <div class="progress" role="progressbar" aria-label="Form completion"
+                     aria-valuemin="0" aria-valuemax="100" aria-valuenow="17">
+                    <div class="progress-bar" id="wizPercentBar" style="width:17%"></div>
+                </div>
             </div>
-            <div class="form-group">
-                <label asp-for="LName" class="control-label"></label>
-                <input asp-for="LName" class="form-control" />
-                <span asp-validation-for="LName" class="text-danger"></span>
+        </aside>
+
+        <!-- ============ FORM ============ -->
+        <form asp-action="Create" method="post" class="wiz-form" id="studentForm" novalidate>
+
+            <!-- ---------- STEP 1: PERSONAL ---------- -->
+            <section class="wiz-panel" data-step="0">
+                <div class="card sect-card">
+                    <div class="card-header sect-head">
+                        <i class="fa-regular fa-user"></i> Student Information
+                    </div>
+                    <div class="card-body">
+                        <div class="row g-3">
+                            <div class="col-12 col-lg-7">
+                                <label asp-for="Student.StuName" class="field-label">Full Name <span class="req">*</span></label>
+                                <input asp-for="Student.StuName" class="form-control" placeholder="e.g. John Dela Cruz" autocomplete="off" />
+                                <span asp-validation-for="Student.StuName" class="field-error"></span>
+                            </div>
+                            <div class="col-12 col-lg-5">
+                                <label asp-for="Student.StuID" class="field-label">
+                                    Student ID <span class="req">*</span>
+                                    <button type="button" class="link-btn link-btn-sm" id="genStuId">Generate</button>
+                                </label>
+                                <input asp-for="Student.StuID" class="form-control field-soft" placeholder="e.g. ST-@currentYear-001" autocomplete="off" />
+                                <span asp-validation-for="Student.StuID" class="field-error"></span>
+                            </div>
+
+                            <div class="col-12 col-md-4">
+                                <label asp-for="Student.Gender" class="field-label">Gender</label>
+                                <select asp-for="Student.Gender" class="form-select">
+                                    <option value="">Select gender</option>
+                                    <option value="Male">Male</option>
+                                    <option value="Female">Female</option>
+                                </select>
+                                <span asp-validation-for="Student.Gender" class="field-error"></span>
+                            </div>
+                            <div class="col-8 col-md-5">
+                                <label asp-for="Student.Birthday" class="field-label">Birth Date</label>
+                                <input asp-for="Student.Birthday" type="date" class="form-control" />
+                                <span asp-validation-for="Student.Birthday" class="field-error"></span>
+                            </div>
+                            <div class="col-4 col-md-3">
+                                <label class="field-label" for="studentAge">Age</label>
+                                @* Age is a computed [NotMapped] property, so it is display-only and
+                                   deliberately not bound with asp-for. *@
+                                <input type="text" class="form-control field-soft" id="studentAge" value="&#8212;" readonly tabindex="-1" />
+                            </div>
+
+                            <div class="col-12 col-md-3">
+                                <label asp-for="Student.BirthOrder" class="field-label">
+                                    Birth Order <span class="opt">(optional)</span>
+                                </label>
+                                <input asp-for="Student.BirthOrder" class="form-control" placeholder="e.g. 2nd of 4" />
+                                <span asp-validation-for="Student.BirthOrder" class="field-error"></span>
+                            </div>
+
+                            <div class="col-12 col-md-9">
+                                <label class="field-label">Contact Number</label>
+                                <div class="repeater" id="student-contacts" data-prefix="StudentContacts">
+                                    @for (int i = 0; i < studentContacts.Count; i++)
+                                    {
+                                        <div class="contact-row">
+                                            <input name="StudentContacts[@i].Number" value="@studentContacts[i].Number"
+                                                   class="form-control" placeholder="+63 917 123 4567" inputmode="tel" />
+                                            <select name="StudentContacts[@i].Label" class="form-select contact-type">
+                                                <option value="">Select type</option>
+                                                @foreach (var t in contactTypes)
+                                                {
+                                                    <option value="@t" selected="@(studentContacts[i].Label == t)">@t</option>
+                                                }
+                                            </select>
+                                            <button type="button" class="btn-remove remove-contact" aria-label="Remove number">
+                                                <i class="fa-solid fa-xmark"></i>
+                                            </button>
+                                        </div>
+                                    }
+                                </div>
+                                <button type="button" class="link-btn add-contact" data-target="student-contacts">
+                                    <i class="fa-solid fa-plus"></i> Add another number
+                                </button>
+                            </div>
+
+                            <div class="col-12 col-md-6">
+                                <label asp-for="Student.Email" class="field-label">
+                                    Email Address <span class="opt">(optional)</span>
+                                </label>
+                                <input asp-for="Student.Email" class="form-control" placeholder="student@@school.edu" />
+                                <span asp-validation-for="Student.Email" class="field-error"></span>
+                            </div>
+                            <div class="col-12 col-md-6">
+                                <label asp-for="Student.StayingWith" class="field-label">Living Arrangement</label>
+                                <select asp-for="Student.StayingWith" class="form-select">
+                                    <option value="">Select</option>
+                                    <option value="Parents">With Parents</option>
+                                    <option value="Relatives">Relatives</option>
+                                    <option value="Own Family">Own Family</option>
+                                    <option value="Alone">Alone</option>
+                                </select>
+                                <span asp-validation-for="Student.StayingWith" class="field-error"></span>
+                            </div>
+
+                            <div class="col-12 col-md-4">
+                                <label asp-for="Student.Religion" class="field-label">
+                                    Religion <span class="opt">(optional)</span>
+                                </label>
+                                <input asp-for="Student.Religion" class="form-control" />
+                                <span asp-validation-for="Student.Religion" class="field-error"></span>
+                            </div>
+                            <div class="col-12 col-md-4">
+                                <label asp-for="Student.GradeLevel" class="field-label">Grade Level <span class="req">*</span></label>
+                                <input asp-for="Student.GradeLevel" class="form-control" list="gradeLevelList" placeholder="Select grade" />
+                                <datalist id="gradeLevelList">
+                                    <option value="Grade 7"></option>
+                                    <option value="Grade 8"></option>
+                                    <option value="Grade 9"></option>
+                                    <option value="Grade 10"></option>
+                                    <option value="Grade 11"></option>
+                                    <option value="Grade 12"></option>
+                                </datalist>
+                                <span asp-validation-for="Student.GradeLevel" class="field-error"></span>
+                            </div>
+                            <div class="col-12 col-md-4">
+                                <label asp-for="Student.Section" class="field-label">Section <span class="req">*</span></label>
+                                <input asp-for="Student.Section" class="form-control" placeholder="e.g. Rizal" />
+                                <span asp-validation-for="Student.Section" class="field-error"></span>
+                            </div>
+
+                            <div class="col-12">
+                                <label asp-for="Student.Address" class="field-label">Home Address <span class="req">*</span></label>
+                                <textarea asp-for="Student.Address" class="form-control" rows="2"
+                                          placeholder="Full residential address..."></textarea>
+                                <span asp-validation-for="Student.Address" class="field-error"></span>
+                            </div>
+
+                            <div class="col-12 col-md-4">
+                                <label asp-for="Student.Nationality" class="field-label">
+                                    Nationality <span class="opt">(optional)</span>
+                                </label>
+                                <input asp-for="Student.Nationality" class="form-control" />
+                                <span asp-validation-for="Student.Nationality" class="field-error"></span>
+                            </div>
+                            <div class="col-12 col-md-4">
+                                <label asp-for="Student.School" class="field-label">School <span class="req">*</span></label>
+                                <input asp-for="Student.School" class="form-control" />
+                                <span asp-validation-for="Student.School" class="field-error"></span>
+                            </div>
+                            <div class="col-12 col-md-4">
+                                <label asp-for="Student.AcademicYear" class="field-label">Academic Year <span class="req">*</span></label>
+                                <select asp-for="Student.AcademicYear" class="form-select">
+                                    <option value="">Select</option>
+                                    <option value="@yearRange">@yearRange</option>
+                                    <option value="First Semester A.Y. @yearRange">First Semester A.Y. @yearRange</option>
+                                    <option value="Second Semester A.Y. @yearRange">Second Semester A.Y. @yearRange</option>
+                                </select>
+                                <span asp-validation-for="Student.AcademicYear" class="field-error"></span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- ---------- STEP 2: FAMILY ---------- -->
+            <section class="wiz-panel" data-step="1" hidden>
+                <div class="card sect-card">
+                    <div class="card-header sect-head">
+                        <i class="fa-solid fa-people-roof"></i> Family Information
+                    </div>
+                    <div class="card-body">
+
+                        <div class="sub-head">Father's Details</div>
+                        <div class="row g-3 mb-4">
+                            <div class="col-12 col-md-6">
+                                <label asp-for="Family.FatherName" class="field-label">Full Name</label>
+                                <input asp-for="Family.FatherName" class="form-control" />
+                                <span asp-validation-for="Family.FatherName" class="field-error"></span>
+                            </div>
+                            <div class="col-6 col-md-2">
+                                <label asp-for="Family.FatherAge" class="field-label">Age</label>
+                                <input asp-for="Family.FatherAge" class="form-control" type="number" min="18" max="120" />
+                                <span asp-validation-for="Family.FatherAge" class="field-error"></span>
+                            </div>
+                            <div class="col-6 col-md-4">
+                                <label asp-for="Family.FatherOccupation" class="field-label">Occupation</label>
+                                <input asp-for="Family.FatherOccupation" class="form-control" />
+                                <span asp-validation-for="Family.FatherOccupation" class="field-error"></span>
+                            </div>
+                            <div class="col-12 col-md-6">
+                                <label asp-for="Family.FatherEducationalAttainment" class="field-label">Educational Attainment</label>
+                                <input asp-for="Family.FatherEducationalAttainment" class="form-control" />
+                                <span asp-validation-for="Family.FatherEducationalAttainment" class="field-error"></span>
+                            </div>
+                            <div class="col-12 col-md-6">
+                                <label class="field-label">Contact Number</label>
+                                <div class="repeater" id="father-contacts" data-prefix="FatherContacts" data-fixed-label="Father">
+                                    @for (int i = 0; i < fatherContacts.Count; i++)
+                                    {
+                                        <div class="contact-row">
+                                            <input name="FatherContacts[@i].Number" value="@fatherContacts[i].Number"
+                                                   class="form-control" placeholder="+63 917 123 4567" inputmode="tel" />
+                                            <input type="hidden" name="FatherContacts[@i].Label" value="Father" />
+                                            <button type="button" class="btn-remove remove-contact" aria-label="Remove number">
+                                                <i class="fa-solid fa-xmark"></i>
+                                            </button>
+                                        </div>
+                                    }
+                                </div>
+                                <button type="button" class="link-btn add-contact" data-target="father-contacts">
+                                    <i class="fa-solid fa-plus"></i> Add another number
+                                </button>
+                            </div>
+                        </div>
+
+                        <div class="sub-head">Mother's Details</div>
+                        <div class="row g-3 mb-4">
+                            <div class="col-12 col-md-6">
+                                <label asp-for="Family.MotherName" class="field-label">Full Name</label>
+                                <input asp-for="Family.MotherName" class="form-control" />
+                                <span asp-validation-for="Family.MotherName" class="field-error"></span>
+                            </div>
+                            <div class="col-6 col-md-2">
+                                <label asp-for="Family.MotherAge" class="field-label">Age</label>
+                                <input asp-for="Family.MotherAge" class="form-control" type="number" min="18" max="120" />
+                                <span asp-validation-for="Family.MotherAge" class="field-error"></span>
+                            </div>
+                            <div class="col-6 col-md-4">
+                                <label asp-for="Family.MotherOccupation" class="field-label">Occupation</label>
+                                <input asp-for="Family.MotherOccupation" class="form-control" />
+                                <span asp-validation-for="Family.MotherOccupation" class="field-error"></span>
+                            </div>
+                            <div class="col-12 col-md-6">
+                                <label asp-for="Family.MotherEducationalAttainment" class="field-label">Educational Attainment</label>
+                                <input asp-for="Family.MotherEducationalAttainment" class="form-control" />
+                                <span asp-validation-for="Family.MotherEducationalAttainment" class="field-error"></span>
+                            </div>
+                            <div class="col-12 col-md-6">
+                                <label class="field-label">Contact Number</label>
+                                <div class="repeater" id="mother-contacts" data-prefix="MotherContacts" data-fixed-label="Mother">
+                                    @for (int i = 0; i < motherContacts.Count; i++)
+                                    {
+                                        <div class="contact-row">
+                                            <input name="MotherContacts[@i].Number" value="@motherContacts[i].Number"
+                                                   class="form-control" placeholder="+63 917 123 4567" inputmode="tel" />
+                                            <input type="hidden" name="MotherContacts[@i].Label" value="Mother" />
+                                            <button type="button" class="btn-remove remove-contact" aria-label="Remove number">
+                                                <i class="fa-solid fa-xmark"></i>
+                                            </button>
+                                        </div>
+                                    }
+                                </div>
+                                <button type="button" class="link-btn add-contact" data-target="mother-contacts">
+                                    <i class="fa-solid fa-plus"></i> Add another number
+                                </button>
+                            </div>
+                        </div>
+
+                        <div class="row g-3">
+                            <div class="col-12 col-md-6">
+                                <label asp-for="Family.ParentsRelationshipStatus" class="field-label">Parents' Status</label>
+                                <select asp-for="Family.ParentsRelationshipStatus" class="form-select">
+                                    <option value="">Select</option>
+                                    <option>Married and Living Together</option>
+                                    <option>Married but Separated</option>
+                                    <option>Both with other partners</option>
+                                    <option>Not Married</option>
+                                    <option>Father/Mother with another partner</option>
+                                    <option>Both without parents</option>
+                                    <option>Deceased</option>
+                                </select>
+                                <span asp-validation-for="Family.ParentsRelationshipStatus" class="field-error"></span>
+                            </div>
+                            <div class="col-12 col-md-6">
+                                <label asp-for="Family.MonthlyFamilyIncome" class="field-label">Monthly Household Income</label>
+                                <select asp-for="Family.MonthlyFamilyIncome" class="form-select">
+                                    <option value="">Select</option>
+                                    <option>Below 10,000</option>
+                                    <option>10,000 - 20,000</option>
+                                    <option>20,001 - 30,000</option>
+                                    <option>Above 30,000</option>
+                                </select>
+                                <span asp-validation-for="Family.MonthlyFamilyIncome" class="field-error"></span>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+            </section>
+
+            <!-- ---------- STEP 3: EDUCATION ---------- -->
+            <section class="wiz-panel" data-step="2" hidden>
+                <div class="card sect-card">
+                    <div class="card-header sect-head">
+                        <i class="fa-solid fa-graduation-cap"></i> Educational History
+                    </div>
+                    <div class="card-body">
+                        <div class="row g-3">
+                            <div class="col-12 col-md-6">
+                                <label asp-for="Education.ElementarySchool" class="field-label">Elementary School</label>
+                                <input asp-for="Education.ElementarySchool" class="form-control" />
+                                <span asp-validation-for="Education.ElementarySchool" class="field-error"></span>
+                            </div>
+                            <div class="col-6 col-md-2">
+                                <label asp-for="Education.ElementaryYear" class="field-label">Year Graduated</label>
+                                <input asp-for="Education.ElementaryYear" class="form-control" placeholder="e.g. 2020" />
+                                <span asp-validation-for="Education.ElementaryYear" class="field-error"></span>
+                            </div>
+                            <div class="col-6 col-md-4">
+                                <label asp-for="Education.ElementaryHonors" class="field-label">Honors/Awards</label>
+                                <input asp-for="Education.ElementaryHonors" class="form-control" />
+                                <span asp-validation-for="Education.ElementaryHonors" class="field-error"></span>
+                            </div>
+
+                            <div class="col-12 col-md-6">
+                                <label asp-for="Education.SecondarySchool" class="field-label">High School</label>
+                                <input asp-for="Education.SecondarySchool" class="form-control" />
+                                <span asp-validation-for="Education.SecondarySchool" class="field-error"></span>
+                            </div>
+                            <div class="col-6 col-md-2">
+                                <label asp-for="Education.SecondaryYear" class="field-label">Year Graduated</label>
+                                <input asp-for="Education.SecondaryYear" class="form-control" placeholder="e.g. 2024" />
+                                <span asp-validation-for="Education.SecondaryYear" class="field-error"></span>
+                            </div>
+                            <div class="col-6 col-md-4">
+                                <label asp-for="Education.SecondaryHonors" class="field-label">Honors/Awards</label>
+                                <input asp-for="Education.SecondaryHonors" class="form-control" />
+                                <span asp-validation-for="Education.SecondaryHonors" class="field-error"></span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- ---------- STEP 4: HEALTH ---------- -->
+            <section class="wiz-panel" data-step="3" hidden>
+                <div class="card sect-card">
+                    <div class="card-header sect-head">
+                        <i class="fa-solid fa-heart-pulse"></i> Health &amp; Wellness
+                    </div>
+                    <div class="card-body">
+
+                        <div class="confidential-note">
+                            <i class="fa-solid fa-triangle-exclamation"></i>
+                            <span>
+                                This section contains sensitive health information. Only the counseling team
+                                can view it, and it is handled with strict confidentiality.
+                            </span>
+                        </div>
+
+                        <div class="row g-3">
+                            <div class="col-12 col-md-6">
+                                <label asp-for="Health.BloodType" class="field-label">Blood Type</label>
+                                <select asp-for="Health.BloodType" class="form-select">
+                                    <option value="">Unknown</option>
+                                    <option>A+</option>
+                                    <option>A-</option>
+                                    <option>B+</option>
+                                    <option>B-</option>
+                                    <option>AB+</option>
+                                    <option>AB-</option>
+                                    <option>O+</option>
+                                    <option>O-</option>
+                                </select>
+                                <span asp-validation-for="Health.BloodType" class="field-error"></span>
+                            </div>
+                            <div class="col-6 col-md-3">
+                                <label asp-for="Health.Height" class="field-label">Height (cm)</label>
+                                <input asp-for="Health.Height" class="form-control" />
+                                <span asp-validation-for="Health.Height" class="field-error"></span>
+                            </div>
+                            <div class="col-6 col-md-3">
+                                <label asp-for="Health.Weight" class="field-label">Weight (kg)</label>
+                                <input asp-for="Health.Weight" class="form-control" />
+                                <span asp-validation-for="Health.Weight" class="field-error"></span>
+                            </div>
+
+                            <div class="col-12">
+                                <label asp-for="Health.Medication" class="field-label">Current Medications / Chronic Ailments</label>
+                                <textarea asp-for="Health.Medication" class="form-control" rows="2"
+                                          placeholder="List any medications or medical conditions..."></textarea>
+                                <span asp-validation-for="Health.Medication" class="field-error"></span>
+                            </div>
+                            <div class="col-12">
+                                <label asp-for="Health.Ailments" class="field-label">Family Medical History</label>
+                                <textarea asp-for="Health.Ailments" class="form-control" rows="2"
+                                          placeholder="Specify condition(s), if any"></textarea>
+                                <span asp-validation-for="Health.Ailments" class="field-error"></span>
+                            </div>
+                            <div class="col-12">
+                                <label asp-for="Health.SuicideRiskHistory" class="field-label">History of Suicidal Thoughts or Attempts</label>
+                                <textarea asp-for="Health.SuicideRiskHistory" class="form-control" rows="2"
+                                          placeholder="Details if applicable..."></textarea>
+                                <span asp-validation-for="Health.SuicideRiskHistory" class="field-error"></span>
+                            </div>
+                            <div class="col-12">
+                                <label asp-for="Health.AbuseHistory" class="field-label">History of Abuse or Maltreatment</label>
+                                <textarea asp-for="Health.AbuseHistory" class="form-control" rows="2"></textarea>
+                                <span asp-validation-for="Health.AbuseHistory" class="field-error"></span>
+                            </div>
+                            <div class="col-12">
+                                <label asp-for="Health.DrugHistory" class="field-label">History of Illegal Drug Use</label>
+                                <textarea asp-for="Health.DrugHistory" class="form-control" rows="2"
+                                          placeholder="If yes, indicate type and approximate time period"></textarea>
+                                <span asp-validation-for="Health.DrugHistory" class="field-error"></span>
+                            </div>
+                            <div class="col-12">
+                                <label asp-for="Health.FamilyMentalHealthHistory" class="field-label">Family History of Mental or Developmental Conditions</label>
+                                <textarea asp-for="Health.FamilyMentalHealthHistory" class="form-control" rows="2"
+                                          placeholder="Specify condition and relationship to the family member"></textarea>
+                                <span asp-validation-for="Health.FamilyMentalHealthHistory" class="field-error"></span>
+                            </div>
+                            <div class="col-12">
+                                <label asp-for="Health.PsychiatricConsultation" class="field-label">Previous Psychiatric or Psychological Consultation</label>
+                                <textarea asp-for="Health.PsychiatricConsultation" class="form-control" rows="2"
+                                          placeholder="State reason and approximate date of consultation(s)"></textarea>
+                                <span asp-validation-for="Health.PsychiatricConsultation" class="field-error"></span>
+                            </div>
+                            <div class="col-12">
+                                <label asp-for="Health.AdditionalNotes" class="field-label">Additional Relevant Information / Remarks</label>
+                                <textarea asp-for="Health.AdditionalNotes" class="form-control" rows="2"
+                                          placeholder="Enter any additional notes or comments"></textarea>
+                                <span asp-validation-for="Health.AdditionalNotes" class="field-error"></span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- ---------- STEP 5: EMERGENCY ---------- -->
+            <section class="wiz-panel" data-step="4" hidden>
+                <div class="card sect-card">
+                    <div class="card-header sect-head">
+                        <i class="fa-regular fa-address-card"></i> Emergency Contact
+                    </div>
+                    <div class="card-body">
+                        <div class="row g-3">
+                            <div class="col-12 col-md-8">
+                                <label asp-for="Emergency.EmergencyContactPerson" class="field-label">Full Name</label>
+                                <input asp-for="Emergency.EmergencyContactPerson" class="form-control" placeholder="e.g. Martha Wayne" />
+                                <span asp-validation-for="Emergency.EmergencyContactPerson" class="field-error"></span>
+                            </div>
+                            <div class="col-12 col-md-4">
+                                <label asp-for="Emergency.EmergencyContactAge" class="field-label">Age</label>
+                                <input asp-for="Emergency.EmergencyContactAge" class="form-control" type="number" min="18" max="120" />
+                                <span asp-validation-for="Emergency.EmergencyContactAge" class="field-error"></span>
+                            </div>
+
+                            <div class="col-12 col-md-6">
+                                <label class="field-label">Contact Number</label>
+                                <div class="repeater" id="emergency-contacts" data-prefix="EmergencyContacts">
+                                    @for (int i = 0; i < emergencyContacts.Count; i++)
+                                    {
+                                        <div class="contact-row">
+                                            <input name="EmergencyContacts[@i].Number" value="@emergencyContacts[i].Number"
+                                                   class="form-control" placeholder="+63 917 123 4567" inputmode="tel" />
+                                            <select name="EmergencyContacts[@i].Label" class="form-select contact-type">
+                                                <option value="">Select type</option>
+                                                @foreach (var t in contactTypes)
+                                                {
+                                                    <option value="@t" selected="@(emergencyContacts[i].Label == t)">@t</option>
+                                                }
+                                            </select>
+                                            <button type="button" class="btn-remove remove-contact" aria-label="Remove number">
+                                                <i class="fa-solid fa-xmark"></i>
+                                            </button>
+                                        </div>
+                                    }
+                                </div>
+                                <button type="button" class="link-btn add-contact" data-target="emergency-contacts">
+                                    <i class="fa-solid fa-plus"></i> Add another number
+                                </button>
+                            </div>
+
+                            <div class="col-12 col-md-6">
+                                <label asp-for="Emergency.EmergencyContactOccupation" class="field-label">Occupation</label>
+                                <input asp-for="Emergency.EmergencyContactOccupation" class="form-control" />
+                                <span asp-validation-for="Emergency.EmergencyContactOccupation" class="field-error"></span>
+                            </div>
+
+                            <div class="col-12">
+                                <label asp-for="Emergency.EmergencyContactAddress" class="field-label">Address</label>
+                                <textarea asp-for="Emergency.EmergencyContactAddress" class="form-control" rows="2"></textarea>
+                                <span asp-validation-for="Emergency.EmergencyContactAddress" class="field-error"></span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- ---------- STEP 6: REVIEW ---------- -->
+            <section class="wiz-panel" data-step="5" hidden>
+                <div class="card sect-card">
+                    <div class="card-header sect-head">
+                        <i class="fa-regular fa-circle-check"></i> Review &amp; Submit
+                    </div>
+                    <div class="card-body">
+                        <p class="review-intro">
+                            Please check the details below before adding this student.
+                            You can jump back to any section to make changes.
+                        </p>
+
+                        <div class="review-block">
+                            <div class="review-block-head">
+                                <h3>Student Information</h3>
+                                <button type="button" class="link-btn" data-goto="0"><i class="fa-regular fa-pen-to-square"></i> Edit</button>
+                            </div>
+                            <div class="review-grid">
+                                <div class="rev-item"><span class="rev-key">Full Name</span><span class="rev-val" data-src="Student_StuName"></span></div>
+                                <div class="rev-item"><span class="rev-key">Student ID</span><span class="rev-val" data-src="Student_StuID"></span></div>
+                                <div class="rev-item"><span class="rev-key">Gender</span><span class="rev-val" data-src="Student_Gender"></span></div>
+                                <div class="rev-item"><span class="rev-key">Birth Date</span><span class="rev-val" data-src="Student_Birthday"></span></div>
+                                <div class="rev-item"><span class="rev-key">Age</span><span class="rev-val" data-src="studentAge"></span></div>
+                                <div class="rev-item"><span class="rev-key">Birth Order</span><span class="rev-val" data-src="Student_BirthOrder"></span></div>
+                                <div class="rev-item"><span class="rev-key">Contact Number</span><span class="rev-val" data-contacts="student-contacts"></span></div>
+                                <div class="rev-item"><span class="rev-key">Email</span><span class="rev-val" data-src="Student_Email"></span></div>
+                                <div class="rev-item"><span class="rev-key">Living Arrangement</span><span class="rev-val" data-src="Student_StayingWith"></span></div>
+                                <div class="rev-item"><span class="rev-key">Religion</span><span class="rev-val" data-src="Student_Religion"></span></div>
+                                <div class="rev-item"><span class="rev-key">Nationality</span><span class="rev-val" data-src="Student_Nationality"></span></div>
+                                <div class="rev-item"><span class="rev-key">Grade Level</span><span class="rev-val" data-src="Student_GradeLevel"></span></div>
+                                <div class="rev-item"><span class="rev-key">Section</span><span class="rev-val" data-src="Student_Section"></span></div>
+                                <div class="rev-item"><span class="rev-key">Home Address</span><span class="rev-val" data-src="Student_Address"></span></div>
+                                <div class="rev-item"><span class="rev-key">School</span><span class="rev-val" data-src="Student_School"></span></div>
+                                <div class="rev-item"><span class="rev-key">Academic Year</span><span class="rev-val" data-src="Student_AcademicYear"></span></div>
+                            </div>
+                        </div>
+
+                        <div class="review-block">
+                            <div class="review-block-head">
+                                <h3>Family Background</h3>
+                                <button type="button" class="link-btn" data-goto="1"><i class="fa-regular fa-pen-to-square"></i> Edit</button>
+                            </div>
+                            <div class="review-grid">
+                                <div class="rev-item"><span class="rev-key">Father's Name</span><span class="rev-val" data-src="Family_FatherName"></span></div>
+                                <div class="rev-item"><span class="rev-key">Father's Age</span><span class="rev-val" data-src="Family_FatherAge"></span></div>
+                                <div class="rev-item"><span class="rev-key">Father's Occupation</span><span class="rev-val" data-src="Family_FatherOccupation"></span></div>
+                                <div class="rev-item"><span class="rev-key">Father's Education</span><span class="rev-val" data-src="Family_FatherEducationalAttainment"></span></div>
+                                <div class="rev-item"><span class="rev-key">Father's Contact</span><span class="rev-val" data-contacts="father-contacts"></span></div>
+                                <div class="rev-item"><span class="rev-key">Mother's Name</span><span class="rev-val" data-src="Family_MotherName"></span></div>
+                                <div class="rev-item"><span class="rev-key">Mother's Age</span><span class="rev-val" data-src="Family_MotherAge"></span></div>
+                                <div class="rev-item"><span class="rev-key">Mother's Occupation</span><span class="rev-val" data-src="Family_MotherOccupation"></span></div>
+                                <div class="rev-item"><span class="rev-key">Mother's Education</span><span class="rev-val" data-src="Family_MotherEducationalAttainment"></span></div>
+                                <div class="rev-item"><span class="rev-key">Mother's Contact</span><span class="rev-val" data-contacts="mother-contacts"></span></div>
+                                <div class="rev-item"><span class="rev-key">Parents' Status</span><span class="rev-val" data-src="Family_ParentsRelationshipStatus"></span></div>
+                                <div class="rev-item"><span class="rev-key">Household Income</span><span class="rev-val" data-src="Family_MonthlyFamilyIncome"></span></div>
+                            </div>
+                        </div>
+
+                        <div class="review-block">
+                            <div class="review-block-head">
+                                <h3>Educational History</h3>
+                                <button type="button" class="link-btn" data-goto="2"><i class="fa-regular fa-pen-to-square"></i> Edit</button>
+                            </div>
+                            <div class="review-grid">
+                                <div class="rev-item"><span class="rev-key">Elementary School</span><span class="rev-val" data-src="Education_ElementarySchool"></span></div>
+                                <div class="rev-item"><span class="rev-key">Elem. Year Graduated</span><span class="rev-val" data-src="Education_ElementaryYear"></span></div>
+                                <div class="rev-item"><span class="rev-key">Elem. Honors</span><span class="rev-val" data-src="Education_ElementaryHonors"></span></div>
+                                <div class="rev-item"><span class="rev-key">High School</span><span class="rev-val" data-src="Education_SecondarySchool"></span></div>
+                                <div class="rev-item"><span class="rev-key">HS Year Graduated</span><span class="rev-val" data-src="Education_SecondaryYear"></span></div>
+                                <div class="rev-item"><span class="rev-key">HS Honors</span><span class="rev-val" data-src="Education_SecondaryHonors"></span></div>
+                            </div>
+                        </div>
+
+                        <div class="review-block">
+                            <div class="review-block-head">
+                                <h3>Health &amp; Wellness <span class="rev-conf">(confidential)</span></h3>
+                                <button type="button" class="link-btn" data-goto="3"><i class="fa-regular fa-pen-to-square"></i> Edit</button>
+                            </div>
+                            <div class="review-grid">
+                                <div class="rev-item"><span class="rev-key">Blood Type</span><span class="rev-val" data-src="Health_BloodType"></span></div>
+                                <div class="rev-item"><span class="rev-key">Height</span><span class="rev-val" data-src="Health_Height"></span></div>
+                                <div class="rev-item"><span class="rev-key">Weight</span><span class="rev-val" data-src="Health_Weight"></span></div>
+                                <div class="rev-item"><span class="rev-key">Medications / Conditions</span><span class="rev-val" data-src="Health_Medication"></span></div>
+                                <div class="rev-item"><span class="rev-key">Family Medical History</span><span class="rev-val" data-src="Health_Ailments"></span></div>
+                                <div class="rev-item"><span class="rev-key">Suicidal History</span><span class="rev-val" data-src="Health_SuicideRiskHistory"></span></div>
+                                <div class="rev-item"><span class="rev-key">Abuse History</span><span class="rev-val" data-src="Health_AbuseHistory"></span></div>
+                                <div class="rev-item"><span class="rev-key">Drug Use History</span><span class="rev-val" data-src="Health_DrugHistory"></span></div>
+                                <div class="rev-item"><span class="rev-key">Family Mental Health History</span><span class="rev-val" data-src="Health_FamilyMentalHealthHistory"></span></div>
+                                <div class="rev-item"><span class="rev-key">Psych Consultation History</span><span class="rev-val" data-src="Health_PsychiatricConsultation"></span></div>
+                                <div class="rev-item"><span class="rev-key">Additional Notes</span><span class="rev-val" data-src="Health_AdditionalNotes"></span></div>
+                            </div>
+                        </div>
+
+                        <div class="review-block">
+                            <div class="review-block-head">
+                                <h3>Emergency Contact</h3>
+                                <button type="button" class="link-btn" data-goto="4"><i class="fa-regular fa-pen-to-square"></i> Edit</button>
+                            </div>
+                            <div class="review-grid">
+                                <div class="rev-item"><span class="rev-key">Name</span><span class="rev-val" data-src="Emergency_EmergencyContactPerson"></span></div>
+                                <div class="rev-item"><span class="rev-key">Age</span><span class="rev-val" data-src="Emergency_EmergencyContactAge"></span></div>
+                                <div class="rev-item"><span class="rev-key">Contact Number</span><span class="rev-val" data-contacts="emergency-contacts"></span></div>
+                                <div class="rev-item"><span class="rev-key">Occupation</span><span class="rev-val" data-src="Emergency_EmergencyContactOccupation"></span></div>
+                                <div class="rev-item"><span class="rev-key">Address</span><span class="rev-val" data-src="Emergency_EmergencyContactAddress"></span></div>
+                            </div>
+                        </div>
+
+                        <div class="confirm-box form-check">
+                            <input class="form-check-input" type="checkbox" id="confirmAccuracy" />
+                            <label class="form-check-label" for="confirmAccuracy">
+                                I confirm the information above is accurate to the best of my knowledge, and I
+                                understand health and family details are kept confidential within the Care Center system.
+                            </label>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- ---------- FOOTER ---------- -->
+            <div class="wiz-footer">
+                <small class="privacy-note">
+                    <i class="fa-solid fa-lock"></i> Privacy Protected &amp; Encrypted
+                </small>
+                <div class="wiz-actions">
+                    <a asp-action="Index" class="btn btn-shell">Cancel</a>
+                    <button type="button" class="btn btn-shell" id="wizBack" hidden>Back</button>
+                    <button type="button" class="btn btn-brand" id="wizNext">Next</button>
+                    <button type="submit" class="btn btn-brand" id="wizSubmit" hidden>Add Student</button>
+                </div>
             </div>
-            <div class="form-group">
-                <label asp-for="MName" class="control-label"></label>
-                <input asp-for="MName" class="form-control" />
-                <span asp-validation-for="MName" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="GradeLevel" class="control-label"></label>
-                <input asp-for="GradeLevel" class="form-control" />
-                <span asp-validation-for="GradeLevel" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="Section" class="control-label"></label>
-                <input asp-for="Section" class="form-control" />
-                <span asp-validation-for="Section" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="School" class="control-label"></label>
-                <input asp-for="School" class="form-control" />
-                <span asp-validation-for="School" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="Birthday" class="control-label"></label>
-                <input asp-for="Birthday" class="form-control" />
-                <span asp-validation-for="Birthday" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="Age" class="control-label"></label>
-                <input asp-for="Age" class="form-control" />
-                <span asp-validation-for="Age" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="BirthOrder" class="control-label"></label>
-                <input asp-for="BirthOrder" class="form-control" />
-                <span asp-validation-for="BirthOrder" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="Address" class="control-label"></label>
-                <textarea asp-for="Address" class="form-control"></textarea>
-                <span asp-validation-for="Address" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="ContactNumber" class="control-label"></label>
-                <input asp-for="ContactNumber" class="form-control" />
-                <span asp-validation-for="ContactNumber" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="Email" class="control-label"></label>
-                <input asp-for="Email" class="form-control" />
-                <span asp-validation-for="Email" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="Gender" class="control-label"></label>
-                <input asp-for="Gender" class="form-control" />
-                <span asp-validation-for="Gender" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="Nationality" class="control-label"></label>
-                <input asp-for="Nationality" class="form-control" />
-                <span asp-validation-for="Nationality" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="Religion" class="control-label"></label>
-                <input asp-for="Religion" class="form-control" />
-                <span asp-validation-for="Religion" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="StayingWith" class="control-label"></label>
-                <input asp-for="StayingWith" class="form-control" />
-                <span asp-validation-for="StayingWith" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="FatherName" class="control-label"></label>
-                <input asp-for="FatherName" class="form-control" />
-                <span asp-validation-for="FatherName" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="FatherAge" class="control-label"></label>
-                <input asp-for="FatherAge" class="form-control" />
-                <span asp-validation-for="FatherAge" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="FatherEducationalAttainment" class="control-label"></label>
-                <input asp-for="FatherEducationalAttainment" class="form-control" />
-                <span asp-validation-for="FatherEducationalAttainment" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="FatherOccupation" class="control-label"></label>
-                <input asp-for="FatherOccupation" class="form-control" />
-                <span asp-validation-for="FatherOccupation" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="FatherContactNumber" class="control-label"></label>
-                <input asp-for="FatherContactNumber" class="form-control" />
-                <span asp-validation-for="FatherContactNumber" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="MotherName" class="control-label"></label>
-                <input asp-for="MotherName" class="form-control" />
-                <span asp-validation-for="MotherName" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="MotherAge" class="control-label"></label>
-                <input asp-for="MotherAge" class="form-control" />
-                <span asp-validation-for="MotherAge" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="MotherEducationalAttainment" class="control-label"></label>
-                <input asp-for="MotherEducationalAttainment" class="form-control" />
-                <span asp-validation-for="MotherEducationalAttainment" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="MotherOccupation" class="control-label"></label>
-                <input asp-for="MotherOccupation" class="form-control" />
-                <span asp-validation-for="MotherOccupation" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="MotherContactNumber" class="control-label"></label>
-                <input asp-for="MotherContactNumber" class="form-control" />
-                <span asp-validation-for="MotherContactNumber" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="MonthlyFamilyIncome" class="control-label"></label>
-                <input asp-for="MonthlyFamilyIncome" class="form-control" />
-                <span asp-validation-for="MonthlyFamilyIncome" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="ParentsRelationshipStatus" class="control-label"></label>
-                <input asp-for="ParentsRelationshipStatus" class="form-control" />
-                <span asp-validation-for="ParentsRelationshipStatus" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="EmergencyContactPerson" class="control-label"></label>
-                <input asp-for="EmergencyContactPerson" class="form-control" />
-                <span asp-validation-for="EmergencyContactPerson" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="EmergencyContactAge" class="control-label"></label>
-                <input asp-for="EmergencyContactAge" class="form-control" />
-                <span asp-validation-for="EmergencyContactAge" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="EmergencyContactOccupation" class="control-label"></label>
-                <input asp-for="EmergencyContactOccupation" class="form-control" />
-                <span asp-validation-for="EmergencyContactOccupation" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="EmergencyContactNumber" class="control-label"></label>
-                <input asp-for="EmergencyContactNumber" class="form-control" />
-                <span asp-validation-for="EmergencyContactNumber" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="EmergencyContactAddress" class="control-label"></label>
-                <textarea asp-for="EmergencyContactAddress" class="form-control"></textarea>
-                <span asp-validation-for="EmergencyContactAddress" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="ElementarySchool" class="control-label"></label>
-                <input asp-for="ElementarySchool" class="form-control" />
-                <span asp-validation-for="ElementarySchool" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="ElementaryYear" class="control-label"></label>
-                <input asp-for="ElementaryYear" class="form-control" />
-                <span asp-validation-for="ElementaryYear" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="ElementaryHonors" class="control-label"></label>
-                <input asp-for="ElementaryHonors" class="form-control" />
-                <span asp-validation-for="ElementaryHonors" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="SecondarySchool" class="control-label"></label>
-                <input asp-for="SecondarySchool" class="form-control" />
-                <span asp-validation-for="SecondarySchool" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="SecondaryYear" class="control-label"></label>
-                <input asp-for="SecondaryYear" class="form-control" />
-                <span asp-validation-for="SecondaryYear" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="SecondaryHonors" class="control-label"></label>
-                <input asp-for="SecondaryHonors" class="form-control" />
-                <span asp-validation-for="SecondaryHonors" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="Height" class="control-label"></label>
-                <input asp-for="Height" class="form-control" />
-                <span asp-validation-for="Height" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="Weight" class="control-label"></label>
-                <input asp-for="Weight" class="form-control" />
-                <span asp-validation-for="Weight" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="BloodType" class="control-label"></label>
-                <input asp-for="BloodType" class="form-control" />
-                <span asp-validation-for="BloodType" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="Ailments" class="control-label"></label>
-                <textarea asp-for="Ailments" class="form-control"></textarea>
-                <span asp-validation-for="Ailments" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="Medication" class="control-label"></label>
-                <textarea asp-for="Medication" class="form-control"></textarea>
-                <span asp-validation-for="Medication" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="SuicidalAttempts" class="control-label"></label>
-                <textarea asp-for="SuicidalAttempts" class="form-control"></textarea>
-                <span asp-validation-for="SuicidalAttempts" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="VictimOfAbuse" class="control-label"></label>
-                <textarea asp-for="VictimOfAbuse" class="form-control"></textarea>
-                <span asp-validation-for="VictimOfAbuse" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="InvolvedWithDrugs" class="control-label"></label>
-                <textarea asp-for="InvolvedWithDrugs" class="form-control"></textarea>
-                <span asp-validation-for="InvolvedWithDrugs" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="MentallyChallengedRelative" class="control-label"></label>
-                <textarea asp-for="MentallyChallengedRelative" class="form-control"></textarea>
-                <span asp-validation-for="MentallyChallengedRelative" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="VisitedPsychiatrist" class="control-label"></label>
-                <textarea asp-for="VisitedPsychiatrist" class="form-control"></textarea>
-                <span asp-validation-for="VisitedPsychiatrist" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="VisitedPsychiatristReason" class="control-label"></label>
-                <textarea asp-for="VisitedPsychiatristReason" class="form-control"></textarea>
-                <span asp-validation-for="VisitedPsychiatristReason" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <input type="submit" value="Create" class="btn btn-primary" />
-            </div>
+
         </form>
     </div>
 </div>
 
-<div>
-    <a asp-action="Index">Back to List</a>
-</div>
-
 @section Scripts {
-    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+    <partial name="_ValidationScriptsPartial" />
+    <script src="~/js/record-wizard.js" asp-append-version="true"></script>
+    <script>
+        GcamsWizard.init({
+            page: 'studentCreatePage',
+            form: 'studentForm',
+            birthdayField: 'Student_Birthday',
+            ageField: 'studentAge',
+            idField: 'Student_StuID',
+            idPrefix: 'ST',
+            generateBtn: 'genStuId',
+            confirmBox: 'confirmAccuracy'
+        });
+    </script>
 }

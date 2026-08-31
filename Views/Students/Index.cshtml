@@ -1,329 +1,317 @@
-﻿@model IEnumerable<GCAMS.Models.Students>
+﻿@model IEnumerable<GCAMS.Models.Students.Students>
 
 @{
-    ViewData["Title"] = "Index";
+    ViewData["Title"] = "Students";
+    ViewData["PageSubtitle"] = $"{Model.Count()} registered student{(Model.Count() == 1 ? "" : "s")}";
 }
 
-<h1>Index</h1>
-
-<p>
-    <a asp-action="Create">Create New</a>
-</p>
-<table class="table">
-    <thead>
-        <tr>
-            <th>
-                @Html.DisplayNameFor(model => model.FName)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.LName)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.MName)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.GradeLevel)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Section)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.School)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Birthday)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Age)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.BirthOrder)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Address)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.ContactNumber)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Email)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Gender)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Nationality)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Religion)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.StayingWith)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.FatherName)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.FatherAge)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.FatherEducationalAttainment)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.FatherOccupation)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.FatherContactNumber)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.MotherName)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.MotherAge)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.MotherEducationalAttainment)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.MotherOccupation)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.MotherContactNumber)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.MonthlyFamilyIncome)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.ParentsRelationshipStatus)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.EmergencyContactPerson)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.EmergencyContactAge)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.EmergencyContactOccupation)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.EmergencyContactNumber)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.EmergencyContactAddress)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.ElementarySchool)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.ElementaryYear)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.ElementaryHonors)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.SecondarySchool)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.SecondaryYear)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.SecondaryHonors)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Height)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Weight)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.BloodType)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Ailments)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Medication)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.SuicidalAttempts)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.VictimOfAbuse)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.InvolvedWithDrugs)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.MentallyChallengedRelative)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.VisitedPsychiatrist)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.VisitedPsychiatristReason)
-            </th>
-            <th></th>
-        </tr>
-    </thead>
-    <tbody>
-@foreach (var item in Model) {
-        <tr>
-            <td>
-                @Html.DisplayFor(modelItem => item.FName)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.LName)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.MName)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.GradeLevel)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Section)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.School)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Birthday)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Age)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.BirthOrder)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Address)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.ContactNumber)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Email)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Gender)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Nationality)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Religion)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.StayingWith)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.FatherName)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.FatherAge)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.FatherEducationalAttainment)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.FatherOccupation)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.FatherContactNumber)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.MotherName)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.MotherAge)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.MotherEducationalAttainment)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.MotherOccupation)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.MotherContactNumber)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.MonthlyFamilyIncome)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.ParentsRelationshipStatus)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.EmergencyContactPerson)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.EmergencyContactAge)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.EmergencyContactOccupation)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.EmergencyContactNumber)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.EmergencyContactAddress)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.ElementarySchool)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.ElementaryYear)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.ElementaryHonors)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.SecondarySchool)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.SecondaryYear)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.SecondaryHonors)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Height)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Weight)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.BloodType)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Ailments)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Medication)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.SuicidalAttempts)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.VictimOfAbuse)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.InvolvedWithDrugs)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.MentallyChallengedRelative)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.VisitedPsychiatrist)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.VisitedPsychiatristReason)
-            </td>
-            <td>
-                <a asp-action="Edit" asp-route-id="@item.Id">Edit</a> |
-                <a asp-action="Details" asp-route-id="@item.Id">Details</a> |
-                <a asp-action="Delete" asp-route-id="@item.Id">Delete</a>
-            </td>
-        </tr>
+@section Styles {
+    <link rel="stylesheet" href="~/css/Students/Index.css" asp-append-version="true" />
 }
-    </tbody>
-</table>
+
+<div class="students-page">
+
+    <!-- ================= Toolbar ================= -->
+    <div class="page-toolbar d-flex flex-wrap align-items-center justify-content-end gap-2 mb-3">
+        <button type="button" class="btn btn-ghost" data-bs-toggle="modal" data-bs-target="#importModal">
+            <i class="fa-solid fa-file-arrow-up"></i>
+            <span>Import Excel</span>
+        </button>
+        <a asp-action="Create" class="btn btn-brand">
+            <i class="fa-solid fa-user-plus"></i>
+            <span>Add New Student</span>
+        </a>
+    </div>
+
+    @if (TempData["Success"] != null)
+    {
+        <div class="alert alert-success alert-dismissible fade show d-flex align-items-center gap-2" role="alert">
+            <i class="fa-solid fa-circle-check"></i>
+            <div>@TempData["Success"]</div>
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    }
+    @if (TempData["Error"] != null)
+    {
+        <div class="alert alert-danger alert-dismissible fade show d-flex align-items-center gap-2" role="alert">
+            <i class="fa-solid fa-circle-exclamation"></i>
+            <div>@TempData["Error"]</div>
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    }
+
+    <!-- ================= Panel ================= -->
+    <div class="content-panel">
+
+        <!-- Filters -->
+        <div class="filter-bar d-flex flex-wrap align-items-center gap-2 mb-3">
+            <div class="search-box">
+                <i class="fa-solid fa-magnifying-glass" aria-hidden="true"></i>
+                <input type="search" id="studentSearch" class="form-control border-0 shadow-none p-0"
+                       placeholder="Search students by name or ID" aria-label="Search students by name or ID" />
+            </div>
+
+            <select id="gradeFilter" class="form-select filter-select" aria-label="Filter by grade level">
+                <option value="">All Grades</option>
+                @foreach (var grade in Model.Select(s => s.GradeLevel)
+                                .Where(g => !string.IsNullOrWhiteSpace(g))
+                                .Distinct()
+                                .OrderBy(g => g))
+                {
+                    <option value="@grade.ToLower()">@grade</option>
+                }
+            </select>
+
+            <select id="sectionFilter" class="form-select filter-select" aria-label="Filter by section">
+                <option value="">All Sections</option>
+                @foreach (var sec in Model.Select(s => s.Section)
+                                .Where(s => !string.IsNullOrWhiteSpace(s))
+                                .Distinct()
+                                .OrderBy(s => s))
+                {
+                    <option value="@sec.ToLower()">@sec</option>
+                }
+            </select>
+
+            <select id="statusFilter" class="form-select filter-select filter-extra" aria-label="Filter by status">
+                <option value="">All Status</option>
+                <option value="true">Active</option>
+                <option value="false">Archived</option>
+            </select>
+
+        </div>
+
+        <!-- Table -->
+        <div class="table-card">
+            <div class="table-responsive table-scroll">
+                <table class="table table-hover gcams-table align-middle mb-0" id="studentTable">
+                    <thead>
+                        <tr>
+                            <th scope="col">Student ID</th>
+                            <th scope="col">Full Name</th>
+                            <th scope="col">Email</th>
+                            <th scope="col">Grade</th>
+                            <th scope="col">Section</th>
+                            <th scope="col" class="th-actions">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var item in Model)
+                        {
+                            <tr data-name="@item.StuName?.ToLower()"
+                                data-stuid="@item.StuID?.ToLower()"
+                                data-grade="@item.GradeLevel?.ToLower()"
+                                data-section="@item.Section?.ToLower()"
+                                data-active="@item.IsActive.ToString().ToLower()">
+                                <td data-label="Student ID"><span class="cell-id">@item.StuID</span></td>
+                                <td data-label="Full Name"><span class="cell-name">@item.StuName</span></td>
+                                <td data-label="Email"><span class="cell-muted">@item.Email</span></td>
+                                <td data-label="Grade"><span class="grade-pill">@item.GradeLevel</span></td>
+                                <td data-label="Section">@item.Section</td>
+                                <td data-label="Actions">
+                                    <div class="action-icons">
+                                        <a asp-action="Details" asp-route-id="@item.StudentsID"
+                                           class="action-icon" title="View details" aria-label="View details">
+                                            <i class="fa-regular fa-eye"></i>
+                                        </a>
+                                        <a asp-action="Edit" asp-route-id="@item.StudentsID"
+                                           class="action-icon" title="Edit" aria-label="Edit">
+                                            <i class="fa-solid fa-pen"></i>
+                                        </a>
+                                        @if (item.IsActive)
+                                        {
+                                            <form asp-action="SoftDelete" asp-route-id="@item.StudentsID" method="post" class="inline-form">
+                                                @Html.AntiForgeryToken()
+                                                <button type="submit" class="action-icon danger" title="Archive student" aria-label="Archive student">
+                                                    <i class="fa-solid fa-box-archive"></i>
+                                                </button>
+                                            </form>
+                                        }
+                                        else
+                                        {
+                                            <form asp-action="Restore" asp-route-id="@item.StudentsID" method="post" class="inline-form">
+                                                @Html.AntiForgeryToken()
+                                                <button type="submit" class="action-icon restore" title="Restore student" aria-label="Restore student">
+                                                    <i class="fa-solid fa-rotate-left"></i>
+                                                </button>
+                                            </form>
+                                        }
+                                    </div>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="empty-state d-none" id="emptyState">
+                <i class="fa-solid fa-user-graduate"></i>
+                <p class="mb-0">No students match your filters.</p>
+            </div>
+
+            <div class="table-footer d-flex flex-wrap align-items-center justify-content-between gap-2">
+                <span class="showing-text" id="showingText"></span>
+                <ul class="pagination gcams-pagination mb-0" id="pagination"></ul>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- ================= Import Modal ================= -->
+<div class="modal fade" id="importModal" tabindex="-1" aria-labelledby="importModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="importModalLabel">Import Students from Excel</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <form asp-action="Import" method="post" enctype="multipart/form-data">
+                @Html.AntiForgeryToken()
+                <div class="modal-body">
+                    <label for="importFile" class="form-label">Select Excel file (.xlsx)</label>
+                    <input type="file" id="importFile" name="file" accept=".xlsx" class="form-control" required />
+                    <div class="form-text">The first row is treated as the header and is skipped. Duplicate student IDs are ignored.</div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-light" data-bs-dismiss="modal">Cancel</button>
+                    <button type="submit" class="btn btn-brand">Upload &amp; Import</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        (function () {
+            const pageSize = 10;
+            let currentPage = 1;
+            let visibleRows = [];
+
+            const table = document.getElementById('studentTable');
+            const rows = Array.from(table.querySelectorAll('tbody tr'));
+            const searchInput = document.getElementById('studentSearch');
+            const gradeFilter = document.getElementById('gradeFilter');
+            const sectionFilter = document.getElementById('sectionFilter');
+            const statusFilter = document.getElementById('statusFilter');
+            const filterBar = document.querySelector('.filter-bar');
+            const filterToggle = document.getElementById('filterToggle');
+            const emptyState = document.getElementById('emptyState');
+            const showingText = document.getElementById('showingText');
+            const pagination = document.getElementById('pagination');
+
+            function applyFilters() {
+                const query = searchInput.value.toLowerCase().trim();
+                const grade = gradeFilter.value.toLowerCase();
+                const section = sectionFilter.value.toLowerCase();
+                const status = statusFilter.value;
+
+                visibleRows = rows.filter(function (row) {
+                    const d = row.dataset;
+                    return (!query || (d.name || '').includes(query) || (d.stuid || '').includes(query))
+                        && (!grade || d.grade === grade)
+                        && (!section || d.section === section)
+                        && (!status || d.active === status);
+                });
+
+                currentPage = 1;
+                renderPage();
+            }
+
+            function renderPage() {
+                const total = visibleRows.length;
+                const totalPages = Math.max(1, Math.ceil(total / pageSize));
+                if (currentPage > totalPages) currentPage = totalPages;
+
+                const start = (currentPage - 1) * pageSize;
+                const end = start + pageSize;
+
+                rows.forEach(r => r.classList.add('d-none'));
+                visibleRows.slice(start, end).forEach(r => r.classList.remove('d-none'));
+
+                emptyState.classList.toggle('d-none', total !== 0);
+
+                showingText.textContent = total === 0
+                    ? 'No students found'
+                    : `Showing ${start + 1} - ${Math.min(end, total)} of ${total} student${total !== 1 ? 's' : ''}`;
+
+                renderPagination(total);
+            }
+
+            function pageItem(label, page, { active = false, disabled = false, ariaLabel = null } = {}) {
+                const li = document.createElement('li');
+                li.className = 'page-item' + (active ? ' active' : '') + (disabled ? ' disabled' : '');
+
+                const btn = document.createElement('button');
+                btn.type = 'button';
+                btn.className = 'page-link';
+                btn.innerHTML = label;
+                btn.disabled = disabled;
+                if (ariaLabel) btn.setAttribute('aria-label', ariaLabel);
+                if (!disabled && !active) {
+                    btn.addEventListener('click', function () { currentPage = page; renderPage(); });
+                }
+
+                li.appendChild(btn);
+                return li;
+            }
+
+            function renderPagination(total) {
+                const totalPages = Math.ceil(total / pageSize);
+                pagination.innerHTML = '';
+                if (totalPages <= 1) return;
+
+                pagination.appendChild(pageItem(
+                    '<i class="fa-solid fa-chevron-left"></i>', currentPage - 1,
+                    { disabled: currentPage === 1, ariaLabel: 'Previous page' }));
+
+                const pages = [];
+                if (totalPages <= 7) {
+                    for (let i = 1; i <= totalPages; i++) pages.push(i);
+                } else {
+                    pages.push(1);
+                    if (currentPage > 3) pages.push('...');
+                    for (let i = Math.max(2, currentPage - 1); i <= Math.min(totalPages - 1, currentPage + 1); i++) pages.push(i);
+                    if (currentPage < totalPages - 2) pages.push('...');
+                    pages.push(totalPages);
+                }
+
+                pages.forEach(function (p) {
+                    if (p === '...') {
+                        const li = document.createElement('li');
+                        li.className = 'page-item disabled';
+                        li.innerHTML = '<span class="page-link page-gap">&hellip;</span>';
+                        pagination.appendChild(li);
+                    } else {
+                        pagination.appendChild(pageItem(p, p, { active: p === currentPage }));
+                    }
+                });
+
+                pagination.appendChild(pageItem(
+                    '<i class="fa-solid fa-chevron-right"></i>', currentPage + 1,
+                    { disabled: currentPage === totalPages, ariaLabel: 'Next page' }));
+            }
+
+            filterToggle.addEventListener('click', function () {
+                const open = filterBar.classList.toggle('show-extra');
+                this.setAttribute('aria-expanded', open ? 'true' : 'false');
+                if (open) statusFilter.focus();
+            });
+
+            function paintFilterState() {
+                filterToggle.classList.toggle('has-filter', statusFilter.value !== '');
+            }
+
+            searchInput.addEventListener('input', applyFilters);
+            gradeFilter.addEventListener('change', applyFilters);
+            sectionFilter.addEventListener('change', applyFilters);
+            statusFilter.addEventListener('change', function () {
+                paintFilterState();
+                applyFilters();
+            });
+
+            paintFilterState();
+            applyFilters();
+        })();
+    </script>
+}

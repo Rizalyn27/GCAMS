@@ -1,0 +1,400 @@
+﻿@model GCAMS.Models.Appointment.Appointments
+@{
+    ViewData["Title"] = "Create Appointment";
+}
+
+<style>
+    @@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Manrope:wght@600;700&display=swap');
+
+    .form-card {
+        background: #fff;
+        border: 1px solid #e5e7eb;
+        border-radius: 12px;
+        padding: 1.5rem;
+        margin-bottom: 1.25rem;
+    }
+
+    .form-section-title {
+        font-family: 'Manrope', sans-serif;
+        font-size: 15px;
+        font-weight: 700;
+        color: #111;
+        margin-bottom: 1rem;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+
+        .form-section-title i {
+            color: #1a56db;
+            font-size: 16px;
+        }
+
+    .form-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 1rem;
+    }
+
+        .form-grid .full-width {
+            grid-column: 1 / -1;
+        }
+
+    .field-label {
+        font-size: 13px;
+        font-family: 'Inter', sans-serif;
+        font-weight: 500;
+        color: #6b7280;
+        margin-bottom: 4px;
+        display: block;
+    }
+
+    .form-control, .form-select {
+        font-size: 14px;
+        font-family: 'Inter', sans-serif;
+        border-radius: 8px;
+        border: 1px solid #d1d5db;
+        padding: 8px 12px;
+        width: 100%;
+        color: #111;
+    }
+
+        .form-control:focus, .form-select:focus {
+            border-color: #1a56db;
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(26,86,219,0.1);
+        }
+
+        .form-control[readonly] {
+            background: #f9fafb;
+            color: #6b7280;
+        }
+
+    .lookup-group {
+        display: flex;
+        gap: 8px;
+    }
+
+        .lookup-group .form-control {
+            flex: 1;
+        }
+
+    .btn-lookup {
+        background: #fff;
+        border: 1px solid #d1d5db;
+        border-radius: 8px;
+        padding: 8px 16px;
+        font-size: 14px;
+        font-family: 'Inter', sans-serif;
+        color: #374151;
+        cursor: pointer;
+        white-space: nowrap;
+    }
+
+        .btn-lookup:hover {
+            background: #f3f4f6;
+        }
+
+    .lookup-status {
+        font-size: 12px;
+        font-family: 'Inter', sans-serif;
+        margin-top: 6px;
+        display: block;
+    }
+
+    .form-footer {
+        display: flex;
+        gap: 8px;
+        padding-top: 1rem;
+        border-top: 1px solid #e5e7eb;
+        margin-top: 0.5rem;
+    }
+
+    .btn-save {
+        background: #1B5E20;
+        border: none;
+        border-radius: 8px;
+        padding: 9px 20px;
+        font-size: 14px;
+        font-family: 'Inter', sans-serif;
+        color: #fff;
+        cursor: pointer;
+    }
+
+        .btn-save:hover {
+            background: #1648c0;
+        }
+
+    .btn-cancel {
+        background: #fff;
+        border: 1px solid #d1d5db;
+        border-radius: 8px;
+        padding: 9px 20px;
+        font-size: 14px;
+        font-family: 'Inter', sans-serif;
+        color: #374151;
+        text-decoration: none;
+    }
+
+        .btn-cancel:hover {
+            background: #f9fafb;
+            text-decoration: none;
+        }
+
+    .page-title {
+        font-family: 'Manrope', sans-serif;
+        font-size: 22px;
+        font-weight: 700;
+        color: #111;
+        margin-bottom: 1.5rem;
+    }
+
+    @@media (max-width: 768px) {
+        .form-grid {
+            grid-template-columns: 1fr;
+        }
+    }
+</style>
+
+<div class="container-lg py-4" style="max-width: 720px;">
+    <p class="page-title">Create Appointment</p>
+
+    <form asp-action="Create" id="appointmentForm">
+        <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
+
+        <input type="hidden" asp-for="StudentsID" id="studentsIdHidden" />
+
+        @if (!(ViewBag.IsStudentBooking ?? false))
+        {
+            <div class="form-card">
+                <div class="form-section-title">
+                    <i class="bi bi-search"></i> Student lookup
+                </div>
+                <div>
+                    <label for="stuIdLookup" class="field-label">Student ID (school-issued)</label>
+                    <div class="lookup-group">
+                        <input type="text" id="stuIdLookup" class="form-control" placeholder="e.g. 2024-0001" autocomplete="off" />
+                        <button type="button" class="btn-lookup" id="btnLookup">Search</button>
+                    </div>
+                    <small id="lookupStatus" class="lookup-status"></small>
+                </div>
+            </div>
+        }
+
+        <div class="form-card">
+            <div class="form-section-title">
+                <i class="bi bi-person"></i> Client
+            </div>
+            <div class="form-grid">
+                <div class="full-width">
+                    <label asp-for="FullName" class="field-label"></label>
+                    <input asp-for="FullName" id="fieldFullName" class="form-control"
+                           readonly="@(ViewBag.IsStudentBooking == true)" />
+                    <span asp-validation-for="FullName" class="text-danger" style="font-size:12px;"></span>
+                </div>
+                <div>
+                    <label class="field-label">Grade level</label>
+                    <input type="text" id="fieldGradeLevel" class="form-control" readonly tabindex="-1"
+                           value="@(ViewBag.GradeLevel ?? "")" />
+                </div>
+                <div>
+                    <label class="field-label">Section</label>
+                    <input type="text" id="fieldSection" class="form-control" readonly tabindex="-1"
+                           value="@(ViewBag.Section ?? "")" />
+                </div>
+                <div class="full-width">
+                    <label asp-for="Email" class="field-label"></label>
+                    <input asp-for="Email" id="fieldEmail" class="form-control"
+                           readonly="@(ViewBag.IsStudentBooking == true)" />
+                    <span asp-validation-for="Email" class="text-danger" style="font-size:12px;"></span>
+                </div>
+            </div>
+        </div>
+
+        <div class="form-card">
+            <div class="form-section-title">
+                <i class="bi bi-calendar3"></i> Appointment
+            </div>
+            <div class="form-grid">
+                <div>
+                    <label asp-for="AppointmentDate" class="field-label"></label>
+                    <input asp-for="AppointmentDate" asp-format="{0:yyyy-MM-ddTHH:00}"
+                           id="fieldAppointmentDate"
+                           class="form-control" type="datetime-local"
+                           step="3600"
+                           min="@DateTime.Now.ToString("yyyy-MM-ddTHH:00")" />
+                    <span asp-validation-for="AppointmentDate" class="text-danger" style="font-size:12px;"></span>
+                    <small id="hoursHint" class="lookup-status" style="color:#6b7280;">Available 8–11 AM and 1–4 PM.</small>
+                </div>
+                <div>
+                    <label asp-for="AppointmentType" class="field-label"></label>
+                    <select asp-for="AppointmentType" class="form-control">
+                        <option value="">Select</option>
+                        <option>Academic Concern</option>
+                        <option>Behavioral Concern</option>
+                        <option>Personal/Emotional Concern</option>
+                        <option>Family-Related Concern</option>
+                        <option>Peer Relationship</option>
+                        <option>Career Guidance</option>
+                        <option>Health/Physical Concern</option>
+                        <option>Bullying Report</option>
+                        <option>Crisis/Urgent Concern</option>
+                        <option>Follow-up Session</option>
+                        <option>Other</option>
+                    </select>
+                    <span asp-validation-for="AppointmentType" class="text-danger" style="font-size:12px;"></span>
+                </div>
+                <div class="full-width">
+                    <label asp-for="Notes" class="field-label"></label>
+                    <textarea asp-for="Notes" class="form-control" rows="3"></textarea>
+                    <span asp-validation-for="Notes" class="text-danger" style="font-size:12px;"></span>
+                </div>
+            </div>
+        </div>
+
+        <input type="hidden" asp-for="Status" value="Pending" />
+
+        <div class="form-footer">
+            <button type="submit" class="btn-save">Create appointment</button>
+            @if (User.IsInRole("Student"))
+            {
+                <a asp-action="MyAppointments" class="btn-cancel">Cancel</a>
+            }
+            else
+            {
+                <a asp-action="Index" class="btn-cancel">Cancel</a>
+            }
+        </div>
+
+    </form>
+</div>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+
+    <script>
+        // ── DOM references ───────────────────────────────────────────────────
+        const stuIdInput       = document.getElementById('stuIdLookup');
+        const btnLookup        = document.getElementById('btnLookup');
+        const statusEl         = document.getElementById('lookupStatus');
+
+        // Individual fields filled in by the lookup
+        const hiddenStudentsID = document.getElementById('studentsIdHidden');
+        const fieldFullName    = document.getElementById('fieldFullName');
+        const fieldEmail       = document.getElementById('fieldEmail');
+        const fieldGradeLevel  = document.getElementById('fieldGradeLevel');
+        const fieldSection     = document.getElementById('fieldSection');
+
+        // The lookup card only renders for non-student bookings (admin/counselor).
+        // When a student is booking, stuIdInput etc. won't exist in the DOM —
+        // skip wiring up all this JS entirely to avoid null-reference errors.
+        if (stuIdInput) {
+
+            // ── Core lookup function ─────────────────────────────────────────────
+            async function lookupStudent() {
+                const stuId = stuIdInput.value.trim();
+
+                if (!stuId) {
+                    setStatus('Please enter a Student ID first.', 'secondary');
+                    return;
+                }
+
+                setStatus('Searching…', 'secondary');
+
+                try {
+                    // Calls AppointmentsController.GetStudentByStuID(stuId)
+                    const response = await fetch(
+                        `/Appointments/GetStudentByStuID?stuId=${encodeURIComponent(stuId)}`
+                    );
+
+                    if (response.ok) {
+                        // ── Found: auto-fill and lock fields so they can't be overwritten ──
+                        const student = await response.json();
+
+                        hiddenStudentsID.value = student.studentsID;
+                        fieldFullName.value    = student.fullName;
+                        fieldEmail.value       = student.email;
+                        fieldGradeLevel.value  = student.gradeLevel;
+                        fieldSection.value     = student.section;
+
+                        // Lock auto-filled fields — student should contact admin to change these
+                        [fieldFullName, fieldEmail].forEach(f => f.setAttribute('readonly', true));
+
+                        setStatus(`✓ Student found: ${student.fullName}`, 'success');
+
+                    } else if (response.status === 404) {
+                        // ── Not found: clear any previous auto-fill, let them type freely ──
+                        clearStudentFields();
+                        setStatus('✗ ID not found — please fill in your details manually.', 'warning');
+
+                    } else {
+                        setStatus('An error occurred. Please try again.', 'danger');
+                    }
+
+                } catch (err) {
+                    console.error('Student lookup failed:', err);
+                    setStatus('Could not reach the server. Check your connection.', 'danger');
+                }
+            }
+
+            // ── Trigger lookup on Search button click ────────────────────────────
+            btnLookup.addEventListener('click', lookupStudent);
+
+            // ── Trigger lookup on Enter key inside the lookup field ──────────────
+            stuIdInput.addEventListener('keydown', function (e) {
+                if (e.key === 'Enter') {
+                    e.preventDefault(); // prevent accidental form submission
+                    lookupStudent();
+                }
+            });
+
+            // ── If the user clears the lookup field, reset auto-filled values ────
+            stuIdInput.addEventListener('input', function () {
+                if (this.value.trim() === '') {
+                    clearStudentFields();
+                    setStatus('', 'secondary');
+                }
+            });
+
+            // ── Helper: wipe all auto-filled values and re-enable manual editing ──
+            function clearStudentFields() {
+                hiddenStudentsID.value = '';
+                fieldFullName.value    = '';
+                fieldEmail.value       = '';
+                fieldGradeLevel.value  = '';
+                fieldSection.value     = '';
+
+                // Unlock so the student can type manually
+                [fieldFullName, fieldEmail].forEach(f => f.removeAttribute('readonly'));
+            }
+
+            // ── Helper: update the status line below the lookup field ────────────
+            function setStatus(message, color) {
+                statusEl.textContent = message;
+                statusEl.className   = `form-text text-${color}`;
+            }
+
+                    const dateInput = document.getElementById('fieldAppointmentDate');
+        const allowedHours = [8, 9, 10, 11, 13, 14, 15, 16];
+
+        function isWithinWorkingHours(value) {
+            if (!value) return true; // let required-field validation handle empties
+            const hour = parseInt(value.split('T')[1].split(':')[0], 10);
+            return allowedHours.includes(hour);
+        }
+
+        if (dateInput) {
+            dateInput.addEventListener('change', function () {
+                if (!isWithinWorkingHours(this.value)) {
+                    this.setCustomValidity('Appointments must be booked between 8–11 AM or 1–4 PM.');
+                } else {
+                    this.setCustomValidity('');
+                }
+                this.reportValidity();
+            });
+        }
+        }
+    </script>
+}

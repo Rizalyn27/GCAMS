@@ -1,53 +1,306 @@
-﻿<!DOCTYPE html>
+﻿@{
+    var isStudent = User.Identity?.IsAuthenticated == true && User.IsInRole("Student");
+    var isAdmin = User.IsInRole("Admin");
+    var portalLabel = isStudent ? "Student Portal" : isAdmin ? "Admin Portal" : "Counselor Portal";
+    var roleLabel = isStudent ? "Student" : isAdmin ? "Administrator" : "Counselor";
+    var currentController = ViewContext.RouteData.Values["controller"]?.ToString();
+    var currentAction = ViewContext.RouteData.Values["action"]?.ToString();
+}
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>@ViewData["Title"] - GCAMS</title>
+    <title>@ViewData["Title"] - CounselCare</title>
     <script type="importmap"></script>
-    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
-    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
-    <link rel="stylesheet" href="~/GCAMS.styles.css" asp-append-version="true" />
+    <link rel="stylesheet" href="@(Url.Content("~/lib/bootstrap/dist/css/bootstrap.min.css"))" />
+    <link rel="stylesheet" href="@(Url.Content("~/css/site.css"))" />
+    <link rel="stylesheet" href="@(Url.Content("~/MVC_DenoyJabines.styles.css"))" />
+    <link href="https://fonts.googleapis.com/css2?family=Sora:wght@300;400;500;600;700&family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link rel="stylesheet" href="~/css/Shared/Layout.css" asp-append-version="true" />
+    @await RenderSectionAsync("Styles", required: false)
 </head>
 <body>
-    <header>
-        <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-white border-bottom box-shadow mb-3">
-            <div class="container-fluid">
-                <a class="navbar-brand" asp-area="" asp-controller="Home" asp-action="Index">GCAMS</a>
-                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target=".navbar-collapse" aria-controls="navbarSupportedContent"
-                        aria-expanded="false" aria-label="Toggle navigation">
-                    <span class="navbar-toggler-icon"></span>
-                </button>
-                <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
-                    <ul class="navbar-nav flex-grow-1">
-                        <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Index">Home</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Students" asp-action="Index">Student</a>
-                        </li>
-                    </ul>
+
+    <div class="layout-wrapper">
+
+        <aside class="sidebar" id="sidebar">
+            <div class="sidebar-brand">
+                <img src="~/lib/images/logo.png" alt="CounselCare Logo" class="sidebar-logo" />
+                <div class="sidebar-brand-text">
+                    <h4>DSOSMNHS</h4>
+                    <small>Care Center</small>
                 </div>
             </div>
-        </nav>
-    </header>
-    <div class="container">
-        <main role="main" class="pb-3">
-            @RenderBody()
-        </main>
+            <ul class="sidebar-nav">
+                @if (isStudent)
+                {
+                    <li><a asp-controller="Home" asp-action="Index" class="@(currentController == "Home" ? "active" : "")"><i class="fa-solid fa-grip"></i>Dashboard</a></li>
+                    <li><a asp-controller="Appointments" asp-action="Create" class="@(currentAction == "Create" ? "active" : "")"><i class="fa-regular fa-calendar-plus"></i>Book Appointment</a></li>
+                    <li><a asp-controller="Appointments" asp-action="MyAppointments" class="@(currentAction == "MyAppointments" ? "active" : "")"><i class="fa-regular fa-calendar-check"></i>My Appointments</a></li>
+                }
+                else
+                {
+                    <li><a asp-controller="Home" asp-action="Index" class="@(currentController == "Home" ? "active" : "")"><i class="fa-solid fa-grip"></i>Dashboard</a></li>
+                    <li><a asp-controller="Students" asp-action="Index" class="@(currentController == "Students" ? "active" : "")"><i class="fa-solid fa-user-graduate"></i>Students</a></li>
+                    <li><a asp-controller="Counselors" asp-action="Index" class="@(currentController == "Counselors" ? "active" : "")"><i class="fa-solid fa-user-tie"></i>Counselors</a></li>
+                    <li><a asp-controller="Appointments" asp-action="Index" class="@(currentController == "Appointments" ? "active" : "")"><i class="fa-regular fa-calendar-days"></i>Appointments</a></li>
+                    @* No ResourcesController exists yet — pointing at Announcements. Change when you build it. *@
+                    <li><a asp-controller="Announcements" asp-action="Index" class="@(currentController == "Announcements" ? "active" : "")"><i class="fa-regular fa-folder-open"></i>Resources</a></li>
+                }
+            </ul>
+
+            @if (User.Identity?.IsAuthenticated == true)
+            {
+                <div class="sidebar-footer">
+                    <form asp-controller="Users" asp-action="Logout" method="post">
+                        @Html.AntiForgeryToken()
+                        <button type="submit"><i class="fa-solid fa-arrow-right-from-bracket"></i>Logout</button>
+                    </form>
+                </div>
+            }
+        </aside>
+
+        <div class="sidebar-overlay" id="sidebarOverlay"></div>
+
+        <div class="main-content">
+            <div class="topbar">
+                <div style="display:flex;align-items:center;gap:14px;min-width:0;">
+                    <button class="sidebar-toggle" id="sidebarToggle" aria-label="Toggle menu">
+                        <span></span><span></span><span></span>
+                    </button>
+                    @if (IsSectionDefined("Breadcrumb"))
+                    {
+                        @await RenderSectionAsync("Breadcrumb", required: false)
+                    }
+                    else
+                    {
+                        <div>
+                            <div class="topbar-title">@ViewData["Title"]</div>
+                            @if (ViewData["PageSubtitle"] != null)
+                            {
+                                <span class="topbar-sub">@ViewData["PageSubtitle"]</span>
+                            }
+                        </div>
+                    }
+                </div>
+
+                @if (User.Identity?.IsAuthenticated == true)
+                {
+                    <div class="topbar-right">
+                        <div style="position:relative;">
+                            <button id="notif-bell" class="notif-bell" aria-label="Notifications">
+                                <i class="fa-regular fa-bell" style="font-size:20px; color:#41493e;"></i>
+                                <span id="notif-badge" class="notif-badge"></span>
+                            </button>
+
+                            <div id="notif-dropdown" class="notif-dropdown">
+                                <div class="notif-head">
+                                    <span class="notif-heading">Notifications</span>
+                                    <button type="button" class="notif-markall" id="notif-markall">
+                                        <i class="fa-solid fa-check-double"></i> Mark all read
+                                    </button>
+                                </div>
+
+                                <div class="notif-tabs">
+                                    <button type="button" class="notif-tab active" data-filter="all">All <span class="tab-count" id="count-all"></span></button>
+                                    <button type="button" class="notif-tab" data-filter="unread">Unread <span class="tab-count" id="count-unread"></span></button>
+                                    <button type="button" class="notif-tab" data-filter="announcement">Announcements <span class="tab-count" id="count-announcement"></span></button>
+                                </div>
+
+                                <div id="notif-list"></div>
+
+                                <div class="notif-foot">
+                                    <a asp-controller="Notifications" asp-action="Index">View all notifications</a>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="topbar-profile">
+                            <div class="profile-avatar">@(User.Identity?.Name?.Trim().Substring(0, 1).ToUpper() ?? "U")</div>
+                            <div>
+                                <div class="profile-name">@User.Identity?.Name</div>
+                                <div class="profile-role">@roleLabel</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <form style="display:none;">@Html.AntiForgeryToken()</form>
+                }
+            </div>
+
+            <div class="page-body">
+                <main role="main" class="pb-3">
+                    @RenderBody()
+                </main>
+            </div>
+        </div>
+
     </div>
 
-    <footer class="border-top footer text-muted">
-        <div class="container">
-            &copy; 2026 - GCAMS - <a asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
-        </div>
-    </footer>
-    <script src="~/lib/jquery/dist/jquery.min.js"></script>
-    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="~/js/site.js" asp-append-version="true"></script>
+    <script src="@(Url.Content("~/lib/jquery/dist/jquery.min.js"))"></script>
+    <script src="@(Url.Content("~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"))"></script>
+    <script src="@(Url.Content("~/js/site.js"))"></script>
+    <script>
+        const toggle = document.getElementById('sidebarToggle');
+        const sidebar = document.getElementById('sidebar');
+        const overlay = document.getElementById('sidebarOverlay');
+
+        function closeSidebar() {
+            sidebar.classList.remove('open');
+            overlay.classList.remove('active');
+        }
+
+        toggle.addEventListener('click', () => {
+            sidebar.classList.toggle('open');
+            overlay.classList.toggle('active');
+        });
+        overlay.addEventListener('click', closeSidebar);
+        document.addEventListener('keydown', e => { if (e.key === 'Escape') closeSidebar(); });
+        // Tapping a nav link on mobile should close the drawer
+        sidebar.querySelectorAll('.sidebar-nav a').forEach(a => a.addEventListener('click', closeSidebar));
+    </script>
+
+    @if (User.Identity?.IsAuthenticated == true)
+    {
+        <script>
+            const bell = document.getElementById('notif-bell');
+            const dropdown = document.getElementById('notif-dropdown');
+            const badge = document.getElementById('notif-badge');
+            const list = document.getElementById('notif-list');
+            const token = () => document.querySelector('input[name="__RequestVerificationToken"]')?.value || '';
+
+            let activeFilter = 'all';
+            let cached = [];
+
+            function escapeHtml(s) {
+                return String(s ?? '').replace(/[&<>"']/g, c => ({
+                    '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'
+                }[c]));
+            }
+
+            // "5 minutes ago" instead of a raw timestamp
+            function timeAgo(value) {
+                const then = new Date(value);
+                if (isNaN(then)) return '';
+
+                const secs = Math.floor((Date.now() - then.getTime()) / 1000);
+                if (secs < 60) return 'Just now';
+
+                const mins = Math.floor(secs / 60);
+                if (mins < 60) return `${mins} minute${mins === 1 ? '' : 's'} ago`;
+
+                const hrs = Math.floor(mins / 60);
+                if (hrs < 24) return `${hrs} hour${hrs === 1 ? '' : 's'} ago`;
+
+                const days = Math.floor(hrs / 24);
+                if (days < 7) return `${days} day${days === 1 ? '' : 's'} ago`;
+
+                return then.toLocaleDateString();
+            }
+
+            const isAnnouncement = n => String(n.type ?? '').toLowerCase() === 'announcement';
+
+            function renderNotification(n) {
+                const tag = isAnnouncement(n) ? '<span class="notif-tag">Announcement</span>' : '';
+                return `
+                    <div class="notif-item ${n.isRead ? '' : 'unread'}" onclick="markRead(${n.notificationId})">
+                        <span class="notif-icon"><i class="fa-regular fa-file-lines"></i></span>
+                        <div class="notif-body">
+                            <div class="notif-title">${escapeHtml(n.title)}${tag}</div>
+                            <div class="notif-message">${escapeHtml(n.message)}</div>
+                            <div class="notif-time">${timeAgo(n.createdAt)}</div>
+                        </div>
+                        <span class="notif-dot"></span>
+                    </div>`;
+            }
+
+            function paintCounts() {
+                const set = (id, value) => {
+                    const el = document.getElementById(id);
+                    el.textContent = value > 0 ? value : '';
+                    el.style.display = value > 0 ? 'inline-flex' : 'none';
+                };
+                set('count-all', cached.length);
+                set('count-unread', cached.filter(n => !n.isRead).length);
+                set('count-announcement', cached.filter(isAnnouncement).length);
+            }
+
+            function paintList() {
+                const items =
+                    activeFilter === 'unread' ? cached.filter(n => !n.isRead) :
+                    activeFilter === 'announcement' ? cached.filter(isAnnouncement) :
+                    cached;
+
+                list.innerHTML = items.length
+                    ? items.map(renderNotification).join('')
+                    : '<div class="notif-empty">No notifications</div>';
+
+                paintCounts();
+            }
+
+            async function fetchNotifications() {
+                try {
+                    const res = await fetch('/Notifications/GetUnread');
+                    if (!res.ok) return;
+
+                    const { unreadCount, notifications } = await res.json();
+                    cached = notifications || [];
+
+                    badge.style.display = unreadCount > 0 ? 'inline-block' : 'none';
+                    badge.textContent = unreadCount > 9 ? '9+' : unreadCount;
+
+                    paintList();
+                } catch (e) {
+                    // network hiccup — keep whatever is on screen
+                }
+            }
+
+            async function markRead(id) {
+                await fetch(`/Notifications/MarkRead/${id}`, {
+                    method: 'POST',
+                    headers: { 'RequestVerificationToken': token() }
+                });
+                fetchNotifications();
+            }
+
+            document.querySelectorAll('.notif-tab').forEach(tab => {
+                tab.addEventListener('click', function () {
+                    document.querySelectorAll('.notif-tab').forEach(t => t.classList.remove('active'));
+                    this.classList.add('active');
+                    activeFilter = this.dataset.filter;
+                    paintList();
+                });
+            });
+
+            // Uses your existing MarkRead endpoint — no new controller action needed
+            document.getElementById('notif-markall').addEventListener('click', async () => {
+                const unread = cached.filter(n => !n.isRead);
+                await Promise.all(unread.map(n =>
+                    fetch(`/Notifications/MarkRead/${n.notificationId}`, {
+                        method: 'POST',
+                        headers: { 'RequestVerificationToken': token() }
+                    })
+                ));
+                fetchNotifications();
+            });
+
+            bell.addEventListener('click', () => {
+                dropdown.style.display = dropdown.style.display === 'block' ? 'none' : 'block';
+            });
+
+            document.addEventListener('click', e => {
+                if (!bell.contains(e.target) && !dropdown.contains(e.target)) {
+                    dropdown.style.display = 'none';
+                }
+            });
+
+            fetchNotifications();
+            setInterval(fetchNotifications, 30000);
+        </script>
+    }
+
     @await RenderSectionAsync("Scripts", required: false)
 </body>
 </html>

@@ -1,0 +1,634 @@
+﻿/* ==========================================================================
+   Create.css — Student registration (wizard)
+   Path: wwwroot/css/Students/Create.css
+
+   The app shell (sidebar, topbar, notifications) is styled by
+   wwwroot/css/Shared/Layout.css. Bootstrap 5 supplies the grid, cards,
+   buttons, form controls and progress bar; only the GCAMS-specific skin
+   lives here.
+
+   NOTE: this is a plain .css file, so media queries use a SINGLE @.
+   The @@ form is only for CSS written inside a .cshtml file.
+   ========================================================================== */
+
+.student-create-page {
+    --brand: #1b6d24;
+    --brand-dark: #175c1e;
+    --brand-soft: #e8f2ea;
+    --brand-tint: #f2f7f2;
+    --ink: #23291f;
+    --muted: #8a938a;
+    --line: #e6ebe4;
+    --danger-soft: #fdecec;
+    --danger-line: #f5c2c2;
+    --danger-ink: #a13b3b;
+    color: var(--ink);
+    max-width: 1180px;
+    margin: 0 auto;
+    width: 100%;
+}
+
+/* ---------- Breadcrumb (rendered into the topbar slot) ---------- */
+.crumb {
+    font-size: .9rem;
+    color: var(--muted, #8a938a);
+}
+
+    .crumb a {
+        color: #717a6d;
+        text-decoration: none;
+    }
+
+        .crumb a:hover {
+            color: #1b6d24;
+            text-decoration: underline;
+        }
+
+    .crumb .crumb-sep {
+        margin: 0 6px;
+        color: #c3cbc0;
+    }
+
+    .crumb .crumb-current {
+        color: #1b6d24;
+        font-weight: 600;
+    }
+
+/* ---------- Page heading ---------- */
+.student-create-page .page-title {
+    font-size: 1.6rem;
+    font-weight: 700;
+    letter-spacing: -.01em;
+    margin-bottom: 1.25rem;
+}
+
+/* An empty validation summary still renders a div — keep it out of the flow. */
+.student-create-page .validation-summary-valid {
+    display: none;
+}
+
+/* ==========================================================================
+   LAYOUT
+   ========================================================================== */
+.student-create-page .wiz-layout {
+    display: grid;
+    grid-template-columns: 236px minmax(0, 1fr);
+    gap: 1.5rem;
+    align-items: start;
+}
+
+.student-create-page .wiz-aside {
+    position: sticky;
+    top: 1rem;
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+/* min-width:0 stops long inputs from blowing out the grid column in Chrome. */
+.student-create-page .wiz-form {
+    min-width: 0;
+}
+
+/* ==========================================================================
+   STEP RAIL
+   ========================================================================== */
+.student-create-page .wiz-rail {
+    background: #fff;
+    border: 1px solid var(--line);
+    border-radius: 14px;
+    padding: 10px;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+
+.student-create-page .wiz-step-btn {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    width: 100%;
+    padding: 9px 10px;
+    border: 0;
+    border-radius: 9px;
+    background: transparent;
+    color: #556052;
+    font-size: 13.5px;
+    font-weight: 500;
+    text-align: left;
+    cursor: pointer;
+    transition: background .15s ease, color .15s ease;
+}
+
+    .student-create-page .wiz-step-btn:hover {
+        background: var(--brand-tint);
+        color: var(--ink);
+    }
+
+    .student-create-page .wiz-step-btn.is-active {
+        background: var(--brand-soft);
+        color: var(--brand);
+        font-weight: 600;
+    }
+
+.student-create-page .wiz-badge {
+    flex: 0 0 auto;
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    background: #e4e9e2;
+    color: #6f7a6c;
+    font-size: 11px;
+    font-weight: 600;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.student-create-page .wiz-step-btn.is-done .wiz-badge,
+.student-create-page .wiz-step-btn.is-active .wiz-badge {
+    background: var(--brand);
+    color: #fff;
+    /* The number is swapped for a tick once the step has been visited. */
+    font-size: 0;
+}
+
+    .student-create-page .wiz-step-btn.is-done .wiz-badge::after,
+    .student-create-page .wiz-step-btn.is-active .wiz-badge::after {
+        content: "\2713";
+        font-size: 11px;
+        line-height: 1;
+    }
+
+.student-create-page .wiz-step-label {
+    min-width: 0;
+}
+
+/* ---------- Completion meter ---------- */
+.student-create-page .wiz-progress {
+    background: #fff;
+    border: 1px solid var(--line);
+    border-radius: 14px;
+    padding: 14px;
+}
+
+.student-create-page .wiz-progress-head {
+    display: flex;
+    justify-content: space-between;
+    font-size: 12.5px;
+    color: var(--muted);
+    margin-bottom: 8px;
+}
+
+    .student-create-page .wiz-progress-head span:last-child {
+        color: var(--ink);
+        font-weight: 600;
+    }
+
+.student-create-page .progress {
+    height: 6px;
+    background: #eceee9;
+    border-radius: 99px;
+}
+
+.student-create-page .progress-bar {
+    background: var(--brand);
+    border-radius: 99px;
+    transition: width .25s ease;
+}
+
+/* ==========================================================================
+   SECTION CARDS
+   ========================================================================== */
+.student-create-page .sect-card {
+    border: 1px solid var(--line);
+    border-radius: 14px;
+    box-shadow: 0 1px 2px rgba(23, 41, 25, .04);
+    overflow: hidden;
+}
+
+.student-create-page .sect-head {
+    background: #fafbf9;
+    border-bottom: 1px solid var(--line);
+    font-size: 15px;
+    font-weight: 600;
+    color: var(--ink);
+    padding: 14px 18px;
+    display: flex;
+    align-items: center;
+    gap: 9px;
+}
+
+    .student-create-page .sect-head i {
+        color: var(--brand);
+        font-size: 15px;
+    }
+
+.student-create-page .card-body {
+    padding: 20px 18px 22px;
+}
+
+.student-create-page .sub-head {
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: .07em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-bottom: .75rem;
+}
+
+/* ==========================================================================
+   FIELDS
+   ========================================================================== */
+.student-create-page .field-label {
+    display: block;
+    font-size: 12.5px;
+    font-weight: 600;
+    color: #46503f;
+    margin-bottom: 5px;
+}
+
+.student-create-page .req {
+    color: #c0392b;
+    font-weight: 700;
+}
+
+.student-create-page .opt {
+    color: var(--muted);
+    font-weight: 400;
+}
+
+.student-create-page .form-control,
+.student-create-page .form-select {
+    font-size: 14px;
+    border-radius: 9px;
+    border: 1px solid #d8ded4;
+    padding: 9px 12px;
+    min-height: 42px;
+    color: var(--ink);
+    background-color: #fff;
+}
+
+    .student-create-page .form-control::placeholder {
+        color: #aab3a7;
+    }
+
+    .student-create-page .form-control:focus,
+    .student-create-page .form-select:focus {
+        border-color: var(--brand);
+        box-shadow: 0 0 0 3px rgba(27, 109, 36, .12);
+    }
+
+.student-create-page textarea.form-control {
+    min-height: 76px;
+    resize: vertical;
+}
+
+/* Read-only / auto-filled fields read as "system supplied", not editable. */
+.student-create-page .field-soft {
+    background-color: var(--brand-soft);
+    border-color: #cfe0d3;
+}
+
+.student-create-page input[readonly].field-soft {
+    color: #556052;
+    cursor: default;
+}
+
+.student-create-page .field-error {
+    display: block;
+    font-size: 11.5px;
+    color: #c0392b;
+    margin-top: 3px;
+}
+
+.student-create-page .input-validation-error {
+    border-color: #e0a2a2;
+    background-color: #fffafa;
+}
+
+/* ---------- Small inline link-style buttons ---------- */
+.student-create-page .link-btn {
+    background: none;
+    border: 0;
+    padding: 0;
+    color: var(--brand);
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+}
+
+    .student-create-page .link-btn:hover {
+        color: var(--brand-dark);
+        text-decoration: underline;
+    }
+
+    .student-create-page .link-btn i {
+        font-size: 11px;
+    }
+
+.student-create-page .link-btn-sm {
+    float: right;
+    font-size: 11.5px;
+    font-weight: 500;
+}
+
+.student-create-page .add-contact {
+    margin-top: 8px;
+}
+
+/* ---------- Contact repeaters ---------- */
+.student-create-page .contact-row {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+    margin-bottom: 8px;
+}
+
+    .student-create-page .contact-row .form-control {
+        flex: 1 1 auto;
+        min-width: 0;
+    }
+
+    .student-create-page .contact-row .contact-type {
+        flex: 0 0 190px;
+        max-width: 190px;
+    }
+
+.student-create-page .btn-remove {
+    flex: 0 0 auto;
+    width: 34px;
+    height: 34px;
+    border-radius: 8px;
+    border: 1px solid #e3d5d5;
+    background: #fff;
+    color: #b06a6a;
+    line-height: 1;
+    cursor: pointer;
+}
+
+    .student-create-page .btn-remove:hover {
+        background: #fdf3f3;
+        border-color: #dcb9b9;
+        color: #9b4444;
+    }
+
+/* ---------- Confidentiality banner ---------- */
+.student-create-page .confidential-note {
+    display: flex;
+    gap: 10px;
+    align-items: flex-start;
+    background: var(--danger-soft);
+    border: 1px solid var(--danger-line);
+    color: var(--danger-ink);
+    border-radius: 10px;
+    padding: 11px 14px;
+    font-size: 12.5px;
+    line-height: 1.5;
+    margin-bottom: 1.25rem;
+}
+
+    .student-create-page .confidential-note i {
+        margin-top: 2px;
+    }
+
+/* ==========================================================================
+   REVIEW STEP
+   ========================================================================== */
+.student-create-page .review-intro {
+    font-size: 13px;
+    color: #5c665a;
+    margin-bottom: 1.25rem;
+}
+
+.student-create-page .review-block {
+    margin-bottom: 1.5rem;
+}
+
+.student-create-page .review-block-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: .5rem;
+    gap: 12px;
+}
+
+    .student-create-page .review-block-head h3 {
+        font-size: 14px;
+        font-weight: 700;
+        margin: 0;
+    }
+
+.student-create-page .rev-conf {
+    font-size: 11.5px;
+    font-weight: 500;
+    color: var(--muted);
+}
+
+.student-create-page .review-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px 24px;
+    background: #fafbf9;
+    border: 1px solid var(--line);
+    border-radius: 11px;
+    padding: 16px 18px;
+}
+
+.student-create-page .rev-item {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    min-width: 0;
+}
+
+.student-create-page .rev-key {
+    font-size: 10.5px;
+    font-weight: 700;
+    letter-spacing: .06em;
+    text-transform: uppercase;
+    color: var(--muted);
+}
+
+.student-create-page .rev-val {
+    font-size: 13.5px;
+    color: var(--ink);
+    overflow-wrap: anywhere;
+}
+
+    .student-create-page .rev-val.is-empty {
+        color: #a9b2a7;
+        font-style: italic;
+    }
+
+.student-create-page .confirm-box {
+    background: var(--brand-tint);
+    border: 1px solid #dbe6dc;
+    border-radius: 11px;
+    padding: 14px 16px 14px 42px;
+    font-size: 12.5px;
+    line-height: 1.55;
+    color: #3f4a3d;
+}
+
+    .student-create-page .confirm-box .form-check-input {
+        margin-left: -26px;
+        border-color: #b9c7b8;
+    }
+
+        .student-create-page .confirm-box .form-check-input:checked {
+            background-color: var(--brand);
+            border-color: var(--brand);
+        }
+
+        .student-create-page .confirm-box .form-check-input:focus {
+            box-shadow: 0 0 0 3px rgba(27, 109, 36, .15);
+            border-color: var(--brand);
+        }
+
+/* ==========================================================================
+   FOOTER ACTIONS
+   ========================================================================== */
+.student-create-page .wiz-footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 12px;
+    flex-wrap: wrap;
+    background: #fff;
+    border: 1px solid var(--line);
+    border-radius: 14px;
+    padding: 12px 16px;
+    margin-top: 1.25rem;
+}
+
+.student-create-page .privacy-note {
+    color: var(--muted);
+    font-size: 12px;
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+}
+
+.student-create-page .wiz-actions {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+}
+
+.student-create-page .btn-shell,
+.student-create-page .btn-brand {
+    font-size: 14px;
+    font-weight: 600;
+    padding: 9px 20px;
+    border-radius: 10px;
+}
+
+.student-create-page .btn-shell {
+    background: #fff;
+    border: 1px solid #d7ded2;
+    color: #3a4a35;
+}
+
+    .student-create-page .btn-shell:hover {
+        background: #f4f7f2;
+        color: #24331f;
+    }
+
+.student-create-page .btn-brand {
+    background: var(--brand);
+    border: 1px solid var(--brand);
+    color: #fff;
+}
+
+    .student-create-page .btn-brand:hover,
+    .student-create-page .btn-brand:focus {
+        background: var(--brand-dark);
+        border-color: var(--brand-dark);
+        color: #fff;
+    }
+
+    .student-create-page .btn-brand:disabled {
+        background: #a9c2ac;
+        border-color: #a9c2ac;
+        color: #fff;
+        opacity: 1;
+    }
+
+/* ==========================================================================
+   RESPONSIVE
+   ========================================================================== */
+@media (max-width: 991.98px) {
+    .student-create-page .wiz-layout {
+        grid-template-columns: 1fr;
+    }
+
+    .student-create-page .wiz-aside {
+        position: static;
+        flex-direction: column-reverse; /* meter first, then the rail */
+    }
+
+    /* On narrow screens the rail becomes a horizontal, scrollable strip. */
+    .student-create-page .wiz-rail {
+        flex-direction: row;
+        overflow-x: auto;
+        gap: 6px;
+        -webkit-overflow-scrolling: touch;
+        scrollbar-width: none;
+    }
+
+        .student-create-page .wiz-rail::-webkit-scrollbar {
+            display: none;
+        }
+
+    .student-create-page .wiz-step-btn {
+        width: auto;
+        flex: 0 0 auto;
+        white-space: nowrap;
+    }
+}
+
+@media (max-width: 767.98px) {
+    .student-create-page .page-title {
+        font-size: 1.35rem;
+    }
+
+    .student-create-page .review-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .student-create-page .contact-row {
+        flex-wrap: wrap;
+    }
+
+        .student-create-page .contact-row .contact-type {
+            flex: 1 1 auto;
+            max-width: none;
+        }
+
+    .student-create-page .wiz-footer {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .student-create-page .wiz-actions {
+        justify-content: flex-end;
+    }
+
+    .student-create-page .wiz-step-label {
+        font-size: 12.5px;
+    }
+}
+
+@media (max-width: 480px) {
+    .student-create-page .wiz-actions {
+        flex-wrap: wrap;
+    }
+
+        .student-create-page .wiz-actions .btn {
+            flex: 1 1 auto;
+        }
+}

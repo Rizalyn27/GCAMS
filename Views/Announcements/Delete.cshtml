@@ -1,0 +1,42 @@
+﻿@model GCAMS.Models.Announcements.Announcement
+@{
+    ViewData["Title"] = "Delete Announcement";
+}
+
+<style>
+    /* same font imports + .form-card, .page-title, .btn-cancel as above */
+    .btn-delete {
+        background: #b91c1c;
+        border: none;
+        border-radius: 8px;
+        padding: 9px 20px;
+        font-size: 14px;
+        font-family: 'Inter', sans-serif;
+        color: #fff;
+        cursor: pointer;
+    }
+
+        .btn-delete:hover {
+            background: #991b1b;
+        }
+</style>
+
+<div class="container-lg py-4" style="max-width: 720px;">
+    <p class="page-title">Delete Announcement</p>
+
+    <div class="form-card">
+        <p style="font-family:'Inter',sans-serif; color:#374151; margin-bottom: 1rem;">
+            Are you sure you want to delete this announcement? This cannot be undone.
+        </p>
+        <div class="form-section-title">@Model.Title</div>
+        <p style="font-family:'Inter',sans-serif; font-size:14px; color:#6b7280; white-space:pre-wrap;">@Model.Message</p>
+    </div>
+
+    <form asp-action="Delete">
+        <input type="hidden" asp-for="AnnouncementId" />
+        <div class="form-footer" style="border-top:none; padding-top:0;">
+            <button type="submit" class="btn-delete">Delete</button>
+            <a asp-action="Index" class="btn-cancel">Cancel</a>
+        </div>
+    </form>
+</div>

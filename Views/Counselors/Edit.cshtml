@@ -1,0 +1,348 @@
+﻿@model GCAMS.Models.Counselor.Counselor
+@{
+    ViewData["Title"] = "Edit Counselor Profile";
+}
+
+<link rel="stylesheet" href="~/css/Counselors/Edit.css" asp-append-version="true" />
+@section Breadcrumb {
+    <div class="breadcrumb-nav">
+        <a asp-controller="Counselors" asp-action="Index"><i class="bi bi-arrow-left"></i></a>
+        <a asp-controller="Counselors" asp-action="Index">Counselors</a>
+        <span class="sep">/</span>
+        <a asp-controller="Counselors" asp-action="Details" asp-route-id="@Model.CounselorID">Counselor Profile</a>
+        <span class="sep">/</span>
+        <span class="current">Edit Profile</span>
+    </div>
+}
+
+<div class="counselor-edit">
+
+    <div class="edit-page-head">
+        <h1 class="edit-title">Edit Counselor Profile</h1>
+        <span class="emp-chip">@(string.IsNullOrWhiteSpace(Model.EmployeeNumber) ? "No employee number" : "#" + Model.EmployeeNumber)</span>
+    </div>
+
+    <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
+
+    <form asp-action="Edit" method="post" id="counselorForm">
+        <input type="hidden" asp-for="CounselorID" />
+
+        <div class="profile-grid">
+
+            <!-- ============ LEFT: SECTION NAV ============ -->
+            <aside class="profile-aside">
+                <nav class="section-card" aria-label="Profile sections">
+                    <a href="#personal" class="section-item is-active">
+                        <i class="bi bi-person-badge"></i><span>Personal Information</span>
+                    </a>
+                    <a href="#credentials" class="section-item">
+                        <i class="bi bi-patch-check"></i><span>Credentials</span>
+                    </a>
+                    <a href="#employment" class="section-item">
+                        <i class="bi bi-briefcase"></i><span>Employment</span>
+                    </a>
+                </nav>
+
+                <div class="completion-card">
+                    <div class="completion-head">
+                        <span>Completion</span>
+                        <strong id="completionValue">0%</strong>
+                    </div>
+                    <div class="completion-track">
+                        <div class="completion-bar" id="completionBar" style="width:0%"></div>
+                    </div>
+                </div>
+            </aside>
+
+            <!-- ============ RIGHT: FORM CARDS ============ -->
+            <div class="profile-body">
+
+                <!-- Personal Information -->
+                <section class="profile-section" id="personal">
+                    <header class="section-head">
+                        <h2><i class="bi bi-person-badge"></i> Personal Information</h2>
+                        <p>Basic identity details used across counseling records and schedules.</p>
+                    </header>
+
+                    <div class="form-grid">
+                        <div class="field full-width">
+                            <label class="field-label" asp-for="CounselorName">Full Name</label>
+                            <input asp-for="CounselorName" class="form-control" placeholder="e.g. Imee Flores Bolante" />
+                            <span asp-validation-for="CounselorName" class="field-error"></span>
+                        </div>
+
+                        <div class="field">
+                            <label class="field-label" asp-for="EmployeeNumber">Employee Number</label>
+                            <input asp-for="EmployeeNumber" class="form-control is-identifier" placeholder="EMP-2024-001" />
+                            <span asp-validation-for="EmployeeNumber" class="field-error"></span>
+                        </div>
+
+                        <div class="field">
+                            <label class="field-label" asp-for="Gender">Gender</label>
+                            <select asp-for="Gender" class="form-select">
+                                <option value="">Select</option>
+                                <option>Male</option>
+                                <option>Female</option>
+                            </select>
+                            <span asp-validation-for="Gender" class="field-error"></span>
+                        </div>
+
+                        <div class="field">
+                            <label class="field-label" asp-for="BirthDate">Date of Birth</label>
+                            <input asp-for="BirthDate" type="date" class="form-control" />
+                            <span asp-validation-for="BirthDate" class="field-error"></span>
+                        </div>
+
+                        <div class="field">
+                            <label class="field-label" asp-for="EmailAddress">Email Address</label>
+                            <input asp-for="EmailAddress" class="form-control" placeholder="name@carecenter.edu.ph" />
+                            <span asp-validation-for="EmailAddress" class="field-error"></span>
+                        </div>
+
+                        <div class="field">
+                            <label class="field-label" asp-for="MaritalStatus">Marital Status</label>
+                            <select asp-for="MaritalStatus" class="form-select">
+                                <option value="">Select</option>
+                                <option>Single</option>
+                                <option>Married</option>
+                                <option>Widowed</option>
+                                <option>Separated</option>
+                            </select>
+                            <span asp-validation-for="MaritalStatus" class="field-error"></span>
+                        </div>
+
+                        <div class="field">
+                            <label class="field-label" asp-for="NumberOfChildren">No. of Children</label>
+                            <input asp-for="NumberOfChildren" type="number" min="0" max="20" class="form-control" />
+                            <span asp-validation-for="NumberOfChildren" class="field-error"></span>
+                        </div>
+
+                        <div class="field full-width">
+                            <label class="field-label">Contact Numbers</label>
+                            <div id="counselor-contacts" class="contact-list">
+                                @for (int i = 0; i < Model.ContactNumbers.Count; i++)
+                                {
+                                    <div class="contact-row">
+                                        <input name="ContactNumbers[@i].Number"
+                                               value="@Model.ContactNumbers[i].Number"
+                                               class="form-control contact-number" placeholder="+63 917 123 4567" />
+                                        <select name="ContactNumbers[@i].Label" class="form-select contact-label">
+                                            <option value="">Select type</option>
+                                            <option value="Office Telephone" selected="@(Model.ContactNumbers[i].Label == "Office Telephone")">Office Telephone</option>
+                                            <option value="Office Mobile Phone" selected="@(Model.ContactNumbers[i].Label == "Office Mobile Phone")">Office Mobile Phone</option>
+                                            <option value="Home Telephone" selected="@(Model.ContactNumbers[i].Label == "Home Telephone")">Home Telephone</option>
+                                            <option value="Home Mobile Phone" selected="@(Model.ContactNumbers[i].Label == "Home Mobile Phone")">Home Mobile Phone</option>
+                                            <option value="Personal Mobile Phone" selected="@(Model.ContactNumbers[i].Label == "Personal Mobile Phone")">Personal Mobile Phone</option>
+                                        </select>
+                                        <button type="button" class="btn-remove remove-contact" title="Remove number">
+                                            <i class="bi bi-trash3"></i>
+                                        </button>
+                                    </div>
+                                }
+                            </div>
+                            <button type="button" class="btn-add-line" data-add-contact="counselor-contacts" data-prefix="ContactNumbers">
+                                <i class="bi bi-plus-lg"></i> Add another number
+                            </button>
+                        </div>
+
+                        <div class="field full-width">
+                            <label class="field-label" asp-for="Address">Home Address</label>
+                            <textarea asp-for="Address" class="form-control" rows="3" placeholder="Full residential address details..."></textarea>
+                            <span asp-validation-for="Address" class="field-error"></span>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Professional Credentials -->
+                <section class="profile-section" id="credentials">
+                    <header class="section-head">
+                        <h2><i class="bi bi-patch-check"></i> Professional Credentials</h2>
+                        <p>Education and licensure on file for this counselor.</p>
+                    </header>
+
+                    <div class="form-grid">
+                        <div class="field">
+                            <label class="field-label" asp-for="College">College</label>
+                            <input asp-for="College" class="form-control" />
+                            <span asp-validation-for="College" class="field-error"></span>
+                        </div>
+
+                        <div class="field">
+                            <label class="field-label" asp-for="CollegeCourse">Course</label>
+                            <input asp-for="CollegeCourse" class="form-control" />
+                            <span asp-validation-for="CollegeCourse" class="field-error"></span>
+                        </div>
+
+                        <div class="field">
+                            <label class="field-label" asp-for="PostGraduateStudies">Post Graduate Studies</label>
+                            <input asp-for="PostGraduateStudies" class="form-control" />
+                            <span asp-validation-for="PostGraduateStudies" class="field-error"></span>
+                        </div>
+
+                        <div class="field">
+                            <label class="field-label" asp-for="PostGraduateCourse">Post Graduate Course</label>
+                            <input asp-for="PostGraduateCourse" class="form-control" />
+                            <span asp-validation-for="PostGraduateCourse" class="field-error"></span>
+                        </div>
+
+                        <div class="field">
+                            <label class="field-label" asp-for="PRCLicense">PRC License Number</label>
+                            <input asp-for="PRCLicense" class="form-control" placeholder="LCN-2024-552" />
+                            <span asp-validation-for="PRCLicense" class="field-error"></span>
+                        </div>
+
+                        <div class="field">
+                            <label class="field-label" asp-for="PRCLicense2">Secondary PRC License</label>
+                            <input asp-for="PRCLicense2" class="form-control" />
+                            <span asp-validation-for="PRCLicense2" class="field-error"></span>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Employment Details -->
+                <section class="profile-section" id="employment">
+                    <header class="section-head">
+                        <h2><i class="bi bi-briefcase"></i> Employment Details</h2>
+                        <p>Role and standing within the Care Center.</p>
+                    </header>
+
+                    <div class="form-grid">
+                        <div class="field">
+                            <label class="field-label" asp-for="Position">Position</label>
+                            <input asp-for="Position" class="form-control" placeholder="e.g. Guidance Counselor" />
+                            <span asp-validation-for="Position" class="field-error"></span>
+                        </div>
+
+                        <div class="field">
+                            <label class="field-label" asp-for="EmploymentStatus">Employment Status</label>
+                            <select asp-for="EmploymentStatus" class="form-select">
+                                <option value="">Select</option>
+                                @foreach (var status in new[] { "Permanent", "Full-Time", "Contractual", "Part-Time", "Substitute", "Retired", "Inactive" })
+                                {
+                                    <option value="@status" selected="@(Model.EmploymentStatus == status)">@status</option>
+                                }
+                            </select>
+                            <span asp-validation-for="EmploymentStatus" class="field-error"></span>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Footer -->
+                <div class="profile-foot">
+                    <small class="privacy-note"><i class="bi bi-shield-lock"></i> Privacy protected • Changes are logged</small>
+                    <div class="foot-actions">
+                        <a asp-action="Index" class="btn-cancel">Cancel</a>
+                        <button type="submit" class="btn-save"><i class="bi bi-check2"></i> Save Changes</button>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </form>
+</div>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+
+    <script>
+        (function () {
+            "use strict";
+
+            var form = document.getElementById("counselorForm");
+            if (!form) return;
+
+            var links = Array.prototype.slice.call(form.querySelectorAll(".section-item"));
+            var sections = Array.prototype.slice.call(form.querySelectorAll(".profile-section"));
+
+            /* ---------- scroll spy ---------- */
+            if ("IntersectionObserver" in window) {
+                var observer = new IntersectionObserver(function (entries) {
+                    entries.forEach(function (entry) {
+                        if (!entry.isIntersecting) return;
+                        links.forEach(function (l) { l.classList.remove("is-active"); });
+                        var active = form.querySelector('.section-item[href="#' + entry.target.id + '"]');
+                        if (active) {
+                            active.classList.add("is-active");
+                            active.scrollIntoView({ behavior: "smooth", inline: "center", block: "nearest" });
+                        }
+                    });
+                }, { threshold: 0.25 });
+                sections.forEach(function (s) { observer.observe(s); });
+            }
+
+            links.forEach(function (link) {
+                link.addEventListener("click", function (e) {
+                    e.preventDefault();
+                    var target = document.querySelector(link.getAttribute("href"));
+                    if (target) target.scrollIntoView({ behavior: "smooth", block: "start" });
+                });
+            });
+
+            /* ---------- completion meter ---------- */
+            var bar = document.getElementById("completionBar");
+            var valueEl = document.getElementById("completionValue");
+
+            function updateCompletion() {
+                var all = Array.prototype.slice.call(
+                    form.querySelectorAll("input:not([type=hidden]), select, textarea")
+                );
+                if (!all.length) return;
+                var filled = all.filter(function (el) { return String(el.value || "").trim() !== ""; }).length;
+                var pct = Math.round((filled / all.length) * 100);
+                if (bar) bar.style.width = pct + "%";
+                if (valueEl) valueEl.textContent = pct + "%";
+            }
+
+            form.addEventListener("input", updateCompletion);
+            form.addEventListener("change", updateCompletion);
+
+            /* ---------- contact rows ---------- */
+            var CONTACT_TYPES = [
+                "Office Telephone", "Office Mobile Phone", "Home Telephone",
+                "Home Mobile Phone", "Personal Mobile Phone"
+            ];
+
+            form.addEventListener("click", function (e) {
+                var addBtn = e.target.closest("[data-add-contact]");
+                if (addBtn) {
+                    var container = document.getElementById(addBtn.dataset.addContact);
+                    if (!container) return;
+                    var prefix = addBtn.dataset.prefix;
+                    var index = container.querySelectorAll(".contact-row").length;
+                    var opts = '<option value="">Select type</option>' +
+                        CONTACT_TYPES.map(function (t) { return '<option value="' + t + '">' + t + '</option>'; }).join("");
+
+                    var row = document.createElement("div");
+                    row.className = "contact-row";
+                    row.innerHTML =
+                        '<input name="' + prefix + '[' + index + '].Number" class="form-control contact-number" placeholder="Number" />' +
+                        '<select name="' + prefix + '[' + index + '].Label" class="form-select contact-label">' + opts + '</select>' +
+                        '<button type="button" class="btn-remove remove-contact" title="Remove number"><i class="bi bi-trash3"></i></button>';
+                    container.appendChild(row);
+                    updateCompletion();
+                    return;
+                }
+
+                var rm = e.target.closest(".remove-contact");
+                if (rm) {
+                    var list = rm.closest(".contact-list");
+                    var row2 = rm.closest(".contact-row");
+                    if (row2) row2.remove();
+                    if (list) {
+                        // model binding needs contiguous indexes after a removal
+                        Array.prototype.slice.call(list.querySelectorAll(".contact-row")).forEach(function (r, i) {
+                            r.querySelectorAll("[name]").forEach(function (el) {
+                                el.name = el.name.replace(/\[\d+\]/, "[" + i + "]");
+                            });
+                        });
+                    }
+                    updateCompletion();
+                }
+            });
+
+            updateCompletion();
+        })();
+    </script>
+}

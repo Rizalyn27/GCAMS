@@ -1,0 +1,657 @@
+﻿/* ==========================================================================
+   Create.css — Counselor registration (wizard)
+   Path: wwwroot/css/Counselors/Create.css
+
+   The app shell (sidebar, topbar, notifications) is styled by
+   wwwroot/css/Shared/Layout.css. Bootstrap 5 supplies the grid, cards,
+   buttons, form controls and progress bar; only the GCAMS-specific skin
+   lives here.
+
+   NOTE: this is a plain .css file, so media queries use a SINGLE @.
+   The @@ form is only for CSS written inside a .cshtml file.
+   ========================================================================== */
+
+.counselor-create-page {
+    --brand: #1b6d24;
+    --brand-dark: #175c1e;
+    --brand-soft: #e8f2ea;
+    --brand-tint: #f2f7f2;
+    --ink: #23291f;
+    --muted: #8a938a;
+    --line: #e6ebe4;
+    --danger-soft: #fdecec;
+    --danger-line: #f5c2c2;
+    --danger-ink: #a13b3b;
+    color: var(--ink);
+    max-width: 1180px;
+    margin: 0 auto;
+    width: 100%;
+}
+
+/* ---------- Breadcrumb (rendered into the topbar slot) ---------- */
+.crumb {
+    font-size: .9rem;
+    color: var(--muted, #8a938a);
+}
+
+    .crumb a {
+        color: #717a6d;
+        text-decoration: none;
+    }
+
+        .crumb a:hover {
+            color: #1b6d24;
+            text-decoration: underline;
+        }
+
+    .crumb .crumb-sep {
+        margin: 0 6px;
+        color: #c3cbc0;
+    }
+
+    .crumb .crumb-current {
+        color: #1b6d24;
+        font-weight: 600;
+    }
+
+/* ---------- Page heading ---------- */
+.counselor-create-page .page-title {
+    font-size: 1.6rem;
+    font-weight: 700;
+    letter-spacing: -.01em;
+    margin-bottom: 1.25rem;
+}
+
+/* An empty validation summary still renders a div — keep it out of the flow. */
+.counselor-create-page .validation-summary-valid {
+    display: none;
+}
+
+/* ==========================================================================
+   LAYOUT
+   ========================================================================== */
+.counselor-create-page .wiz-layout {
+    display: grid;
+    grid-template-columns: 236px minmax(0, 1fr);
+    gap: 1.5rem;
+    align-items: start;
+}
+
+.counselor-create-page .wiz-aside {
+    position: sticky;
+    top: 1rem;
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+/* min-width:0 stops long inputs from blowing out the grid column in Chrome. */
+.counselor-create-page .wiz-form {
+    min-width: 0;
+}
+
+/* ==========================================================================
+   STEP RAIL
+   ========================================================================== */
+.counselor-create-page .wiz-rail {
+    background: #fff;
+    border: 1px solid var(--line);
+    border-radius: 14px;
+    padding: 10px;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+
+.counselor-create-page .wiz-step-btn {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    width: 100%;
+    padding: 9px 10px;
+    border: 0;
+    border-radius: 9px;
+    background: transparent;
+    color: #556052;
+    font-size: 13.5px;
+    font-weight: 500;
+    text-align: left;
+    cursor: pointer;
+    transition: background .15s ease, color .15s ease;
+}
+
+    .counselor-create-page .wiz-step-btn:hover {
+        background: var(--brand-tint);
+        color: var(--ink);
+    }
+
+    .counselor-create-page .wiz-step-btn.is-active {
+        background: var(--brand-soft);
+        color: var(--brand);
+        font-weight: 600;
+    }
+
+.counselor-create-page .wiz-badge {
+    flex: 0 0 auto;
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    background: #e4e9e2;
+    color: #6f7a6c;
+    font-size: 11px;
+    font-weight: 600;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.counselor-create-page .wiz-step-btn.is-done .wiz-badge,
+.counselor-create-page .wiz-step-btn.is-active .wiz-badge {
+    background: var(--brand);
+    color: #fff;
+    /* The number is swapped for a tick once the step has been visited. */
+    font-size: 0;
+}
+
+    .counselor-create-page .wiz-step-btn.is-done .wiz-badge::after,
+    .counselor-create-page .wiz-step-btn.is-active .wiz-badge::after {
+        content: "\2713";
+        font-size: 11px;
+        line-height: 1;
+    }
+
+.counselor-create-page .wiz-step-label {
+    min-width: 0;
+}
+
+/* ---------- Completion meter ---------- */
+.counselor-create-page .wiz-progress {
+    background: #fff;
+    border: 1px solid var(--line);
+    border-radius: 14px;
+    padding: 14px;
+}
+
+.counselor-create-page .wiz-progress-head {
+    display: flex;
+    justify-content: space-between;
+    font-size: 12.5px;
+    color: var(--muted);
+    margin-bottom: 8px;
+}
+
+    .counselor-create-page .wiz-progress-head span:last-child {
+        color: var(--ink);
+        font-weight: 600;
+    }
+
+.counselor-create-page .progress {
+    height: 6px;
+    background: #eceee9;
+    border-radius: 99px;
+}
+
+.counselor-create-page .progress-bar {
+    background: var(--brand);
+    border-radius: 99px;
+    transition: width .25s ease;
+}
+
+/* ==========================================================================
+   SECTION CARDS
+   ========================================================================== */
+.counselor-create-page .sect-card {
+    border: 1px solid var(--line);
+    border-radius: 14px;
+    box-shadow: 0 1px 2px rgba(23, 41, 25, .04);
+    overflow: hidden;
+}
+
+.counselor-create-page .sect-head {
+    background: #fafbf9;
+    border-bottom: 1px solid var(--line);
+    font-size: 15px;
+    font-weight: 600;
+    color: var(--ink);
+    padding: 14px 18px;
+    display: flex;
+    align-items: center;
+    gap: 9px;
+}
+
+    .counselor-create-page .sect-head i {
+        color: var(--brand);
+        font-size: 15px;
+    }
+
+.counselor-create-page .card-body {
+    padding: 20px 18px 22px;
+}
+
+.counselor-create-page .sub-head {
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: .07em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-bottom: .75rem;
+}
+
+/* ==========================================================================
+   FIELDS
+   ========================================================================== */
+.counselor-create-page .field-label {
+    display: block;
+    font-size: 12.5px;
+    font-weight: 600;
+    color: #46503f;
+    margin-bottom: 5px;
+}
+
+.counselor-create-page .req {
+    color: #c0392b;
+    font-weight: 700;
+}
+
+.counselor-create-page .opt {
+    color: var(--muted);
+    font-weight: 400;
+}
+
+.counselor-create-page .form-control,
+.counselor-create-page .form-select {
+    font-size: 14px;
+    border-radius: 9px;
+    border: 1px solid #d8ded4;
+    padding: 9px 12px;
+    min-height: 42px;
+    color: var(--ink);
+    background-color: #fff;
+}
+
+    .counselor-create-page .form-control::placeholder {
+        color: #aab3a7;
+    }
+
+    .counselor-create-page .form-control:focus,
+    .counselor-create-page .form-select:focus {
+        border-color: var(--brand);
+        box-shadow: 0 0 0 3px rgba(27, 109, 36, .12);
+    }
+
+.counselor-create-page textarea.form-control {
+    min-height: 76px;
+    resize: vertical;
+}
+
+/* Read-only / auto-filled fields read as "system supplied", not editable. */
+.counselor-create-page .field-soft {
+    background-color: var(--brand-soft);
+    border-color: #cfe0d3;
+}
+
+.counselor-create-page input[readonly].field-soft {
+    color: #556052;
+    cursor: default;
+}
+
+.counselor-create-page .field-error {
+    display: block;
+    font-size: 11.5px;
+    color: #c0392b;
+    margin-top: 3px;
+}
+
+.counselor-create-page .input-validation-error {
+    border-color: #e0a2a2;
+    background-color: #fffafa;
+}
+
+/* ---------- Small inline link-style buttons ---------- */
+.counselor-create-page .link-btn {
+    background: none;
+    border: 0;
+    padding: 0;
+    color: var(--brand);
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+}
+
+    .counselor-create-page .link-btn:hover {
+        color: var(--brand-dark);
+        text-decoration: underline;
+    }
+
+    .counselor-create-page .link-btn i {
+        font-size: 11px;
+    }
+
+.counselor-create-page .link-btn-sm {
+    float: right;
+    font-size: 11.5px;
+    font-weight: 500;
+}
+
+.counselor-create-page .add-contact {
+    margin-top: 8px;
+}
+
+/* ---------- Contact repeaters ---------- */
+.counselor-create-page .contact-row {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+    margin-bottom: 8px;
+}
+
+    .counselor-create-page .contact-row .form-control {
+        flex: 1 1 auto;
+        min-width: 0;
+    }
+
+    .counselor-create-page .contact-row .contact-type {
+        flex: 0 0 190px;
+        max-width: 190px;
+    }
+
+.counselor-create-page .btn-remove {
+    flex: 0 0 auto;
+    width: 34px;
+    height: 34px;
+    border-radius: 8px;
+    border: 1px solid #e3d5d5;
+    background: #fff;
+    color: #b06a6a;
+    line-height: 1;
+    cursor: pointer;
+}
+
+    .counselor-create-page .btn-remove:hover {
+        background: #fdf3f3;
+        border-color: #dcb9b9;
+        color: #9b4444;
+    }
+
+/* ---------- Confidentiality banner ---------- */
+.counselor-create-page .confidential-note {
+    display: flex;
+    gap: 10px;
+    align-items: flex-start;
+    background: var(--danger-soft);
+    border: 1px solid var(--danger-line);
+    color: var(--danger-ink);
+    border-radius: 10px;
+    padding: 11px 14px;
+    font-size: 12.5px;
+    line-height: 1.5;
+    margin-bottom: 1.25rem;
+}
+
+    .counselor-create-page .confidential-note i {
+        margin-top: 2px;
+    }
+
+/* ==========================================================================
+   REVIEW STEP
+   ========================================================================== */
+.counselor-create-page .review-intro {
+    font-size: 13px;
+    color: #5c665a;
+    margin-bottom: 1.25rem;
+}
+
+.counselor-create-page .review-block {
+    margin-bottom: 1.5rem;
+}
+
+.counselor-create-page .review-block-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: .5rem;
+    gap: 12px;
+}
+
+    .counselor-create-page .review-block-head h3 {
+        font-size: 14px;
+        font-weight: 700;
+        margin: 0;
+    }
+
+.counselor-create-page .rev-conf {
+    font-size: 11.5px;
+    font-weight: 500;
+    color: var(--muted);
+}
+
+.counselor-create-page .review-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px 24px;
+    background: #fafbf9;
+    border: 1px solid var(--line);
+    border-radius: 11px;
+    padding: 16px 18px;
+}
+
+.counselor-create-page .rev-item {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    min-width: 0;
+}
+
+.counselor-create-page .rev-key {
+    font-size: 10.5px;
+    font-weight: 700;
+    letter-spacing: .06em;
+    text-transform: uppercase;
+    color: var(--muted);
+}
+
+.counselor-create-page .rev-val {
+    font-size: 13.5px;
+    color: var(--ink);
+    overflow-wrap: anywhere;
+}
+
+    .counselor-create-page .rev-val.is-empty {
+        color: #a9b2a7;
+        font-style: italic;
+    }
+
+.counselor-create-page .confirm-box {
+    background: var(--brand-tint);
+    border: 1px solid #dbe6dc;
+    border-radius: 11px;
+    padding: 14px 16px 14px 42px;
+    font-size: 12.5px;
+    line-height: 1.55;
+    color: #3f4a3d;
+}
+
+    .counselor-create-page .confirm-box .form-check-input {
+        margin-left: -26px;
+        border-color: #b9c7b8;
+    }
+
+        .counselor-create-page .confirm-box .form-check-input:checked {
+            background-color: var(--brand);
+            border-color: var(--brand);
+        }
+
+        .counselor-create-page .confirm-box .form-check-input:focus {
+            box-shadow: 0 0 0 3px rgba(27, 109, 36, .15);
+            border-color: var(--brand);
+        }
+
+/* ==========================================================================
+   FOOTER ACTIONS
+   ========================================================================== */
+.counselor-create-page .wiz-footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 12px;
+    flex-wrap: wrap;
+    background: #fff;
+    border: 1px solid var(--line);
+    border-radius: 14px;
+    padding: 12px 16px;
+    margin-top: 1.25rem;
+}
+
+.counselor-create-page .privacy-note {
+    color: var(--muted);
+    font-size: 12px;
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+}
+
+.counselor-create-page .wiz-actions {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+}
+
+.counselor-create-page .btn-shell,
+.counselor-create-page .btn-brand {
+    font-size: 14px;
+    font-weight: 600;
+    padding: 9px 20px;
+    border-radius: 10px;
+}
+
+.counselor-create-page .btn-shell {
+    background: #fff;
+    border: 1px solid #d7ded2;
+    color: #3a4a35;
+}
+
+    .counselor-create-page .btn-shell:hover {
+        background: #f4f7f2;
+        color: #24331f;
+    }
+
+.counselor-create-page .btn-brand {
+    background: var(--brand);
+    border: 1px solid var(--brand);
+    color: #fff;
+}
+
+    .counselor-create-page .btn-brand:hover,
+    .counselor-create-page .btn-brand:focus {
+        background: var(--brand-dark);
+        border-color: var(--brand-dark);
+        color: #fff;
+    }
+
+    .counselor-create-page .btn-brand:disabled {
+        background: #a9c2ac;
+        border-color: #a9c2ac;
+        color: #fff;
+        opacity: 1;
+    }
+
+/* ==========================================================================
+   RESPONSIVE
+   ========================================================================== */
+@media (max-width: 991.98px) {
+    .counselor-create-page .wiz-layout {
+        grid-template-columns: 1fr;
+    }
+
+    .counselor-create-page .wiz-aside {
+        position: static;
+        flex-direction: column-reverse; /* meter first, then the rail */
+    }
+
+    /* On narrow screens the rail becomes a horizontal, scrollable strip. */
+    .counselor-create-page .wiz-rail {
+        flex-direction: row;
+        overflow-x: auto;
+        gap: 6px;
+        -webkit-overflow-scrolling: touch;
+        scrollbar-width: none;
+    }
+
+        .counselor-create-page .wiz-rail::-webkit-scrollbar {
+            display: none;
+        }
+
+    .counselor-create-page .wiz-step-btn {
+        width: auto;
+        flex: 0 0 auto;
+        white-space: nowrap;
+    }
+}
+
+@media (max-width: 767.98px) {
+    .counselor-create-page .page-title {
+        font-size: 1.35rem;
+    }
+
+    .counselor-create-page .review-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .counselor-create-page .contact-row {
+        flex-wrap: wrap;
+    }
+
+        .counselor-create-page .contact-row .contact-type {
+            flex: 1 1 auto;
+            max-width: none;
+        }
+
+    .counselor-create-page .wiz-footer {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .counselor-create-page .wiz-actions {
+        justify-content: flex-end;
+    }
+
+    .counselor-create-page .wiz-step-label {
+        font-size: 12.5px;
+    }
+}
+
+@media (max-width: 480px) {
+    .counselor-create-page .wiz-actions {
+        flex-wrap: wrap;
+    }
+
+        .counselor-create-page .wiz-actions .btn {
+            flex: 1 1 auto;
+        }
+}
+
+/* ==========================================================================
+   COUNSELOR-SPECIFIC
+   ========================================================================== */
+
+/* Explains the side effect of saving: a login account is provisioned. */
+.counselor-create-page .account-note {
+    display: flex;
+    gap: 10px;
+    align-items: flex-start;
+    background: #eef4fa;
+    border: 1px solid #cfdff0;
+    color: #38536e;
+    border-radius: 10px;
+    padding: 11px 14px;
+    font-size: 12.5px;
+    line-height: 1.5;
+    margin-top: 1.25rem;
+}
+
+    .counselor-create-page .account-note i {
+        margin-top: 2px;
+    }
