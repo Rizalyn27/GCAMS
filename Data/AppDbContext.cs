@@ -1,4 +1,5 @@
-﻿using GCAMS.Models.AnecRecs;
+﻿using GCAMS.Models.ActivityLogs;
+using GCAMS.Models.AnecRecs;
 using GCAMS.Models.Announcements;
 using GCAMS.Models.Appointment;
 using GCAMS.Models.CaseNotes;
@@ -6,8 +7,9 @@ using GCAMS.Models.Counselor;
 using GCAMS.Models.Notifs;
 using GCAMS.Models.Students;
 using GCAMS.Models.Users;
-using GCAMS.Models.ActivityLogs;
 using Microsoft.EntityFrameworkCore;
+using static GCAMS.Models.Counselor.Counselor;
+
 
 
 namespace GCAMS.Data
@@ -34,6 +36,9 @@ namespace GCAMS.Data
         //Counselor
         public DbSet<Counselor> Counselors { get; set; }
         public DbSet<CounselorContactNumber> CounselorContactNumbers { get; set; }
+        public DbSet<CounselorLicense> CounselorLicenses { get; set; }
+
+
 
         //Appointment
         public DbSet<Appointments> Appointments { get; set; }
@@ -75,6 +80,9 @@ namespace GCAMS.Data
                 .IsRequired(false)
                 .OnDelete(DeleteBehavior.Cascade);
 
+            modelBuilder.Entity<Students>()
+                .HasIndex(s => s.StuID)
+                .IsUnique();
 
             //EmergencyContact
             modelBuilder.Entity<Students>()
@@ -107,12 +115,19 @@ namespace GCAMS.Data
                 .HasForeignKey(c => c.CounselorID)
                 .OnDelete(DeleteBehavior.Cascade);
 
+            //CounselorPRCLicense
+            modelBuilder.Entity<CounselorLicense>()
+                .HasOne(l => l.Counselor)
+                .WithMany(c => c.Licenses)
+                .HasForeignKey(l => l.CounselorID)
+                .OnDelete(DeleteBehavior.Cascade);
+
             // Appointments
             modelBuilder.Entity<Appointments>()
                 .HasOne(a => a.Student)
                 .WithMany()
                 .HasForeignKey(a => a.StudentsID)
-                .OnDelete(DeleteBehavior.Cascade);  
+                .OnDelete(DeleteBehavior.Cascade);
 
             // StudentContactNumber
             modelBuilder.Entity<StudentContactNumber>()
@@ -157,4 +172,3 @@ namespace GCAMS.Data
         }
     }
 }
-    

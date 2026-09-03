@@ -1,15 +1,16 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+﻿using GCAMS.Data;
+using GCAMS.Models.ActivityLogs;
+using GCAMS.Models.Counselor;
+using GCAMS.Models.Users;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
-using GCAMS.Data;
-using GCAMS.Models.Counselor;
-using GCAMS.Models.ActivityLogs;
+using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Security.Cryptography;
-using GCAMS.Models.Users;
+using System.Threading.Tasks;
+using static GCAMS.Models.Counselor.Counselor;
 
 namespace GCAMS.Controllers
 {
@@ -42,6 +43,7 @@ namespace GCAMS.Controllers
 
             var counselor = await _context.Counselors
                 .Include(c => c.ContactNumbers)
+                .Include(c => c.Licenses)
                 .FirstOrDefaultAsync(m => m.CounselorID == id);
 
             if (counselor == null) return NotFound();
@@ -71,7 +73,12 @@ namespace GCAMS.Controllers
                     .Where(x => !string.IsNullOrWhiteSpace(x.Number))
                     .ToList();
 
+                var incomingLicenses = counselor.Licenses
+                    .Where(x => !string.IsNullOrWhiteSpace(x.LicenseType))
+                    .ToList();
+
                 counselor.ContactNumbers.Clear();
+                counselor.Licenses.Clear();
 
                 _context.Counselors.Add(counselor);
                 await _context.SaveChangesAsync();
@@ -83,8 +90,16 @@ namespace GCAMS.Controllers
                     _context.CounselorContactNumbers.Add(new CounselorContactNumber
                     {
                         CounselorID = counselor.CounselorID,
-                        Number = c.Number,
-                        Label = c.Label
+                        Number = c.Number
+                    });
+                }
+
+                foreach (var l in incomingLicenses)
+                {
+                    _context.CounselorLicenses.Add(new CounselorLicense
+                    {
+                        CounselorID = counselor.CounselorID,
+                        LicenseType = l.LicenseType
                     });
                 }
 
@@ -117,6 +132,7 @@ namespace GCAMS.Controllers
 
             var counselor = await _context.Counselors
                 .Include(c => c.ContactNumbers)
+                .Include(c => c.Licenses)
                 .FirstOrDefaultAsync(c => c.CounselorID == id);
 
             if (counselor == null) return NotFound();
@@ -149,7 +165,12 @@ namespace GCAMS.Controllers
                         .Where(x => !string.IsNullOrWhiteSpace(x.Number))
                         .ToList();
 
+                    var incomingLicenses = counselor.Licenses
+                        .Where(x => !string.IsNullOrWhiteSpace(x.LicenseType))
+                        .ToList();
+
                     counselor.ContactNumbers.Clear();
+                    counselor.Licenses.Clear();
 
                     _context.Update(counselor);
 
@@ -157,13 +178,24 @@ namespace GCAMS.Controllers
                     _context.CounselorContactNumbers.RemoveRange(old);
                     await _context.SaveChangesAsync();
 
+                    var oldLicenses = _context.CounselorLicenses.Where(x => x.CounselorID == id);
+                    _context.CounselorLicenses.RemoveRange(oldLicenses);
+
                     foreach (var c in incoming)
                     {
                         _context.CounselorContactNumbers.Add(new CounselorContactNumber
                         {
                             CounselorID = id,
-                            Number = c.Number,
-                            Label = c.Label
+                            Number = c.Number
+                        });
+                    }
+
+                    foreach (var l in incomingLicenses)
+                    {
+                        _context.CounselorLicenses.Add(new CounselorLicense
+                        {
+                            CounselorID = id,
+                            LicenseType = l.LicenseType
                         });
                     }
 

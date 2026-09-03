@@ -659,9 +659,7 @@
                     {
                         @foreach (var c in Model.StudentContacts)
                         {
-                            <div class="field-value" style="font-family:monospace;">
-                                @c.Number @(!string.IsNullOrEmpty(c.Label) ? $"({c.Label})" : "")
-                            </div>
+                            <div class="field-value" style="font-family:monospace;">@c.Number</div>
                         }
                     }
                 </div>
@@ -871,9 +869,7 @@
                     {
                         @foreach (var c in Model.FatherContacts)
                         {
-                            <div class="field-value" style="font-family:monospace;">
-                                @c.Number @(!string.IsNullOrEmpty(c.Label) ? $"({c.Label})" : "")
-                            </div>
+                            <div class="field-value" style="font-family:monospace;">@c.Number</div>
                         }
                     }
                 </div>
@@ -920,9 +916,7 @@
                     {
                         @foreach (var c in Model.MotherContacts)
                         {
-                            <div class="field-value" style="font-family:monospace;">
-                                @c.Number @(!string.IsNullOrEmpty(c.Label) ? $"({c.Label})" : "")
-                            </div>
+                            <div class="field-value" style="font-family:monospace;">@c.Number</div>
                         }
                     }
                 </div>

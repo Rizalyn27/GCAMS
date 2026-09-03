@@ -13,9 +13,17 @@
 
     <!-- ================= Toolbar ================= -->
     <div class="page-toolbar d-flex flex-wrap align-items-center justify-content-end gap-2 mb-3">
+        <a asp-action="Export" class="btn btn-ghost">
+            <i class="fa-solid fa-file-export"></i>
+            <span>Export Excel</span>
+        </a>
         <button type="button" class="btn btn-ghost" data-bs-toggle="modal" data-bs-target="#importModal">
             <i class="fa-solid fa-file-arrow-up"></i>
             <span>Import Excel</span>
+        </button>
+        <button type="button" class="btn btn-ghost" data-bs-toggle="modal" data-bs-target="#bulkUpdateModal">
+            <i class="fa-solid fa-file-pen"></i>
+            <span>Bulk Update</span>
         </button>
         <a asp-action="Create" class="btn btn-brand">
             <i class="fa-solid fa-user-plus"></i>
@@ -175,7 +183,7 @@
                 <div class="modal-body">
                     <label for="importFile" class="form-label">Select Excel file (.xlsx)</label>
                     <input type="file" id="importFile" name="file" accept=".xlsx" class="form-control" required />
-                    <div class="form-text">The first row is treated as the header and is skipped. Duplicate student IDs are ignored.</div>
+                    <div class="form-text">Matches rows by Student ID. Use the "Export Excel" button above to get a file in the right format, edit it, then upload here. You'll review the changes before anything is saved.</div>
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-light" data-bs-dismiss="modal">Cancel</button>
@@ -186,6 +194,30 @@
     </div>
 </div>
 
+<!-- ================= Bulk Update Modal ================= -->
+
+<div class="modal fade" id="bulkUpdateModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Bulk Update from Excel</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <form asp-action="BulkUpdatePreview" method="post" enctype="multipart/form-data">
+                @Html.AntiForgeryToken()
+                <div class="modal-body">
+                    <label for="bulkUpdateFile" class="form-label">Select the exported Excel file (.xlsx)</label>
+                    <input type="file" id="bulkUpdateFile" name="file" accept=".xlsx" class="form-control" required />
+                    <div class="form-text">Matches rows by Student ID. You'll review the changes before anything is saved.</div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-light" data-bs-dismiss="modal">Cancel</button>
+                    <button type="submit" class="btn btn-brand">Preview Changes</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
 @section Scripts {
     <script>
         (function () {

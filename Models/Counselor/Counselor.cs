@@ -9,7 +9,7 @@ namespace GCAMS.Models.Counselor
         [Key]
         public int CounselorID { get; set; }
 
-      
+
         // Personal Information
         [Required]
         [StringLength(50)]
@@ -35,7 +35,7 @@ namespace GCAMS.Models.Counselor
 
 
 
-      
+
         [Required]
         [EmailAddress]
         [StringLength(100)]
@@ -73,14 +73,19 @@ namespace GCAMS.Models.Counselor
 
         // PRC License
 
-        [StringLength(100)]
-        [Display(Name = "PRC License")]
-        public string? PRCLicense { get; set; }
 
-        [StringLength(100)]
-        [Display(Name = "PRC License 2")]
-        public string? PRCLicense2 { get; set; }
+        public class CounselorLicense
+        {
+            [Key]
+            public int CounselorLicenseID { get; set; }
+            public int CounselorID { get; set; }
+            public Counselor? Counselor { get; set; }
 
+            [StringLength(100)]
+            public string LicenseType { get; set; } = string.Empty;
+        }
+
+        public List<CounselorLicense> Licenses { get; set; } = new();
 
         // Work Experience
 
@@ -106,8 +111,7 @@ namespace GCAMS.Models.Counselor
         [Required]
         [StringLength(50)]
         [Display(Name = "Status")]
-        public string EmploymentStatus { get; set; }
+        public string EmploymentStatus { get; set; } = string.Empty;
 
-        
     }
 }

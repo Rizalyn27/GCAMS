@@ -10,9 +10,8 @@ namespace GCAMS.Models.Counselor
         public Counselor? Counselor { get; set; }
 
         [Phone]
-        [StringLength(20)]
+        [StringLength(11)]
         public string Number { get; set; } = string.Empty;
-        [StringLength(50)]
-        public string? Label { get; set; }
+ 
     }
 }

@@ -10,10 +10,8 @@ namespace GCAMS.Models.Students
         public Students? Student { get; set; }
 
         [Phone]
-        [StringLength(20)]
+        [StringLength(12)]
         public string Number { get; set; } = string.Empty;
-        [StringLength(50)]
-        public string? Label { get; set; }
     }
 
     public class FamilyContactNumber
@@ -23,10 +21,11 @@ namespace GCAMS.Models.Students
         public FamilyBackground? FamilyBackground { get; set; }
 
         [Phone]
-        [StringLength(20)]
+        [StringLength(12)]
         public string Number { get; set; } = string.Empty;
-        [StringLength(50)]
-        public string? Label { get; set; }
+
+        [StringLength(10)]
+        public string Owner { get; set; } = string.Empty;
     }
 
     public class EmergencyContactNumber
@@ -36,9 +35,10 @@ namespace GCAMS.Models.Students
         public EmergencyContact? EmergencyContact { get; set; }
 
         [Phone]
-        [StringLength(20)]
+        [StringLength(12)]
         public string Number { get; set; } = string.Empty;
-        [StringLength(50)]
-        public string? Label { get; set; }
+
+
+
     }
 }
