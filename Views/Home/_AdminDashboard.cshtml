@@ -1,341 +1,145 @@
 ﻿@model GCAMS.ViewModels.AdminDashboardViewModel
 
-<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
-<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet">
+@{
+    ViewData["Title"] = "Dashboard";
 
-<style>
-    .admin-dash * {
-        font-family: 'Inter', sans-serif;
-    }
+    // Greeting — derived from the signed-in user and the clock, no model change.
+    var hour = DateTime.Now.Hour;
+    var partOfDay = hour < 12 ? "morning" : hour < 18 ? "afternoon" : "evening";
+    var displayName = User.Identity?.Name ?? "there";
 
-    .admin-dash .material-symbols-outlined {
-        font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
-        vertical-align: middle;
-    }
+    // Monday-first week, so index 0 of WeeklyAppointmentCounts lines up with Monday.
+    var today = DateTime.Today;
+    var mondayOffset = ((int)today.DayOfWeek + 6) % 7;
+    var weekStart = today.AddDays(-mondayOffset);
+    var weekEnd = weekStart.AddDays(6);
 
-    .admin-dash h1 {
-        font-family: 'Manrope', sans-serif;
-        font-size: 22px;
-        font-weight: 700;
-        color: #191d18;
-        margin-bottom: 4px;
-    }
+    var totalUsers = Model.StudentUserCount + Model.CounselorUserCount + Model.AdminUserCount;
 
-    .admin-dash .subtitle {
-        color: #717a6d;
-        font-size: 14px;
-        margin-bottom: 24px;
-    }
+    Func<string, string> initials = value =>
+    {
+        if (string.IsNullOrWhiteSpace(value)) return "?";
+        var parts = value.Split(new[] { ' ', '.', '_', '@' }, StringSplitOptions.RemoveEmptyEntries);
+        return parts.Length >= 2
+            ? $"{char.ToUpper(parts[0][0])}{char.ToUpper(parts[1][0])}"
+            : char.ToUpper(parts[0][0]).ToString();
+    };
 
-    .admin-dash .stat-grid {
-        display: grid;
-        grid-template-columns: repeat(3, 1fr);
-        gap: 16px;
-        margin-bottom: 24px;
-    }
+    Func<int, int> share = count => totalUsers == 0 ? 0 : (int)Math.Round(100.0 * count / totalUsers);
+}
 
-    .admin-dash .stat-card {
-        background: #fff;
-        border: 1px solid #e1e4db;
-        border-radius: 14px;
-        padding: 18px 20px;
-    }
 
-    .admin-dash .stat-card-attention {
-        border-color: #f3c98a;
-        background: #fffbf2;
-    }
+    <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="~/css/Home/AdminDashboard.css" asp-append-version="true" />
 
-    .admin-dash .stat-label {
-        font-size: 13px;
-        color: #717a6d;
-        margin-bottom: 8px;
-    }
-
-    .admin-dash .stat-value {
-        font-size: 26px;
-        font-weight: 700;
-        color: #191d18;
-        font-family: 'Manrope', sans-serif;
-    }
-
-    .admin-dash .stat-action {
-        display: inline-block;
-        margin-top: 8px;
-        font-size: 12px;
-        font-weight: 600;
-        color: #1a7f74;
-        text-decoration: none;
-    }
-
-        .admin-dash .stat-action:hover {
-            text-decoration: underline;
-        }
-
-    .admin-dash .section-title {
-        font-size: 16px;
-        font-weight: 700;
-        color: #191d18;
-        margin-bottom: 12px;
-        font-family: 'Manrope', sans-serif;
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-    }
-
-        .admin-dash .section-title .count-pill {
-            font-family: 'Inter', sans-serif;
-            font-size: 11px;
-            font-weight: 600;
-            color: #717a6d;
-            background: #f0f3ec;
-            border-radius: 20px;
-            padding: 2px 9px;
-        }
-
-    .admin-dash .panel {
-        background: #fff;
-        border: 1px solid #e1e4db;
-        border-radius: 14px;
-        padding: 18px 20px;
-    }
-
-    .admin-dash .lower-grid {
-        display: grid;
-        grid-template-columns: 1.4fr 1fr;
-        gap: 20px;
-        align-items: start;
-    }
-
-    /* ---------- quick actions ---------- */
-    .admin-dash .quick-actions {
-        display: flex;
-        flex-direction: column;
-        gap: 8px;
-    }
-
-    .admin-dash .quick-action {
-        display: flex;
-        align-items: center;
-        gap: 8px;
-        border: 1px solid #e1e4db;
-        border-radius: 10px;
-        padding: 10px 14px;
-        font-size: 13px;
-        font-weight: 600;
-        color: #191d18;
-        text-decoration: none;
-        transition: background 0.15s;
-    }
-
-        .admin-dash .quick-action:hover {
-            background: #f2f5ec;
-            color: #191d18;
-        }
-
-        .admin-dash .quick-action .material-symbols-outlined {
-            font-size: 18px;
-            color: #1a7f74;
-        }
-
-        .admin-dash .quick-action:focus-visible,
-        .admin-dash .row-action:focus-visible {
-            outline: 2px solid #1a7f74;
-            outline-offset: 2px;
-        }
-
-    .admin-dash .row-action {
-        font-size: 12px;
-        font-weight: 600;
-        color: #1a7f74;
-        text-decoration: none;
-    }
-
-        .admin-dash .row-action:hover {
-            text-decoration: underline;
-        }
-
-    /* ---------- bar chart ---------- */
-    .admin-dash .bar-chart {
-        display: flex;
-        align-items: flex-end;
-        gap: 12px;
-        height: 120px;
-        margin-top: 8px;
-    }
-
-    .admin-dash .bar-col {
-        flex: 1;
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        gap: 6px;
-        height: 100%;
-        justify-content: flex-end;
-    }
-
-    .admin-dash .bar {
-        width: 100%;
-        background: #1a7f74;
-        border-radius: 4px 4px 0 0;
-        min-height: 3px;
-    }
-
-    .admin-dash .bar-label {
-        font-size: 11px;
-        color: #a3aa9e;
-    }
-
-    /* ---------- activity ---------- */
-    .admin-dash .activity-item {
-        display: flex;
-        align-items: flex-start;
-        gap: 10px;
-        padding: 10px 0;
-        border-bottom: 1px solid #f0f3ec;
-    }
-
-        .admin-dash .activity-item:last-child {
-            border-bottom: none;
-        }
-
-    .admin-dash .activity-text {
-        font-size: 13px;
-        color: #191d18;
-    }
-
-    .admin-dash .activity-time {
-        font-size: 11px;
-        color: #a3aa9e;
-        margin-top: 2px;
-    }
-
-    .admin-dash .empty-note {
-        font-size: 13px;
-        color: #a3aa9e;
-        padding: 8px 0;
-        line-height: 1.6;
-    }
-
-        .admin-dash .empty-note a {
-            color: #1a7f74;
-            font-weight: 600;
-            text-decoration: none;
-        }
-
-    /* ---------- distribution ---------- */
-    .admin-dash .dist-row {
-        margin-bottom: 14px;
-    }
-
-        .admin-dash .dist-row:last-child {
-            margin-bottom: 0;
-        }
-
-    .admin-dash .dist-labels {
-        display: flex;
-        justify-content: space-between;
-        font-size: 13px;
-        color: #191d18;
-        margin-bottom: 6px;
-    }
-
-    .admin-dash .dist-bar-track {
-        width: 100%;
-        height: 6px;
-        background: #f0f3ec;
-        border-radius: 4px;
-        overflow: hidden;
-    }
-
-    .admin-dash .dist-bar-fill {
-        height: 100%;
-        background: #1a7f74;
-    }
-
-    /* ---------- pending accounts ---------- */
-    .admin-dash .pending-item {
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        padding: 10px 0;
-        border-bottom: 1px solid #f0f3ec;
-    }
-
-        .admin-dash .pending-item:last-child {
-            border-bottom: none;
-        }
-
-    .admin-dash .pending-name {
-        font-size: 13px;
-        font-weight: 600;
-        color: #191d18;
-    }
-
-    .admin-dash .pending-role {
-        font-size: 12px;
-        color: #717a6d;
-    }
-
-    .admin-dash .badge-pending {
-        font-size: 11px;
-        font-weight: 600;
-        color: #8a5a00;
-        background: #fdf1d6;
-        padding: 3px 10px;
-        border-radius: 20px;
-        white-space: nowrap;
-    }
-
-    @@media (max-width: 900px) {
-        .admin-dash .stat-grid {
-            grid-template-columns: 1fr;
-        }
-
-        .admin-dash .lower-grid {
-            grid-template-columns: 1fr;
-        }
-    }
-</style>
 
 <div class="admin-dash">
-    <h1>Admin dashboard</h1>
-    <p class="subtitle">System-wide overview for @DateTime.Now.ToString("dddd, MMMM d")</p>
 
+    <header class="dash-head">
+        <h1>Good @partOfDay, @displayName</h1>
+        <p class="subtitle">
+            Here's what the Care Center needs from you on @today.ToString("dddd, d MMMM yyyy").
+        </p>
+    </header>
+
+    <!-- ===================== TOP STATS ===================== -->
     <div class="stat-grid">
+
         <div class="stat-card">
-            <div class="stat-label">Active students</div>
+            <div class="stat-label">
+                <span class="material-symbols-outlined"> </span>
+                Active students
+            </div>
             <div class="stat-value">@Model.TotalActiveStudents.ToString("N0")</div>
-            <a asp-controller="Students" asp-action="Index" class="stat-action">Manage students →</a>
+            <div class="stat-note">@(Model.TotalActiveStudents == 0 ? "No student records yet" : "Currently enrolled and not archived")</div>
+            <a asp-controller="Students" asp-action="Index" class="stat-action">
+                Manage students <span class="material-symbols-outlined"></span>
+            </a>
         </div>
-        <div class="stat-card">
-            <div class="stat-label">Active counselors</div>
+
+        <div class="stat-card @(Model.ActiveCounselors == 0 ? "stat-card-attention" : "")">
+            <div class="stat-label">
+                <span class="material-symbols-outlined"></span>
+                Active counselors
+            </div>
             <div class="stat-value">@Model.ActiveCounselors.ToString("N0")</div>
-            <a asp-controller="Counselors" asp-action="Index" class="stat-action">Manage counselors →</a>
+            @if (Model.ActiveCounselors == 0)
+            {
+                <div class="stat-note stat-note-warn">Students can't book yet</div>
+            }
+            else
+            {
+                <div class="stat-note">Available to take appointments</div>
+            }
+            <a asp-controller="Counselors" asp-action="@(Model.ActiveCounselors == 0 ? "Create" : "Index")" class="stat-action">
+                @(Model.ActiveCounselors == 0 ? "Add the first counselor" : "Manage counselors")
+                <span class="material-symbols-outlined"></span>
+            </a>
         </div>
+
         <div class="stat-card">
-            <div class="stat-label">Appointments this week</div>
+            <div class="stat-label">
+                <span class="material-symbols-outlined"></span>
+                Sessions this week
+            </div>
             <div class="stat-value">@Model.AppointmentsThisWeek.ToString("N0")</div>
-            <a asp-controller="Appointments" asp-action="Index" class="stat-action">Open calendar →</a>
+            <div class="stat-note">@weekStart.ToString("d MMM") – @weekEnd.ToString("d MMM")</div>
+            <a asp-controller="Appointments" asp-action="Index" class="stat-action">
+                Open the calendar <span class="material-symbols-outlined"></span>
+            </a>
         </div>
+
     </div>
 
     <div class="lower-grid">
-        <!-- ========================= LEFT COLUMN ========================= -->
-        <div>
-            <div class="panel" style="margin-bottom:20px;">
-                <div class="section-title">Appointments this week</div>
-                @{
-                    var dayLabels = new[] { "Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun" };
-                    var maxCount = Math.Max(1, Model.WeeklyAppointmentCounts.DefaultIfEmpty(0).Max());
-                }
-                <div class="bar-chart">
+
+        <!-- ===================== LEFT COLUMN ===================== -->
+        <div class="dash-col">
+
+            <div class="panel">
+                <div class="section-title">
+                    This week's schedule
+                    <a asp-controller="Appointments" asp-action="Index" class="row-action">
+                        Open the calendar <span class="material-symbols-outlined"></span>
+                    </a>
+                </div>
+                <p class="panel-sub">
+                    @weekStart.ToString("d MMMM") – @weekEnd.ToString("d MMMM yyyy")
+                </p>
+
+                <div class="week-strip">
                     @for (int i = 0; i < 7; i++)
                     {
-                        var pct = Math.Max(4, (int)(100.0 * Model.WeeklyAppointmentCounts[i] / maxCount));
-                        <div class="bar-col">
-                            <div class="bar" style="height:@(pct)%;" title="@Model.WeeklyAppointmentCounts[i] appointments"></div>
-                            <span class="bar-label">@dayLabels[i]</span>
+                        var date = weekStart.AddDays(i);
+                        var count = Model.WeeklyAppointmentCounts[i];
+                        var isToday = date == today;
+                        var isWeekend = i >= 5;
+
+                        <div class="day-cell @(isToday ? "is-today" : "") @(isWeekend ? "is-weekend" : "")">
+                            <div class="day-name">@date.ToString("ddd").ToUpper()</div>
+                            <div class="day-number">@date.Day</div>
+                            @if (isToday)
+                            {
+                                <div class="day-tag">Today</div>
+                            }
+                            <div class="day-count @(count == 0 ? "is-none" : "")">
+                                @if (count > 0)
+                                {
+                                    @count
+                                    <text> </text>
+
+                                    @(count == 1 ? "session" : "sessions")
+                                }
+                                else if (isWeekend)
+                                {
+                                    <text>Closed</text>
+                                }
+                                else
+                                {
+                                    <text>—</text>
+                                }
+                            </div>
                         </div>
                     }
                 </div>
@@ -344,13 +148,17 @@
             <div class="panel">
                 <div class="section-title">
                     Recent activity
-                    <a asp-controller="Activity" asp-action="Index" class="row-action">Full log →</a>
+                    <a asp-controller="Activity" asp-action="Index" class="row-action">
+                        Full log <span class="material-symbols-outlined"></span>
+                    </a>
                 </div>
+
                 @if (Model.RecentActivity.Any())
                 {
                     foreach (var item in Model.RecentActivity)
                     {
                         <div class="activity-item">
+                            <span class="activity-icon material-symbols-outlined"></span>
                             <div>
                                 <div class="activity-text">@item.Text</div>
                                 <div class="activity-time">@item.Timestamp.ToString("MMM d, h:mm tt")</div>
@@ -363,64 +171,59 @@
                     <div class="empty-note">No recent activity yet.</div>
                 }
             </div>
+
         </div>
 
-        <!-- ========================= RIGHT COLUMN ========================= -->
-        <div>
-            <!-- Quick actions: account and record administration only.
-                 Case notes, anecdotal records and announcements are counselor
-                 work and are deliberately not offered here. -->
-            <div class="panel" style="margin-bottom:20px;">
-                <div class="section-title">Quick actions</div>
+        <!-- ===================== RIGHT COLUMN ===================== -->
+        <div class="dash-col">
+
+            @* Account and record administration only. Case notes, anecdotal
+               records and announcements are counselor work, not offered here. *@
+            <div class="panel">
+                <div class="section-title">Start a task</div>
+                <p class="panel-sub">The four things admins do most</p>
+
                 <div class="quick-actions">
                     <a class="quick-action" asp-controller="Students" asp-action="Create">
-                        <span class="material-symbols-outlined"></span> Add a student
+                        <span class="qa-icon material-symbols-outlined"></span>
+                        <span class="qa-text">Add a student</span>
+                        <span class="material-symbols-outlined qa-chevron"></span>
                     </a>
                     <a class="quick-action" asp-controller="Counselors" asp-action="Create">
-                        <span class="material-symbols-outlined"></span> Add a counselor
+                        <span class="qa-icon material-symbols-outlined"></span>
+                        <span class="qa-text">Add a counselor</span>
+                        <span class="material-symbols-outlined qa-chevron"></span>
                     </a>
                     <a class="quick-action" asp-controller="Students" asp-action="Index">
-                        <span class="material-symbols-outlined"></span> Import students from Excel
+                        <span class="qa-icon material-symbols-outlined"></span>
+                        <span class="qa-text">Import students from Excel</span>
+                        <span class="material-symbols-outlined qa-chevron"></span>
                     </a>
                     <a class="quick-action" asp-controller="Activity" asp-action="Index">
-                        <span class="material-symbols-outlined"></span> Review the activity log
+                        <span class="qa-icon material-symbols-outlined"></span>
+                        <span class="qa-text">Review the activity log</span>
+                        <span class="material-symbols-outlined qa-chevron"></span>
                     </a>
-                </div>
-            </div>
-
-            <div class="panel" style="margin-bottom:20px;">
-                <div class="section-title">User distribution</div>
-                @{
-                    var totalUsers = Math.Max(1, Model.StudentUserCount + Model.CounselorUserCount + Model.AdminUserCount);
-                }
-                <div class="dist-row">
-                    <div class="dist-labels"><span>Students</span><span>@Model.StudentUserCount</span></div>
-                    <div class="dist-bar-track"><div class="dist-bar-fill" style="width:@(100 * Model.StudentUserCount / totalUsers)%;"></div></div>
-                </div>
-                <div class="dist-row">
-                    <div class="dist-labels"><span>Counselors</span><span>@Model.CounselorUserCount</span></div>
-                    <div class="dist-bar-track"><div class="dist-bar-fill" style="width:@(100 * Model.CounselorUserCount / totalUsers)%;"></div></div>
-                </div>
-                <div class="dist-row">
-                    <div class="dist-labels"><span>Admins</span><span>@Model.AdminUserCount</span></div>
-                    <div class="dist-bar-track"><div class="dist-bar-fill" style="width:@(100 * Model.AdminUserCount / totalUsers)%;"></div></div>
                 </div>
             </div>
 
             <div class="panel">
                 <div class="section-title">
-                    Accounts awaiting setup
+                    Waiting to sign in
                     @if (Model.PendingSetupAccounts.Any())
                     {
                         <span class="count-pill">@Model.PendingSetupAccounts.Count</span>
                     }
                 </div>
+                <p class="panel-sub">Accounts created but never used</p>
+
                 @if (Model.PendingSetupAccounts.Any())
                 {
                     foreach (var (username, role) in Model.PendingSetupAccounts)
                     {
                         <div class="pending-item">
-                            <div>
+                            <div class="pending-avatar">@initials(username)</div>
+                            <div class="pending-body">
                                 <div class="pending-name">@username</div>
                                 <div class="pending-role">@role</div>
                             </div>
@@ -433,6 +236,55 @@
                     <div class="empty-note">All accounts have completed setup.</div>
                 }
             </div>
+
+            <div class="panel">
+                <div class="section-title">Who's in the system</div>
+                <p class="panel-sub">@totalUsers.ToString("N0") @(totalUsers == 1 ? "account" : "accounts") in total</p>
+
+                <div class="dist-row">
+                    <div class="dist-labels">
+                        <span>Students</span>
+                        <span class="dist-figures">
+                            <span class="dist-pct">@(Model.StudentUserCount == 0 ? "none yet" : share(Model.StudentUserCount) + "%")</span>
+                            <strong>@Model.StudentUserCount</strong>
+                        </span>
+                    </div>
+                    <div class="dist-bar-track">
+                        <div class="dist-bar-fill" style="width:@(share(Model.StudentUserCount))%;"></div>
+                    </div>
+                </div>
+
+                <div class="dist-row">
+                    <div class="dist-labels">
+                        <span>Counselors</span>
+                        <span class="dist-figures">
+                            <span class="dist-pct">@(Model.CounselorUserCount == 0 ? "none yet" : share(Model.CounselorUserCount) + "%")</span>
+                            <strong>@Model.CounselorUserCount</strong>
+                        </span>
+                    </div>
+                    <div class="dist-bar-track">
+                        <div class="dist-bar-fill" style="width:@(share(Model.CounselorUserCount))%;"></div>
+                    </div>
+                </div>
+
+                <div class="dist-row">
+                    <div class="dist-labels">
+                        <span>Administrators</span>
+                        <span class="dist-figures">
+                            <span class="dist-pct">@(Model.AdminUserCount == 0 ? "none yet" : share(Model.AdminUserCount) + "%")</span>
+                            <strong>@Model.AdminUserCount</strong>
+                        </span>
+                    </div>
+                    <div class="dist-bar-track">
+                        <div class="dist-bar-fill" style="width:@(share(Model.AdminUserCount))%;"></div>
+                    </div>
+                </div>
+
+                <p class="dist-foot">
+                    Counts match the numbers at the top of this page. Archived records aren't included.
+                </p>
+            </div>
+
         </div>
     </div>
 </div>

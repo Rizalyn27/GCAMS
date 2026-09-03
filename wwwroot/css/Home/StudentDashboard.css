@@ -1,0 +1,465 @@
+﻿/* ==========================================================================
+   StudentDashboard.css
+   Path: wwwroot/css/Home/StudentDashboard.css
+
+   Plain .css file — media queries use a SINGLE @. The @@ form only works
+   inside a .cshtml <style> block; in a .css file the rule is dropped.
+   ========================================================================== */
+
+.stu-dash {
+    --stu-green: #1b6d24;
+    --stu-green-dark: #14562a;
+    --stu-green-soft: #e6f4ea;
+    --stu-ink: #191d18;
+    --stu-muted: #717a6d;
+    --stu-faint: #a3aa9e;
+    --stu-line: #e1e4db;
+    --stu-tint: #f2f5ec;
+    --stu-warn-ink: #8a5a00;
+    --stu-warn-bg: #fdf6e3;
+    --stu-warn-line: #f0dcae;
+    max-width: 1120px;
+}
+
+    .stu-dash * {
+        font-family: 'Inter', sans-serif;
+    }
+
+    .stu-dash .material-symbols-outlined {
+        font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        vertical-align: middle;
+    }
+
+    /* ==========================================================================
+   HEADER
+   ========================================================================== */
+    .stu-dash .stu-head {
+        margin-bottom: 22px;
+    }
+
+    .stu-dash h1 {
+        font-family: 'Inter', sans-serif;
+        font-size: 34px;
+        font-weight: 400;
+        letter-spacing: -.01em;
+        color: var(--stu-ink);
+        margin: 0 0 6px;
+    }
+
+    .stu-dash .stu-lead {
+        font-size: 14px;
+        line-height: 1.6;
+        color: var(--stu-muted);
+        max-width: 62ch;
+        margin: 0;
+    }
+
+    /* ==========================================================================
+   LAYOUT
+   ========================================================================== */
+    .stu-dash .stu-grid {
+        display: grid;
+        grid-template-columns: 1.7fr 1fr;
+        gap: 20px;
+        align-items: start;
+    }
+
+    .stu-dash .stu-main,
+    .stu-dash .stu-side {
+        display: flex;
+        flex-direction: column;
+        gap: 20px;
+        min-width: 0;
+    }
+
+    .stu-dash .panel {
+        background: #fff;
+        border: 1px solid var(--stu-line);
+        border-radius: 14px;
+        padding: 20px 22px;
+    }
+
+    .stu-dash .panel-feature {
+        border-color: #d3ddd2;
+        box-shadow: 0 1px 3px rgba(0,0,0,.04);
+    }
+
+    .stu-dash .panel-head {
+        display: flex;
+        align-items: baseline;
+        justify-content: space-between;
+        gap: 12px;
+        flex-wrap: wrap;
+    }
+
+    .stu-dash .panel-title {
+        font-family: 'Inter', sans-serif;
+        font-size: 21px;
+        font-weight: 400;
+        color: var(--stu-ink);
+        margin: 0;
+    }
+
+    .stu-dash .panel-sub {
+        font-size: 13px;
+        line-height: 1.55;
+        color: var(--stu-muted);
+        margin: 4px 0 16px;
+    }
+
+    .stu-dash .link-more {
+        display: inline-flex;
+        align-items: center;
+        gap: 2px;
+        font-size: 12.5px;
+        font-weight: 600;
+        color: var(--stu-green);
+        text-decoration: none;
+        white-space: nowrap;
+    }
+
+        .stu-dash .link-more .material-symbols-outlined {
+            font-size: 16px;
+        }
+
+        .stu-dash .link-more:hover {
+            text-decoration: underline;
+        }
+
+    /* ==========================================================================
+   NEXT SESSION
+   ========================================================================== */
+    .stu-dash .panel-eyebrow {
+        display: inline-flex;
+        align-items: center;
+        gap: 7px;
+        font-size: 12px;
+        font-weight: 600;
+        color: var(--stu-green);
+        margin-bottom: 10px;
+    }
+
+        .stu-dash .panel-eyebrow.is-pending {
+            color: var(--stu-warn-ink);
+        }
+
+    .stu-dash .dot {
+        width: 7px;
+        height: 7px;
+        border-radius: 50%;
+        background: currentColor;
+    }
+
+    .stu-dash .dot-quiet {
+        background: var(--stu-faint);
+    }
+
+    .stu-dash .session-when {
+        font-family: 'Inter', sans-serif;
+        font-size: 26px;
+        font-weight: 400;
+        line-height: 1.25;
+        color: var(--stu-ink);
+        margin: 0;
+    }
+
+    .stu-dash .session-meta {
+        font-size: 13px;
+        color: var(--stu-muted);
+        margin: 6px 0 0;
+    }
+
+    .stu-dash .notice {
+        display: flex;
+        align-items: flex-start;
+        gap: 10px;
+        margin-top: 16px;
+        padding: 12px 14px;
+        border-radius: 10px;
+        font-size: 12.5px;
+        line-height: 1.55;
+    }
+
+    .stu-dash .notice-pending {
+        color: var(--stu-warn-ink);
+        background: var(--stu-warn-bg);
+        border: 1px solid var(--stu-warn-line);
+    }
+
+        .stu-dash .notice-pending .material-symbols-outlined {
+            font-size: 18px;
+            flex-shrink: 0;
+        }
+
+    /* ==========================================================================
+   BUTTONS
+   ========================================================================== */
+    .stu-dash .btn-row {
+        display: flex;
+        gap: 10px;
+        flex-wrap: wrap;
+        margin-top: 20px;
+    }
+
+    .stu-dash .btn-gc {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        padding: 11px 20px;
+        font-family: 'Inter', sans-serif;
+        font-size: 13.5px;
+        font-weight: 600;
+        border-radius: 10px;
+        text-decoration: none;
+        cursor: pointer;
+        transition: background .15s, border-color .15s;
+    }
+
+    .stu-dash .btn-gc-primary {
+        color: #fff;
+        background: var(--stu-green);
+        border: 1px solid var(--stu-green);
+    }
+
+        .stu-dash .btn-gc-primary:hover {
+            color: #fff;
+            background: var(--stu-green-dark);
+            border-color: var(--stu-green-dark);
+        }
+
+    .stu-dash .btn-gc-outline {
+        color: var(--stu-ink);
+        background: #fff;
+        border: 1px solid var(--stu-line);
+    }
+
+        .stu-dash .btn-gc-outline:hover {
+            background: var(--stu-tint);
+            border-color: #cfd8c8;
+            color: var(--stu-ink);
+        }
+
+    .stu-dash .btn-gc:focus-visible,
+    .stu-dash .link-more:focus-visible {
+        outline: 2px solid var(--stu-green);
+        outline-offset: 2px;
+    }
+
+    /* ==========================================================================
+   STEPS
+   ========================================================================== */
+    .stu-dash .steps {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 20px;
+    }
+
+    .stu-dash .step-num {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 24px;
+        height: 24px;
+        margin-bottom: 10px;
+        font-size: 11.5px;
+        font-weight: 700;
+        color: var(--stu-green);
+        background: var(--stu-green-soft);
+        border-radius: 50%;
+    }
+
+    .stu-dash .step-name {
+        font-size: 13.5px;
+        font-weight: 700;
+        color: var(--stu-ink);
+    }
+
+    .stu-dash .step-text {
+        font-size: 12.5px;
+        line-height: 1.55;
+        color: var(--stu-muted);
+        margin: 4px 0 0;
+    }
+
+    /* ==========================================================================
+   HELP CARDS
+   ========================================================================== */
+    .stu-dash .help-card {
+        border: 1px solid var(--stu-line);
+        border-radius: 12px;
+        padding: 14px 16px;
+        margin-bottom: 12px;
+    }
+
+        .stu-dash .help-card:last-of-type {
+            margin-bottom: 0;
+        }
+
+    .stu-dash .help-card-urgent {
+        background: var(--stu-warn-bg);
+        border-color: var(--stu-warn-line);
+    }
+
+    .stu-dash .help-head {
+        display: flex;
+        align-items: flex-start;
+        gap: 8px;
+        font-size: 13.5px;
+        font-weight: 700;
+        color: var(--stu-ink);
+        line-height: 1.4;
+    }
+
+        .stu-dash .help-head .material-symbols-outlined {
+            font-size: 18px;
+            color: var(--stu-green);
+            flex-shrink: 0;
+        }
+
+    .stu-dash .help-card-urgent .help-head {
+        color: var(--stu-warn-ink);
+    }
+
+        .stu-dash .help-card-urgent .help-head .material-symbols-outlined {
+            color: #c98a2e;
+        }
+
+    .stu-dash .help-text {
+        font-size: 12.5px;
+        line-height: 1.55;
+        color: var(--stu-muted);
+        margin: 8px 0 0;
+    }
+
+    .stu-dash .help-card-urgent .help-text {
+        color: var(--stu-warn-ink);
+    }
+
+    .stu-dash .side-note {
+        font-size: 12px;
+        color: var(--stu-faint);
+        margin: 14px 0 0;
+        padding-top: 12px;
+        border-top: 1px solid #f0f3ec;
+    }
+
+    /* ==========================================================================
+   PRIVACY LIST
+   ========================================================================== */
+    .stu-dash .privacy-list {
+        list-style: none;
+        margin: 0;
+        padding: 0;
+    }
+
+        .stu-dash .privacy-list li {
+            display: flex;
+            align-items: flex-start;
+            gap: 10px;
+            padding: 11px 0;
+            border-bottom: 1px solid #f0f3ec;
+            font-size: 12.5px;
+            line-height: 1.55;
+            color: var(--stu-muted);
+        }
+
+            .stu-dash .privacy-list li:last-child {
+                border-bottom: none;
+                padding-bottom: 0;
+            }
+
+            .stu-dash .privacy-list li strong {
+                color: var(--stu-ink);
+                font-weight: 600;
+            }
+
+            .stu-dash .privacy-list li .material-symbols-outlined {
+                font-size: 17px;
+                color: var(--stu-faint);
+                flex-shrink: 0;
+                margin-top: 1px;
+            }
+
+    /* ==========================================================================
+   ANNOUNCEMENTS
+   ========================================================================== */
+    .stu-dash .ann-item {
+        padding: 14px 0;
+        border-bottom: 1px solid #f0f3ec;
+    }
+
+        .stu-dash .ann-item:last-child {
+            border-bottom: none;
+            padding-bottom: 0;
+        }
+
+    .stu-dash .ann-title {
+        font-size: 14px;
+        font-weight: 700;
+        color: var(--stu-ink);
+    }
+
+    .stu-dash .ann-date {
+        font-size: 11.5px;
+        color: var(--stu-faint);
+        margin-top: 2px;
+    }
+
+    .stu-dash .ann-excerpt {
+        font-size: 13px;
+        line-height: 1.6;
+        color: #41493e;
+        margin: 6px 0 0;
+    }
+
+    .stu-dash .tag-new {
+        display: inline-block;
+        margin-left: 6px;
+        padding: 2px 8px;
+        font-family: 'Inter', sans-serif;
+        font-size: 10.5px;
+        font-weight: 700;
+        color: var(--stu-green);
+        background: var(--stu-green-soft);
+        border-radius: 20px;
+        vertical-align: middle;
+    }
+
+    .stu-dash .empty-note {
+        font-size: 13px;
+        line-height: 1.6;
+        color: var(--stu-faint);
+        margin: 0;
+    }
+
+/* ==========================================================================
+   RESPONSIVE
+   ========================================================================== */
+@media (max-width: 1000px) {
+    .stu-dash .stu-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+@media (max-width: 640px) {
+    .stu-dash h1 {
+        font-size: 27px;
+    }
+
+    .stu-dash .session-when {
+        font-size: 22px;
+    }
+
+    .stu-dash .panel {
+        padding: 16px;
+    }
+
+    .stu-dash .steps {
+        grid-template-columns: 1fr;
+        gap: 16px;
+    }
+
+    .stu-dash .btn-row .btn-gc {
+        flex: 1 1 100%;
+    }
+}

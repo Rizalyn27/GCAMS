@@ -1,67 +1,275 @@
-﻿<div id="ChatArea" style="border: 1px solid #ccc; padding: 10px; height: 300px; overflow-y: Auto; ">
-    <div><strong>Bot:</strong> Hello I am the Don Sergio Osmeña Sr. Memorial National High School Care Center Chatbot!</div>
+﻿@{
+    ViewData["Title"] = "Ask CareBot";
+}
+
+@section Styles {
+    <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="~/css/Chatbot/Chatbot.css" asp-append-version="true" />
+}
+
+@section Breadcrumb {
+    <a asp-controller="Home" asp-action="Index" class="back-chevron" title="Back to dashboard">
+        <span class="material-symbols-outlined">chevron_left</span>
+    </a>
+    <nav class="breadcrumb-nav">
+        <a asp-controller="Home" asp-action="Index">Care Center</a>
+        <span class="material-symbols-outlined breadcrumb-sep">chevron_right</span>
+        <span class="current">Ask CareBot</span>
+    </nav>
+}
+
+<div class="carebot">
+    <div class="bot-grid">
+
+        <section class="chat-panel">
+
+            <header class="chat-head">
+                <div class="bot-avatar">
+                    <span class="material-symbols-outlined"></span>
+                </div>
+                <div>
+                    <div class="bot-name">CareBot</div>
+                    <div class="bot-status">
+                        <span class="status-dot"></span>
+                        Online · answers questions about the Care Center
+                    </div>
+                </div>
+            </header>
+
+            <div class="chat-disclaimer">
+                <span class="material-symbols-outlined"></span>
+                <span>
+                    CareBot is not a counselor. It can explain how things work and help you
+                    book, but it can't give advice about what you're going through. For that,
+                    talk to a counselor.
+                </span>
+            </div>
+
+            <div id="ChatArea" class="chat-area" role="log" aria-live="polite" aria-label="Conversation with CareBot">
+                <div class="day-divider"><span>Today</span></div>
+
+                <div class="msg msg-bot">
+                    <div class="msg-avatar">
+                        <span class="material-symbols-outlined"></span>
+                    </div>
+                    <div class="msg-bubble">
+                        <p>Hi! I'm CareBot, the Care Center's assistant.</p>
+                        <p>I can help you with things like:</p>
+                        <ul>
+                            <li>Booking or changing a counseling session</li>
+                            <li>Office hours and where to find the guidance office</li>
+                            <li>What happens during a session, and who can see your records</li>
+                        </ul>
+                        <span class="msg-time">@DateTime.Now.ToString("h:mm tt")</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="composer">
+                <div class="suggestions">
+                    <span class="suggest-label">Try asking:</span>
+                    <button type="button" class="chip">How do I book a session?</button>
+                    <button type="button" class="chip">What are the office hours?</button>
+                    <button type="button" class="chip">Who can see my session notes?</button>
+                </div>
+
+                <div class="composer-row">
+                    <textarea id="UserMessage" rows="1" maxlength="500"
+                              placeholder="Ask CareBot a question…"
+                              aria-label="Your message"></textarea>
+                    <button type="button" id="SendBtn" class="btn-send" aria-label="Send message">
+                        <span class="material-symbols-outlined">send</span>
+                    </button>
+                </div>
+
+                <div class="composer-foot">
+                    <span id="charCount">0 / 500</span>
+                </div>
+            </div>
+        </section>
+
+        <aside class="bot-side">
+
+            <section class="card">
+                <h2 class="card-title">What CareBot can do</h2>
+                <p class="card-sub">
+                    It knows the Care Center's rules and schedules nothing about you personally.
+                </p>
+
+                <ul class="cap-list">
+                    <li class="can"><span class="material-symbols-outlined"></span> Explain how booking works, step by step</li>
+                    <li class="can"><span class="material-symbols-outlined"></span> Tell you office hours and room numbers</li>
+                    <li class="can"><span class="material-symbols-outlined"></span> Explain who can see your records</li>
+                    <li class="can"><span class="material-symbols-outlined"></span> Point you to the right person to talk to</li>
+                    <li class="cant"><span class="material-symbols-outlined"></span> It can't give counseling or personal advice</li>
+                    <li class="cant"><span class="material-symbols-outlined"></span> It can't see your appointments or your notes</li>
+                </ul>
+            </section>
+
+            <section class="card">
+                <h2 class="card-title">Talk to a person instead</h2>
+                <p class="card-sub">CareBot can't replace a counselor. These always can.</p>
+
+                <div class="help-card help-card-urgent">
+                    <div class="help-head">
+                        <span class="material-symbols-outlined"></span>
+                        I need help today
+                    </div>
+                    <p class="help-text">
+                        Walk in to the Guidance Office during school hours. No appointment needed,
+                        and you don't need a reason ready.
+                    </p>
+                </div>
+
+                <a class="help-card help-link" asp-controller="Appointments" asp-action="Create">
+                    <div class="help-head">
+                        <span class="material-symbols-outlined"></span>
+                        Book a session
+                    </div>
+                    <p class="help-text">Pick a time with a counselor</p>
+                </a>
+
+                <a class="help-card help-link" asp-controller="Appointments" asp-action="MyAppointments">
+                    <div class="help-head">
+                        <span class="material-symbols-outlined"></span>
+                        My sessions
+                    </div>
+                    <p class="help-text">What you've booked and already attended</p>
+                </a>
+            </section>
+
+        </aside>
+    </div>
 </div>
 
-<div style="margin-top: 10px; display: flex; gap: 5px">
-    <textarea id="UserMessage"
-              rows="2"
-              placeholder="Type Mesasge..."
-              style="flex: 1; resize: none; padding: 5px;">
-    </textarea>
-    <button id="SendBtn" style="padding: 5px 15px;">Send</button>
-
-</div>
-
-<script>
+@section Scripts {
+    <script>
         document.addEventListener('DOMContentLoaded', () => {
-        const ChatArea = document.getElementById('ChatArea');
-        const UserMessage = document.getElementById('UserMessage');
-        const SendBtn = document.getElementById('SendBtn');
+            const chatArea   = document.getElementById('ChatArea');
+            const userInput  = document.getElementById('UserMessage');
+            const sendBtn    = document.getElementById('SendBtn');
+            const charCount  = document.getElementById('charCount');
 
-        SendBtn.addEventListener('click', SendMessage);
+            // Anything the user or the server sends is treated as text, never markup.
+            function appendMessage(role, text) {
+                const wrap = document.createElement('div');
+                wrap.className = 'msg msg-' + role;
 
+                if (role === 'bot') {
+                    const avatar = document.createElement('div');
+                    avatar.className = 'msg-avatar';
+                    avatar.innerHTML = '<span class="material-symbols-outlined"></span>';
+                    wrap.appendChild(avatar);
+                }
 
-        //Enter to send message
-        UserMessage.addEventListener('keydown', (e) => {
-            if (e.key === 'Enter' && !e.shiftKey) {
-                e.preventDefault();
-                SendMessage();
+                const bubble = document.createElement('div');
+                bubble.className = 'msg-bubble';
+
+                const body = document.createElement('p');
+                body.textContent = text;
+                bubble.appendChild(body);
+
+                const time = document.createElement('span');
+                time.className = 'msg-time';
+                time.textContent = new Date().toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' });
+                bubble.appendChild(time);
+
+                wrap.appendChild(bubble);
+                chatArea.appendChild(wrap);
+                scrollToEnd();
+                return wrap;
             }
-        });
 
-        function SendMessage() {
-            const Message = UserMessage.value.trim();
-            if (Message === '') return;
+            function showTyping() {
+                const wrap = document.createElement('div');
+                wrap.className = 'msg msg-bot';
+                wrap.id = 'typing-indicator';
+                wrap.innerHTML = `
+                    <div class="msg-avatar"><span class="material-symbols-outlined">smart_toy</span></div>
+                    <div class="msg-bubble typing"><span></span><span></span><span></span></div>`;
+                chatArea.appendChild(wrap);
+                scrollToEnd();
+            }
 
-            ChatArea.innerHTML += `<div><strong>You:</strong> ${Message}</div>`;
-            UserMessage.value = '';
-
-            const typingIndicator = document.createElement('div');
-            typingIndicator.id = 'typing-indicator';
-            typingIndicator.innerHTML = '<strong>Bot:</strong> Typing...';
-            ChatArea.appendChild(typingIndicator);
-            ChatArea.scrollTop = ChatArea.scrollHeight;
-
-            fetch('/ChatBot/SendMessage', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ Message })
-            })
-            .then(res => res.json())
-            .then(data => {
+            function hideTyping() {
                 const indicator = document.getElementById('typing-indicator');
-                if (indicator) indicator.remove();
+                if (indicator) { indicator.remove(); }
+            }
 
-                ChatArea.innerHTML += `<div><strong>Bot: </strong>${data.answer}</div>`;
-                ChatArea.scrollTop = ChatArea.scrollHeight;
-            })
-            .catch(() => {
-                const indicator = document.getElementById('typing-indicator');
-                if (indicator) indicator.remove();
+            function scrollToEnd() {
+                chatArea.scrollTop = chatArea.scrollHeight;
+            }
 
-                ChatArea.innerHTML += '<div><strong>Bot: </strong>Error</div>';
-                ChatArea.scrollTop = ChatArea.scrollHeight;
+            function setBusy(isBusy) {
+                sendBtn.disabled = isBusy;
+                userInput.disabled = isBusy;
+                if (!isBusy) { userInput.focus(); }
+            }
+
+            async function sendMessage() {
+                const message = userInput.value.trim();
+                if (message === '') { return; }
+
+                appendMessage('user', message);
+                userInput.value = '';
+                autoGrow();
+                syncCount();
+                setBusy(true);
+                showTyping();
+
+                try {
+                    const res = await fetch('/ChatBot/SendMessage', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ Message: message })
+                    });
+
+                    if (!res.ok) { throw new Error('Request failed'); }
+
+                    const data = await res.json();
+                    hideTyping();
+                    appendMessage('bot', data.answer);
+
+                } catch (err) {
+                    hideTyping();
+                    appendMessage('bot', "Sorry — I couldn't reach the server just now. Please try again in a moment.");
+                } finally {
+                    setBusy(false);
+                }
+            }
+
+            // Textarea grows with the message instead of scrolling in a 2-row box
+            function autoGrow() {
+                userInput.style.height = 'auto';
+                userInput.style.height = Math.min(userInput.scrollHeight, 140) + 'px';
+            }
+
+            function syncCount() {
+                charCount.textContent = `${userInput.value.length} / 500`;
+            }
+
+            sendBtn.addEventListener('click', sendMessage);
+
+            userInput.addEventListener('input', () => { autoGrow(); syncCount(); });
+
+            userInput.addEventListener('keydown', (e) => {
+                if (e.key === 'Enter' && !e.shiftKey) {
+                    e.preventDefault();
+                    sendMessage();
+                }
             });
-        }
-    });
-</script>
+
+            document.querySelectorAll('.chip').forEach(chip => {
+                chip.addEventListener('click', function () {
+                    userInput.value = this.textContent.trim();
+                    syncCount();
+                    sendMessage();
+                });
+            });
+
+            syncCount();
+            userInput.focus();
+        });
+    </script>
+}
