@@ -92,7 +92,7 @@
                     @if (Model.HasPendingRequest)
                     {
                         <div class="notice notice-pending">
-                            <span class="material-symbols-outlined"></span>
+                            <span class="material-symbols-outlined">hourglass_top</span>
                             <div>
                                 A counselor still has to confirm this time. Most requests are
                                 answered within a school day, and you'll see the change here.
@@ -101,14 +101,21 @@
                     }
 
                     <div class="btn-row">
+                        <a class="btn-gc btn-gc-outline"
+                           asp-controller="Appointments" asp-action="Edit"
+                           asp-route-appointmentid="@appt.AppointmentId">
+                            <span class="material-symbols-outlined">schedule</span>
+                            Change the time
+                        </a>
+                        <a class="btn-gc btn-gc-outline btn-gc-quiet"
+                           asp-controller="Appointments" asp-action="Delete"
+                           asp-route-appointmentid="@appt.AppointmentId">
+                            Cancel this session
+                        </a>
                         <a class="btn-gc btn-gc-primary"
                            asp-controller="Appointments" asp-action="Details"
                            asp-route-appointmentid="@appt.AppointmentId">
-                            View this session
-                        </a>
-                        <a class="btn-gc btn-gc-outline"
-                           asp-controller="Appointments" asp-action="MyAppointments">
-                            All my appointments
+                            View details
                         </a>
                     </div>
                 }
@@ -142,7 +149,7 @@
                     <div class="panel-head">
                         <h2 class="panel-title">Book another session</h2>
                         <a asp-controller="Appointments" asp-action="Create" class="link-more">
-                            See all times <span class="material-symbols-outlined"></span>
+                            See all times <span class="material-symbols-outlined">chevron_right</span>
                         </a>
                     </div>
                     <p class="panel-sub">Pick a time that works for you. You can change or cancel it later.</p>
@@ -235,7 +242,7 @@
 
                 <div class="help-card help-card-urgent">
                     <div class="help-head">
-                        <span class="material-symbols-outlined"></span>
+                        <span class="material-symbols-outlined">warning</span>
                         I need to talk to someone today
                     </div>
                     <p class="help-text">
@@ -244,14 +251,24 @@
                     </p>
                 </div>
 
+                <a class="help-card help-card-link" asp-controller="ChatBot" asp-action="Index">
+                    <div class="help-head">
+                        <span class="material-symbols-outlined">forum</span>
+                        Ask the chatbot
+                    </div>
+                    <p class="help-text">
+                        Quick answers about schedules, requirements and how counseling works.
+                    </p>
+                </a>
+
                 <div class="help-card">
                     <div class="help-head">
-                        <span class="material-symbols-outlined"></span>
+                        <span class="material-symbols-outlined">campaign</span>
                         Check the announcements
                     </div>
                     <p class="help-text">
-                        Schedules, requirements and reminders from the guidance office are
-                        posted further down this page.
+                        Schedules and reminders from the guidance office are posted
+                        further down this page.
                     </p>
                 </div>
 
@@ -270,15 +287,15 @@
 
                 <ul class="privacy-list">
                     <li>
-                        <span class="material-symbols-outlined"></span>
+                        <span class="material-symbols-outlined">lock</span>
                         <div>What you talk about <strong>stays between you and your counselor</strong>. It isn't shared with your teachers or classmates.</div>
                     </li>
                     <li>
-                        <span class="material-symbols-outlined"></span>
+                        <span class="material-symbols-outlined">visibility_off</span>
                         <div>Your parents are not notified when you book a session.</div>
                     </li>
                     <li>
-                        <span class="material-symbols-outlined"></span>
+                        <span class="material-symbols-outlined">warning</span>
                         <div>The one exception: if someone is in danger, your counselor has to involve an adult who can help. They'll tell you first.</div>
                     </li>
                 </ul>

@@ -19,15 +19,28 @@
     --stu-warn-bg: #fdf6e3;
     --stu-warn-line: #f0dcae;
     max-width: 1120px;
+    margin: 0 auto;
 }
 
     .stu-dash * {
         font-family: 'Inter', sans-serif;
     }
 
+    /* Naming the family here means a missing font shows nothing rather than
+       leaking the ligature name ("lock", "warning") into the page as text. */
     .stu-dash .material-symbols-outlined {
+        font-family: 'Material Symbols Outlined';
         font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        font-weight: normal;
+        font-style: normal;
+        line-height: 1;
+        letter-spacing: normal;
+        text-transform: none;
+        white-space: nowrap;
+        direction: ltr;
         vertical-align: middle;
+        -webkit-font-feature-settings: 'liga';
+        -webkit-font-smoothing: antialiased;
     }
 
     /* ==========================================================================
@@ -239,6 +252,20 @@
             color: var(--stu-ink);
         }
 
+    .stu-dash .btn-gc .material-symbols-outlined {
+        font-size: 17px;
+        margin-right: 6px;
+    }
+
+    /* Cancel sits with the others but shouldn't compete for attention */
+    .stu-dash .btn-gc-quiet {
+        color: var(--stu-muted);
+    }
+
+        .stu-dash .btn-gc-quiet:hover {
+            color: var(--stu-ink);
+        }
+
     .stu-dash .btn-gc:focus-visible,
     .stu-dash .link-more:focus-visible {
         outline: 2px solid var(--stu-green);
@@ -293,6 +320,17 @@
 
         .stu-dash .help-card:last-of-type {
             margin-bottom: 0;
+        }
+
+    .stu-dash .help-card-link {
+        display: block;
+        text-decoration: none;
+        transition: background .15s, border-color .15s;
+    }
+
+        .stu-dash .help-card-link:hover {
+            background: var(--stu-tint);
+            border-color: #cfd8c8;
         }
 
     .stu-dash .help-card-urgent {

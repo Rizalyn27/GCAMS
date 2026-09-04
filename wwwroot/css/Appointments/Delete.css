@@ -1,0 +1,408 @@
+﻿/* ==========================================================================
+   Delete.css — Cancel a session
+   Path: wwwroot/css/Appointments/Delete.css
+
+   Plain .css file — media queries use a SINGLE @. The @@ form only works
+   inside a .cshtml <style> block; in a .css file the rule is dropped.
+   ========================================================================== */
+
+.cancel-page {
+    --cx-green: #1b6d24;
+    --cx-green-dark: #14562a;
+    --cx-green-soft: #e6f4ea;
+    --cx-ink: #191d18;
+    --cx-muted: #717a6d;
+    --cx-faint: #a3aa9e;
+    --cx-line: #e1e4db;
+    --cx-tint: #f2f5ec;
+    --cx-warn-ink: #8a5a00;
+    --cx-warn-bg: #fdf1d6;
+    --cx-danger: #c0392f;
+    --cx-danger-ink: #93000a;
+    --cx-danger-bg: #fdeceb;
+    --cx-info-bg: #eef4fb;
+    --cx-info-line: #cfe0f2;
+    --cx-info-ink: #1f4e79;
+    display: flex;
+    align-items: flex-start;
+    justify-content: center;
+    min-height: 60vh;
+    padding: 12px 0 40px;
+}
+
+    .cancel-page * {
+        font-family: 'Inter', sans-serif;
+        box-sizing: border-box;
+    }
+
+    /* Naming the family here means a missing font shows nothing rather than
+       leaking the ligature name ("warning") into the page as text. */
+    .cancel-page .material-symbols-outlined {
+        font-family: 'Material Symbols Outlined';
+        font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        font-weight: normal;
+        font-style: normal;
+        line-height: 1;
+        letter-spacing: normal;
+        text-transform: none;
+        white-space: nowrap;
+        direction: ltr;
+        vertical-align: middle;
+        -webkit-font-feature-settings: 'liga';
+        -webkit-font-smoothing: antialiased;
+    }
+
+/* ==========================================================================
+   DIALOG SHELL
+   ========================================================================== */
+.cancel-dialog {
+    width: 100%;
+    max-width: 560px;
+    background: #fff;
+    border: 1px solid var(--cx-line);
+    border-radius: 16px;
+    box-shadow: 0 10px 34px rgba(25,29,24,.09);
+    overflow: hidden;
+}
+
+.dialog-head {
+    display: flex;
+    align-items: flex-start;
+    gap: 13px;
+    padding: 22px 24px 18px;
+}
+
+.dialog-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 38px;
+    height: 38px;
+    flex-shrink: 0;
+    font-size: 21px;
+    color: #c98a2e;
+    background: var(--cx-warn-bg);
+    border-radius: 50%;
+}
+
+.dialog-title {
+    font-family: 'Manrope', sans-serif;
+    font-size: 19px;
+    font-weight: 700;
+    line-height: 1.3;
+    color: var(--cx-ink);
+    margin: 0;
+}
+
+.dialog-sub {
+    font-size: 13px;
+    line-height: 1.55;
+    color: var(--cx-muted);
+    margin: 5px 0 0;
+}
+
+.dialog-close {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 30px;
+    height: 30px;
+    flex-shrink: 0;
+    margin-left: auto;
+    color: var(--cx-faint);
+    border-radius: 8px;
+    text-decoration: none;
+}
+
+    .dialog-close:hover {
+        background: var(--cx-tint);
+        color: var(--cx-ink);
+    }
+
+    .dialog-close .material-symbols-outlined {
+        font-size: 19px;
+    }
+
+.dialog-body {
+    padding: 0 24px 4px;
+}
+
+/* ==========================================================================
+   SESSION CARD
+   ========================================================================== */
+.session-card {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding: 14px 16px;
+    background: #fbfcf9;
+    border: 1px solid var(--cx-line);
+    border-radius: 12px;
+}
+
+.date-chip {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    width: 56px;
+    height: 56px;
+    flex-shrink: 0;
+    background: #fff;
+    border: 1px solid var(--cx-line);
+    border-radius: 10px;
+    line-height: 1.15;
+}
+
+.chip-dow {
+    font-size: 9.5px;
+    font-weight: 700;
+    letter-spacing: .08em;
+    color: var(--cx-muted);
+}
+
+.chip-day {
+    font-family: 'Manrope', sans-serif;
+    font-size: 20px;
+    font-weight: 700;
+    color: var(--cx-ink);
+}
+
+.chip-mon {
+    font-size: 10px;
+    color: var(--cx-muted);
+}
+
+.session-body {
+    min-width: 0;
+}
+
+.session-time {
+    font-size: 15px;
+    font-weight: 700;
+    color: var(--cx-ink);
+}
+
+.session-meta {
+    display: flex;
+    align-items: center;
+    gap: 9px;
+    flex-wrap: wrap;
+    margin-top: 5px;
+}
+
+.meta-text {
+    font-size: 12.5px;
+    color: var(--cx-muted);
+}
+
+.meta-quiet {
+    color: var(--cx-faint);
+}
+
+.status-badge {
+    display: inline-flex;
+    align-items: center;
+    padding: 3px 10px;
+    font-size: 11.5px;
+    font-weight: 600;
+    border-radius: 20px;
+    white-space: nowrap;
+}
+
+.status-Confirmed {
+    color: #0f6b1f;
+    background: var(--cx-green-soft);
+}
+
+.status-Pending {
+    color: var(--cx-warn-ink);
+    background: var(--cx-warn-bg);
+}
+
+.status-Completed {
+    color: #41493e;
+    background: #eef1ea;
+}
+
+.status-Cancelled {
+    color: var(--cx-danger-ink);
+    background: var(--cx-danger-bg);
+}
+
+.status-Missed {
+    color: #41493e;
+    background: #eef1ea;
+}
+
+/* ==========================================================================
+   CONSEQUENCES + ALTERNATIVE
+   ========================================================================== */
+.consequence-list {
+    list-style: none;
+    margin: 16px 0 0;
+    padding: 0;
+}
+
+    .consequence-list li {
+        display: flex;
+        align-items: flex-start;
+        gap: 10px;
+        padding: 8px 0;
+        font-size: 12.5px;
+        line-height: 1.55;
+        color: var(--cx-muted);
+    }
+
+        .consequence-list li .material-symbols-outlined {
+            font-size: 17px;
+            color: var(--cx-faint);
+            flex-shrink: 0;
+            margin-top: 1px;
+        }
+
+.alt-callout {
+    display: flex;
+    align-items: flex-start;
+    gap: 11px;
+    margin-top: 14px;
+    padding: 14px 16px;
+    background: var(--cx-info-bg);
+    border: 1px solid var(--cx-info-line);
+    border-radius: 12px;
+}
+
+    .alt-callout .material-symbols-outlined {
+        font-size: 18px;
+        color: var(--cx-info-ink);
+        flex-shrink: 0;
+        margin-top: 1px;
+    }
+
+.alt-title {
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--cx-info-ink);
+}
+
+.alt-text {
+    font-size: 12.5px;
+    line-height: 1.55;
+    color: var(--cx-info-ink);
+    margin: 3px 0 8px;
+    opacity: .9;
+}
+
+.alt-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 2px;
+    font-size: 12.5px;
+    font-weight: 700;
+    color: var(--cx-info-ink);
+    text-decoration: none;
+}
+
+    .alt-link:hover {
+        text-decoration: underline;
+        color: var(--cx-info-ink);
+    }
+
+    .alt-link .material-symbols-outlined {
+        font-size: 16px;
+        color: inherit;
+        margin-top: 0;
+    }
+
+/* ==========================================================================
+   FOOTER BUTTONS
+   ========================================================================== */
+.dialog-foot {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    margin-top: 20px;
+    padding: 16px 24px;
+    background: #fbfcf9;
+    border-top: 1px solid var(--cx-line);
+}
+
+.btn-keep,
+.btn-cancel-session {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 11px 20px;
+    font-family: 'Inter', sans-serif;
+    font-size: 13.5px;
+    font-weight: 600;
+    border-radius: 10px;
+    text-decoration: none;
+    cursor: pointer;
+    white-space: nowrap;
+    transition: background .15s, border-color .15s;
+}
+
+/* Keeping the session is the safe default, so it carries the solid button */
+.btn-keep {
+    color: #fff;
+    background: var(--cx-green);
+    border: 1px solid var(--cx-green);
+}
+
+    .btn-keep:hover {
+        color: #fff;
+        background: var(--cx-green-dark);
+        border-color: var(--cx-green-dark);
+    }
+
+.btn-cancel-session {
+    color: var(--cx-danger-ink);
+    background: #fff;
+    border: 1px solid #f2cfcc;
+}
+
+    .btn-cancel-session:hover {
+        background: var(--cx-danger-bg);
+    }
+
+    .btn-keep:focus-visible,
+    .btn-cancel-session:focus-visible,
+    .alt-link:focus-visible,
+    .dialog-close:focus-visible {
+        outline: 2px solid var(--cx-green);
+        outline-offset: 2px;
+    }
+
+/* ==========================================================================
+   RESPONSIVE
+   ========================================================================== */
+@media (max-width: 560px) {
+    .cancel-page {
+        padding: 0 0 30px;
+        min-height: 0;
+    }
+
+    .dialog-head {
+        padding: 18px 16px 14px;
+    }
+
+    .dialog-title {
+        font-size: 17px;
+    }
+
+    .dialog-body {
+        padding: 0 16px;
+    }
+
+    .dialog-foot {
+        flex-direction: column-reverse;
+        padding: 14px 16px;
+    }
+
+        .dialog-foot .btn-keep,
+        .dialog-foot .btn-cancel-session {
+            width: 100%;
+        }
+}

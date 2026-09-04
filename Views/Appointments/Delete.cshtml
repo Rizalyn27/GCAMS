@@ -1,221 +1,88 @@
 @model GCAMS.Models.Appointment.Appointments
 
-<div>
-    <style>
-        @@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Manrope:wght@600;700&display=swap');
+@{
+    ViewData["Title"] = "Cancel this session";
+    var backAction = User.IsInRole("Student") ? "MyAppointments" : "Index";
+    var dayName = Model.AppointmentDate.ToString("dddd");
+}
 
-        .detail-card {
-            background: #fff;
-            border: 1px solid #e5e7eb;
-            border-radius: 12px;
-            padding: 1.5rem;
-            margin-bottom: 1.25rem;
-        }
+@section Styles {
+    <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0&display=block" rel="stylesheet">
+    <link rel="stylesheet" href="~/css/Appointments/Delete.css" asp-append-version="true" />
+}
 
-        .detail-section-title {
-            font-family: 'Manrope', sans-serif;
-            font-size: 15px;
-            font-weight: 700;
-            color: #111;
-            margin-bottom: 1rem;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
+<div class="cancel-page">
+    <div class="cancel-dialog">
 
-            .detail-section-title i {
-                color: #1a56db;
-                font-size: 16px;
-            }
-
-        .detail-grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 1rem;
-        }
-
-        .detail-field label {
-            font-family: 'Inter', sans-serif;
-            font-size: 12px;
-            font-weight: 500;
-            color: #6b7280;
-            display: block;
-            margin-bottom: 3px;
-            text-transform: uppercase;
-            letter-spacing: 0.04em;
-        }
-
-        .detail-field .value {
-            font-family: 'Inter', sans-serif;
-            font-size: 14px;
-            color: #111;
-        }
-
-        .status-badge {
-            display: inline-block;
-            padding: 3px 10px;
-            border-radius: 20px;
-            font-size: 12px;
-            font-weight: 600;
-            font-family: 'Inter', sans-serif;
-        }
-
-        .status-Pending {
-            background: #fef3c7;
-            color: #92400e;
-        }
-
-        .status-Confirmed {
-            background: #d1fae5;
-            color: #065f46;
-        }
-
-        .status-Cancelled {
-            background: #fee2e2;
-            color: #991b1b;
-        }
-
-        .status-Completed {
-            background: #e0e7ff;
-            color: #3730a3;
-        }
-
-        .status-Missed {
-            background: #f3f4f6;
-            color: #374151;
-        }
-
-        .warn-banner {
-            background: #fef2f2;
-            border: 1px solid #fecaca;
-            border-radius: 10px;
-            padding: 12px 16px;
-            font-family: 'Inter', sans-serif;
-            font-size: 13px;
-            color: #991b1b;
-            margin-bottom: 1.25rem;
-        }
-
-        .form-footer {
-            display: flex;
-            gap: 8px;
-            margin-top: 1.5rem;
-        }
-
-        .btn-danger {
-            background: #dc2626;
-            border: none;
-            border-radius: 8px;
-            padding: 9px 20px;
-            font-size: 14px;
-            font-family: 'Inter', sans-serif;
-            color: #fff;
-            cursor: pointer;
-        }
-
-            .btn-danger:hover {
-                background: #b91c1c;
-            }
-
-        .btn-back {
-            background: #fff;
-            color: #374151;
-            border: 1px solid #d1d5db;
-            border-radius: 8px;
-            padding: 9px 20px;
-            font-size: 14px;
-            font-family: 'Inter', sans-serif;
-            text-decoration: none;
-        }
-
-            .btn-back:hover {
-                background: #f9fafb;
-                text-decoration: none;
-            }
-
-        .page-title {
-            font-family: 'Manrope', sans-serif;
-            font-size: 22px;
-            font-weight: 700;
-            color: #111;
-            margin-bottom: 0.5rem;
-        }
-
-        @@media (max-width: 768px) {
-            .detail-grid {
-                grid-template-columns: 1fr;
-            }
-        }
-    </style>
-
-    <div class="container-lg py-4" style="max-width: 720px;">
-        <p class="page-title">Cancel this appointment?</p>
-
-        <div class="warn-banner">
-            This can't be undone. You'll need to book a new appointment if you change your mind.
-        </div>
-
-        <div class="detail-card">
-            <div class="detail-section-title">
-                <i class="bi bi-person"></i> Client
+        <header class="dialog-head">
+            <span class="dialog-icon material-symbols-outlined">warning</span>
+            <div>
+                <h1 class="dialog-title">Cancel your @dayName session?</h1>
+                <p class="dialog-sub">
+                    Once you cancel, the time opens up for another student and can't be taken back.
+                </p>
             </div>
-            <div class="detail-grid">
-                <div class="detail-field">
-                    <label>@Html.DisplayNameFor(m => m.FullName)</label>
-                    <div class="value">@Html.DisplayFor(m => m.FullName)</div>
-                </div>
-                <div class="detail-field">
-                    <label>@Html.DisplayNameFor(m => m.Email)</label>
-                    <div class="value">@Html.DisplayFor(m => m.Email)</div>
-                </div>
-            </div>
-        </div>
+            <a asp-action="@backAction" class="dialog-close" aria-label="Close and go back">
+                <span class="material-symbols-outlined">close</span>
+            </a>
+        </header>
 
-        <div class="detail-card">
-            <div class="detail-section-title">
-                <i class="bi bi-calendar3"></i> Appointment
-            </div>
-            <div class="detail-grid">
-                <div class="detail-field">
-                    <label>@Html.DisplayNameFor(m => m.AppointmentDate)</label>
-                    <div class="value">@Model?.AppointmentDate.ToString("MMM d, yyyy — h:mm tt")</div>
-                </div>
-                <div class="detail-field">
-                    <label>@Html.DisplayNameFor(m => m.AppointmentType)</label>
-                    <div class="value">@Html.DisplayFor(m => m.AppointmentType)</div>
-                </div>
-                <div class="detail-field" style="grid-column: 1 / -1;">
-                    <label>@Html.DisplayNameFor(m => m.Notes)</label>
-                    <div class="value">@(string.IsNullOrWhiteSpace(Model?.Notes) ? "—" : Model.Notes)</div>
-                </div>
-            </div>
-        </div>
+        <div class="dialog-body">
 
-        <div class="detail-card">
-            <div class="detail-section-title">
-                <i class="bi bi-info-circle"></i> Status
-            </div>
-            <div class="detail-grid">
-                <div class="detail-field">
-                    <label>Status</label>
-                    <div class="value">
-                        <span class="status-badge status-@Model?.Status">@Model?.Status</span>
+            <!-- The session being cancelled -->
+            <div class="session-card">
+                <div class="date-chip">
+                    <span class="chip-dow">@Model.AppointmentDate.ToString("ddd").ToUpper()</span>
+                    <span class="chip-day">@Model.AppointmentDate.Day</span>
+                    <span class="chip-mon">@Model.AppointmentDate.ToString("MMM")</span>
+                </div>
+                <div class="session-body">
+                    <div class="session-time">@Model.AppointmentDate.ToString("h:mm tt")</div>
+                    <div class="session-meta">
+                        <span class="status-badge status-@Model.Status">@Model.Status</span>
+                        <span class="meta-text">@Model.AppointmentType</span>
+                    </div>
+                    <div class="session-meta">
+                        <span class="meta-text meta-quiet">@Model.FullName</span>
                     </div>
                 </div>
-                <div class="detail-field">
-                    <label>@Html.DisplayNameFor(m => m.CreatedAt)</label>
-                    <div class="value">@Model?.CreatedAt.ToString("MMM d, yyyy h:mm tt")</div>
+            </div>
+
+            <ul class="consequence-list">
+                <li>
+                    <span class="material-symbols-outlined">event_busy</span>
+                    The @Model.AppointmentDate.ToString("h:mm tt") slot opens up for another student,
+                    so it may be gone if you change your mind.
+                </li>
+                <li>
+                    <span class="material-symbols-outlined">history</span>
+                    You can book a new time whenever you want. Cancelling doesn't count against you.
+                </li>
+            </ul>
+
+            <div class="alt-callout">
+                <span class="material-symbols-outlined">schedule</span>
+                <div>
+                    <div class="alt-title">Just need a different time?</div>
+                    <p class="alt-text">
+                        Change the time instead and you keep your placeSSS nothing is released
+                        until you pick a new slot.
+                    </p>
+                    <a asp-action="Edit" asp-route-appointmentid="@Model.AppointmentID" class="alt-link">
+                        Change the time instead
+                        <span class="material-symbols-outlined">chevron_right</span>
+                    </a>
                 </div>
             </div>
         </div>
 
-        <form asp-action="Delete" method="post">
+        <form asp-action="Delete" method="post" class="dialog-foot">
             @Html.AntiForgeryToken()
             <input type="hidden" asp-for="AppointmentID" />
-            <div class="form-footer">
-                <input type="submit" value="Yes, cancel appointment" class="btn-danger" />
-                <a asp-action="MyAppointments" class="btn-back">Go back</a>
-            </div>
+
+            <a asp-action="@backAction" class="btn-keep">Keep my session</a>
+            <button type="submit" class="btn-cancel-session">Yes, cancel it</button>
         </form>
     </div>
 </div>

@@ -1,222 +1,429 @@
-@model GCAMS.Models.Appointment.Appointments
+﻿@model GCAMS.Models.Appointment.Appointments
+
 @{
-    ViewData["Title"] = "Edit Appointment";
+    ViewData["Title"] = "Change this session";
+    var isStudentEdit = ViewBag.IsStudentEdit == true;
+    var cancelAction = User.IsInRole("Student") ? "MyAppointments" : "Index";
 }
 
-<style>
-    @@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Manrope:wght@600;700&display=swap');
+    <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="~/css/Appointments/Edit.css" asp-append-version="true" />
 
-    .form-card {
-        background: #fff;
-        border: 1px solid #e5e7eb;
-        border-radius: 12px;
-        padding: 1.5rem;
-        margin-bottom: 1.25rem;
-    }
 
-    .form-section-title {
-        font-family: 'Manrope', sans-serif;
-        font-size: 15px;
-        font-weight: 700;
-        color: #111;
-        margin-bottom: 1rem;
-        display: flex;
-        align-items: center;
-        gap: 8px;
-    }
+@section Breadcrumb {
+    <a asp-action="Details" asp-route-appointmentid="@Model.AppointmentID" class="back-chevron" title="Back to this session">
+        <span class="material-symbols-outlined">chevron_left</span>
+    </a>
+    <nav class="breadcrumb-nav">
+        <a asp-action="@cancelAction">Appointments</a>
+        <span class="material-symbols-outlined breadcrumb-sep">chevron_right</span>
+        <span class="current">Change this session</span>
+    </nav>
+}
 
-        .form-section-title i {
-            color: #1a56db;
-            font-size: 16px;
-        }
+<div class="booking">
 
-    .form-grid {
-        display: grid;
-        grid-template-columns: 1fr 1fr;
-        gap: 1rem;
-    }
+    <header class="booking-head">
+        <h1>Change your session</h1>
+        <p class="booking-lead">
+            Pick a different time, update what you want to talk about, and save your changes.
+            Your current slot is held the whole time, and nothing changes until you save.
+        </p>
+    </header>
 
-        .form-grid .full-width {
-            grid-column: 1 / -1;
-        }
+    <ol class="stepper" id="stepper">
+        <li class="step" data-step="time"><span class="step-dot">1</span> Pick a time</li>
+        <li class="step" data-step="about"><span class="step-dot">2</span> Say what it's about</li>
+        <li class="step" data-step="save"><span class="step-dot">3</span> Save your changes</li>
+    </ol>
 
-    .field-label {
-        font-size: 13px;
-        font-family: 'Inter', sans-serif;
-        font-weight: 500;
-        color: #6b7280;
-        margin-bottom: 4px;
-        display: block;
-    }
+    <form asp-action="Edit" id="appointmentForm" class="booking-grid">
 
-    .form-control, .form-select {
-        font-size: 14px;
-        font-family: 'Inter', sans-serif;
-        border-radius: 8px;
-        border: 1px solid #d1d5db;
-        padding: 8px 12px;
-        width: 100%;
-        color: #111;
-    }
+        <div class="booking-main">
 
-        .form-control:focus, .form-select:focus {
-            border-color: #1a56db;
-            outline: none;
-            box-shadow: 0 0 0 3px rgba(26,86,219,0.1);
-        }
+            <div asp-validation-summary="ModelOnly" class="validation-summary"></div>
 
-    .form-footer {
-        display: flex;
-        gap: 8px;
-        padding-top: 1rem;
-        border-top: 1px solid #e5e7eb;
-        margin-top: 0.5rem;
-    }
+            @* Values the form must round-trip. Status is included so it isn't wiped
+               on save — the model requires it, and this page doesn't edit it. *@
+            <input type="hidden" asp-for="AppointmentID" />
+            <input type="hidden" asp-for="CreatedAt" />
+            <input type="hidden" asp-for="UpdatedAt" />
+            <input type="hidden" asp-for="StudentsID" />
+            <input type="hidden" asp-for="Status" />
 
-    .btn-save {
-        background: #1B5E20;
-        border: none;
-        border-radius: 8px;
-        padding: 9px 20px;
-        font-size: 14px;
-        font-family: 'Inter', sans-serif;
-        color: #fff;
-        cursor: pointer;
-    }
+            <!-- ============ WHO IT'S FOR ============ -->
+            <section class="card">
+                <h2 class="card-title">
+                    <span class="material-symbols-outlined">person</span>
+                    @(isStudentEdit ? "Booked for" : "Client")
+                </h2>
 
-        .btn-save:hover {
-            background: #1648c0;
-        }
+                @if (isStudentEdit)
+                {
+                    <div class="identity">
+                        <div class="identity-avatar">
+                            @(string.IsNullOrWhiteSpace(Model.FullName) ? "?" : Model.FullName.Trim().Substring(0, 1).ToUpper())
+                        </div>
+                        <div class="identity-body">
+                            <div class="identity-name">@Model.FullName</div>
+                            <div class="identity-meta">@Model.Email</div>
+                        </div>
+                    </div>
 
-    .btn-cancel {
-        background: #fff;
-        border: 1px solid #d1d5db;
-        border-radius: 8px;
-        padding: 9px 20px;
-        font-size: 14px;
-        font-family: 'Inter', sans-serif;
-        color: #374151;
-        text-decoration: none;
-    }
+                    @* readonly (not disabled) so the values still post back *@
+                    <input type="hidden" asp-for="FullName" />
+                    <input type="hidden" asp-for="Email" />
+                }
+                else
+                {
+                    <div class="form-grid">
+                        <div>
+                            <label asp-for="FullName" class="field-label"></label>
+                            <input asp-for="FullName" class="form-control" />
+                            <span asp-validation-for="FullName" class="field-error"></span>
+                        </div>
+                        <div>
+                            <label asp-for="Email" class="field-label"></label>
+                            <input asp-for="Email" class="form-control" />
+                            <span asp-validation-for="Email" class="field-error"></span>
+                        </div>
+                    </div>
+                }
+            </section>
 
-        .btn-cancel:hover {
-            background: #f9fafb;
-            text-decoration: none;
-        }
-
-    .page-title {
-        font-family: 'Manrope', sans-serif;
-        font-size: 22px;
-        font-weight: 700;
-        color: #111;
-        margin-bottom: 1.5rem;
-    }
-
-    @@media (max-width: 768px) {
-        .form-grid {
-            grid-template-columns: 1fr;
-        }
-    }
-</style>
-
-<div class="container-lg py-4" style="max-width: 720px;">
-    <p class="page-title">Edit Appointment</p>
-
-    <form asp-action="Edit">
-        <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
-
-        <input type="hidden" asp-for="AppointmentID" />
-        <input type="hidden" asp-for="CreatedAt" />
-        <input type="hidden" asp-for="UpdatedAt" />
-        <input type="hidden" asp-for="StudentsID" />
-
-        <div class="form-card">
-            <div class="form-section-title">
-                <i class="bi bi-person"></i> Client
-            </div>
-            <div class="form-grid">
+            <div class="held-banner">
+                <span class="material-symbols-outlined">event_available</span>
                 <div>
-                    <label asp-for="FullName" class="field-label"></label>
-                    <input asp-for="FullName" class="form-control" readonly="@(ViewBag.IsStudentEdit == true)" disabled/>
-                    <span asp-validation-for="FullName" class="text-danger" style="font-size:12px;"></span>
-                </div>
-                <div>
-                    <label asp-for="Email" class="field-label"></label>
-                    <input asp-for="Email" class="form-control" readonly="@(ViewBag.IsStudentEdit == true)" disabled/>
-                    <span asp-validation-for="Email" class="text-danger" style="font-size:12px;"></span>
+                    You're currently booked for
+                    <strong>@Model.AppointmentDate.ToString("dddd, d MMMM · h:mm tt")</strong>.
+                    That slot stays yours until you save a change.
                 </div>
             </div>
-        </div>
 
-        <div class="form-card">
-            <div class="form-section-title">
-                <i class="bi bi-calendar3"></i> Appointment
-            </div>
-            <div class="form-grid">
-                <div>
-                    <label asp-for="AppointmentDate" class="field-label"></label>
+            <!-- ============ WHEN ============ -->
+            <section class="card" id="when-card">
+                <div class="card-head">
+                    <h2 class="card-title">
+                        <span class="material-symbols-outlined">calendar_month</span>
+                        When works for you?
+                    </h2>
+                </div>
+                <p class="card-sub">
+                    Sessions run 8–11 AM and 1–4 PM on school days. Weekends are closed. Your current slot is outlined.
+                </p>
+
+                <div class="day-strip" id="dayStrip"></div>
+
+                <div class="slot-group">
+                    <div class="slot-heading">
+                        <span class="material-symbols-outlined">wb_sunny</span> Morning
+                    </div>
+                    <div class="slot-row" data-slots="morning"></div>
+                </div>
+
+                <div class="slot-group">
+                    <div class="slot-heading">
+                        <span class="material-symbols-outlined">wb_twilight</span> Afternoon
+                    </div>
+                    <div class="slot-row" data-slots="afternoon"></div>
+                </div>
+
+                <div class="exact-time">
+                    <label asp-for="AppointmentDate" class="field-label">Selected date and time</label>
                     <input asp-for="AppointmentDate" asp-format="{0:yyyy-MM-ddTHH:00}"
                            id="fieldAppointmentDate"
                            class="form-control" type="datetime-local"
                            step="3600"
                            min="@DateTime.Now.ToString("yyyy-MM-ddTHH:00")" />
-                    <span asp-validation-for="AppointmentDate" class="text-danger" style="font-size:12px;"></span>
-                    <small class="field-label" style="color:#6b7280; text-transform:none; font-weight:400;">Available 8�11 AM and 1�4 PM.</small>
+                    <span asp-validation-for="AppointmentDate" class="field-error"></span>
+                    <small class="field-hint">
+                        Picking above fills this in. You can also type a time directly.
+                    </small>
                 </div>
-                <div>
-                    <label asp-for="AppointmentType" class="field-label"></label>
-                    <select asp-for="AppointmentType" class="form-control">
-                        <option value="">Select</option>
-                        <option>Academic Concern</option>
-                        <option>Behavioral Concern</option>
-                        <option>Personal/Emotional Concern</option>
-                        <option>Family-Related Concern</option>
-                        <option>Peer Relationship</option>
-                        <option>Career Guidance</option>
-                        <option>Health/Physical Concern</option>
-                        <option>Bullying Report</option>
-                        <option>Crisis/Urgent Concern</option>
-                        <option>Follow-up Session</option>
-                        <ption>Other</ption>
-                    </select>
-                    <span asp-validation-for="AppointmentType" class="text-danger" style="font-size:12px;"></span>
+            </section>
+
+            <!-- ============ WHAT IT'S ABOUT ============ -->
+            <section class="card" id="about-card">
+                <div class="card-head">
+                    <h2 class="card-title">
+                        <span class="material-symbols-outlined">chat_bubble</span>
+                        What would you like to talk about?
+                    </h2>
                 </div>
-                <div class="full-width">
-                    <label asp-for="Notes" class="field-label"></label>
-                    <textarea asp-for="Notes" class="form-control" rows="3"></textarea>
-                    <span asp-validation-for="Notes" class="text-danger" style="font-size:12px;"></span>
+                <p class="card-sub">
+                    Choose the option that best matches what you'd like help with.
+                    You can talk about anything during your session.
+                </p>
+
+                <div class="type-group">
+                    <div class="type-group-title">
+                        <span class="material-symbols-outlined">school</span> School and future
+                    </div>
+                    <div class="type-grid">
+                        <label class="type-card">
+                            <input type="radio" asp-for="AppointmentType" id="type-academic" value="Academic Concern" />
+                            <span class="type-icon material-symbols-outlined">menu_book</span>
+                            <span class="type-body">
+                                <span class="type-name">Academic Concern</span>
+                                <span class="type-desc">Grades, homework, or a subject you're struggling with</span>
+                            </span>
+                            <span class="type-check"></span>
+                        </label>
+
+                        <label class="type-card">
+                            <input type="radio" asp-for="AppointmentType" id="type-behavioral" value="Behavioral Concern" />
+                            <span class="type-icon material-symbols-outlined">flag</span>
+                            <span class="type-body">
+                                <span class="type-name">Behavioral Concern</span>
+                                <span class="type-desc">Something about your behavior at school you'd like to talk about</span>
+                            </span>
+                            <span class="type-check"></span>
+                        </label>
+
+                        <label class="type-card">
+                            <input type="radio" asp-for="AppointmentType" id="type-career" value="Career Guidance" />
+                            <span class="type-icon material-symbols-outlined">explore</span>
+                            <span class="type-body">
+                                <span class="type-name">Career Guidance</span>
+                                <span class="type-desc">Questions about your future, career, or college plans</span>
+                            </span>
+                            <span class="type-check"></span>
+                        </label>
+                    </div>
                 </div>
-            </div>
+
+                <div class="type-group">
+                    <div class="type-group-title">
+                        <span class="material-symbols-outlined">favorite</span> Personal and relationships
+                    </div>
+                    <div class="type-grid">
+                        <label class="type-card">
+                            <input type="radio" asp-for="AppointmentType" id="type-personal" value="Personal/Emotional Concern" />
+                            <span class="type-icon material-symbols-outlined">volunteer_activism</span>
+                            <span class="type-body">
+                                <span class="type-name">Personal/Emotional Concern</span>
+                                <span class="type-desc">Stress, worries, feelings, or something bothering you</span>
+                            </span>
+                            <span class="type-check"></span>
+                        </label>
+
+                        <label class="type-card">
+                            <input type="radio" asp-for="AppointmentType" id="type-peer" value="Peer Relationship" />
+                            <span class="type-icon material-symbols-outlined">group</span>
+                            <span class="type-body">
+                                <span class="type-name">Peer Relationship</span>
+                                <span class="type-desc">Problems with friends, classmates, or feeling left out</span>
+                            </span>
+                            <span class="type-check"></span>
+                        </label>
+
+                        <label class="type-card">
+                            <input type="radio" asp-for="AppointmentType" id="type-family" value="Family-Related Concern" />
+                            <span class="type-icon material-symbols-outlined">home</span>
+                            <span class="type-body">
+                                <span class="type-name">Family-Related Concern</span>
+                                <span class="type-desc">Something happening at home or with your family</span>
+                            </span>
+                            <span class="type-check"></span>
+                        </label>
+
+                        <label class="type-card">
+                            <input type="radio" asp-for="AppointmentType" id="type-health" value="Health/Physical Concern" />
+                            <span class="type-icon material-symbols-outlined">ecg_heart</span>
+                            <span class="type-body">
+                                <span class="type-name">Health/Physical Concern</span>
+                                <span class="type-desc">Sleep, eating, energy, or a health concern affecting school</span>
+                            </span>
+                            <span class="type-check"></span>
+                        </label>
+                    </div>
+                </div>
+
+                <div class="type-group">
+                    <div class="type-group-title">
+                        <span class="material-symbols-outlined">shield</span> Safety and other
+                    </div>
+                    <div class="type-grid">
+                        <label class="type-card">
+                            <input type="radio" asp-for="AppointmentType" id="type-bullying" value="Bullying Report" />
+                            <span class="type-icon material-symbols-outlined">shield</span>
+                            <span class="type-body">
+                                <span class="type-name">Bullying Report</span>
+                                <span class="type-desc">Something hurtful happening to you or someone you know</span>
+                            </span>
+                            <span class="type-check"></span>
+                        </label>
+
+                        <label class="type-card type-card-urgent">
+                            <input type="radio" asp-for="AppointmentType" id="type-crisis" value="Crisis/Urgent Concern" />
+                            <span class="type-icon material-symbols-outlined">warning</span>
+                            <span class="type-body">
+                                <span class="type-name">Crisis/Urgent Concern</span>
+                                <span class="type-desc">You need help with something urgent or serious</span>
+                            </span>
+                            <span class="type-check"></span>
+                        </label>
+
+                        <label class="type-card">
+                            <input type="radio" asp-for="AppointmentType" id="type-followup" value="Follow-up Session" />
+                            <span class="type-icon material-symbols-outlined">history</span>
+                            <span class="type-body">
+                                <span class="type-name">Follow-up Session</span>
+                                <span class="type-desc">Continue a conversation from a previous counseling session</span>
+                            </span>
+                            <span class="type-check"></span>
+                        </label>
+
+                        <label class="type-card">
+                            <input type="radio" asp-for="AppointmentType" id="type-other" value="Other" />
+                            <span class="type-icon material-symbols-outlined">description</span>
+                            <span class="type-body">
+                                <span class="type-name">Other</span>
+                                <span class="type-desc">Not sure which option fits? That's okay — choose this one</span>
+                            </span>
+                            <span class="type-check"></span>
+                        </label>
+                    </div>
+                </div>
+
+                <span asp-validation-for="AppointmentType" class="field-error"></span>
+
+                <div class="urgent-note" id="urgentNote" hidden>
+                    <span class="material-symbols-outlined">emergency</span>
+                    <div>
+                        If you need help today, don't wait for this request to be confirmed —
+                        walk in to the Guidance Office during school hours and tell any staff
+                        member you need to speak with a counselor.
+                    </div>
+                </div>
+            </section>
+
+            <!-- ============ NOTES ============ -->
+            <section class="card">
+                <div class="card-head">
+                    <h2 class="card-title">
+                        <span class="material-symbols-outlined">edit_note</span>
+                        Anything you want your counselor to know first?
+                        <span class="pill-optional">Optional</span>
+                    </h2>
+                </div>
+                <p class="card-sub">
+                    @(string.IsNullOrWhiteSpace(Model.Notes)
+                                        ? "You left this blank when you booked. You can add something now, or leave it and just talk in person."
+                                        : "You can edit what you wrote when you booked.")
+                </p>
+
+                <textarea asp-for="Notes" id="fieldNotes" class="form-control" rows="4" maxlength="320"
+                          placeholder="For example: I've been having a hard time keeping up in math since the new grading period started."></textarea>
+                <div class="notes-foot">
+                    <span asp-validation-for="Notes" class="field-error"></span>
+                    <span class="char-count" id="charCount">0 / 320</span>
+                </div>
+
+                <div class="privacy-strip">
+                    <span class="material-symbols-outlined">lock</span>
+                    Only your counselor reads this. It isn't shown to your teachers,
+                    your classmates, or your parents.
+                </div>
+            </section>
         </div>
 
-     @*    <div class="form-card">
-            <div class="form-section-title">
-                <i class="bi bi-info-circle"></i> Status
-            </div>
-            <div style="max-width: 240px;">
-                <label asp-for="Status" class="field-label"></label>
-                <select asp-for="Status" class="form-select">
-                    @foreach (var s in new[] { "Pending", "Confirmed", "Cancelled", "Completed", "Missed" })
-                    {
-                        <option value="@s">@s</option>
-                    }
-                </select>
-                <span asp-validation-for="Status" class="text-danger" style="font-size:12px;"></span>
-            </div>
-        </div> *@
+        <!-- ============ SUMMARY ============ -->
+        <aside class="booking-side">
+            <div class="card summary-card">
+                <h2 class="card-title">Your changes</h2>
+                <p class="card-sub">Check this before you save</p>
 
-        <div class="form-footer">
-            <button type="submit" class="btn-save">Save changes</button>
-            @if (User.IsInRole("Student"))
-            {
-                <a asp-action="MyAppointments" class="btn-back">Cancel</a>
-            }
-            else
-            {
-                <a asp-action="Index" class="btn-back">Cancel</a>
-            }
-        </div>
+                <div class="summary-row">
+                    <span class="material-symbols-outlined">calendar_month</span>
+                    <div>
+                        <div class="summary-label">Day and time</div>
+                        <div class="summary-value" id="summaryWhen">—</div>
+                        <div class="summary-was" id="summaryWhenWas" hidden>
+                            was @Model.AppointmentDate.ToString("d MMM, h:mm tt")
+                        </div>
+                    </div>
+                </div>
+
+                <div class="summary-row">
+                    <span class="material-symbols-outlined">chat_bubble</span>
+                    <div>
+                        <div class="summary-label">About</div>
+                        <div class="summary-value" id="summaryAbout">—</div>
+                        <div class="summary-was" id="summaryAboutWas" hidden>
+                            was @Model.AppointmentType
+                        </div>
+                    </div>
+                </div>
+
+                <div class="summary-row">
+                    <span class="material-symbols-outlined">edit_note</span>
+                    <div>
+                        <div class="summary-label">Notes</div>
+                        <div class="summary-value" id="summaryNotes">Still empty</div>
+                    </div>
+                </div>
+
+                <div class="summary-row">
+                    <span class="material-symbols-outlined">location_on</span>
+                    <div>
+                        <div class="summary-label">Where</div>
+                        <div class="summary-value">Guidance Office</div>
+                    </div>
+                </div>
+
+                <div class="no-change-note" id="noChangeNote">
+                    You haven't changed anything yet.
+                </div>
+
+                <button type="submit" class="btn-send" id="btnSave">
+                    <span class="material-symbols-outlined">check</span> Save changes
+                </button>
+                <a asp-action="Details" asp-route-appointmentid="@Model.AppointmentID" class="btn-cancel">
+                    Discard and go back
+                </a>
+
+                <p class="summary-fine">
+                    Saving releases your old slot and requests the new one. A counselor usually
+                    replies within one school day, and you'll see the answer in My Appointments.
+                </p>
+            </div>
+        </aside>
     </form>
+
+    <!-- Confirmation shown before the form actually posts -->
+    <div class="modal-backdrop" id="confirmModal">
+        <div class="modal-box" role="dialog" aria-modal="true" aria-labelledby="confirmTitle">
+            <span class="modal-icon material-symbols-outlined">event_repeat</span>
+
+            <h2 class="modal-title" id="confirmTitle">Save these changes?</h2>
+            <p class="modal-sub">
+                Your old slot is released and the new one is requested. A counselor
+                usually confirms within one school day.
+            </p>
+
+            <dl class="modal-diff">
+                <div class="diff-row">
+                    <dt>Was</dt>
+                    <dd>@Model.AppointmentDate.ToString("ddd d MMM, h:mm tt")</dd>
+                </div>
+                <div class="diff-row">
+                    <dt>Now</dt>
+                    <dd id="confirmNow">—</dd>
+                </div>
+                <div class="diff-row">
+                    <dt>About</dt>
+                    <dd id="confirmAbout">—</dd>
+                </div>
+            </dl>
+
+            <div class="modal-actions">
+                <button type="button" class="btn-modal btn-modal-quiet" id="btnBackToEdit">Go back and edit</button>
+                <button type="button" class="btn-modal btn-modal-primary" id="btnConfirmSave">Save it</button>
+            </div>
+        </div>
+    </div>
 </div>
 
 @section Scripts {
@@ -226,23 +433,276 @@
 
     <script>
         const dateInput = document.getElementById('fieldAppointmentDate');
-        const allowedHours = [8, 9, 10, 11, 13, 14, 15, 16];
+        const ALLOWED_HOURS = [8, 9, 10, 11, 13, 14, 15, 16];
+
+        // What the appointment looked like when the page loaded
+        const ORIGINAL_WHEN = '@Model.AppointmentDate.ToString("yyyy-MM-ddTHH:mm")';
+        const ORIGINAL_TYPE = '@Model.AppointmentType';
+        const ORIGINAL_DAY  = ORIGINAL_WHEN.split('T')[0];
+        const ORIGINAL_HOUR = parseInt(ORIGINAL_WHEN.split('T')[1], 10);
+
+        const dayStrip = document.getElementById('dayStrip');
+        const now = new Date();
+        let selectedDay = null;
+        let selectedHour = null;
+
+        function pad(n) { return String(n).padStart(2, '0'); }
+        function isoDay(d) { return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`; }
+
+        if (dateInput.value) {
+            selectedDay = dateInput.value.split('T')[0];
+            selectedHour = parseInt(dateInput.value.split('T')[1], 10);
+        }
+
+        function buildDayStrip() {
+            dayStrip.innerHTML = '';
+
+            // Include the existing booking even if it's already in the past,
+            // so an overdue appointment can still be rescheduled from here.
+            const start = (selectedDay && selectedDay < isoDay(now))
+                ? new Date(selectedDay + 'T00:00:00')
+                : new Date(now.getFullYear(), now.getMonth(), now.getDate());
+
+            for (let i = 0; i < 14; i++) {
+                const d = new Date(start.getFullYear(), start.getMonth(), start.getDate() + i);
+                const key = isoDay(d);
+                const weekend = d.getDay() === 0 || d.getDay() === 6;
+
+                const cell = document.createElement('button');
+                cell.type = 'button';
+                const isHeld = key === ORIGINAL_DAY;
+
+                cell.className = 'day-cell'
+                    + (weekend ? ' is-closed' : '')
+                    + (isHeld ? ' is-held' : '')
+                    + (key === selectedDay ? ' is-selected' : '');
+                cell.disabled = weekend;
+                cell.dataset.day = key;
+
+                const state = weekend ? 'Closed'
+                    : isHeld ? 'Your slot'
+                    : key === isoDay(now) ? 'Today'
+                    : 'Open';
+
+                cell.innerHTML = `
+                    <span class="day-name">${d.toLocaleDateString(undefined, { weekday: 'short' }).toUpperCase()}</span>
+                    <span class="day-number">${d.getDate()}</span>
+                    <span class="day-month">${d.toLocaleDateString(undefined, { month: 'short' })}</span>
+                    <span class="day-state">${state}</span>`;
+
+                cell.addEventListener('click', function () {
+                    selectedDay = this.dataset.day;
+                    selectedHour = null;
+                    buildDayStrip();
+                    buildSlots();
+                    syncDateField();
+                });
+
+                dayStrip.appendChild(cell);
+            }
+        }
+
+        function buildSlots() {
+            document.querySelectorAll('[data-slots]').forEach(row => {
+                const isMorning = row.dataset.slots === 'morning';
+                const hours = ALLOWED_HOURS.filter(h => isMorning ? h < 12 : h >= 12);
+                row.innerHTML = '';
+
+                hours.forEach(h => {
+                    const slot = document.createElement('button');
+                    slot.type = 'button';
+
+                    const isToday = selectedDay === isoDay(now);
+                    const past = isToday && h <= now.getHours();
+
+                    const isHeld = selectedDay === ORIGINAL_DAY && h === ORIGINAL_HOUR;
+
+                    slot.className = 'slot'
+                        + (h === selectedHour ? ' is-selected' : '')
+                        + (isHeld ? ' is-held' : '')
+                        + (past ? ' is-past' : '');
+                    slot.disabled = !selectedDay || (past && !isHeld);
+                    slot.dataset.hour = h;
+
+                    const label = new Date(2000, 0, 1, h).toLocaleTimeString(undefined,
+                        { hour: 'numeric', minute: '2-digit' });
+                    const note = isHeld ? 'Your slot' : past ? 'Passed' : '1 hour';
+                    slot.innerHTML = `<span class="slot-time">${label}</span>
+                                      <span class="slot-note">${note}</span>`;
+
+                    slot.addEventListener('click', function () {
+                        selectedHour = parseInt(this.dataset.hour, 10);
+                        buildSlots();
+                        syncDateField();
+                    });
+
+                    row.appendChild(slot);
+                });
+            });
+        }
+
+        function syncDateField() {
+            if (selectedDay && selectedHour !== null) {
+                dateInput.value = `${selectedDay}T${pad(selectedHour)}:00`;
+                dateInput.setCustomValidity('');
+            }
+            updateSummary();
+        }
 
         function isWithinWorkingHours(value) {
             if (!value) return true;
             const hour = parseInt(value.split('T')[1].split(':')[0], 10);
-            return allowedHours.includes(hour);
+            return ALLOWED_HOURS.includes(hour);
         }
 
-        if (dateInput) {
-            dateInput.addEventListener('change', function () {
-                if (!isWithinWorkingHours(this.value)) {
-                    this.setCustomValidity('Appointments must be booked between 8�11 AM or 1�4 PM.');
-                } else {
-                    this.setCustomValidity('');
-                }
+        dateInput.addEventListener('change', function () {
+            if (!isWithinWorkingHours(this.value)) {
+                this.setCustomValidity('Appointments must be booked between 8–11 AM or 1–4 PM.');
                 this.reportValidity();
-            });
+            } else {
+                this.setCustomValidity('');
+                if (this.value) {
+                    selectedDay = this.value.split('T')[0];
+                    selectedHour = parseInt(this.value.split('T')[1], 10);
+                    buildDayStrip();
+                    buildSlots();
+                }
+            }
+            updateSummary();
+        });
+
+        // ── Summary ─────────────────────────────────────────────────────────
+        const summaryWhen     = document.getElementById('summaryWhen');
+        const summaryWhenWas  = document.getElementById('summaryWhenWas');
+        const summaryAbout    = document.getElementById('summaryAbout');
+        const summaryAboutWas = document.getElementById('summaryAboutWas');
+        const urgentNote      = document.getElementById('urgentNote');
+        const summaryNotes    = document.getElementById('summaryNotes');
+        const noChangeNote    = document.getElementById('noChangeNote');
+        const btnSave         = document.getElementById('btnSave');
+        const notes           = document.getElementById('fieldNotes');
+        const charCount       = document.getElementById('charCount');
+
+        const ORIGINAL_NOTES = notes ? notes.value : '';
+
+        function selectedType() {
+            const picked = document.querySelector('input[name="AppointmentType"]:checked');
+            return picked ? picked.value : null;
         }
+
+        function updateSummary() {
+            const type = selectedType();
+            let whenChanged = false;
+
+            if (dateInput.value) {
+                const d = new Date(dateInput.value);
+                summaryWhen.textContent = d.toLocaleDateString(undefined,
+                    { weekday: 'long', day: 'numeric', month: 'long' }) + ' · ' +
+                    d.toLocaleTimeString(undefined, { hour: 'numeric', minute: '2-digit' });
+
+                whenChanged = dateInput.value.slice(0, 16) !== ORIGINAL_WHEN.slice(0, 16);
+                summaryWhenWas.hidden = !whenChanged;
+                summaryWhen.classList.toggle('is-changed', whenChanged);
+            }
+
+            summaryAbout.textContent = type || '—';
+            const typeChanged = !!type && type !== ORIGINAL_TYPE;
+            summaryAboutWas.hidden = !typeChanged;
+            summaryAbout.classList.toggle('is-changed', typeChanged);
+
+            const notesValue = notes ? notes.value.trim() : '';
+            const notesChanged = notesValue !== ORIGINAL_NOTES.trim();
+            summaryNotes.textContent = notesValue === '' ? 'Still empty' : notesValue;
+            summaryNotes.classList.toggle('is-empty', notesValue === '');
+            summaryNotes.classList.toggle('is-changed', notesChanged);
+
+            urgentNote.hidden = type !== 'Crisis/Urgent Concern';
+
+            // Nothing to save until something actually differs
+            const dirty = whenChanged || typeChanged || notesChanged;
+            noChangeNote.hidden = dirty;
+            btnSave.disabled = !dirty;
+
+            const steps = document.querySelectorAll('#stepper .step');
+            steps.forEach(s => s.classList.remove('is-current', 'is-done'));
+            if (whenChanged) { steps[0].classList.add('is-done'); }
+            if (typeChanged) { steps[1].classList.add('is-done'); }
+            steps[dirty ? 2 : 0].classList.add('is-current');
+        }
+
+        document.querySelectorAll('input[name="AppointmentType"]').forEach(r => {
+            r.addEventListener('change', updateSummary);
+        });
+
+        if (notes) {
+            const syncCount = () => { charCount.textContent = `${notes.value.length} / 320`; };
+            notes.addEventListener('input', function () { syncCount(); updateSummary(); });
+            syncCount();
+        }
+
+        // ── Confirm before saving ───────────────────────────────────────────
+        const form         = document.getElementById('appointmentForm');
+        const modal        = document.getElementById('confirmModal');
+        const confirmNow   = document.getElementById('confirmNow');
+        const confirmAbout = document.getElementById('confirmAbout');
+        const btnBackToEdit = document.getElementById('btnBackToEdit');
+        const btnConfirmSave = document.getElementById('btnConfirmSave');
+
+        let confirmed = false;
+        let lastFocused = null;
+
+        if (!form || !modal) {
+            console.error('Edit: confirm modal markup not found — check #appointmentForm / #confirmModal');
+        }
+
+        function openModal() {
+            const d = new Date(dateInput.value);
+            confirmNow.textContent = d.toLocaleDateString(undefined,
+                { weekday: 'long', day: 'numeric', month: 'long' }) + ', ' +
+                d.toLocaleTimeString(undefined, { hour: 'numeric', minute: '2-digit' });
+            confirmAbout.textContent = selectedType() || '—';
+
+            lastFocused = document.activeElement;
+            modal.classList.add('is-open');
+            document.body.style.overflow = 'hidden';
+            btnConfirmSave.focus();
+        }
+
+        function closeModal() {
+            modal.classList.remove('is-open');
+            document.body.style.overflow = '';
+            if (lastFocused) { lastFocused.focus(); }
+        }
+
+        form.addEventListener('submit', function (e) {
+            if (confirmed) { return; }                 // second pass — let it post
+            if (!form.checkValidity()) { return; }     // let the browser report errors
+            if (window.jQuery && jQuery(form).valid && !jQuery(form).valid()) { return; }
+
+            e.preventDefault();
+            openModal();
+        });
+
+        btnBackToEdit.addEventListener('click', closeModal);
+
+        btnConfirmSave.addEventListener('click', function () {
+            confirmed = true;
+            this.disabled = true;
+            this.textContent = 'Saving…';
+
+            if (form.requestSubmit) { form.requestSubmit(); } else { form.submit(); }
+        });
+
+        modal.addEventListener('click', function (e) {
+            if (e.target === modal) { closeModal(); }
+        });
+
+        document.addEventListener('keydown', function (e) {
+            if (e.key === 'Escape' && modal.classList.contains('is-open')) { closeModal(); }
+        });
+
+        buildDayStrip();
+        buildSlots();
+        updateSummary();
     </script>
 }

@@ -1,54 +1,479 @@
 ﻿@model List<GCAMS.Models.Appointment.Appointments>
+
 @{
-    ViewData["Title"] = "My Appointments";
+    ViewData["Title"] = "My sessions";
+
+    var now = DateTime.Now;
+    var all = Model ?? new List<GCAMS.Models.Appointment.Appointments>();
+
+    // Buckets derived from Status + AppointmentDate — no new model fields.
+    var upcoming = all
+        .Where(a => (a.Status == "Pending" || a.Status == "Confirmed") && a.AppointmentDate >= now)
+        .OrderBy(a => a.AppointmentDate)
+        .ToList();
+
+    var attended = all
+        .Where(a => a.Status == "Completed"
+                 || ((a.Status == "Pending" || a.Status == "Confirmed") && a.AppointmentDate < now))
+        .OrderByDescending(a => a.AppointmentDate)
+        .ToList();
+
+    var closed = all
+        .Where(a => a.Status == "Cancelled" || a.Status == "Missed")
+        .OrderByDescending(a => a.AppointmentDate)
+        .ToList();
+
+    Func<DateTime, string> whenLabel = date =>
+    {
+        var days = (date.Date - now.Date).Days;
+        if (days == 0) return "Today";
+        if (days == 1) return "Tomorrow";
+        if (days == -1) return "Yesterday";
+        if (days > 1 && days <= 14) return $"In {days} days";
+        if (days < -1 && days >= -14) return $"{Math.Abs(days)} days ago";
+        return date.ToString("d MMM yyyy");
+    };
 }
 
-<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
-<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700;0,1&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="~/css/Appointments/MyAppointments.css" asp-append-version="true" />
+    <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="~/css/Appointments/MyAppointments.css" asp-append-version="true" />
 
-<div class="container-lg py-4" style="max-width: 720px;">
-    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1.25rem;">
-        <h2 style="margin:0;">My Appointments</h2>
-        <a asp-controller="Appointments" asp-action="Create" asp-route-force="true" class="btn-book">
-            Book Appointment
+
+<div class="sessions">
+
+    <header class="sessions-head">
+        <div>
+            <h1>My sessions</h1>
+            <p class="sessions-lead">
+                Everything you've booked with the guidance office, and everything you've already attended.
+            </p>
+        </div>
+        <a asp-action="Create" asp-route-force="true" class="btn-book">
+            <span class="material-symbols-outlined">calendar_add_on</span>
+            Book a session
         </a>
+    </header>
+
+    <div class="tab-bar" role="tablist">
+        <button type="button" class="tab is-active" role="tab" data-panel="upcoming">
+            Coming up <span class="tab-count">@upcoming.Count</span>
+        </button>
+        <button type="button" class="tab" role="tab" data-panel="attended">
+            Already attended <span class="tab-count">@attended.Count</span>
+        </button>
+        <button type="button" class="tab" role="tab" data-panel="closed">
+            Cancelled <span class="tab-count">@closed.Count</span>
+        </button>
     </div>
 
-    @if (!Model.Any())
-    {
-        <div class="empty-state">
-            <p>You don't have any appointments yet.</p>
-            <a asp-controller="Appointments" asp-action="Create" class="btn-book">Book your first appointment</a>
+    <!-- ==================== COMING UP ==================== -->
+    <section class="panel tab-panel is-active" id="panel-upcoming">
+        <div class="panel-head">
+            <h2 class="panel-title">Coming up</h2>
+            <p class="panel-sub">Soonest first. Pending requests can still be changed or cancelled.</p>
         </div>
-    }
-    else
-    {
-        foreach (var appt in Model)
+
+        @if (upcoming.Any())
         {
-            var statusClass = "status-" + appt.Status.ToLower();
-            <div class="appt-card">
-                <div class="appt-info">
-                    <div class="appt-date">@appt.AppointmentDate.ToString("MMM d, yyyy - h:mm tt")</div>
-                    <div class="appt-type">@appt.AppointmentType</div>
+            foreach (var appt in upcoming)
+            {
+                var isNext = appt == upcoming.First();
+
+                <div class="session-row @(isNext ? "is-next" : "")">
+                    <div class="date-chip @(isNext ? "is-next" : "")">
+                        <span class="chip-dow">@appt.AppointmentDate.ToString("ddd").ToUpper()</span>
+                        <span class="chip-day">@appt.AppointmentDate.Day</span>
+                        <span class="chip-mon">@appt.AppointmentDate.ToString("MMM")</span>
+                    </div>
+
+                    <div class="session-body">
+                        <div class="session-time">
+                            @appt.AppointmentDate.ToString("h:mm tt")
+                            <span class="session-rel">· @whenLabel(appt.AppointmentDate)</span>
+                        </div>
+
+                        <div class="session-meta">
+                            <span class="status-badge status-@appt.Status">
+                                <span class="material-symbols-outlined">
+                                    @(appt.Status == "Confirmed" ? "check_circle" : "schedule")
+                                </span>
+                                @(appt.Status == "Pending" ? "Waiting for confirmation" : appt.Status)
+                            </span>
+                            <span class="meta-text">About: @appt.AppointmentType</span>
+                            @if (appt.Status == "Pending")
+                            {
+                                <span class="meta-text meta-quiet">
+                                    requested @whenLabel(appt.CreatedAt).ToLower()
+                                </span>
+                            }
+                        </div>
+                    </div>
+
+                    <div class="row-actions">
+                        <button type="button" class="btn-row btn-row-outline js-view"
+                                data-open="1"
+                                data-dow="@appt.AppointmentDate.ToString("ddd").ToUpper()"
+                                data-day="@appt.AppointmentDate.Day"
+                                data-mon="@appt.AppointmentDate.ToString("MMM")"
+                                data-time="@appt.AppointmentDate.ToString("h:mm tt")"
+                                data-when="@whenLabel(appt.AppointmentDate)"
+                                data-status="@appt.Status"
+                                data-created="@appt.CreatedAt.ToString("d MMM yyyy, h:mm tt")"
+                                data-updated="@(appt.UpdatedAt?.ToString("d MMM yyyy, h:mm tt") ?? "")"
+                                data-type="@appt.AppointmentType"
+                                data-name="@appt.FullName"
+                                data-email="@appt.Email"
+                                data-studentid="@(appt.StudentsID?.ToString() ?? "")"
+                                data-datetime="@appt.AppointmentDate.ToString("MMM d, yyyy — h:mm tt")"
+                                data-notes="@appt.Notes"
+                                data-detailurl="@Url.Action("Details", new { appointmentid = appt.AppointmentID })"
+                                data-editurl="@Url.Action("Edit", new { appointmentid = appt.AppointmentID })"
+                                data-cancelurl="@Url.Action("Delete", new { appointmentid = appt.AppointmentID })">
+                            View details
+                        </button>
+                        <a class="btn-row btn-row-primary" asp-action="Edit" asp-route-appointmentid="@appt.AppointmentID">Change time</a>
+                        @* <a class="row-link row-link-danger" asp-action="Delete" asp-route-appointmentid="@appt.AppointmentID">Cancel this session</a> *@
+                    </div>
                 </div>
-                <div style="display:flex; align-items:center; gap:12px;">
-                    <span class="status-badge @statusClass">@appt.Status</span>
-                    <a asp-controller="Appointments" asp-action="Details" asp-route-appointmentid="@appt.AppointmentID">
-                        View
-                    </a>
-                    @if (appt.Status == "Pending")
-                    {
-                        <a asp-controller="Appointments" asp-action="Edit" asp-route-appointmentid="@appt.AppointmentID">
-                            Edit
-                        </a>
-                    }
-                    <a asp-controller="Appointments" asp-action="Delete" asp-route-appointmentid="@appt.AppointmentID"
-                       style="color:#991b1b;">
-                        Cancel
-                    </a>
-                </div>
+            }
+        }
+        else
+        {
+            <div class="empty-state">
+                <span class="material-symbols-outlined">event_available</span>
+                <div class="empty-title">Nothing booked right now</div>
+                <p class="empty-text">
+                    If you'd like to talk to a counselor, you can request a time and
+                    they'll confirm it here.
+                </p>
+                <a asp-action="Create" class="btn-book">
+                    <span class="material-symbols-outlined">calendar_add_on</span>
+                    Book a session
+                </a>
             </div>
         }
-    }
+    </section>
+
+    <!-- ==================== ALREADY ATTENDED ==================== -->
+    <section class="panel tab-panel" id="panel-attended">
+        <div class="panel-head">
+            <h2 class="panel-title">Already attended</h2>
+            <p class="panel-sub">Most recent first.</p>
+        </div>
+
+        @if (attended.Any())
+        {
+            foreach (var appt in attended)
+            {
+                <div class="session-row is-quiet">
+                    <div class="date-chip">
+                        <span class="chip-dow">@appt.AppointmentDate.ToString("ddd").ToUpper()</span>
+                        <span class="chip-day">@appt.AppointmentDate.Day</span>
+                        <span class="chip-mon">@appt.AppointmentDate.ToString("MMM")</span>
+                    </div>
+
+                    <div class="session-body">
+                        <div class="session-time">@appt.AppointmentDate.ToString("h:mm tt")</div>
+                        <div class="session-meta">
+                            <span class="status-badge status-@appt.Status">
+                                @(appt.Status == "Completed" ? "Attended" : appt.Status)
+                            </span>
+                            <span class="meta-text">About: @appt.AppointmentType</span>
+                        </div>
+                    </div>
+
+                    <div class="row-actions">
+                        <button type="button" class="btn-row btn-row-outline js-view"
+                                data-open="0"
+                                data-dow="@appt.AppointmentDate.ToString("ddd").ToUpper()"
+                                data-day="@appt.AppointmentDate.Day"
+                                data-mon="@appt.AppointmentDate.ToString("MMM")"
+                                data-time="@appt.AppointmentDate.ToString("h:mm tt")"
+                                data-when="@whenLabel(appt.AppointmentDate)"
+                                data-status="@appt.Status"
+                                data-created="@appt.CreatedAt.ToString("d MMM yyyy, h:mm tt")"
+                                data-updated="@(appt.UpdatedAt?.ToString("d MMM yyyy, h:mm tt") ?? "")"
+                                data-type="@appt.AppointmentType"
+                                data-name="@appt.FullName"
+                                data-email="@appt.Email"
+                                data-studentid="@(appt.StudentsID?.ToString() ?? "")"
+                                data-datetime="@appt.AppointmentDate.ToString("MMM d, yyyy — h:mm tt")"
+                                data-notes="@appt.Notes"
+                                data-detailurl="@Url.Action("Details", new { appointmentid = appt.AppointmentID })"
+                                data-editurl="@Url.Action("Edit", new { appointmentid = appt.AppointmentID })"
+                                data-cancelurl="@Url.Action("Delete", new { appointmentid = appt.AppointmentID })">
+                            View details
+                        </button>
+                    </div>
+                </div>
+            }
+
+            <p class="panel-foot">
+                <span class="material-symbols-outlined">lock</span>
+                You can see that a session happened, but the notes your counselor writes
+                during it are private to them.
+            </p>
+        }
+        else
+        {
+            <div class="empty-state">
+                <span class="material-symbols-outlined">history</span>
+                <div class="empty-title">No sessions yet</div>
+                <p class="empty-text">Sessions you've attended will be listed here.</p>
+            </div>
+        }
+    </section>
+
+    <!-- ==================== CANCELLED ==================== -->
+    <section class="panel tab-panel" id="panel-closed">
+        <div class="panel-head">
+            <h2 class="panel-title">Cancelled</h2>
+            <p class="panel-sub">Kept here so you can see what happened. Nothing is scheduled for these.</p>
+        </div>
+
+        @if (closed.Any())
+        {
+            foreach (var appt in closed)
+            {
+                <div class="session-row is-quiet">
+                    <div class="date-chip is-muted">
+                        <span class="chip-dow">@appt.AppointmentDate.ToString("ddd").ToUpper()</span>
+                        <span class="chip-day">@appt.AppointmentDate.Day</span>
+                        <span class="chip-mon">@appt.AppointmentDate.ToString("MMM")</span>
+                    </div>
+
+                    <div class="session-body">
+                        <div class="session-time">@appt.AppointmentDate.ToString("h:mm tt")</div>
+                        <div class="session-meta">
+                            <span class="status-badge status-@appt.Status">@appt.Status</span>
+                            <span class="meta-text">About: @appt.AppointmentType</span>
+                            @if (appt.UpdatedAt.HasValue)
+                            {
+                                <span class="meta-text meta-quiet">
+                                    updated @appt.UpdatedAt.Value.ToString("d MMM yyyy")
+                                </span>
+                            }
+                        </div>
+                    </div>
+
+                    <div class="row-actions">
+                        <button type="button" class="btn-row btn-row-outline js-view"
+                                data-open="0"
+                                data-dow="@appt.AppointmentDate.ToString("ddd").ToUpper()"
+                                data-day="@appt.AppointmentDate.Day"
+                                data-mon="@appt.AppointmentDate.ToString("MMM")"
+                                data-time="@appt.AppointmentDate.ToString("h:mm tt")"
+                                data-when="@whenLabel(appt.AppointmentDate)"
+                                data-status="@appt.Status"
+                                data-created="@appt.CreatedAt.ToString("d MMM yyyy, h:mm tt")"
+                                data-updated="@(appt.UpdatedAt?.ToString("d MMM yyyy, h:mm tt") ?? "")"
+                                data-type="@appt.AppointmentType"
+                                data-name="@appt.FullName"
+                                data-email="@appt.Email"
+                                data-studentid="@(appt.StudentsID?.ToString() ?? "")"
+                                data-datetime="@appt.AppointmentDate.ToString("MMM d, yyyy — h:mm tt")"
+                                data-notes="@appt.Notes"
+                                data-detailurl="@Url.Action("Details", new { appointmentid = appt.AppointmentID })"
+                                data-editurl="@Url.Action("Edit", new { appointmentid = appt.AppointmentID })"
+                                data-cancelurl="@Url.Action("Delete", new { appointmentid = appt.AppointmentID })">
+                            View details
+                        </button>
+                    </div>
+                </div>
+            }
+        }
+        else
+        {
+            <div class="empty-state">
+                <span class="material-symbols-outlined">event_busy</span>
+                <div class="empty-title">Nothing cancelled</div>
+                <p class="empty-text">Cancelled or missed sessions would show up here.</p>
+            </div>
+        }
+    </section>
+
+    <!-- Appointment details dialog — filled from the row that opened it -->
+    <div class="modal-backdrop" id="detailModal">
+        <div class="modal-box" role="dialog" aria-modal="true" aria-labelledby="dlgHeading">
+            <header class="dlg-head">
+                <div>
+                    <h2 class="dlg-heading" id="dlgHeading">Appointment details</h2>
+                    <p class="dlg-ref" id="dlgRef"></p>
+                </div>
+                <button type="button" class="dlg-close" id="dlgClose" aria-label="Close">
+                    <span class="material-symbols-outlined">close</span>
+                </button>
+            </header>
+
+            <div class="dlg-body">
+
+                <section class="dlg-section">
+                    <h3 class="dlg-section-title">
+                        <span class="material-symbols-outlined">person</span> Client
+                    </h3>
+                    <div class="dlg-grid">
+                        <div class="dlg-field">
+                            <div class="dlg-label">Full name</div>
+                            <div class="dlg-value" id="dlgName"></div>
+                        </div>
+                        <div class="dlg-field">
+                            <div class="dlg-label">Email address</div>
+                            <div class="dlg-value" id="dlgEmail"></div>
+                        </div>
+                    </div>
+                </section>
+
+                <section class="dlg-section">
+                    <h3 class="dlg-section-title">
+                        <span class="material-symbols-outlined">calendar_month</span> Appointment
+                    </h3>
+                    <div class="dlg-grid">
+                        <div class="dlg-field">
+                            <div class="dlg-label">Date and time</div>
+                            <div class="dlg-value" id="dlgDateTime"></div>
+                        </div>
+                        <div class="dlg-field">
+                            <div class="dlg-label">Appointment type</div>
+                            <div class="dlg-value" id="dlgType"></div>
+                        </div>
+                        <div class="dlg-field dlg-field-wide">
+                            <div class="dlg-label">Additional notes</div>
+                            <div class="dlg-value dlg-notes" id="dlgNotes"></div>
+                        </div>
+                    </div>
+                </section>
+
+                <section class="dlg-section">
+                    <h3 class="dlg-section-title">
+                        <span class="material-symbols-outlined">info</span> Status and audit
+                    </h3>
+                    <div class="dlg-grid">
+                        <div class="dlg-field">
+                            <div class="dlg-label">Status</div>
+                            <div class="dlg-value"><span class="status-badge" id="dlgBadge"></span></div>
+                        </div>
+                        <div class="dlg-field">
+                            <div class="dlg-label">Linked student ID</div>
+                            <div class="dlg-value" id="dlgStudentId"></div>
+                        </div>
+                        <div class="dlg-field">
+                            <div class="dlg-label">Created at</div>
+                            <div class="dlg-value" id="dlgCreated"></div>
+                        </div>
+                        <div class="dlg-field">
+                            <div class="dlg-label">Last updated</div>
+                            <div class="dlg-value" id="dlgUpdated"></div>
+                        </div>
+                    </div>
+                </section>
+
+                <div class="dlg-privacy">
+                    <span class="material-symbols-outlined">lock</span>
+                    Notes are read by your counselor only. They aren't shown to your
+                    teachers, your classmates, or your parents.
+                </div>
+            </div>
+
+            <footer class="dlg-foot" id="dlgFoot">
+                <a class="btn-modal btn-modal-danger" id="dlgCancel" href="#">Cancel session</a>
+                <a class="btn-modal btn-modal-primary" id="dlgEdit" href="#">Change time</a>
+            </footer>
+        </div>
+    </div>
 </div>
+
+@section Scripts {
+    <script>
+        // ── Appointment details dialog ──────────────────────────────────────
+        const modal = document.getElementById('detailModal');
+        const dlg = {
+            ref:       document.getElementById('dlgRef'),
+            name:      document.getElementById('dlgName'),
+            email:     document.getElementById('dlgEmail'),
+            dateTime:  document.getElementById('dlgDateTime'),
+            type:      document.getElementById('dlgType'),
+            notes:     document.getElementById('dlgNotes'),
+            badge:     document.getElementById('dlgBadge'),
+            studentId: document.getElementById('dlgStudentId'),
+            created:   document.getElementById('dlgCreated'),
+            updated:   document.getElementById('dlgUpdated'),
+            edit:      document.getElementById('dlgEdit'),
+            cancel:    document.getElementById('dlgCancel'),
+            foot:      document.getElementById('dlgFoot')
+        };
+
+        let lastFocused = null;
+
+        // Everything is written with textContent, so a student's notes can
+        // never render as markup.
+        function setValue(el, value, emptyText) {
+            const text = (value || '').trim();
+            el.textContent = text === '' ? (emptyText || '—') : text;
+            el.classList.toggle('is-empty', text === '');
+        }
+
+        function openDetails(btn) {
+            const d = btn.dataset;
+
+            dlg.ref.textContent = d.when + ' · ' + d.time;
+
+            setValue(dlg.name, d.name);
+            setValue(dlg.email, d.email);
+            setValue(dlg.dateTime, d.datetime);
+            setValue(dlg.type, d.type);
+            setValue(dlg.notes, d.notes, '—');
+            setValue(dlg.studentId, d.studentid);
+            setValue(dlg.created, d.created);
+            setValue(dlg.updated, d.updated);
+
+            dlg.badge.className = 'status-badge status-' + d.status;
+            dlg.badge.textContent = d.status;
+
+            dlg.edit.href = d.editurl;
+            dlg.cancel.href = d.cancelurl;
+
+            // Only an upcoming session can be moved or cancelled
+            const canAct = d.open === '1';
+            dlg.edit.hidden = !canAct;
+            dlg.cancel.hidden = !canAct;
+            dlg.foot.hidden = !canAct;
+
+            lastFocused = btn;
+            modal.classList.add('is-open');
+            document.body.style.overflow = 'hidden';
+            document.getElementById('dlgClose').focus();
+        }
+
+        function closeDetails() {
+            modal.classList.remove('is-open');
+            document.body.style.overflow = '';
+            if (lastFocused) { lastFocused.focus(); }
+        }
+
+        document.querySelectorAll('.js-view').forEach(function (btn) {
+            btn.addEventListener('click', function () { openDetails(this); });
+        });
+
+        document.getElementById('dlgClose').addEventListener('click', closeDetails);
+
+        modal.addEventListener('click', function (e) {
+            if (e.target === modal) { closeDetails(); }
+        });
+
+        document.addEventListener('keydown', function (e) {
+            if (e.key === 'Escape' && modal.classList.contains('is-open')) { closeDetails(); }
+        });
+
+        // ── Tabs ────────────────────────────────────────────────────────────
+        document.querySelectorAll('.tab-bar .tab').forEach(function (tab) {
+            tab.addEventListener('click', function () {
+                document.querySelectorAll('.tab-bar .tab').forEach(t => t.classList.remove('is-active'));
+                document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('is-active'));
+
+                this.classList.add('is-active');
+                document.getElementById('panel-' + this.dataset.panel).classList.add('is-active');
+            });
+        });
+    </script>
+}
