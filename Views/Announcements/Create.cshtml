@@ -1,13 +1,13 @@
 ﻿@model GCAMS.Models.Announcements.Announcement
 @{
     ViewData["Title"] = "New Announcement";
-    Layout = "_Layout"; // uses your existing CounselCare shell (sidebar + topbar)
+    Layout = "_Layout";
+
+    var isExisting = Model != null && Model.AnnouncementId != 0;
 }
 
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Manrope:wght@600;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="~/css/Announcements/Create.css" asp-append-version="true" />
-
-
 
 <div class="announce-wrap">
     <div class="announce-card">
@@ -25,50 +25,34 @@
             <div class="field-group">
                 <div class="field-label-row">
                     <label asp-for="Title" class="field-label">Title</label>
-                    <span class="badge-needed">Needed</span>
+                    <span class="badge-needed"></span>
                 </div>
-                <input asp-for="Title" class="form-control" placeholder="e.g. Career guidance week — sign-ups are open" />
-                <p class="field-hint">Most students read only this line.</p>
+                <input asp-for="Title" class="form-control" placeholder="e.g. Career guidance week sign-ups are open" />
+                <p class="field-hint"></p>
                 <span asp-validation-for="Title" class="field-error"></span>
             </div>
 
             <div class="field-group">
                 <div class="field-label-row">
                     <label asp-for="Message" class="field-label">Message</label>
-                    <span class="badge-needed">Needed</span>
+                    <span class="badge-needed"></span>
                 </div>
                 <textarea asp-for="Message" class="form-control" rows="4" placeholder="Lead with what's happening and when."></textarea>
                 <span asp-validation-for="Message" class="field-error"></span>
             </div>
 
             <div class="field-group">
-                <div class="section-header">
-                    <div class="field-label-row" style="margin-bottom:0;">
-                        <span class="field-label">Who sees this</span>
-                        <span class="badge-needed">Needed</span>
-                    </div>
-                    <a href="#" class="new-field-link">+ New field</a>
+                <div class="field-label-row">
+                    <span class="field-label">Who sees this</span>
                 </div>
-                <p class="field-hint" style="margin-top:0;">Your build sends every announcement to all students. Narrowing it means fewer students see posts that aren't theirs.</p>
+                <p class="field-hint" style="margin-top:0;">
+                    Every announcement currently goes to all students. Narrowing the
+                    audience needs a field on the announcement until then this is fixed.
+                </p>
 
                 <div class="option-grid">
                     <label class="option-card">
-                        <input type="radio" name="Audience" value="MyStudents" checked />
-                        <span class="option-title">My students</span>
-                        <span class="option-sub">Your assigned students</span>
-                    </label>
-                    <label class="option-card">
-                        <input type="radio" name="Audience" value="OneGrade" />
-                        <span class="option-title">One grade level</span>
-                        <span class="option-sub">Pick a grade</span>
-                    </label>
-                    <label class="option-card">
-                        <input type="radio" name="Audience" value="OneSection" />
-                        <span class="option-title">One section</span>
-                        <span class="option-sub">Pick a section</span>
-                    </label>
-                    <label class="option-card">
-                        <input type="radio" name="Audience" value="Everyone" />
+                        <input type="radio" name="Audience" value="Everyone" checked />
                         <span class="option-title">Every student</span>
                         <span class="option-sub">All students in the school</span>
                     </label>
@@ -76,44 +60,51 @@
             </div>
 
             <div class="field-group">
-                <div class="section-header">
-                    <div class="field-label-row" style="margin-bottom:0;">
-                        <span class="field-label">When it goes out</span>
-                    </div>
-                    <a href="#" class="new-field-link">+ New field</a>
+                <div class="field-label-row">
+                    <span class="field-label">When it goes out</span>
                 </div>
 
                 <div class="option-grid">
                     <label class="option-card">
                         <input type="radio" name="Timing" value="Now" id="timingNow" checked />
                         <span class="option-title">Post now</span>
-                        <span class="option-sub">Students see it straight away</span>
+                        <span class="option-sub">Dated today</span>
                     </label>
                     <label class="option-card">
                         <input type="radio" name="Timing" value="Scheduled" id="timingScheduled" />
                         <span class="option-title">Schedule it</span>
-                        <span class="option-sub">Pick a date and time</span>
+                        <span class="option-sub">Pick the date it's for</span>
                     </label>
                 </div>
 
                 <div id="schedulePicker">
+                    <label asp-for="AnnouncementDate" class="field-label" style="margin-top:10px;"></label>
                     <input asp-for="AnnouncementDate" type="date" class="form-control" />
                     <span asp-validation-for="AnnouncementDate" class="field-error"></span>
                 </div>
             </div>
 
             <div class="form-footer">
-                <button type="button" class="btn-delete">Delete</button>
+                @if (isExisting)
+                {
+                    <button type="button" class="btn-delete">Delete</button>
+                }
+                else
+                {
+                    <span></span>
+                }
                 <div style="display:flex; gap:8px;">
                     <a asp-action="Index" class="btn-cancel">Cancel</a>
-                    <button type="submit" class="btn-save">Review and post</button>
+                    <button type="submit" class="btn-save">Post announcement</button>
                 </div>
             </div>
         </form>
 
-        @if (Model?.AnnouncementId != 0)
+        @if (isExisting)
         {
-            <form id="deleteForm" asp-action="Delete" asp-route-id="@Model?.AnnouncementId" method="post" style="display:none;"></form>
+            <form id="deleteForm" asp-action="Delete" asp-route-id="@Model.AnnouncementId" method="post" style="display:none;">
+                @Html.AntiForgeryToken()
+            </form>
         }
     </div>
 </div>

@@ -21,11 +21,17 @@
 
     // Pre-fills the date box on the Create form with the day being viewed.
     var newDate = (Model.SelectedDate ?? today).ToString("yyyy-MM-dd");
+
+    // Controller is AnnouncementsController, so the name here is "Announcements".
+    // Getting this wrong returns null and the modal silently fails to load.
+    var createUrl = Url.Action("Create", "Announcements", new { date = newDate });
 }
 
 <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
 <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0&display=block" rel="stylesheet">
 <link rel="stylesheet" href="~/css/Announcements/Index.css" asp-append-version="true" />
+@* The form is injected into the modal on this page, so its stylesheet has to load here too *@
+<link rel="stylesheet" href="~/css/Announcements/Create.css" asp-append-version="true" />
 
 
 <div class="ann-page">
@@ -43,7 +49,10 @@
             <h1>Announcements</h1>
             <p class="ann-lead">Posted to students from the guidance office.</p>
         </div>
-        <a asp-action="Create" asp-route-date="@newDate" class="btn-new">
+        @* Falls back to the real page if JavaScript is off — the click handler
+           cancels the navigation and opens the modal instead. *@
+        <a asp-action="Create" asp-route-date="@newDate"
+           class="btn-new js-new-announcement" data-create-url="@createUrl">
             <span class="material-symbols-outlined">add</span>
             New announcement
         </a>
@@ -63,12 +72,12 @@
                             <span class="count-pill">@dayCount</span>
                         </h2>
                         <p class="list-sub">Newest first</p>
-                    </div>
+                    </div>@* 
                     <a asp-action="Index" asp-route-year="@Model.Year" asp-route-month="@Model.Month"
                        class="link-quiet">
                         Clear day
                         <span class="material-symbols-outlined">close</span>
-                    </a>
+                    </a> *@
                 </div>
 
                 @if (dayCount == 0)
@@ -77,7 +86,8 @@
                         <span class="material-symbols-outlined">campaign</span>
                         <div class="empty-title">Nothing posted on this day</div>
                         <p>Pick another date, or write a new announcement.</p>
-                        <a asp-action="Create" asp-route-date="@newDate" class="btn-quiet">New announcement</a>
+                        <a asp-action="Create" asp-route-date="@newDate"
+                           class="btn-quiet js-new-announcement" data-create-url="@createUrl">New announcement</a>
                     </div>
                 }
                 else
@@ -217,3 +227,92 @@
         </aside>
     </div>
 </div>
+
+<!-- ==================== NEW ANNOUNCEMENT MODAL ==================== -->
+<div class="modal fade" id="newAnnouncementModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable modal-fullscreen-sm-down"
+         style="max-width:660px;">
+        <div class="modal-content" style="border-radius:16px; border:none;">
+            <div class="modal-body p-4" id="newAnnouncementModalBody">
+                <div class="text-center text-muted py-5">Loading…</div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script src="~/js/Announcement/announcement-form.js" asp-append-version="true"></script>
+    <script>
+        (function () {
+            var modalEl = document.getElementById('newAnnouncementModal');
+            var modalBody = document.getElementById('newAnnouncementModalBody');
+            var bsModal = null;
+
+            function getBsModal() {
+                if (!bsModal) {
+                    bsModal = bootstrap.Modal.getOrCreateInstance(modalEl);
+                }
+                return bsModal;
+            }
+
+            function wireCloseLinks() {
+                modalBody.querySelectorAll('.close-link, .btn-cancel').forEach(function (el) {
+                    el.addEventListener('click', function (e) {
+                        e.preventDefault();
+                        getBsModal().hide();
+                    });
+                });
+            }
+
+            function loadForm(url) {
+                modalBody.innerHTML = '<div class="text-center text-muted py-5">Loading…</div>';
+
+                fetch(url, { headers: { 'X-Requested-With': 'XMLHttpRequest' } })
+                    .then(function (res) { return res.text(); })
+                    .then(function (html) {
+                        var doc = new DOMParser().parseFromString(html, 'text/html');
+                        var card = doc.querySelector('.announce-card');
+
+                        if (!card) {
+                            modalBody.innerHTML = '<p class="text-danger p-3 mb-0">Could not load the form. Please try again.</p>';
+                            return;
+                        }
+
+                        // outerHTML plus the wrapper: Create.css is scoped to
+                        // .announce-card and its variables live on .announce-wrap,
+                        // so dropping either ancestor unstyles the whole form.
+                        modalBody.innerHTML = '<div class="announce-wrap">' + card.outerHTML + '</div>';
+
+                        // Re-arm client validation on the freshly injected form
+                        if (window.jQuery && jQuery.validator && jQuery.validator.unobtrusive) {
+                            var form = modalBody.querySelector('form');
+                            if (form) {
+                                jQuery(form).removeData('validator').removeData('unobtrusiveValidation');
+                                jQuery.validator.unobtrusive.parse(form);
+                            }
+                        }
+
+                        initAnnouncementForm(modalBody);
+                        wireCloseLinks();
+                    })
+                    .catch(function () {
+                        modalBody.innerHTML = '<p class="text-danger p-3 mb-0">Could not load the form. Please try again.</p>';
+                    });
+            }
+
+            document.querySelectorAll('.js-new-announcement').forEach(function (btn) {
+                btn.addEventListener('click', function (e) {
+                    e.preventDefault();   // don't follow the href — open the modal
+                    loadForm(this.getAttribute('data-create-url'));
+                    getBsModal().show();
+                });
+            });
+
+            // Reset so the next open fetches a fresh form and a fresh
+            // antiforgery token, and the user stays on the Announcements page.
+            modalEl.addEventListener('hidden.bs.modal', function () {
+                modalBody.innerHTML = '<div class="text-center text-muted py-5">Loading…</div>';
+            });
+        })();
+    </script>
+}

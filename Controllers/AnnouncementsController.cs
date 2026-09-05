@@ -18,8 +18,7 @@ namespace GCAMS.Controllers
         {
             _context = context;
         }
-    
-        // GET: Announcements
+
         // GET: Announcements
         public async Task<IActionResult> Index(int? year, int? month, int? day)
         {
@@ -30,14 +29,17 @@ namespace GCAMS.Controllers
             var firstOfMonth = new DateTime(y, m, 1);
             var lastOfMonth = firstOfMonth.AddMonths(1).AddDays(-1);
 
+            // Everything below keys off AnnouncementDate — the day the announcement
+            // is FOR. CreatedAt is only the timestamp of when it was written.
             var monthAnnouncements = await _context.Announcements
                 .Include(a => a.Counselor)
-                .Where(a => a.CreatedAt.Date >= firstOfMonth && a.CreatedAt.Date <= lastOfMonth)
-                .OrderByDescending(a => a.CreatedAt)
+                .Where(a => a.AnnouncementDate.Date >= firstOfMonth && a.AnnouncementDate.Date <= lastOfMonth)
+                .OrderByDescending(a => a.AnnouncementDate)
+                .ThenByDescending(a => a.CreatedAt)
                 .ToListAsync();
 
             var countsByDay = monthAnnouncements
-                .GroupBy(a => a.CreatedAt.Date)
+                .GroupBy(a => a.AnnouncementDate.Date)
                 .ToDictionary(g => g.Key, g => g.Count());
 
             // Build a full grid: pad out to the Sunday before the 1st, and the Saturday after the last day
@@ -63,7 +65,7 @@ namespace GCAMS.Controllers
             {
                 selectedDate = new DateTime(y, m, day.Value);
                 selectedDayAnnouncements = monthAnnouncements
-                    .Where(a => a.CreatedAt.Date == selectedDate.Value)
+                    .Where(a => a.AnnouncementDate.Date == selectedDate.Value)
                     .ToList();
             }
 
@@ -81,20 +83,25 @@ namespace GCAMS.Controllers
         }
 
         // GET: Announcements/Create
-        public IActionResult Create()
+        // The calendar passes the day being viewed, so the form opens on it.
+        public IActionResult Create(DateTime? date)
         {
-            return View();
+            return View(new Announcement
+            {
+                AnnouncementDate = date ?? DateTime.Today
+            });
         }
 
         // POST: Announcements/Create
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Title,Message")] Announcement announcement)
+        public async Task<IActionResult> Create([Bind("Title,Message,AnnouncementDate")] Announcement announcement)
         {
             if (!ModelState.IsValid) return View(announcement);
 
             announcement.CounselorID = await GetCurrentCounselorIdAsync();
-            announcement.CreatedAt = DateTime.Now;
+            announcement.CreatedAt = DateTime.Now;   // written now; AnnouncementDate comes from the form
+
             _context.Announcements.Add(announcement);
             await _context.SaveChangesAsync();
 
@@ -103,7 +110,7 @@ namespace GCAMS.Controllers
                 Who = User.Identity?.Name ?? "Unknown",
                 Date = DateTime.Now,
                 ActivityAction = ActivityAction.AnnouncementCreated.ToString(),
-                Details = $"Announcement \"{announcement.Title}\" was posted."
+                Details = $"Announcement \"{announcement.Title}\" was posted for {announcement.AnnouncementDate:d MMM yyyy}."
             });
             await _context.SaveChangesAsync();
 
@@ -142,7 +149,14 @@ namespace GCAMS.Controllers
             }
 
             TempData["Success"] = $"Announcement sent to {sentCount} student(s).";
-            return RedirectToAction(nameof(Index));
+
+            // Land back on the day the announcement is for, so it's visible straight away.
+            return RedirectToAction(nameof(Index), new
+            {
+                year = announcement.AnnouncementDate.Year,
+                month = announcement.AnnouncementDate.Month,
+                day = announcement.AnnouncementDate.Day
+            });
         }
 
         // GET: Announcements/Edit/5
@@ -159,7 +173,7 @@ namespace GCAMS.Controllers
         // POST: Announcements/Edit/5
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("AnnouncementId,Title,Message,CreatedAt")] Announcement posted)
+        public async Task<IActionResult> Edit(int id, [Bind("AnnouncementId,Title,Message,AnnouncementDate")] Announcement posted)
         {
             if (id != posted.AnnouncementId) return NotFound();
 
@@ -170,7 +184,8 @@ namespace GCAMS.Controllers
 
             existing.Title = posted.Title;
             existing.Message = posted.Message;
-            existing.UpdatedAt = DateTime.Now;
+            existing.AnnouncementDate = posted.AnnouncementDate;
+            existing.UpdatedAt = DateTime.Now;   // CreatedAt is left alone on purpose
 
             try
             {
@@ -183,7 +198,13 @@ namespace GCAMS.Controllers
             }
 
             TempData["Success"] = "Announcement updated.";
-            return RedirectToAction(nameof(Index));
+
+            return RedirectToAction(nameof(Index), new
+            {
+                year = existing.AnnouncementDate.Year,
+                month = existing.AnnouncementDate.Month,
+                day = existing.AnnouncementDate.Day
+            });
         }
 
         // GET: Announcements/Delete/5
