@@ -251,13 +251,7 @@
 
 /* Weekends read as unavailable rather than just empty */
 .cal-day.is-closed {
-    background: repeating-linear-gradient(
-        45deg,
-        #fafbf8,
-        #fafbf8 6px,
-        #f4f6f1 6px,
-        #f4f6f1 12px
-    );
+    background: repeating-linear-gradient( 45deg, #fafbf8, #fafbf8 6px, #f4f6f1 6px, #f4f6f1 12px );
     cursor: default;
 }
 
@@ -352,69 +346,69 @@
         color: var(--cl-ink);
     }
 
-/* ---------- status dots keep their colour in every state ---------- */
-.cal-page .chip .dot {
-    width: 8px;
-    height: 8px;
-    flex-shrink: 0;
-    border-radius: 50%;
-}
+    /* ---------- status dots keep their colour in every state ---------- */
+    .cal-page .chip .dot {
+        width: 8px;
+        height: 8px;
+        flex-shrink: 0;
+        border-radius: 50%;
+    }
 
-.cal-page .chip .dot-pending {
-    background: #f0a92c;
-}
+    .cal-page .chip .dot-pending {
+        background: #f0a92c;
+    }
 
-.cal-page .chip .dot-confirmed {
-    background: #12894a;
-}
+    .cal-page .chip .dot-confirmed {
+        background: #12894a;
+    }
 
-.cal-page .chip .dot-completed {
-    background: #3b82f6;
-}
+    .cal-page .chip .dot-completed {
+        background: #3b82f6;
+    }
 
-.cal-page .chip .dot-cancelled {
-    background: #e0402f;
-}
+    .cal-page .chip .dot-cancelled {
+        background: #e0402f;
+    }
 
-/* ---------- selected: tinted in its own colour, text stays readable ---------- */
-.cal-page .chip.is-active {
-    font-weight: 700;
-    color: var(--cl-ink);
-    background: #fff;
-    border-color: var(--cl-ink);
-    box-shadow: inset 0 0 0 1px var(--cl-ink);
-}
+    /* ---------- selected: tinted in its own colour, text stays readable ---------- */
+    .cal-page .chip.is-active {
+        font-weight: 700;
+        color: var(--cl-ink);
+        background: #fff;
+        border-color: var(--cl-ink);
+        box-shadow: inset 0 0 0 1px var(--cl-ink);
+    }
 
-.cal-page .chip[data-filter="all"].is-active {
-    color: #fff;
-    background: var(--cl-green);
-    border-color: var(--cl-green);
-    box-shadow: none;
-}
+    .cal-page .chip[data-filter="all"].is-active {
+        color: #fff;
+        background: var(--cl-green);
+        border-color: var(--cl-green);
+        box-shadow: none;
+    }
 
-.cal-page .chip[data-filter="Pending"].is-active {
-    background: #fdf4e3;
-    border-color: #f0a92c;
-    box-shadow: inset 0 0 0 1px #f0a92c;
-}
+    .cal-page .chip[data-filter="Pending"].is-active {
+        background: #fdf4e3;
+        border-color: #f0a92c;
+        box-shadow: inset 0 0 0 1px #f0a92c;
+    }
 
-.cal-page .chip[data-filter="Confirmed"].is-active {
-    background: var(--cl-green-soft);
-    border-color: #12894a;
-    box-shadow: inset 0 0 0 1px #12894a;
-}
+    .cal-page .chip[data-filter="Confirmed"].is-active {
+        background: var(--cl-green-soft);
+        border-color: #12894a;
+        box-shadow: inset 0 0 0 1px #12894a;
+    }
 
-.cal-page .chip[data-filter="Completed"].is-active {
-    background: #eaf1fd;
-    border-color: #3b82f6;
-    box-shadow: inset 0 0 0 1px #3b82f6;
-}
+    .cal-page .chip[data-filter="Completed"].is-active {
+        background: #eaf1fd;
+        border-color: #3b82f6;
+        box-shadow: inset 0 0 0 1px #3b82f6;
+    }
 
-.cal-page .chip[data-filter="Cancelled"].is-active {
-    background: var(--cl-danger-bg);
-    border-color: #e0402f;
-    box-shadow: inset 0 0 0 1px #e0402f;
-}
+    .cal-page .chip[data-filter="Cancelled"].is-active {
+        background: var(--cl-danger-bg);
+        border-color: #e0402f;
+        box-shadow: inset 0 0 0 1px #e0402f;
+    }
 
 /* ---------- count badge ---------- */
 .chip-count {
@@ -460,5 +454,352 @@
         justify-content: center;
         padding: 7px 10px;
         font-size: 12px;
+    }
+}
+
+/* ==========================================================================
+   DAY PANEL
+   ========================================================================== */
+.day-panel {
+    position: sticky;
+    top: 82px;
+    min-width: 0;
+    padding: 18px 20px;
+    background: #fff;
+    border: 1px solid var(--cl-line);
+    border-radius: 14px;
+    max-height: calc(100vh - 120px);
+    overflow-y: auto;
+    overscroll-behavior: contain;
+}
+
+.day-head {
+    padding-bottom: 14px;
+    margin-bottom: 6px;
+    border-bottom: 1px solid #f0f3ec;
+}
+
+.day-title {
+    font-family: 'Manrope', sans-serif;
+    font-size: 17px;
+    font-weight: 700;
+    color: var(--cl-ink);
+    margin: 0;
+}
+
+.day-sub {
+    font-size: 12.5px;
+    color: var(--cl-muted);
+    margin: 3px 0 0;
+}
+
+/* ==========================================================================
+   AGENDA ROWS
+   ========================================================================== */
+.agenda-row {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    padding: 14px 0;
+    border-bottom: 1px solid #f0f3ec;
+}
+
+    .agenda-row:last-of-type {
+        border-bottom: none;
+    }
+
+    .agenda-row[hidden] {
+        display: none;
+    }
+
+.agenda-time {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    width: 52px;
+    flex-shrink: 0;
+    padding-top: 2px;
+}
+
+.time-main {
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--cl-ink);
+    line-height: 1.2;
+}
+
+.time-ampm {
+    font-size: 10.5px;
+    color: var(--cl-muted);
+}
+
+.agenda-dot {
+    width: 8px;
+    height: 8px;
+    flex-shrink: 0;
+    margin-top: 6px;
+    border-radius: 50%;
+    background: var(--cl-green);
+}
+
+.agenda-card {
+    flex: 1;
+    min-width: 0;
+    padding: 12px 14px;
+    background: #fff;
+    border: 1px solid var(--cl-line);
+    border-left: 3px solid var(--cl-green);
+    border-radius: 10px;
+}
+
+    .agenda-card.status-Pending {
+        border-left-color: var(--cl-warn-dot);
+    }
+
+    .agenda-card.status-Completed {
+        border-left-color: #6b8fb5;
+        background: #fbfcfd;
+    }
+
+    .agenda-card.status-Cancelled {
+        border-left-color: #c0392f;
+        background: #fffafa;
+    }
+
+    .agenda-card.status-Missed {
+        border-left-color: var(--cl-faint);
+        background: #fafbf8;
+    }
+
+.agenda-name {
+    font-size: 14px;
+    font-weight: 700;
+    color: var(--cl-ink);
+    line-height: 1.3;
+}
+
+.agenda-meta {
+    font-size: 12px;
+    color: var(--cl-muted);
+    margin-top: 2px;
+    word-break: break-word;
+}
+
+.agenda-foot {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-wrap: wrap;
+    margin-top: 10px;
+}
+
+.agenda-links {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    margin-top: 9px;
+    padding-top: 9px;
+    border-top: 1px solid #f4f6f2;
+}
+
+.row-link {
+    font-size: 12.5px;
+    font-weight: 600;
+    color: var(--cl-green);
+    text-decoration: none;
+}
+
+    .row-link:hover {
+        text-decoration: underline;
+        color: var(--cl-green-dark);
+    }
+
+    .row-link.is-disabled {
+        color: var(--cl-faint);
+        cursor: not-allowed;
+    }
+
+        .row-link.is-disabled:hover {
+            text-decoration: none;
+        }
+
+/* ==========================================================================
+   STATUS BADGES + SELECT
+   ========================================================================== */
+.status-badge {
+    display: inline-flex;
+    align-items: center;
+    padding: 3px 10px;
+    font-size: 11px;
+    font-weight: 600;
+    border-radius: 20px;
+    white-space: nowrap;
+}
+
+.status-Pending {
+    color: var(--cl-warn-ink);
+    background: var(--cl-warn-bg);
+}
+
+.status-Confirmed {
+    color: #0f6b1f;
+    background: var(--cl-green-soft);
+}
+
+.status-Completed {
+    color: var(--cl-info-ink);
+    background: var(--cl-info-bg);
+}
+
+.status-Cancelled {
+    color: var(--cl-danger-ink);
+    background: var(--cl-danger-bg);
+}
+
+.status-Missed {
+    color: #41493e;
+    background: #eef1ea;
+}
+
+/* the badge colours must not repaint the card wrapper */
+.agenda-card.status-Pending,
+.agenda-card.status-Confirmed,
+.agenda-card.status-Completed,
+.agenda-card.status-Cancelled,
+.agenda-card.status-Missed {
+    color: var(--cl-ink);
+}
+
+.status-select {
+    font-family: 'Inter', sans-serif;
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--cl-ink);
+    background: #fff;
+    border: 1px solid var(--cl-line);
+    border-radius: 8px;
+    padding: 5px 8px;
+    cursor: pointer;
+}
+
+    .status-select:hover {
+        background: var(--cl-tint);
+    }
+
+    .status-select:disabled {
+        opacity: .55;
+        cursor: progress;
+    }
+
+/* ==========================================================================
+   EMPTY STATES
+   ========================================================================== */
+.empty-state {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+    padding: 34px 18px;
+    text-align: center;
+}
+
+    .empty-state[hidden] {
+        display: none;
+    }
+
+    .empty-state > .material-symbols-outlined {
+        font-size: 28px;
+        color: var(--cl-faint);
+    }
+
+.empty-title {
+    font-size: 14px;
+    font-weight: 700;
+    color: var(--cl-ink);
+}
+
+.empty-state p {
+    font-size: 12.5px;
+    line-height: 1.55;
+    color: var(--cl-muted);
+    margin: 0;
+}
+
+/* .btn-quiet only carried colours before — it needs its own box here,
+   since in the day panel it isn't sitting next to .btn-new */
+.cal-page .btn-quiet {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 9px 18px;
+    font-size: 13px;
+    font-weight: 600;
+    border-radius: 10px;
+    text-decoration: none;
+    cursor: pointer;
+}
+
+/* ==========================================================================
+   RESPONSIVE
+   ========================================================================== */
+@media (max-width: 1050px) {
+    .cal-layout {
+        grid-template-columns: 1fr;
+    }
+
+    .day-panel {
+        position: static;
+        max-height: none;
+    }
+}
+
+@media (max-width: 768px) {
+    .cal-month {
+        order: -1;
+        width: 100%;
+        margin: 0;
+        text-align: center;
+    }
+
+    .cal-toolbar {
+        justify-content: space-between;
+    }
+
+    .cal-day {
+        min-height: 72px;
+        padding: 6px;
+    }
+
+    .cal-weekday {
+        font-size: 9.5px;
+        padding: 8px 2px;
+    }
+
+    .cal-count {
+        font-size: 10px;
+    }
+}
+
+@media (max-width: 520px) {
+    .cal-day {
+        min-height: 58px;
+    }
+
+    .cal-day-num {
+        font-size: 12px;
+    }
+
+    .cal-closed,
+    .cal-today-tag {
+        display: none;
+    }
+
+    .agenda-time {
+        width: 44px;
+    }
+
+    .btn-new {
+        flex: 1;
+        justify-content: center;
     }
 }
