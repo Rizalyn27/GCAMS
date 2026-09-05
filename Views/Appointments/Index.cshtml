@@ -1,53 +1,102 @@
 ﻿@model GCAMS.ViewModels.AppointmentCalendarViewModel
+
 @{
     ViewData["Title"] = "Appointments";
-    var today = DateTime.Today;
-    var prevMonth = new DateTime(Model.Year, Model.Month, 1).AddMonths(-1);
-    var nextMonth = new DateTime(Model.Year, Model.Month, 1).AddMonths(1);
 
-    // Status counts — computed from the selected day's appointments.
-    // If you want true month-wide counts, expose a Dictionary<string,int> (e.g. Model.StatusCounts)
-    // from the controller/ViewModel and swap the lines below for that instead.
-    var needsConfirmingCount = Model.SelectedDayAppointments?.Count(a => a.Status == "Pending") ?? 0;
-    var confirmedCount = Model.SelectedDayAppointments?.Count(a => a.Status == "Confirmed") ?? 0;
-    var completedCount = Model.SelectedDayAppointments?.Count(a => a.Status == "Completed") ?? 0;
-    var cancelledCount = Model.SelectedDayAppointments?.Count(a => a.Status == "Cancelled" || a.Status == "Missed") ?? 0;
+    var firstOfMonth = new DateTime(Model.Year, Model.Month, 1);
+    var prevMonth = firstOfMonth.AddMonths(-1);
+    var nextMonth = firstOfMonth.AddMonths(1);
+    var today = DateTime.Today;
+
+    // The model carries the full appointment list only for the selected day,
+    // so the filter counts describe that day.
+    var dayList = (Model.SelectedDayAppointments ?? Enumerable.Empty<GCAMS.Models.Appointment.Appointments>())
+        .OrderBy(a => a.AppointmentDate)
+        .ToList();
+
+    var countPending = dayList.Count(a => a.Status == "Pending");
+    var countConfirmed = dayList.Count(a => a.Status == "Confirmed");
+    var countCompleted = dayList.Count(a => a.Status == "Completed");
+    var countCancelled = dayList.Count(a => a.Status == "Cancelled" || a.Status == "Missed");
 }
 
-<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
-<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="~/css/Appointments/Index.css" asp-append-version="true" />
+@section Styles {
+    <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0&display=block" rel="stylesheet">
+    <link rel="stylesheet" href="~/css/Appointments/Index.css" asp-append-version="true" />
+}
 
-<div class="appt-page">
+<div class="cal-page">
 
-    <div class="appt-toolbar">
-        <div class="appt-toolbar-left">
-            <a class="icon-btn" asp-action="Index" asp-route-year="@prevMonth.Year" asp-route-month="@prevMonth.Month">&larr;</a>
-            <a class="icon-btn" asp-action="Index" asp-route-year="@nextMonth.Year" asp-route-month="@nextMonth.Month">&rarr;</a>
-            <a class="today-btn" asp-action="Index" asp-route-year="@today.Year" asp-route-month="@today.Month" asp-route-day="@today.Day">Today</a>
+    <!-- ==================== TOOLBAR ==================== -->
+    <header class="cal-toolbar">
+        <div class="cal-nav">
+            <a class="nav-btn" title="Previous month"
+               asp-action="Index" asp-route-year="@prevMonth.Year" asp-route-month="@prevMonth.Month">
+                <span class="material-symbols-outlined">chevron_left</span>
+            </a>
+            <a class="nav-btn" title="Next month"
+               asp-action="Index" asp-route-year="@nextMonth.Year" asp-route-month="@nextMonth.Month">
+                <span class="material-symbols-outlined">chevron_right</span>
+            </a>
+            <a class="btn-today"
+               asp-action="Index" asp-route-year="@today.Year" asp-route-month="@today.Month" asp-route-day="@today.Day">
+                Today
+            </a>
         </div>
 
-        <div class="month-title">@Model.MonthName</div>
+        <h1 class="cal-month">@Model.MonthName</h1>
 
-        <div class="view-toggle">
-            <span class="active">Day</span>
-        </div>
+        <a asp-action="Create" class="btn-new">
+            <span class="material-symbols-outlined">add</span>
+            New appointment
+        </a>
+    </header>
+
+    <!-- Pick one status to narrow the day panel. Every chip stays clickable
+         at a count of zero — the panel then says so explicitly. -->
+    <div class="filter-bar d-flex align-items-center flex-wrap gap-2" role="group" aria-label="Filter by status">
+        <span class="filter-label">Show</span>
+
+        <button type="button" class="btn btn-sm rounded-pill chip is-active"
+                data-filter="all" data-label="appointments" aria-pressed="true">
+            Show all
+            <span class="chip-count">@dayList.Count()</span>
+        </button>
+
+        <button type="button" class="btn btn-sm rounded-pill chip"
+                data-filter="Pending" data-label="appointments that need confirming" aria-pressed="false">
+            <span class="dot dot-pending"></span>
+            Needs confirming
+            <span class="chip-count">@countPending</span>
+        </button>
+
+        <button type="button" class="btn btn-sm rounded-pill chip"
+                data-filter="Confirmed" data-label="confirmed appointments" aria-pressed="false">
+            <span class="dot dot-confirmed"></span>
+            Confirmed
+            <span class="chip-count">@countConfirmed</span>
+        </button>
+
+        <button type="button" class="btn btn-sm rounded-pill chip"
+                data-filter="Completed" data-label="completed appointments" aria-pressed="false">
+            <span class="dot dot-completed"></span>
+            Completed
+            <span class="chip-count">@countCompleted</span>
+        </button>
+
+        <button type="button" class="btn btn-sm rounded-pill chip"
+                data-filter="Cancelled" data-label="cancelled appointments" aria-pressed="false">
+            <span class="dot dot-cancelled"></span>
+            Cancelled
+            <span class="chip-count">@countCancelled</span>
+        </button>
     </div>
 
-    <div class="appt-actions-row">
-        <a asp-action="Create" class="btn-new">+ New appointment</a>
+    <div class="cal-layout">
 
-        <div class="filter-chips">
-            <span class="filter-chip"><span class="chip-dot dot-pending"></span>Needs confirming @needsConfirmingCount</span>
-            <span class="filter-chip"><span class="chip-dot dot-confirmed"></span>Confirmed @confirmedCount</span>
-            <span class="filter-chip"><span class="chip-dot dot-completed"></span>Completed @completedCount</span>
-            <span class="filter-chip"><span class="chip-dot dot-cancelled"></span>Cancelled @cancelledCount</span>
-        </div>
-    </div>
-
-    <div class="appt-body">
-
-        <div class="cal-panel">
+        <!-- ==================== CALENDAR ==================== -->
+        <div class="cal-main">
             <div class="cal-grid">
                 @foreach (var wd in new[] { "Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat" })
                 {
@@ -57,107 +106,204 @@
                 @foreach (var d in Model.Days)
                 {
                     var isSelected = Model.SelectedDate.HasValue && Model.SelectedDate.Value == d.Date;
-                    <a class="cal-day @(d.IsCurrentMonth ? "" : "other-month") @(isSelected ? "selected" : "")"
+                    var isWeekend = d.Date.DayOfWeek == DayOfWeek.Saturday || d.Date.DayOfWeek == DayOfWeek.Sunday;
+
+                    <a class="cal-day @(d.IsCurrentMonth ? "" : "is-outside") @(isWeekend ? "is-closed" : "") @(isSelected ? "is-selected" : "")"
                        asp-action="Index"
                        asp-route-year="@d.Date.Year"
                        asp-route-month="@d.Date.Month"
                        asp-route-day="@d.Date.Day">
-                        <div class="cal-day-top">
-                            <span class="cal-day-num @(d.IsToday ? "today" : "")">@d.Date.Day</span>
+
+                        <div class="cal-day-head">
+                            <span class="cal-day-num @(d.IsToday ? "is-today" : "")">@d.Date.Day</span>
+                            @if (isWeekend)
+                            {
+                                <span class="cal-closed">Closed</span>
+                            }
+                            else if (d.IsToday)
+                            {
+                                <span class="cal-today-tag">Today</span>
+                            }
                         </div>
 
                         @if (d.Count > 0)
                         {
-                            <span class="cal-appt-pill">@d.Count appt@(d.Count == 1 ? "" : "s")</span>
-                        }
-                        else
-                        {
-                            <span class="cal-day-closed">Closed</span>
+                            <span class="cal-count">
+                                @d.Count @(d.Count == 1 ? "session" : "sessions")
+                            </span>
                         }
                     </a>
                 }
             </div>
         </div>
 
-        <div class="day-side-panel">
+        <!-- ==================== DAY PANEL ==================== -->
+        <aside class="day-panel">
             @if (Model.SelectedDate.HasValue)
             {
-                <div class="day-panel-title">@Model.SelectedDate.Value.ToString("dddd, d MMMM")</div>
-                <div class="day-panel-subtitle">@Model.SelectedDayAppointments.Count() appointment@(Model.SelectedDayAppointments.Count() == 1 ? "" : "s")</div>
+                var list = dayList;
 
-                @if (!Model.SelectedDayAppointments.Any())
+                <div class="day-head">
+                    <h2 class="day-title">@Model.SelectedDate.Value.ToString("dddd, d MMMM")</h2>
+                    <p class="day-sub">
+                        @(list.Any()
+                                            ? $"{list.Count} appointment{(list.Count == 1 ? "" : "s")}"
+                                            : "Nothing booked")
+                </p>
+            </div>
+
+            @if (!list.Any())
                 {
-                    <div class="empty-state">No appointments on this day.</div>
+                    <div class="empty-state">
+                        <span class="material-symbols-outlined">event_available</span>
+                        <div class="empty-title">No appointments this day</div>
+                        <a asp-action="Create" class="btn-quiet">Add one</a>
+                    </div>
                 }
                 else
                 {
-                    foreach (var item in Model.SelectedDayAppointments.OrderBy(a => a.AppointmentDate))
+                    foreach (var item in list)
                     {
-                        <div class="timeline-item">
-                            <div class="timeline-time-col">
-                                <div class="timeline-time">@item.AppointmentDate.ToString("h:mm tt")</div>
-                                <div class="timeline-duration">30 min</div>
+                        <div class="agenda-row" data-status="@(item.Status == "Missed" ? "Cancelled" : item.Status)">
+                            <div class="agenda-time">
+                                <span class="time-main">@item.AppointmentDate.ToString("h:mm")</span>
+                                <span class="time-ampm">@item.AppointmentDate.ToString("tt")</span>
                             </div>
-                            <div class="timeline-rail">
-                                <div class="timeline-dot"></div>
-                            </div>
-                            <div class="timeline-card">
-                                <div class="timeline-name">@item.FullName</div>
-                                <div class="timeline-meta">@item.AppointmentType<br />@item.Email</div>
-                                <div class="timeline-card-actions">
-                                    <span class="status-badge @item.Status">@item.Status</span>
 
-                                    <select class="status-select status-dropdown" data-id="@item.AppointmentID" data-current="@item.Status">
+                            <span class="agenda-dot dot-@item.Status"></span>
+
+                            <div class="agenda-card status-@item.Status">
+                                <div class="agenda-name">@item.FullName</div>
+                                <div class="agenda-meta">@item.Email</div>
+                                <div class="agenda-meta">@item.AppointmentType</div>
+
+                                <div class="agenda-foot">
+                                    <span class="status-badge status-@item.Status">
+                                        @(item.Status == "Pending" ? "Needs confirming" : item.Status)
+                                    </span>
+
+                                    <select class="status-select status-dropdown"
+                                            data-id="@item.AppointmentID"
+                                            data-current="@item.Status"
+                                            aria-label="Change status for @item.FullName">
                                         @foreach (var status in new[] { "Pending", "Confirmed", "Completed", "Missed", "Cancelled" })
                                         {
                                             <option value="@status" selected="@(item.Status == status ? "selected" : null)">@status</option>
                                         }
                                     </select>
+                                </div>
 
+                                <div class="agenda-links">
                                     <a asp-action="Details" asp-route-appointmentid="@item.AppointmentID" class="row-link">View</a>
                                     @if (item.Status == "Pending")
                                     {
                                         <a asp-action="Edit" asp-route-appointmentid="@item.AppointmentID" class="row-link">Edit</a>
                                     }
+                                    else
+                                    {
+                                        <span class="row-link is-disabled" title="Only pending appointments can be edited">Edit</span>
+                                    }
                                 </div>
                             </div>
                         </div>
                     }
+                    <div class="empty-state" id="filterEmpty" hidden>
+                        <span class="material-symbols-outlined">filter_alt_off</span>
+                        <div class="empty-title" id="filterEmptyTitle">No appointments</div>
+                        <button type="button" class="btn-quiet" id="filterShowAll">Show all</button>
+                    </div>
                 }
             }
             else
             {
-                <div class="day-panel-title">Select a date</div>
-                <div class="empty-state">Pick a day on the calendar to see its appointments.</div>
-            }
-        </div>
+                <div class="day-head">
+                    <h2 class="day-title">Pick a day</h2>
+                    <p class="day-sub">Choose a date on the calendar to see what's booked.</p>
+                </div>
 
+                <div class="empty-state">
+                    <span class="material-symbols-outlined">calendar_month</span>
+                    <div class="empty-title">No day selected</div>
+                    <a asp-action="Index" asp-route-year="@today.Year" asp-route-month="@today.Month" asp-route-day="@today.Day"
+                       class="btn-quiet">Show today</a>
+                </div>
+            }
+        </aside>
     </div>
 </div>
 
 @section Scripts {
     <script>
+        // ── Status filters (one at a time) ──────────────────────────────────
+        const chips = document.querySelectorAll('.chip[data-filter]');
+        const filterEmpty = document.getElementById('filterEmpty');
+        const filterEmptyTitle = document.getElementById('filterEmptyTitle');
+        const filterShowAll = document.getElementById('filterShowAll');
+        const rows = document.querySelectorAll('.agenda-row');
+
+        function applyFilter(value, label) {
+            let shown = 0;
+
+            rows.forEach(function (row) {
+                const match = value === 'all' || row.dataset.status === value;
+                row.hidden = !match;
+                if (match) { shown++; }
+            });
+
+            chips.forEach(function (chip) {
+                const on = chip.dataset.filter === value;
+                chip.classList.toggle('is-active', on);
+                chip.setAttribute('aria-pressed', on);
+            });
+
+            // A count of zero is a valid answer, not a broken filter
+            if (filterEmpty) {
+                filterEmpty.hidden = shown > 0;
+                if (filterEmptyTitle) {
+                    filterEmptyTitle.textContent = 'No ' + label + ' on this day.';
+                }
+            }
+        }
+
+        chips.forEach(function (chip) {
+            chip.addEventListener('click', function () {
+                applyFilter(this.dataset.filter, this.dataset.label);
+            });
+        });
+
+        if (filterShowAll) {
+            filterShowAll.addEventListener('click', function () {
+                applyFilter('all', 'appointments');
+            });
+        }
+
         document.querySelectorAll('.status-dropdown').forEach(function (dropdown) {
             dropdown.addEventListener('change', async function () {
                 const appointmentId  = this.dataset.id;
                 const newStatus      = this.value;
                 const previousStatus = this.dataset.current;
+
+                this.disabled = true;
+
                 try {
                     const response = await fetch('/Appointments/UpdateStatus', {
                         method: 'POST',
                         headers: { 'Content-Type': 'application/json' },
                         body: JSON.stringify({ appointmentId, newStatus })
                     });
+
                     if (response.ok) {
                         location.reload();
                     } else {
                         alert('Failed to update status. Please try again.');
                         this.value = previousStatus;
+                        this.disabled = false;
                     }
                 } catch (err) {
                     console.error('Status update failed:', err);
                     alert('Could not reach the server. Please try again.');
                     this.value = previousStatus;
+                    this.disabled = false;
                 }
             });
         });

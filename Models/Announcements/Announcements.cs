@@ -1,5 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
-using GCAMS.Models.Counselor;
+﻿using GCAMS.Models.Counselor;
+using System.ComponentModel.DataAnnotations;
 
 namespace GCAMS.Models.Announcements
 {
@@ -21,5 +21,10 @@ namespace GCAMS.Models.Announcements
 
         public DateTime CreatedAt { get; set; } = DateTime.Now;
         public DateTime? UpdatedAt { get; set; }
+
+        [Required(ErrorMessage = "Please choose the date this announcement is for")]
+        [DataType(DataType.Date)]
+        [Display(Name = "Announcement date")]
+        public DateTime AnnouncementDate { get; set; }
     }
 }
