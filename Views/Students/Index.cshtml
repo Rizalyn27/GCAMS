@@ -81,12 +81,15 @@
                 }
             </select>
 
-            <select id="statusFilter" class="form-select filter-select filter-extra" aria-label="Filter by status">
+            <select id="statusFilter" class="form-select filter-select" aria-label="Filter by status">
                 <option value="">All Status</option>
                 <option value="true">Active</option>
                 <option value="false">Archived</option>
             </select>
 
+            <button type="button" class="btn-clear ms-auto" id="clearFilters" hidden>
+                <i class="fa-solid fa-xmark"></i> Clear filters
+            </button>
         </div>
 
         <!-- Table -->
@@ -95,11 +98,19 @@
                 <table class="table table-hover gcams-table align-middle mb-0" id="studentTable">
                     <thead>
                         <tr>
-                            <th scope="col">Student ID</th>
-                            <th scope="col">Full Name</th>
+                            <th scope="col" class="sortable" data-sort="stuid">
+                                Student ID <i class="fa-solid fa-sort sort-icon"></i>
+                            </th>
+                            <th scope="col" class="sortable" data-sort="name">
+                                Full Name <i class="fa-solid fa-sort sort-icon"></i>
+                            </th>
                             <th scope="col">Email</th>
-                            <th scope="col">Grade</th>
-                            <th scope="col">Section</th>
+                            <th scope="col" class="sortable" data-sort="grade">
+                                Grade <i class="fa-solid fa-sort sort-icon"></i>
+                            </th>
+                            <th scope="col" class="sortable" data-sort="section">
+                                Section <i class="fa-solid fa-sort sort-icon"></i>
+                            </th>
                             <th scope="col" class="th-actions">Actions</th>
                         </tr>
                     </thead>
@@ -151,17 +162,14 @@
                     </tbody>
                 </table>
             </div>
-            <!-- Table Footer -->
-            <div class="table-footer">
-                <span class="showing-text" id="showingText"></span>
-                <div class="pagination" id="pagination"></div>
-            </div>
 
             <div class="empty-state d-none" id="emptyState">
                 <i class="fa-solid fa-user-graduate"></i>
                 <p class="mb-0">No students match your filters.</p>
             </div>
 
+            <!-- One footer only — two elements sharing an id meant the pagination
+                 was being written into a plain div instead of the <ul>. -->
             <div class="table-footer d-flex flex-wrap align-items-center justify-content-between gap-2">
                 <span class="showing-text" id="showingText"></span>
                 <ul class="pagination gcams-pagination mb-0" id="pagination"></ul>
@@ -195,7 +203,6 @@
 </div>
 
 <!-- ================= Bulk Update Modal ================= -->
-
 <div class="modal fade" id="bulkUpdateModal" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content">
@@ -218,25 +225,29 @@
         </div>
     </div>
 </div>
+
 @section Scripts {
     <script>
         (function () {
             const pageSize = 10;
             let currentPage = 1;
             let visibleRows = [];
+            let sortKey = null;
+            let sortAsc = true;
 
             const table = document.getElementById('studentTable');
-            const rows = Array.from(table.querySelectorAll('tbody tr'));
+            const tbody = table.querySelector('tbody');
+            const rows = Array.from(tbody.querySelectorAll('tr'));
             const searchInput = document.getElementById('studentSearch');
             const gradeFilter = document.getElementById('gradeFilter');
             const sectionFilter = document.getElementById('sectionFilter');
             const statusFilter = document.getElementById('statusFilter');
-            const filterBar = document.querySelector('.filter-bar');
-            const filterToggle = document.getElementById('filterToggle');
+            const clearBtn = document.getElementById('clearFilters');
             const emptyState = document.getElementById('emptyState');
             const showingText = document.getElementById('showingText');
             const pagination = document.getElementById('pagination');
 
+            // ---------- filtering ----------
             function applyFilters() {
                 const query = searchInput.value.toLowerCase().trim();
                 const grade = gradeFilter.value.toLowerCase();
@@ -251,10 +262,43 @@
                         && (!status || d.active === status);
                 });
 
+                clearBtn.hidden = !(query || grade || section || status);
+
                 currentPage = 1;
+                applySort();
+            }
+
+            // ---------- sorting ----------
+            function applySort() {
+                if (sortKey) {
+                    visibleRows.sort(function (a, b) {
+                        const av = (a.dataset[sortKey] || '');
+                        const bv = (b.dataset[sortKey] || '');
+                        // numeric-aware so "Grade 9" sorts before "Grade 10"
+                        const cmp = av.localeCompare(bv, undefined, { numeric: true, sensitivity: 'base' });
+                        return sortAsc ? cmp : -cmp;
+                    });
+                }
                 renderPage();
             }
 
+            document.querySelectorAll('th.sortable').forEach(function (th) {
+                th.addEventListener('click', function () {
+                    const key = this.dataset.sort;
+                    sortAsc = (sortKey === key) ? !sortAsc : true;
+                    sortKey = key;
+
+                    document.querySelectorAll('th.sortable').forEach(function (other) {
+                        other.classList.remove('is-asc', 'is-desc');
+                    });
+                    this.classList.add(sortAsc ? 'is-asc' : 'is-desc');
+
+                    currentPage = 1;
+                    applySort();
+                });
+            });
+
+            // ---------- paging ----------
             function renderPage() {
                 const total = visibleRows.length;
                 const totalPages = Math.max(1, Math.ceil(total / pageSize));
@@ -263,7 +307,9 @@
                 const start = (currentPage - 1) * pageSize;
                 const end = start + pageSize;
 
+                // Re-append in sorted order, then show only this page's slice
                 rows.forEach(r => r.classList.add('d-none'));
+                visibleRows.forEach(r => tbody.appendChild(r));
                 visibleRows.slice(start, end).forEach(r => r.classList.remove('d-none'));
 
                 emptyState.classList.toggle('d-none', total !== 0);
@@ -286,7 +332,11 @@
                 btn.disabled = disabled;
                 if (ariaLabel) btn.setAttribute('aria-label', ariaLabel);
                 if (!disabled && !active) {
-                    btn.addEventListener('click', function () { currentPage = page; renderPage(); });
+                    btn.addEventListener('click', function () {
+                        currentPage = page;
+                        renderPage();
+                        table.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                    });
                 }
 
                 li.appendChild(btn);
@@ -329,25 +379,20 @@
                     { disabled: currentPage === totalPages, ariaLabel: 'Next page' }));
             }
 
-            filterToggle.addEventListener('click', function () {
-                const open = filterBar.classList.toggle('show-extra');
-                this.setAttribute('aria-expanded', open ? 'true' : 'false');
-                if (open) statusFilter.focus();
-            });
-
-            function paintFilterState() {
-                filterToggle.classList.toggle('has-filter', statusFilter.value !== '');
-            }
-
+            // ---------- wiring ----------
             searchInput.addEventListener('input', applyFilters);
             gradeFilter.addEventListener('change', applyFilters);
             sectionFilter.addEventListener('change', applyFilters);
-            statusFilter.addEventListener('change', function () {
-                paintFilterState();
+            statusFilter.addEventListener('change', applyFilters);
+
+            clearBtn.addEventListener('click', function () {
+                searchInput.value = '';
+                gradeFilter.value = '';
+                sectionFilter.value = '';
+                statusFilter.value = '';
                 applyFilters();
             });
 
-            paintFilterState();
             applyFilters();
         })();
     </script>

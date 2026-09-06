@@ -1,4 +1,13 @@
-﻿.material-symbols-outlined {
+﻿/* ==========================================================================
+   Details.css — Student profile page
+   Path: wwwroot/css/Students/Details.css
+
+   Loads AFTER Layout.css, so this file must not redefine shared topbar
+   classes (.profile-name, .profile-role, .notif-dot, .profile-avatar).
+   Those belong to Layout.css and are used on every page.
+   ========================================================================== */
+
+.material-symbols-outlined {
     font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
     vertical-align: middle;
 }
@@ -8,48 +17,20 @@
     box-sizing: border-box;
 }
 
-.profile-page h1, .profile-page h2, .profile-page h3 {
+.profile-page h1,
+.profile-page h2,
+.profile-page h3 {
     font-family: 'Manrope', sans-serif;
 }
 
-/* ============================================================
-   TOP NAVBAR (back chevron + breadcrumb / notifications + profile)
-   ============================================================ */
-.top-navbar {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 16px;
-    background: #fff;
-    border-bottom: 1px solid rgba(192,201,187,0.3);
-    padding: 12px 24px;
-    box-sizing: border-box;
-    position: -webkit-sticky; /* Safari */
-    position: sticky;
-    top: 0;
-    z-index: 30;
-    margin: 0; /* kill any inherited top margin causing the gap */
+.profile-page {
+    max-width: 1100px;
+    margin: 0 auto;
 }
 
-/*
-  NOTE: if the gap and non-sticky behavior persist after this,
-  the cause is almost certainly in _Layout.cshtml:
-  1) the wrapper around @RenderBody() has padding/margin-top -> remove it,
-     or move .top-navbar outside that padded wrapper.
-  2) an ancestor (often the flex/grid container holding the sidebar +
-     content column) has "overflow: auto" or "overflow: hidden" ->
-     position:sticky only works within the nearest scrolling ancestor,
-     so that ancestor must be the one that actually scrolls (usually
-     the window/body, not a wrapped div).
-*/
-
-.top-navbar-left {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    min-width: 0;
-}
-
+/* ==========================================================================
+   BREADCRUMB (renders inside the layout topbar via @@section Breadcrumb)
+   ========================================================================== */
 .back-chevron {
     display: flex;
     align-items: center;
@@ -60,7 +41,7 @@
     color: #41493e;
     text-decoration: none;
     flex-shrink: 0;
-    transition: background 0.15s, color 0.15s;
+    transition: background .15s, color .15s;
 }
 
     .back-chevron:hover {
@@ -105,106 +86,202 @@
         text-overflow: ellipsis;
     }
 
-.top-navbar-right {
+/* ==========================================================================
+   PROFILE HEADER
+   ========================================================================== */
+.profile-header-card {
+    background: #fff;
+    border-radius: 12px;
+    border: 1px solid rgba(192,201,187,0.2);
+    padding: 24px;
+    margin-bottom: 24px;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.05);
+}
+
+.profile-top-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 20px;
+    flex-wrap: wrap;
+}
+
+.profile-identity {
     display: flex;
     align-items: center;
-    gap: 14px;
-    flex-shrink: 0;
+    gap: 20px;
 }
 
-.notif-btn {
-    position: relative;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    width: 36px;
-    height: 36px;
-    border-radius: 50%;
-    border: none;
-    background: transparent;
-    color: #41493e;
-    cursor: pointer;
-    transition: background 0.15s, color 0.15s;
-}
-
-    .notif-btn:hover {
-        background: #f2f5ec;
-        color: #1b6d24;
-    }
-
-    .notif-btn .material-symbols-outlined {
-        font-size: 22px;
-    }
-
-.notif-dot {
-    position: absolute;
-    top: 7px;
-    right: 8px;
-    width: 7px;
-    height: 7px;
-    border-radius: 50%;
-    background: #e04b3f;
-    border: 1.5px solid #fff;
-}
-
-.navbar-divider {
-    width: 1px;
-    height: 28px;
-    background: rgba(192,201,187,0.5);
-}
-
-.profile-chip {
+.identity-line {
     display: flex;
     align-items: center;
     gap: 10px;
-    cursor: pointer;
-    border-radius: 999px;
-    padding: 4px;
-    transition: background 0.15s;
+    flex-wrap: wrap;
 }
 
-    .profile-chip:hover {
-        background: #f2f5ec;
+    .identity-line + .identity-line {
+        margin-top: 6px;
+        gap: 8px;
     }
 
-.navbar-avatar {
-    width: 36px;
-    height: 36px;
-    border-radius: 50%;
+.student-name {
+    font-size: 24px;
+    font-weight: 700;
+    color: #002c06;
+    margin: 0;
+}
+
+.meta-sep {
+    color: #c0c9bb;
+}
+
+.meta-text {
+    font-size: 13px;
+    color: #717a6d;
+}
+
+.avatar-circle {
+    width: 80px;
+    height: 80px;
+    border-radius: 16px;
     background: linear-gradient(135deg, #2e6b2f, #1b6d24);
-    color: #fff;
     display: flex;
     align-items: center;
     justify-content: center;
     font-family: 'Manrope', sans-serif;
-    font-size: 13px;
+    font-size: 28px;
     font-weight: 700;
+    color: #fff;
     flex-shrink: 0;
 }
 
-.profile-info {
-    display: flex;
-    flex-direction: column;
-    line-height: 1.25;
-}
-
-.profile-name {
-    font-family: 'Manrope', sans-serif;
-    font-size: 13.5px;
+.status-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    padding: 4px 12px;
+    border-radius: 999px;
+    font-size: 12px;
     font-weight: 700;
-    color: #191d18;
-    white-space: nowrap;
 }
 
-.profile-role {
-    font-size: 11px;
+    .status-badge .badge-icon {
+        font-size: 13px;
+        font-variation-settings: 'FILL' 1;
+    }
+
+.status-active {
+    background: #a0f499;
+    color: #004d08;
+}
+
+.status-inactive {
+    background: #e1e4db;
+    color: #41493e;
+}
+
+.info-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    background: #f2f5ec;
+    border-radius: 6px;
+    padding: 2px 10px;
+    font-size: 13px;
+    color: #41493e;
+    font-weight: 500;
+}
+
+    .info-pill.id-pill {
+        color: #1b6d24;
+        font-family: monospace;
+        font-size: 13px;
+    }
+
+    .info-pill .pill-icon {
+        font-size: 13px;
+    }
+
+/* ==========================================================================
+   BUTTONS
+   ========================================================================== */
+.action-buttons {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+    align-items: center;
+}
+
+    .action-buttons form {
+        display: inline-flex;
+        margin: 0;
+    }
+
+.action-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    padding: 10px 20px;
+    border-radius: 10px;
+    font-family: 'Inter', sans-serif;
+    font-size: 14px;
     font-weight: 600;
-    text-transform: uppercase;
-    letter-spacing: 0.04em;
-    color: #717a6d;
+    cursor: pointer;
+    border: none;
+    transition: all .2s;
+    text-decoration: none;
     white-space: nowrap;
 }
 
+    .action-btn .btn-icon {
+        font-size: 18px;
+    }
+
+.btn-outline {
+    background: rgba(192,201,187,0.15);
+    color: #41493e;
+}
+
+    .btn-outline:hover {
+        background: rgba(192,201,187,0.3);
+        color: #191d18;
+    }
+
+.btn-primary-green {
+    background: #1b6d24;
+    color: #fff;
+}
+
+    .btn-primary-green:hover {
+        color: #fff;
+        filter: brightness(1.1);
+        box-shadow: 0 2px 8px rgba(27,109,36,0.3);
+    }
+
+.btn-danger {
+    background: #ffdad6;
+    color: #93000a;
+}
+
+    .btn-danger:hover {
+        background: #ffb4ab;
+    }
+
+/* Small "Add new…" button that sits at the right end of a section header */
+.header-action {
+    margin-left: auto;
+    padding: 6px 14px;
+    font-size: 13px;
+}
+
+    .header-action .btn-icon {
+        font-size: 16px;
+    }
+
+/* ==========================================================================
+   TABS
+   ========================================================================== */
 .tabs-bar {
     display: flex;
     gap: 24px;
@@ -225,9 +302,11 @@
     }
 
 .tab-btn {
-    padding-bottom: 12px;
-    padding-left: 4px;
-    padding-right: 4px;
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    padding: 0 4px 12px;
+    font-family: 'Inter', sans-serif;
     font-weight: 600;
     font-size: 14px;
     border: none;
@@ -235,13 +314,17 @@
     color: #717a6d;
     cursor: pointer;
     border-bottom: 3px solid transparent;
-    transition: all 0.2s;
+    transition: color .2s, border-color .2s;
     white-space: nowrap;
     flex-shrink: 0;
 }
 
+    .tab-btn .tab-icon {
+        font-size: 15px;
+    }
+
     .tab-btn.active {
-        border-bottom: 3px solid #1b6d24;
+        border-bottom-color: #1b6d24;
         color: #1b6d24;
     }
 
@@ -257,28 +340,9 @@
         display: block;
     }
 
-.field-label {
-    font-size: 11px;
-    font-weight: 600;
-    text-transform: uppercase;
-    letter-spacing: 0.06em;
-    color: #717a6d;
-    margin-bottom: 2px;
-}
-
-.field-value {
-    font-size: 15px;
-    color: #191d18;
-    font-weight: 500;
-    word-break: break-word;
-}
-
-    .field-value.empty {
-        color: #c0c9bb;
-        font-style: italic;
-        font-weight: 400;
-    }
-
+/* ==========================================================================
+   SECTIONS & FIELDS
+   ========================================================================== */
 .section-card {
     background: #fff;
     border-radius: 12px;
@@ -307,6 +371,20 @@
         font-size: 20px;
     }
 
+    .section-header .header-icon-danger {
+        color: #93000a;
+    }
+
+.confidential-tag {
+    margin-left: auto;
+    font-size: 11px;
+    font-weight: 700;
+    background: #ffdad6;
+    color: #93000a;
+    padding: 2px 8px;
+    border-radius: 4px;
+}
+
 .section-body {
     padding: 24px;
     display: grid;
@@ -326,111 +404,30 @@
     grid-column: 1 / -1;
 }
 
-.profile-header-card {
-    background: #fff;
-    border-radius: 12px;
-    border: 1px solid rgba(192,201,187,0.2);
-    padding: 24px;
-    margin-bottom: 24px;
-    box-shadow: 0 1px 4px rgba(0,0,0,0.05);
-}
-
-.avatar-circle {
-    width: 80px;
-    height: 80px;
-    border-radius: 16px;
-    background: linear-gradient(135deg, #2e6b2f, #1b6d24);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-family: 'Manrope', sans-serif;
-    font-size: 28px;
-    font-weight: 700;
-    color: white;
-    flex-shrink: 0;
-}
-
-.status-badge {
-    display: inline-flex;
-    align-items: center;
-    gap: 4px;
-    padding: 4px 12px;
-    border-radius: 999px;
-    font-size: 12px;
-    font-weight: 700;
-}
-
-.status-active {
-    background: #a0f499;
-    color: #004d08;
-}
-
-.status-inactive {
-    background: #e1e4db;
-    color: #41493e;
-}
-
-.action-btn {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    gap: 6px;
-    padding: 10px 20px;
-    border-radius: 10px;
-    font-size: 14px;
+.field-label {
+    font-size: 11px;
     font-weight: 600;
-    cursor: pointer;
-    border: none;
-    transition: all 0.2s;
-    text-decoration: none;
-    white-space: nowrap;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: #717a6d;
+    margin-bottom: 2px;
 }
 
-.btn-outline {
-    background: rgba(192,201,187,0.15);
-    color: #41493e;
-}
-
-    .btn-outline:hover {
-        background: rgba(192,201,187,0.3);
-        color: #191d18;
-    }
-
-.btn-primary-green {
-    background: #1b6d24;
-    color: white;
-}
-
-    .btn-primary-green:hover {
-        filter: brightness(1.1);
-        box-shadow: 0 2px 8px rgba(27,109,36,0.3);
-    }
-
-.btn-danger {
-    background: #ffdad6;
-    color: #93000a;
-}
-
-    .btn-danger:hover {
-        background: #ffb4ab;
-    }
-
-.info-pill {
-    display: inline-flex;
-    align-items: center;
-    gap: 4px;
-    background: #f2f5ec;
-    border-radius: 6px;
-    padding: 2px 10px;
-    font-size: 13px;
-    color: #41493e;
+.field-value {
+    font-size: 15px;
+    color: #191d18;
     font-weight: 500;
+    word-break: break-word;
 }
 
-    .info-pill.id-pill {
-        color: #1b6d24;
+    .field-value.mono {
         font-family: monospace;
-        font-size: 13px;
+    }
+
+    .field-value.empty {
+        color: #c0c9bb;
+        font-style: italic;
+        font-weight: 400;
     }
 
 .empty-state {
@@ -446,7 +443,9 @@
         margin-bottom: 8px;
     }
 
-/* Table wrapper so tables scroll horizontally instead of breaking the layout */
+/* ==========================================================================
+   TABLES
+   ========================================================================== */
 .table-scroll {
     width: 100%;
     overflow-x: auto;
@@ -454,7 +453,6 @@
     border-radius: 12px;
 }
 
-/* Case notes table */
 .cn-table {
     width: 100%;
     min-width: 560px;
@@ -483,7 +481,7 @@
 
     .cn-table tbody tr {
         border-bottom: 1px solid #f2f5ec;
-        transition: background 0.15s;
+        transition: background .15s;
     }
 
         .cn-table tbody tr:last-child {
@@ -534,128 +532,22 @@
     cursor: pointer;
     color: #717a6d;
     text-decoration: none;
-    transition: all 0.15s;
+    transition: all .15s;
 }
+
+    .cn-action-icon .material-symbols-outlined {
+        font-size: 18px;
+    }
 
     .cn-action-icon:hover {
         background: #f2f5ec;
         color: #1b6d24;
     }
 
-.modal-overlay {
-    display: none;
-    position: fixed;
-    inset: 0;
-    background: rgba(25,29,24,0.5);
-    z-index: 1000;
-    align-items: center;
-    justify-content: center;
-    padding: 16px;
-}
-
-    .modal-overlay.open {
-        display: flex;
-    }
-
-.modal-box {
-    background: #fff;
-    border-radius: 12px;
-    max-width: 520px;
-    width: 100%;
-    max-height: 85vh;
-    overflow-y: auto;
-    box-shadow: 0 8px 30px rgba(0,0,0,0.2);
-    padding: 24px;
-}
-
-.modal-header {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    margin-bottom: 12px;
-}
-
-    .modal-header h3 {
-        font-family: 'Manrope', sans-serif;
-        font-size: 18px;
-        font-weight: 700;
-        color: #191d18;
-        margin: 0;
-    }
-
-.modal-close {
-    border: none;
-    background: transparent;
-    font-size: 22px;
-    line-height: 1;
-    cursor: pointer;
-    color: #717a6d;
-}
-
-.modal-warning {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    background: #fff3e0;
-    color: #7a4a00;
-    font-size: 13px;
-    font-weight: 600;
-    padding: 10px 14px;
-    border-radius: 8px;
-    margin-bottom: 16px;
-}
-
-.modal-details {
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
-    margin-bottom: 20px;
-    max-height: 300px;
-    overflow-y: auto;
-    padding-right: 4px;
-}
-
-.modal-row {
-    display: flex;
-    flex-direction: column;
-    gap: 2px;
-    border-bottom: 1px solid #f2f5ec;
-    padding-bottom: 8px;
-}
-
-.modal-label {
-    font-size: 11px;
-    font-weight: 600;
-    text-transform: uppercase;
-    letter-spacing: 0.06em;
-    color: #717a6d;
-}
-
-.modal-value {
-    font-size: 14px;
-    color: #191d18;
-}
-
-.modal-actions {
-    display: flex;
-    justify-content: flex-end;
-    gap: 10px;
-    flex-wrap: wrap;
-}
-
-/* =========================================================
-   RESPONSIVE BREAKPOINTS
-   Desktop: default styles above (>992px)
-   Tablet:  ≤992px
-   Mobile:  ≤576px
-   ========================================================= */
-
-/* ---------- TABLET (≤992px) ---------- */
+/* ==========================================================================
+   RESPONSIVE
+   ========================================================================== */
 @media (max-width: 992px) {
-    .profile-page {
-        padding: 20px 16px;
-    }
-
     .section-body.cols-3 {
         grid-template-columns: repeat(2, 1fr);
     }
@@ -670,38 +562,34 @@
         font-size: 24px;
     }
 
-    .profile-top-row h2 {
-        font-size: 21px !important;
-    }
-
-    .top-navbar {
-        padding: 10px 16px;
+    .student-name {
+        font-size: 21px;
     }
 }
 
-/* ---------- MOBILE / TABLET PORTRAIT (≤768px) ---------- */
 @media (max-width: 768px) {
-    .section-body {
+    .section-body,
+    .section-body.cols-3 {
         grid-template-columns: 1fr;
     }
 
-        .section-body.cols-3 {
-            grid-template-columns: 1fr;
-        }
-
     .profile-top-row {
         flex-direction: column;
-        align-items: stretch !important;
+        align-items: stretch;
     }
 
     .action-buttons {
-        flex-direction: row;
         width: 100%;
     }
 
-        .action-buttons .action-btn {
+        .action-buttons > .action-btn,
+        .action-buttons form {
             flex: 1;
         }
+
+            .action-buttons form .action-btn {
+                width: 100%;
+            }
 
     .section-header {
         padding: 12px 16px;
@@ -715,23 +603,9 @@
     .cn-table tbody td {
         max-width: 180px;
     }
-
-    /* Collapse profile chip to avatar-only to save space */
-    .profile-info {
-        display: none;
-    }
-
-    .navbar-divider {
-        display: none;
-    }
 }
 
-/* ---------- MOBILE (≤576px) ---------- */
 @media (max-width: 576px) {
-    .profile-page {
-        padding: 16px 12px;
-    }
-
     .profile-header-card {
         padding: 16px;
         border-radius: 10px;
@@ -741,6 +615,12 @@
         font-size: 13px;
     }
 
+        .breadcrumb-nav a {
+            max-width: 70px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
     .avatar-circle {
         width: 56px;
         height: 56px;
@@ -748,8 +628,8 @@
         border-radius: 12px;
     }
 
-    .profile-top-row h2 {
-        font-size: 18px !important;
+    .student-name {
+        font-size: 18px;
     }
 
     .status-badge,
@@ -762,17 +642,19 @@
         flex-direction: column;
     }
 
-        .action-buttons .action-btn {
+        .action-buttons > .action-btn,
+        .action-buttons form,
+        .action-buttons form .action-btn {
             width: 100%;
         }
+
+    .tabs-bar {
+        gap: 16px;
+    }
 
     .tab-btn {
         font-size: 12.5px;
         padding-bottom: 10px;
-    }
-
-    .tabs-bar {
-        gap: 16px;
     }
 
     .section-card {
@@ -786,12 +668,12 @@
         gap: 6px;
     }
 
-        .section-header > a.action-btn {
-            width: 100%;
-            margin-left: 0 !important;
-            margin-top: 8px;
-            justify-content: center;
-        }
+    .header-action {
+        width: 100%;
+        margin-left: 0;
+        margin-top: 8px;
+        justify-content: center;
+    }
 
     .section-body {
         padding: 14px;
@@ -809,42 +691,4 @@
     .cn-table {
         min-width: 480px;
     }
-
-    .modal-box {
-        padding: 18px;
-    }
-
-    .modal-actions {
-        flex-direction: column-reverse;
-    }
-
-        .modal-actions .action-btn {
-            width: 100%;
-        }
-
-    /* Tighter top navbar on small phones */
-    .top-navbar {
-        padding: 8px 12px;
-    }
-
-    .breadcrumb-nav a {
-        max-width: 70px;
-        overflow: hidden;
-        text-overflow: ellipsis;
-    }
-
-    .navbar-avatar {
-        width: 30px;
-        height: 30px;
-        font-size: 11px;
-    }
-
-    .notif-btn {
-        width: 32px;
-        height: 32px;
-    }
-
-        .notif-btn .material-symbols-outlined {
-            font-size: 20px;
-        }
 }

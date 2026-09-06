@@ -125,56 +125,30 @@
         box-shadow: none;
     }
 
-/* Status filter sits behind the sliders button on wide screens */
-.filter-extra {
-    display: none;
-}
-
-.filter-bar.show-extra .filter-extra {
-    display: block;
-}
-
-.filter-toggle {
-    position: relative;
+/* ---------- Clear filters ---------- */
+.btn-clear {
     display: inline-flex;
     align-items: center;
-    justify-content: center;
-    width: 42px;
-    height: 42px;
-    flex: 0 0 auto;
+    gap: 6px;
+    padding: 8px 14px;
+    font-size: 13px;
+    font-weight: 600;
     color: #5c665a;
     background: #fff;
     border: 1px solid #e5eae1;
     border-radius: 999px;
     cursor: pointer;
-    transition: background .15s ease, border-color .15s ease;
 }
 
-    .filter-toggle:hover {
+    .btn-clear:hover {
         background: #f3f6f1;
-    }
-
-    .filter-toggle:focus-visible {
-        outline: 2px solid var(--brand);
-        outline-offset: 2px;
-    }
-
-    .filter-toggle.has-filter {
         color: var(--brand);
         border-color: var(--brand);
     }
 
-        .filter-toggle.has-filter::after {
-            content: "";
-            position: absolute;
-            top: 7px;
-            right: 8px;
-            width: 8px;
-            height: 8px;
-            background: var(--brand);
-            border: 1.5px solid #fff;
-            border-radius: 50%;
-        }
+    .btn-clear[hidden] {
+        display: none;
+    }
 
 /* ---------- Table card ---------- */
 .table-card {
@@ -226,6 +200,41 @@
         text-align: left;
     }
 
+    /* ---------- Sortable headers ---------- */
+    .gcams-table thead th.sortable {
+        cursor: pointer;
+        user-select: none;
+    }
+
+        .gcams-table thead th.sortable:hover {
+            color: var(--brand);
+        }
+
+.sort-icon {
+    margin-left: 5px;
+    font-size: 10px;
+    opacity: .35;
+}
+
+.gcams-table thead th.is-asc,
+.gcams-table thead th.is-desc {
+    color: var(--brand);
+}
+
+    .gcams-table thead th.is-asc .sort-icon,
+    .gcams-table thead th.is-desc .sort-icon {
+        opacity: 1;
+    }
+
+        .gcams-table thead th.is-asc .sort-icon::before {
+            content: "\f0de"; /* sort-up */
+        }
+
+        .gcams-table thead th.is-desc .sort-icon::before {
+            content: "\f0dd"; /* sort-down */
+        }
+
+/* ---------- Cells ---------- */
 .cell-id {
     color: #7c857a;
     font-size: 13px;
@@ -369,21 +378,25 @@
         background: transparent;
     }
 
-/* ---------- Modal ---------- */
-#importModal .modal-content {
+/* ---------- Modals ---------- */
+#importModal .modal-content,
+#bulkUpdateModal .modal-content {
     border: none;
     border-radius: 14px;
 }
 
-#importModal .modal-header {
+#importModal .modal-header,
+#bulkUpdateModal .modal-header {
     border-bottom: 1px solid #eef1eb;
 }
 
-#importModal .modal-footer {
+#importModal .modal-footer,
+#bulkUpdateModal .modal-footer {
     border-top: 1px solid #eef1eb;
 }
 
-#importModal .btn-brand {
+#importModal .btn-brand,
+#bulkUpdateModal .btn-brand {
     background: var(--brand, #1b6d24);
     border: 1px solid var(--brand, #1b6d24);
     color: #fff;
@@ -391,7 +404,8 @@
     border-radius: 10px;
 }
 
-    #importModal .btn-brand:hover {
+    #importModal .btn-brand:hover,
+    #bulkUpdateModal .btn-brand:hover {
         background: #175c1e;
         border-color: #175c1e;
         color: #fff;
@@ -430,19 +444,12 @@
     }
 
     .search-box,
-    .students-page .filter-select {
+    .students-page .filter-select,
+    .btn-clear {
         width: 100%;
         min-width: 0;
         flex: 1 1 auto;
-    }
-
-    /* No room to hide filters on a phone — show status outright */
-    .filter-extra {
-        display: block;
-    }
-
-    .filter-toggle {
-        display: none;
+        justify-content: center;
     }
 
     .table-footer {
