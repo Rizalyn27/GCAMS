@@ -7,7 +7,7 @@
 
 @section Styles {
     <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
     <link rel="stylesheet" href="~/css/Students/Details.css" asp-append-version="true" />
 }
 
@@ -15,11 +15,11 @@
    The layout already supplies notifications and the signed-in profile chip. *@
 @section Breadcrumb {
     <a asp-action="Index" class="back-chevron" title="Back to Students">
-        <span class="material-symbols-outlined">chevron_left</span>
+        <i class="bi bi-chevron-left"></i>
     </a>
     <nav class="breadcrumb-nav">
         <a asp-action="Index">Students</a>
-        <span class="material-symbols-outlined breadcrumb-sep">chevron_right</span>
+        <i class="bi bi-chevron-right breadcrumb-sep"></i>
         <span class="current">@Model.Student.StuName</span>
     </nav>
 }
@@ -39,9 +39,7 @@
                         <h2 class="student-name">@Model.Student.StuName</h2>
 
                         <span class="status-badge @(Model.Student.IsActive ? "status-active" : "status-inactive")">
-                            <span class="material-symbols-outlined badge-icon">
-                                @(Model.Student.IsActive ? "check_circle" : "cancel")
-                            </span>
+                            <i class="bi @(Model.Student.IsActive ? "bi-check-circle" : "bi-x-circle") badge-icon"></i>
                             @(Model.Student.IsActive ? "Active" : "Inactive")
                         </span>
 
@@ -57,7 +55,7 @@
 
                     <div class="identity-line">
                         <span class="info-pill id-pill">
-                            <span class="material-symbols-outlined pill-icon">badge</span>
+                            <i class="bi bi-person-badge pill-icon"></i>
                             @Model.Student.StuID
                         </span>
                         @if (!string.IsNullOrEmpty(Model.Student.School))
@@ -86,7 +84,7 @@
 
             <div class="action-buttons">
                 <a asp-action="Edit" asp-route-id="@Model.Student.StudentsID" class="action-btn btn-outline">
-                    <span class="material-symbols-outlined btn-icon">edit</span>
+                    <i class="bi bi-pencil btn-icon"></i>
                     Edit Record
                 </a>
                 @if (Model.Student.IsActive)
@@ -94,7 +92,7 @@
                     <form asp-action="SoftDelete" asp-route-id="@Model.Student.StudentsID" method="post">
                         @Html.AntiForgeryToken()
                         <button type="submit" class="action-btn btn-danger">
-                            <span class="material-symbols-outlined btn-icon">archive</span>
+                            <i class="bi bi-archive btn-icon"></i>
                             Archive
                         </button>
                     </form>
@@ -104,7 +102,7 @@
                     <form asp-action="Restore" asp-route-id="@Model.Student.StudentsID" method="post">
                         @Html.AntiForgeryToken()
                         <button type="submit" class="action-btn btn-primary-green">
-                            <span class="material-symbols-outlined btn-icon">restore_from_trash</span>
+                            <i class="bi bi-arrow-counterclockwise btn-icon"></i>
                             Restore
                         </button>
                     </form>
@@ -115,19 +113,19 @@
         <!-- Tabs -->
         <div class="tabs-bar">
             <button type="button" class="tab-btn active" onclick="switchTab('personal', this)">
-                <span class="material-symbols-outlined tab-icon">person</span>
+                <i class="bi bi-person tab-icon"></i>
                 Personal Details
             </button>
             <button type="button" class="tab-btn" onclick="switchTab('family', this)">
-                <span class="material-symbols-outlined tab-icon">family_restroom</span>
+                <i class="bi bi-people tab-icon"></i>
                 Family Background
             </button>
             <button type="button" class="tab-btn" onclick="switchTab('casenotes', this)">
-                <span class="material-symbols-outlined tab-icon">description</span>
+                <i class="bi bi-file-text tab-icon"></i>
                 Case Notes
             </button>
             <button type="button" class="tab-btn" onclick="switchTab('anecrecs', this)">
-                <span class="material-symbols-outlined tab-icon">event_note</span>
+                <i class="bi bi-journal-text tab-icon"></i>
                 Anecdotal Records
             </button>
         </div>
@@ -138,7 +136,7 @@
 
         <div class="section-card">
             <div class="section-header">
-                <span class="material-symbols-outlined">person</span>
+                <i class="bi bi-person"></i>
                 Personal Information
             </div>
             <div class="section-body cols-3">
@@ -201,7 +199,7 @@
 
         <div class="section-card">
             <div class="section-header">
-                <span class="material-symbols-outlined">contact_phone</span>
+                <i class="bi bi-telephone"></i>
                 Contact Information
             </div>
             <div class="section-body">
@@ -232,7 +230,7 @@
 
         <div class="section-card">
             <div class="section-header">
-                <span class="material-symbols-outlined">school</span>
+                <i class="bi bi-mortarboard"></i>
                 Educational Background
             </div>
             <div class="section-body cols-3">
@@ -257,7 +255,7 @@
 
         <div class="section-card">
             <div class="section-header">
-                <span class="material-symbols-outlined">menu_book</span>
+                <i class="bi bi-book"></i>
                 Elementary
             </div>
             <div class="section-body cols-3">
@@ -284,7 +282,7 @@
 
         <div class="section-card">
             <div class="section-header">
-                <span class="material-symbols-outlined">history_edu</span>
+                <i class="bi bi-journal-bookmark"></i>
                 Secondary / Junior High
             </div>
             <div class="section-body cols-3">
@@ -311,7 +309,7 @@
 
         <div class="section-card">
             <div class="section-header">
-                <span class="material-symbols-outlined">monitor_heart</span>
+                <i class="bi bi-heart-pulse"></i>
                 Physical Health
             </div>
             <div class="section-body cols-3">
@@ -350,7 +348,7 @@
 
         <div class="section-card">
             <div class="section-header">
-                <span class="material-symbols-outlined header-icon-danger">psychology</span>
+                <i class="bi bi-shield-lock header-icon-danger"></i>
                 Mental Health &amp; Sensitive Information
                 <span class="confidential-tag">Confidential</span>
             </div>
@@ -401,7 +399,7 @@
 
         <div class="section-card">
             <div class="section-header">
-                <span class="material-symbols-outlined">man</span>
+                <i class="bi bi-person"></i>
                 Father's Information
             </div>
             <div class="section-body cols-3">
@@ -450,7 +448,7 @@
 
         <div class="section-card">
             <div class="section-header">
-                <span class="material-symbols-outlined">woman</span>
+                <i class="bi bi-person"></i>
                 Mother's Information
             </div>
             <div class="section-body cols-3">
@@ -499,7 +497,7 @@
 
         <div class="section-card">
             <div class="section-header">
-                <span class="material-symbols-outlined">family_restroom</span>
+                <i class="bi bi-people"></i>
                 Family Details
             </div>
             <div class="section-body">
@@ -520,7 +518,7 @@
 
         <div class="section-card">
             <div class="section-header">
-                <span class="material-symbols-outlined">emergency</span>
+                <i class="bi bi-telephone-plus"></i>
                 Emergency Contact
             </div>
             <div class="section-body cols-3">
@@ -574,20 +572,20 @@
 
         <div class="section-card">
             <div class="section-header">
-                <span class="material-symbols-outlined">description</span>
+                <i class="bi bi-file-text"></i>
                 Case Notes
                 <a asp-controller="CaseNotes" asp-action="Create"
                    asp-route-fullName="@Model.Student.StuName"
                    asp-route-studentId="@Model.Student.StudentsID"
                    class="action-btn btn-primary-green header-action">
-                    <span class="material-symbols-outlined btn-icon">add</span>Add New Case Note
+                    <i class="bi bi-plus-lg btn-icon"></i>Add New Case Note
                 </a>
             </div>
             <div class="section-body cols-1">
                 @if (Model.CaseNotes == null || !Model.CaseNotes.Any())
                 {
                     <div class="empty-state">
-                        <span class="material-symbols-outlined">note_stack</span>
+                        <i class="bi bi-journal-text"></i>
                         No case notes have been recorded yet.
                     </div>
                 }
@@ -616,13 +614,13 @@
                                                    asp-route-id="@note.CasenoteId"
                                                    asp-route-studentId="@Model.Student.StudentsID"
                                                    class="cn-action-icon" title="View Details">
-                                                    <span class="material-symbols-outlined">visibility</span>
+                                                    <i class="bi bi-eye"></i>
                                                 </a>
                                                 <a asp-controller="CaseNotes" asp-action="Edit"
                                                    asp-route-id="@note.CasenoteId"
                                                    asp-route-studentId="@Model.Student.StudentsID"
                                                    class="cn-action-icon" title="Edit">
-                                                    <span class="material-symbols-outlined">edit</span>
+                                                    <i class="bi bi-pencil"></i>
                                                 </a>
                                             </div>
                                         </td>
@@ -642,20 +640,20 @@
 
         <div class="section-card">
             <div class="section-header">
-                <span class="material-symbols-outlined">event_note</span>
+                <i class="bi bi-journal-text"></i>
                 Anecdotal Records
                 <a asp-controller="AnecRecs" asp-action="Create"
                    asp-route-fullName="@Model.Student.StuName"
                    asp-route-studentId="@Model.Student.StudentsID"
                    class="action-btn btn-primary-green header-action">
-                    <span class="material-symbols-outlined btn-icon">add</span>Add New Anecdotal Record
+                    <i class="bi bi-plus-lg btn-icon"></i>Add New Anecdotal Record
                 </a>
             </div>
             <div class="section-body cols-1">
                 @if (Model.AnecRecs == null || !Model.AnecRecs.Any())
                 {
                     <div class="empty-state">
-                        <span class="material-symbols-outlined">event_busy</span>
+                        <i class="bi bi-calendar-x"></i>
                         No anecdotal records have been recorded yet.
                     </div>
                 }
@@ -684,13 +682,13 @@
                                                    asp-route-id="@note.AnecRecsId"
                                                    asp-route-studentId="@Model.Student.StudentsID"
                                                    class="cn-action-icon" title="View Details">
-                                                    <span class="material-symbols-outlined">visibility</span>
+                                                    <i class="bi bi-eye"></i>
                                                 </a>
                                                 <a asp-controller="AnecRecs" asp-action="Edit"
                                                    asp-route-id="@note.AnecRecsId"
                                                    asp-route-studentId="@Model.Student.StudentsID"
                                                    class="cn-action-icon" title="Edit">
-                                                    <span class="material-symbols-outlined">edit</span>
+                                                    <i class="bi bi-pencil"></i>
                                                 </a>
                                             </div>
                                         </td>

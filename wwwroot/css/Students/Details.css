@@ -7,9 +7,11 @@
    Those belong to Layout.css and are used on every page.
    ========================================================================== */
 
-.material-symbols-outlined {
-    font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
-    vertical-align: middle;
+/* Bootstrap Icons — outline set, loaded from the CDN in the view.
+   Sized per context below rather than with inline styles. */
+.profile-page .bi {
+    line-height: 1;
+    vertical-align: -.125em;
 }
 
 .profile-page * {
@@ -49,7 +51,7 @@
         color: #1b6d24;
     }
 
-    .back-chevron .material-symbols-outlined {
+    .back-chevron .bi {
         font-size: 22px;
     }
 
@@ -366,7 +368,7 @@
     color: #191d18;
 }
 
-    .section-header .material-symbols-outlined {
+    .section-header .bi {
         color: #1b6d24;
         font-size: 20px;
     }
@@ -436,7 +438,7 @@
     color: #717a6d;
 }
 
-    .empty-state .material-symbols-outlined {
+    .empty-state .bi {
         font-size: 36px;
         color: #c0c9bb;
         display: block;
@@ -535,7 +537,7 @@
     transition: all .15s;
 }
 
-    .cn-action-icon .material-symbols-outlined {
+    .cn-action-icon .bi {
         font-size: 18px;
     }
 
@@ -691,4 +693,27 @@
     .cn-table {
         min-width: 480px;
     }
+}
+
+
+/* ---------- Icon sizes by context ---------- */
+.profile-page .badge-icon {
+    font-size: 12px;
+}
+
+.profile-page .pill-icon {
+    font-size: 12px;
+}
+
+.profile-page .tab-icon {
+    font-size: 14px;
+}
+
+.profile-page .btn-icon {
+    font-size: 15px;
+}
+
+.breadcrumb-nav .bi,
+.back-chevron .bi {
+    font-size: 15px;
 }
