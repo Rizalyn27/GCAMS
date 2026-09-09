@@ -1,313 +1,125 @@
 ﻿@model GCAMS.Models.AnecRecs.AnecRecs
+@{
+    ViewData["Title"] = "Create Anecdotal Record";
+}
 
-@* This view is loaded inside the Student Details Bootstrap modal. *@
+@* Shares the record-form stylesheet with CaseNotes/Create so both forms
+   drop into the same modal on the student profile. *@
+<link rel="stylesheet" href="~/css/CaseNotes/Create.css" asp-append-version="true" />
 
-<style>
-    .anec-modal {
-        font-family: 'Inter', sans-serif;
-        color: #111827;
-    }
+<div class="cn-wrap">
+    <div class="cn-card">
 
-    .anec-modal-header {
-        padding: 4px 4px 18px;
-        border-bottom: 1px solid #e5e7eb;
-        margin-bottom: 18px;
-    }
+        <header class="cn-head">
+            <div>
+                <h1 class="cn-title">Create Anecdotal Record</h1>
+                <p class="cn-subtitle">DSOSMNHS Guidance &amp; Counseling Care System</p>
+            </div>
+            <a asp-controller="Students" asp-action="Details" asp-route-id="@ViewBag.StudentsID"
+               class="cn-close" aria-label="Close">&#10005;</a>
+        </header>
 
-    .anec-modal-title {
-        margin: 0;
-        font-family: 'Manrope', sans-serif;
-        font-size: 20px;
-        font-weight: 700;
-        color: #111827;
-        line-height: 1.25;
-    }
+        <form asp-action="Create" method="post" id="anecRecordForm">
+            <div asp-validation-summary="ModelOnly" class="cn-summary"></div>
 
-    .anec-modal-subtitle {
-        margin: 5px 0 0;
-        font-size: 12px;
-        color: #6b7280;
-    }
+            <input type="hidden" asp-for="StudentsID" />
+            <input type="hidden" name="studentId" value="@ViewBag.StudentsID" />
 
-    .anec-section {
-        background: #fff;
-        border: 1px solid #e5e7eb;
-        border-radius: 10px;
-        padding: 14px;
-        margin-bottom: 12px;
-    }
+            <!-- ============ OBSERVATION INFO ============ -->
+            <section class="cn-section">
+                <h2 class="cn-section-title">Observation Info</h2>
 
-    .anec-section-title {
-        margin: 0 0 12px;
-        font-family: 'Manrope', sans-serif;
-        font-size: 13px;
-        font-weight: 700;
-        color: #111827;
-    }
+                <div class="row g-3">
+                    <div class="col-12">
+                        <label asp-for="StuName" class="cn-label">Full Name</label>
+                        <input asp-for="StuName" class="form-control" placeholder="Student's full name" />
+                        <span asp-validation-for="StuName" class="cn-error"></span>
+                    </div>
 
-    .anec-grid {
-        display: grid;
-        grid-template-columns: 1fr 1fr;
-        gap: 10px;
-    }
+                    <div class="col-12 col-md-6">
+                        <label asp-for="AnecRecNo" class="cn-label">Record No.</label>
+                        <input asp-for="AnecRecNo" readonly class="form-control is-readonly" />
+                        <span asp-validation-for="AnecRecNo" class="cn-error"></span>
+                    </div>
 
-    .anec-field.full-width {
-        grid-column: 1 / -1;
-    }
+                    <div class="col-12 col-md-6">
+                        <label asp-for="DateOfObserv" class="cn-label">Date of Observation</label>
+                        <input asp-for="DateOfObserv"
+                               class="form-control"
+                               type="datetime-local"
+                               step="3600"
+                               max="@DateTime.Now.ToString("yyyy-MM-ddTHH:00")" />
+                        <small class="cn-hint">An observation can't be dated in the future.</small>
+                        <span asp-validation-for="DateOfObserv" class="cn-error"></span>
+                    </div>
 
-    .anec-label {
-        display: block;
-        margin-bottom: 4px;
-        font-size: 10px;
-        font-weight: 500;
-        color: #6b7280;
-    }
+                    <div class="col-12">
+                        <label asp-for="ObservedBy" class="cn-label">Observed By</label>
+                        <input asp-for="ObservedBy" class="form-control" placeholder="Enter observer's name" />
+                        <span asp-validation-for="ObservedBy" class="cn-error"></span>
+                    </div>
+                </div>
+            </section>
 
-    .anec-modal .form-control {
-        width: 100%;
-        min-height: 34px;
-        padding: 7px 9px;
-        border: 1px solid #d1d5db;
-        border-radius: 6px;
-        background: #fff;
-        color: #111827;
-        font-family: 'Inter', sans-serif;
-        font-size: 11px;
-        box-shadow: none;
-    }
+            <!-- ============ OBSERVATION DETAILS ============ -->
+            <section class="cn-section">
+                <h2 class="cn-section-title">Observation Details</h2>
 
-    .anec-modal textarea.form-control {
-        min-height: 58px;
-        resize: vertical;
-    }
+                <div class="row g-3">
+                    <div class="col-12 col-md-6">
+                        <label asp-for="Place" class="cn-label">Place</label>
+                        <input asp-for="Place" class="form-control" placeholder="e.g. Science Laboratory, Hallway B" />
+                        <span asp-validation-for="Place" class="cn-error"></span>
+                    </div>
 
-    .anec-modal .form-control:focus {
-        border-color: #1b6d24;
-        box-shadow: 0 0 0 2px rgba(27, 109, 36, .10);
-        outline: none;
-    }
+                    <div class="col-12 col-md-6">
+                        <label asp-for="PeopleInvolved" class="cn-label">People Involved</label>
+                        <input asp-for="PeopleInvolved" class="form-control" placeholder="Names of classmates, staff, or witnesses involved" />
+                        <span asp-validation-for="PeopleInvolved" class="cn-error"></span>
+                    </div>
 
-    .anec-validation {
-        display: block;
-        margin-top: 3px;
-        font-size: 10px;
-    }
+                    <div class="col-12">
+                        <label asp-for="SceneMood" class="cn-label">Scene / Mood</label>
+                        <input asp-for="SceneMood" class="form-control" placeholder="e.g. Calm, tense, agitated during group work" />
+                        <span asp-validation-for="SceneMood" class="cn-error"></span>
+                    </div>
+                </div>
+            </section>
 
-    .anec-footer {
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        gap: 12px;
-        padding: 14px 4px 2px;
-        border-top: 1px solid #e5e7eb;
-        margin-top: 4px;
-    }
+            <!-- ============ BEHAVIOR & RECOMMENDATIONS ============ -->
+            <section class="cn-section">
+                <h2 class="cn-section-title">Behavior &amp; Recommendations</h2>
 
-    .anec-privacy {
-        font-size: 10px;
-        color: #6b7280;
-    }
+                <div class="row g-3">
+                    <div class="col-12">
+                        <label asp-for="StudentBehavior" class="cn-label">Student Behavior</label>
+                        <textarea asp-for="StudentBehavior" class="form-control" rows="3" placeholder="Detailed, objective description of the student's actions and words"></textarea>
+                        <span asp-validation-for="StudentBehavior" class="cn-error"></span>
+                    </div>
 
-    .anec-actions {
-        display: flex;
-        align-items: center;
-        gap: 8px;
-    }
+                    <div class="col-12">
+                        <label asp-for="ObserverRecs" class="cn-label">Observer Recommendations</label>
+                        <textarea asp-for="ObserverRecs" class="form-control" rows="3" placeholder="Immediate action taken, or recommended next steps"></textarea>
+                        <span asp-validation-for="ObserverRecs" class="cn-error"></span>
+                    </div>
+                </div>
+            </section>
 
-    .anec-btn {
-        min-height: 34px;
-        padding: 7px 14px;
-        border-radius: 6px;
-        font-family: 'Inter', sans-serif;
-        font-size: 11px;
-        font-weight: 600;
-        cursor: pointer;
-        text-decoration: none;
-        transition: .15s ease;
-    }
-
-    .anec-btn-cancel {
-        color: #374151;
-        background: #fff;
-        border: 1px solid #d1d5db;
-    }
-
-        .anec-btn-cancel:hover {
-            background: #f9fafb;
-            color: #374151;
-        }
-
-    .anec-btn-save {
-        color: #fff;
-        background: #1b6d24;
-        border: 1px solid #1b6d24;
-    }
-
-        .anec-btn-save:hover {
-            background: #155a1e;
-            border-color: #155a1e;
-        }
-
-    @@media (max-width: 576px) 
-
-    {
-        padding-bottom: 14px;
-    }
-
-    .anec-modal-title {
-        font-size: 18px;
-    }
-
-    .anec-grid {
-        grid-template-columns: 1fr;
-        gap: 9px;
-    }
-
-    .anec-field.full-width {
-        grid-column: auto;
-    }
-
-    .anec-section {
-        padding: 12px;
-    }
-
-    .anec-footer {
-        align-items: stretch;
-        flex-direction: column;
-    }
-
-    .anec-actions {
-        width: 100%;
-    }
-
-        .anec-actions .anec-btn {
-            flex: 1;
-            text-align: center;
-        }
-
-    }
-</style>
-
-<div class="anec-modal">
-    <div class="anec-modal-header">
-        <h2 class="anec-modal-title">Create Anecdotal Record</h2>
-        <p class="anec-modal-subtitle">DSOSMNHS Guidance &amp; Counseling Care System</p>
+            <!-- ============ FOOTER ============ -->
+            <div class="cn-foot">
+                <small class="cn-privacy"><i class="bi bi-shield-lock"></i> Private to the counseling team • Changes are logged</small>
+                <div class="cn-actions">
+                    <a asp-controller="Students" asp-action="Details" asp-route-id="@ViewBag.StudentsID"
+                       class="btn-cancel">Cancel</a>
+                    <button type="submit" class="btn-save">Save Record</button>
+                </div>
+            </div>
+        </form>
     </div>
-
-    <form asp-action="Create" method="post" id="anecRecordForm">
-        <div asp-validation-summary="ModelOnly" class="text-danger mb-2"></div>
-
-        <input type="hidden" asp-for="StudentsID" />
-        <input type="hidden" name="studentId" value="@ViewBag.StudentsID" />
-
-        <!-- Observation Info -->
-        <div class="anec-section">
-            <h3 class="anec-section-title">Observation Info</h3>
-
-            <div class="anec-grid">
-                <div class="anec-field full-width">
-                    <label asp-for="StuName" class="anec-label">Full Name</label>
-                    <input asp-for="StuName" class="form-control" />
-                    <span asp-validation-for="StuName" class="text-danger anec-validation"></span>
-                </div>
-
-                <div class="anec-field">
-                    <label asp-for="AnecRecNo" class="anec-label">Record No.</label>
-                    <input asp-for="AnecRecNo" readonly class="form-control" />
-                    <span asp-validation-for="AnecRecNo" class="text-danger anec-validation"></span>
-                </div>
-
-                <div class="anec-field">
-                    <label asp-for="DateOfObserv" class="anec-label">Date of Observation</label>
-                    <input asp-for="DateOfObserv"
-                           class="form-control"
-                           type="datetime-local"
-                           step="3600"
-                           max="@DateTime.Now.ToString("yyyy-MM-ddTHH:00")" />
-                    <span asp-validation-for="DateOfObserv" class="text-danger anec-validation"></span>
-                </div>
-
-                <div class="anec-field full-width">
-                    <label asp-for="ObservedBy" class="anec-label">Observed By</label>
-                    <input asp-for="ObservedBy" class="form-control" />
-                    <span asp-validation-for="ObservedBy" class="text-danger anec-validation"></span>
-                </div>
-            </div>
-        </div>
-
-        <!-- Observation Details -->
-        <div class="anec-section">
-            <h3 class="anec-section-title">Observation Details</h3>
-
-            <div class="anec-grid">
-                <div class="anec-field full-width">
-                    <label asp-for="Place" class="anec-label">Place</label>
-                    <input asp-for="Place" class="form-control" />
-                    <span asp-validation-for="Place" class="text-danger anec-validation"></span>
-                </div>
-
-                <div class="anec-field full-width">
-                    <label asp-for="PeopleInvolved" class="anec-label">People Involved</label>
-                    <input asp-for="PeopleInvolved" class="form-control" />
-                    <span asp-validation-for="PeopleInvolved" class="text-danger anec-validation"></span>
-                </div>
-
-                <div class="anec-field full-width">
-                    <label asp-for="SceneMood" class="anec-label">Scene / Mood</label>
-                    <input asp-for="SceneMood" class="form-control" />
-                    <span asp-validation-for="SceneMood" class="text-danger anec-validation"></span>
-                </div>
-            </div>
-        </div>
-
-        <!-- Behavior & Recommendations -->
-        <div class="anec-section">
-            <h3 class="anec-section-title">Behavior &amp; Recommendations</h3>
-
-            <div class="anec-grid">
-                <div class="anec-field full-width">
-                    <label asp-for="StudentBehavior" class="anec-label">Student Behavior</label>
-                    <textarea asp-for="StudentBehavior" class="form-control" rows="2"></textarea>
-                    <span asp-validation-for="StudentBehavior" class="text-danger anec-validation"></span>
-                </div>
-
-                <div class="anec-field full-width">
-                    <label asp-for="ObserverRecs" class="anec-label">Observer Recommendations</label>
-                    <textarea asp-for="ObserverRecs" class="form-control" rows="2"></textarea>
-                    <span asp-validation-for="ObserverRecs" class="text-danger anec-validation"></span>
-                </div>
-            </div>
-        </div>
-
-        <!-- Footer -->
-        <div class="anec-footer">
-            <small class="anec-privacy">🔒 Privacy Protected • Sys.Logged</small>
-
-            <div class="anec-actions">
-                <button type="button"
-                        class="anec-btn anec-btn-cancel cn-close btn-cancel">
-                    Cancel
-                </button>
-
-                <button type="submit" class="anec-btn anec-btn-save">
-                    Save Record
-                </button>
-            </div>
-        </div>
-    </form>
 </div>
 
-<script>
-    (function () {
-        var form = document.getElementById('anecRecordForm');
-        if (!form) return;
-
-        form.addEventListener('submit', function () {
-            var saveButton = form.querySelector('.anec-btn-save');
-            if (saveButton) {
-                saveButton.disabled = true;
-                saveButton.textContent = 'Saving...';
-            }
-        });
-    })();
-</script>
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}
