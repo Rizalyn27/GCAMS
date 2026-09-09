@@ -1,316 +1,313 @@
 ﻿@model GCAMS.Models.AnecRecs.AnecRecs
 
-@{
-    ViewData["Title"] = "Create Anecdotal Record";
-}
+@* This view is loaded inside the Student Details Bootstrap modal. *@
 
 <style>
-    @@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Manrope:wght@600;700&display=swap');
-
-    .form-wrapper {
-        display: flex;
-        gap: 1.5rem;
-        align-items: flex-start;
+    .anec-modal {
+        font-family: 'Inter', sans-serif;
+        color: #111827;
     }
 
-    .form-sidebar {
-        width: 200px;
-        flex-shrink: 0;
-        position: sticky;
-        top: 1rem;
+    .anec-modal-header {
+        padding: 4px 4px 18px;
+        border-bottom: 1px solid #e5e7eb;
+        margin-bottom: 18px;
     }
 
-        .form-sidebar .nav-link {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            padding: 10px 14px;
-            border-radius: 8px;
-            font-size: 14px;
-            font-family: Inter;
-            color: #555;
-            text-decoration: none;
-            margin-bottom: 4px;
-            transition: background 0.15s;
-        }
-
-            .form-sidebar .nav-link:hover {
-                background: #f0f0f0;
-                color: #222;
-            }
-
-            .form-sidebar .nav-link.active {
-                background: #e8f5e9;
-                color: #1b6d24;
-                font-weight: 500;
-            }
-
-            .form-sidebar .nav-link i {
-                font-size: 16px;
-            }
-
-    .form-content {
-        flex: 1;
-        min-width: 0;
+    .anec-modal-title {
+        margin: 0;
+        font-family: 'Manrope', sans-serif;
+        font-size: 20px;
+        font-weight: 700;
+        color: #111827;
+        line-height: 1.25;
     }
 
-    .form-section {
+    .anec-modal-subtitle {
+        margin: 5px 0 0;
+        font-size: 12px;
+        color: #6b7280;
+    }
+
+    .anec-section {
         background: #fff;
         border: 1px solid #e5e7eb;
-        border-radius: 12px;
-        padding: 1.5rem;
-        margin-bottom: 1.5rem;
+        border-radius: 10px;
+        padding: 14px;
+        margin-bottom: 12px;
     }
 
-    .form-section-title {
-        font-size: 18px;
-        font-weight: 700;
+    .anec-section-title {
+        margin: 0 0 12px;
         font-family: 'Manrope', sans-serif;
-        color: #111;
-        margin-bottom: 1.25rem;
+        font-size: 13px;
+        font-weight: 700;
+        color: #111827;
+    }
+
+    .anec-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 10px;
+    }
+
+    .anec-field.full-width {
+        grid-column: 1 / -1;
+    }
+
+    .anec-label {
+        display: block;
+        margin-bottom: 4px;
+        font-size: 10px;
+        font-weight: 500;
+        color: #6b7280;
+    }
+
+    .anec-modal .form-control {
+        width: 100%;
+        min-height: 34px;
+        padding: 7px 9px;
+        border: 1px solid #d1d5db;
+        border-radius: 6px;
+        background: #fff;
+        color: #111827;
+        font-family: 'Inter', sans-serif;
+        font-size: 11px;
+        box-shadow: none;
+    }
+
+    .anec-modal textarea.form-control {
+        min-height: 58px;
+        resize: vertical;
+    }
+
+    .anec-modal .form-control:focus {
+        border-color: #1b6d24;
+        box-shadow: 0 0 0 2px rgba(27, 109, 36, .10);
+        outline: none;
+    }
+
+    .anec-validation {
+        display: block;
+        margin-top: 3px;
+        font-size: 10px;
+    }
+
+    .anec-footer {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 12px;
+        padding: 14px 4px 2px;
+        border-top: 1px solid #e5e7eb;
+        margin-top: 4px;
+    }
+
+    .anec-privacy {
+        font-size: 10px;
+        color: #6b7280;
+    }
+
+    .anec-actions {
         display: flex;
         align-items: center;
         gap: 8px;
     }
 
-        .form-section-title i {
-            font-size: 18px;
-            color: #1b6d24;
-        }
-
-    .form-grid {
-        display: grid;
-        grid-template-columns: 1fr 1fr;
-        gap: 1rem;
-    }
-
-        .form-grid .full-width {
-            grid-column: 1 / -1;
-        }
-
-    .field-label {
-        font-size: 13px;
+    .anec-btn {
+        min-height: 34px;
+        padding: 7px 14px;
+        border-radius: 6px;
         font-family: 'Inter', sans-serif;
-        font-weight: 500;
-        color: #6b7280;
-        margin-bottom: 4px;
-        display: block;
-    }
-
-    .form-control, .form-select {
-        font-size: 14px;
-        font-family: 'Inter', sans-serif;
-        border-radius: 8px;
-        border: 1px solid #d1d5db;
-        padding: 8px 12px;
-        width: 100%;
-        color: #111;
-    }
-
-        .form-control:focus, .form-select:focus {
-            border-color: #1b6d24;
-            outline: none;
-            box-shadow: 0 0 0 3px rgba(27, 109, 36, 0.1);
-        }
-
-    .form-footer {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        padding: 1rem 0;
-        border-top: 1px solid #e5e7eb;
-        margin-top: 1rem;
-    }
-
-    .btn-cancel {
-        background: #fff;
-        border: 1px solid #d1d5db;
-        border-radius: 8px;
-        padding: 9px 20px;
-        font-size: 14px;
-        color: #374151;
+        font-size: 11px;
+        font-weight: 600;
         cursor: pointer;
         text-decoration: none;
+        transition: .15s ease;
     }
 
-        .btn-cancel:hover {
+    .anec-btn-cancel {
+        color: #374151;
+        background: #fff;
+        border: 1px solid #d1d5db;
+    }
+
+        .anec-btn-cancel:hover {
             background: #f9fafb;
             color: #374151;
         }
 
-    .btn-save {
-        background: #1b6d24;
-        border: none;
-        border-radius: 8px;
-        padding: 9px 20px;
-        font-size: 14px;
+    .anec-btn-save {
         color: #fff;
-        cursor: pointer;
+        background: #1b6d24;
+        border: 1px solid #1b6d24;
     }
 
-        .btn-save:hover {
+        .anec-btn-save:hover {
             background: #155a1e;
+            border-color: #155a1e;
         }
 
-    @@media (max-width: 768px) {
-        .form-wrapper {
-            flex-direction: column;
-        }
+    @@media (max-width: 576px) 
 
-        .form-sidebar {
-            width: 100%;
-            position: static;
-        }
-
-        .form-grid {
-            grid-template-columns: 1fr;
-        }
+    {
+        padding-bottom: 14px;
     }
 
-    body {
-        font-family: 'Inter', sans-serif;
+    .anec-modal-title {
+        font-size: 18px;
     }
 
-    h1, h2, h3, h4, h5, h6 {
-        font-family: 'Manrope', sans-serif;
+    .anec-grid {
+        grid-template-columns: 1fr;
+        gap: 9px;
+    }
+
+    .anec-field.full-width {
+        grid-column: auto;
+    }
+
+    .anec-section {
+        padding: 12px;
+    }
+
+    .anec-footer {
+        align-items: stretch;
+        flex-direction: column;
+    }
+
+    .anec-actions {
+        width: 100%;
+    }
+
+        .anec-actions .anec-btn {
+            flex: 1;
+            text-align: center;
+        }
+
     }
 </style>
 
-<h1>Create Anecdotal Record</h1>
-
-<div class="form-wrapper">
-
-    <!-- Sidebar -->
-    <div class="form-sidebar">
-        <a href="#observation" class="nav-link active">
-            <i class="bi bi-calendar-event"></i> Observation Info
-        </a>
-        <a href="#details" class="nav-link">
-            <i class="bi bi-geo-alt"></i> Observation Details
-        </a>
-        <a href="#behavior" class="nav-link">
-            <i class="bi bi-clipboard2-pulse"></i> Behavior &amp; Recommendations
-        </a>
+<div class="anec-modal">
+    <div class="anec-modal-header">
+        <h2 class="anec-modal-title">Create Anecdotal Record</h2>
+        <p class="anec-modal-subtitle">DSOSMNHS Guidance &amp; Counseling Care System</p>
     </div>
 
-    <!-- Form Content -->
-    <form asp-action="Create" method="post" class="form-content">
-        <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
+    <form asp-action="Create" method="post" id="anecRecordForm">
+        <div asp-validation-summary="ModelOnly" class="text-danger mb-2"></div>
+
         <input type="hidden" asp-for="StudentsID" />
         <input type="hidden" name="studentId" value="@ViewBag.StudentsID" />
 
         <!-- Observation Info -->
-        <div class="form-section" id="observation">
-            <div class="form-section-title">
-                <i class="bi bi-calendar-event"></i> Observation Info
-            </div>
-            <div class="form-grid">
-                <div class="full-width">
-                    <label class="field-label">Full Name</label>
+        <div class="anec-section">
+            <h3 class="anec-section-title">Observation Info</h3>
+
+            <div class="anec-grid">
+                <div class="anec-field full-width">
+                    <label asp-for="StuName" class="anec-label">Full Name</label>
                     <input asp-for="StuName" class="form-control" />
-                    <span asp-validation-for="StuName" class="text-danger" style="font-size:12px;"></span>
+                    <span asp-validation-for="StuName" class="text-danger anec-validation"></span>
                 </div>
-                <div>
-                    <label class="field-label">Record No.</label>
+
+                <div class="anec-field">
+                    <label asp-for="AnecRecNo" class="anec-label">Record No.</label>
                     <input asp-for="AnecRecNo" readonly class="form-control" />
-                    <span asp-validation-for="AnecRecNo" class="text-danger" style="font-size:12px;"></span>
+                    <span asp-validation-for="AnecRecNo" class="text-danger anec-validation"></span>
                 </div>
-                <div>
-                    <label class="field-label">Date of Observation</label>
-                    <input asp-for="DateOfObserv" class="form-control" type="datetime-local"
+
+                <div class="anec-field">
+                    <label asp-for="DateOfObserv" class="anec-label">Date of Observation</label>
+                    <input asp-for="DateOfObserv"
+                           class="form-control"
+                           type="datetime-local"
                            step="3600"
                            max="@DateTime.Now.ToString("yyyy-MM-ddTHH:00")" />
-                    <span asp-validation-for="DateOfObserv" class="text-danger" style="font-size:12px;"></span>
+                    <span asp-validation-for="DateOfObserv" class="text-danger anec-validation"></span>
                 </div>
-                <div class="full-width">
-                    <label class="field-label">Observed By</label>
+
+                <div class="anec-field full-width">
+                    <label asp-for="ObservedBy" class="anec-label">Observed By</label>
                     <input asp-for="ObservedBy" class="form-control" />
-                    <span asp-validation-for="ObservedBy" class="text-danger" style="font-size:12px;"></span>
+                    <span asp-validation-for="ObservedBy" class="text-danger anec-validation"></span>
                 </div>
             </div>
         </div>
 
         <!-- Observation Details -->
-        <div class="form-section" id="details">
-            <div class="form-section-title">
-                <i class="bi bi-geo-alt"></i> Observation Details
-            </div>
-            <div class="form-grid">
-                <div class="full-width">
-                    <label class="field-label">Place</label>
+        <div class="anec-section">
+            <h3 class="anec-section-title">Observation Details</h3>
+
+            <div class="anec-grid">
+                <div class="anec-field full-width">
+                    <label asp-for="Place" class="anec-label">Place</label>
                     <input asp-for="Place" class="form-control" />
-                    <span asp-validation-for="Place" class="text-danger" style="font-size:12px;"></span>
+                    <span asp-validation-for="Place" class="text-danger anec-validation"></span>
                 </div>
-                <div class="full-width">
-                    <label class="field-label">People Involved</label>
+
+                <div class="anec-field full-width">
+                    <label asp-for="PeopleInvolved" class="anec-label">People Involved</label>
                     <input asp-for="PeopleInvolved" class="form-control" />
-                    <span asp-validation-for="PeopleInvolved" class="text-danger" style="font-size:12px;"></span>
+                    <span asp-validation-for="PeopleInvolved" class="text-danger anec-validation"></span>
                 </div>
-                <div class="full-width">
-                    <label class="field-label">Scene / Mood</label>
+
+                <div class="anec-field full-width">
+                    <label asp-for="SceneMood" class="anec-label">Scene / Mood</label>
                     <input asp-for="SceneMood" class="form-control" />
-                    <span asp-validation-for="SceneMood" class="text-danger" style="font-size:12px;"></span>
+                    <span asp-validation-for="SceneMood" class="text-danger anec-validation"></span>
                 </div>
             </div>
         </div>
 
         <!-- Behavior & Recommendations -->
-        <div class="form-section" id="behavior">
-            <div class="form-section-title">
-                <i class="bi bi-clipboard2-pulse"></i> Behavior &amp; Recommendations
-            </div>
-            <div class="form-grid">
-                <div class="full-width">
-                    <label class="field-label">Student Behavior</label>
-                    <input asp-for="StudentBehavior" class="form-control" />
-                    <span asp-validation-for="StudentBehavior" class="text-danger" style="font-size:12px;"></span>
+        <div class="anec-section">
+            <h3 class="anec-section-title">Behavior &amp; Recommendations</h3>
+
+            <div class="anec-grid">
+                <div class="anec-field full-width">
+                    <label asp-for="StudentBehavior" class="anec-label">Student Behavior</label>
+                    <textarea asp-for="StudentBehavior" class="form-control" rows="2"></textarea>
+                    <span asp-validation-for="StudentBehavior" class="text-danger anec-validation"></span>
                 </div>
-                <div class="full-width">
-                    <label class="field-label">Observer Recommendations</label>
-                    <input asp-for="ObserverRecs" class="form-control" />
-                    <span asp-validation-for="ObserverRecs" class="text-danger" style="font-size:12px;"></span>
+
+                <div class="anec-field full-width">
+                    <label asp-for="ObserverRecs" class="anec-label">Observer Recommendations</label>
+                    <textarea asp-for="ObserverRecs" class="form-control" rows="2"></textarea>
+                    <span asp-validation-for="ObserverRecs" class="text-danger anec-validation"></span>
                 </div>
             </div>
         </div>
 
         <!-- Footer -->
-        <div class="form-footer">
-            <small class="text-muted">🔒 Privacy Protected • Sys.Logged</small>
-            <div style="display:flex; gap:10px;">
-                <a asp-controller="Students" asp-action="Details" asp-route-id="@ViewBag.StudentsID" class="btn-cancel">Cancel</a>
-                <input type="submit" value="Save Record" class="btn-save" />
+        <div class="anec-footer">
+            <small class="anec-privacy">🔒 Privacy Protected • Sys.Logged</small>
+
+            <div class="anec-actions">
+                <button type="button"
+                        class="anec-btn anec-btn-cancel cn-close btn-cancel">
+                    Cancel
+                </button>
+
+                <button type="submit" class="anec-btn anec-btn-save">
+                    Save Record
+                </button>
             </div>
         </div>
-
     </form>
 </div>
 
 <script>
-    const links = document.querySelectorAll('.form-sidebar .nav-link');
-    const sections = document.querySelectorAll('.form-section');
+    (function () {
+        var form = document.getElementById('anecRecordForm');
+        if (!form) return;
 
-    const observer = new IntersectionObserver((entries) => {
-        entries.forEach(entry => {
-            if (entry.isIntersecting) {
-                links.forEach(l => l.classList.remove('active'));
-                const active = document.querySelector(`.nav-link[href="#${entry.target.id}"]`);
-                if (active) active.classList.add('active');
+        form.addEventListener('submit', function () {
+            var saveButton = form.querySelector('.anec-btn-save');
+            if (saveButton) {
+                saveButton.disabled = true;
+                saveButton.textContent = 'Saving...';
             }
         });
-    }, { threshold: 0.3 });
-
-    sections.forEach(s => observer.observe(s));
-
-    links.forEach(link => {
-        link.addEventListener('click', e => {
-            e.preventDefault();
-            document.querySelector(link.getAttribute('href')).scrollIntoView({ behavior: 'smooth' });
-        });
-    });
+    })();
 </script>
-
-@section Scripts {
-    @{
-        await Html.RenderPartialAsync("_ValidationScriptsPartial");
-    }
-}

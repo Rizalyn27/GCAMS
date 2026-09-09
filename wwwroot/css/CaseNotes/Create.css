@@ -1,2 +1,278 @@
-﻿body {
+﻿/* ==========================================================================
+   Create.css — Create Case Note
+   Path: wwwroot/css/CaseNotes/Create.css
+
+   Used by BOTH:
+     - CaseNotes/Create.cshtml (standalone page / no-JS fallback)
+     - Students/Details.cshtml (same markup injected into the modal)
+
+   Plain .css file — media queries use a SINGLE @.
+   ========================================================================== */
+
+.cn-wrap {
+    --brand: #1b6d24;
+    --brand-dark: #14562a;
+    --brand-tint: #e8f3e9;
+    --ink: #101913;
+    --muted: #6b7280;
+    --line: #e5e7eb;
+    --danger: #b3261e;
+    display: flex;
+    justify-content: center;
+    padding: 1.5rem 1rem 2.5rem;
+}
+
+.cn-card {
+    width: 100%;
+    max-width: 680px;
+    background: #fff;
+    border: 1px solid var(--line);
+    border-radius: 16px;
+    box-shadow: 0 4px 24px rgba(0, 0, 0, .06);
+    padding: 1.5rem;
+}
+
+    .cn-card * {
+        font-family: 'Inter', sans-serif;
+        box-sizing: border-box;
+    }
+
+/* ---------- header ---------- */
+.cn-head {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 1rem;
+    padding-bottom: 1rem;
+    margin-bottom: 1.25rem;
+    border-bottom: 1px solid var(--line);
+}
+
+.cn-title {
+    font-family: 'Manrope', 'Inter', sans-serif;
+    font-size: 1.3rem;
+    font-weight: 700;
+    color: var(--ink);
+    margin: 0;
+}
+
+.cn-subtitle {
+    font-size: .78rem;
+    color: var(--muted);
+    margin: .2rem 0 0;
+}
+
+.cn-close {
+    flex-shrink: 0;
+    color: var(--muted);
+    font-size: 1.05rem;
+    line-height: 1;
+    padding: .25rem;
+    text-decoration: none;
+    cursor: pointer;
+}
+
+    .cn-close:hover {
+        color: var(--ink);
+    }
+
+.cn-summary:not(:empty) {
+    background: #fdecea;
+    border: 1px solid #f5c2bd;
+    border-radius: 10px;
+    padding: .75rem 1rem;
+    margin-bottom: 1.1rem;
+    font-size: .8125rem;
+    color: var(--danger);
+}
+
+.cn-summary ul {
+    margin: 0;
+    padding-left: 1.1rem;
+}
+
+/* ---------- sections ---------- */
+.cn-section {
+    background: #fbfcfa;
+    border: 1px solid var(--line);
+    border-radius: 12px;
+    padding: 1.1rem 1.15rem 1.25rem;
+    margin-bottom: 1.1rem;
+}
+
+.cn-section-title {
+    font-family: 'Manrope', 'Inter', sans-serif;
+    font-size: .95rem;
+    font-weight: 700;
+    color: var(--ink);
+    margin: 0 0 .9rem;
+}
+
+/* ---------- fields ---------- */
+.cn-label {
+    display: block;
+    font-size: .78rem;
+    font-weight: 500;
+    color: var(--muted);
+    margin-bottom: .3rem;
+}
+
+.cn-card .form-control,
+.cn-card .form-select {
+    font-size: .875rem;
+    border-radius: 9px;
+    border: 1px solid #d6dad6;
+    padding: .5rem .75rem;
+    min-height: 40px;
+    width: 100%;
+    color: var(--ink);
+    background-color: #fff;
+}
+
+    .cn-card .form-control:focus,
+    .cn-card .form-select:focus {
+        border-color: var(--brand);
+        box-shadow: 0 0 0 3px rgba(27, 109, 36, .1);
+        outline: none;
+    }
+
+    .cn-card .form-control.is-readonly {
+        background: #f4f6f3;
+        color: var(--muted);
+    }
+
+.cn-hint {
+    display: block;
+    font-size: .72rem;
+    color: var(--muted);
+    margin-top: .28rem;
+}
+
+.cn-error {
+    display: block;
+    font-size: .72rem;
+    color: var(--danger);
+    margin-top: .25rem;
+}
+
+.cn-card .input-validation-error {
+    border-color: var(--danger);
+}
+
+/* ---------- footer ---------- */
+.cn-foot {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    flex-wrap: wrap;
+    padding-top: 1rem;
+    border-top: 1px solid var(--line);
+}
+
+.cn-privacy {
+    font-size: .74rem;
+    color: var(--muted);
+    display: inline-flex;
+    align-items: center;
+    gap: .35rem;
+}
+
+.cn-actions {
+    display: flex;
+    gap: .6rem;
+    align-items: center;
+    margin-left: auto;
+}
+
+.cn-card .btn-cancel {
+    background: #fff;
+    border: 1px solid #d6dad6;
+    border-radius: 9px;
+    padding: .55rem 1.3rem;
+    font-size: .875rem;
+    font-weight: 500;
+    color: #374151;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    cursor: pointer;
+}
+
+    .cn-card .btn-cancel:hover {
+        background: #f7f8f7;
+        color: var(--ink);
+    }
+
+.cn-card .btn-save {
+    background: var(--brand);
+    border: 1px solid var(--brand);
+    border-radius: 9px;
+    padding: .55rem 1.35rem;
+    font-size: .875rem;
+    font-weight: 600;
+    color: #fff;
+    cursor: pointer;
+}
+
+    .cn-card .btn-save:hover {
+        background: var(--brand-dark);
+        border-color: var(--brand-dark);
+    }
+
+    .cn-card .btn-save:focus-visible,
+    .cn-card .btn-cancel:focus-visible {
+        outline: 2px solid var(--brand);
+        outline-offset: 2px;
+    }
+
+/* ==========================================================================
+   INSIDE THE MODAL
+   modal-content already supplies the chrome, so the card drops its own.
+   ========================================================================== */
+#caseNoteModal .cn-wrap {
+    padding: 0;
+}
+
+#caseNoteModal .cn-card {
+    box-shadow: none;
+    border: none;
+    border-radius: 0;
+    max-width: none;
+    padding: 0;
+}
+
+/* ==========================================================================
+   RESPONSIVE
+   ========================================================================== */
+@media (max-width: 575.98px) {
+    .cn-wrap {
+        padding: 1rem .75rem 2rem;
+    }
+
+    .cn-card {
+        padding: 1.1rem;
+        border-radius: 12px;
+    }
+
+    .cn-section {
+        padding: 1rem;
+    }
+
+    .cn-foot {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .cn-actions {
+        flex-direction: column-reverse;
+        width: 100%;
+        margin-left: 0;
+    }
+
+        .cn-actions > * {
+            width: 100%;
+            justify-content: center;
+            text-align: center;
+        }
 }
