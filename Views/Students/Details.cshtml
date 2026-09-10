@@ -9,6 +9,8 @@
     <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
     <link rel="stylesheet" href="~/css/Students/Details.css" asp-append-version="true" />
+    @* the case note form is injected into the modal on this page *@
+    <link rel="stylesheet" href="~/css/CaseNotes/Create.css" asp-append-version="true" />
 }
 
 @* Renders inside the layout's sticky topbar, next to the sidebar toggle.
@@ -577,7 +579,8 @@
                 <a asp-controller="CaseNotes" asp-action="Create"
                    asp-route-fullName="@Model.Student.StuName"
                    asp-route-studentId="@Model.Student.StudentsID"
-                   class="action-btn btn-primary-green header-action">
+                   class="action-btn btn-primary-green header-action js-new-casenote"
+                   data-create-url="@Url.Action("Create", "CaseNotes", new { fullName = Model.Student.StuName, studentId = Model.Student.StudentsID })">
                     <i class="bi bi-plus-lg btn-icon"></i>Add New Case Note
                 </a>
             </div>
@@ -645,7 +648,8 @@
                 <a asp-controller="AnecRecs" asp-action="Create"
                    asp-route-fullName="@Model.Student.StuName"
                    asp-route-studentId="@Model.Student.StudentsID"
-                   class="action-btn btn-primary-green header-action">
+                   class="action-btn btn-primary-green header-action js-new-casenote"
+                   data-create-url="@Url.Action("Create", "AnecRecs", new { fullName = Model.Student.StuName, studentId = Model.Student.StudentsID })">
                     <i class="bi bi-plus-lg btn-icon"></i>Add New Anecdotal Record
                 </a>
             </div>
@@ -703,9 +707,22 @@
 
     </div>
 
+    <!-- ================= CREATE CASE NOTE MODAL ================= -->
+    <div class="modal fade" id="caseNoteModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable modal-fullscreen-sm-down"
+             style="max-width:700px;">
+            <div class="modal-content" style="border-radius:16px; border:none;">
+                <div class="modal-body p-4" id="caseNoteModalBody">
+                    <div class="text-center text-muted py-5">Loading…</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
 </div>
 
 @section Scripts {
+    <script src="~/js/CaseNotes/casenote-form.js" asp-append-version="true"></script>
     <script>
         function switchTab(name, btn) {
             document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
@@ -713,5 +730,78 @@
             document.getElementById('tab-' + name).classList.add('active');
             btn.classList.add('active');
         }
+
+        // ── Create Case Note modal ──────────────────────────────────────────
+        (function () {
+            var modalEl = document.getElementById('caseNoteModal');
+            if (!modalEl) return;
+
+            var modalBody = document.getElementById('caseNoteModalBody');
+            var bsModal = null;
+
+            function getBsModal() {
+                if (!bsModal) { bsModal = bootstrap.Modal.getOrCreateInstance(modalEl); }
+                return bsModal;
+            }
+
+            function wireCloseLinks() {
+                modalBody.querySelectorAll('.cn-close, .btn-cancel').forEach(function (el) {
+                    el.addEventListener('click', function (e) {
+                        e.preventDefault();
+                        getBsModal().hide();
+                    });
+                });
+            }
+
+            function loadForm(url) {
+                modalBody.innerHTML = '<div class="text-center text-muted py-5">Loading…</div>';
+
+                fetch(url, { headers: { 'X-Requested-With': 'XMLHttpRequest' } })
+                    .then(function (res) { return res.text(); })
+                    .then(function (html) {
+                        var doc = new DOMParser().parseFromString(html, 'text/html');
+                        var card = doc.querySelector('.cn-card');
+
+                        if (!card) {
+                            modalBody.innerHTML = '<p class="text-danger p-3 mb-0">Could not load the form. Please try again.</p>';
+                            return;
+                        }
+
+                        // outerHTML plus the wrapper: Create.css is scoped to .cn-card
+                        // and its variables live on .cn-wrap, so dropping either
+                        // ancestor leaves the form unstyled.
+                        modalBody.innerHTML = '<div class="cn-wrap">' + card.outerHTML + '</div>';
+
+                        // Unobtrusive validation binds on page load, so a form added
+                        // afterwards has none until it is parsed again.
+                        if (window.jQuery && jQuery.validator && jQuery.validator.unobtrusive) {
+                            var form = modalBody.querySelector('form');
+                            if (form) {
+                                jQuery(form).removeData('validator').removeData('unobtrusiveValidation');
+                                jQuery.validator.unobtrusive.parse(form);
+                            }
+                        }
+
+                        if (window.initCaseNoteForm) { initCaseNoteForm(modalBody); }
+                        wireCloseLinks();
+                    })
+                    .catch(function () {
+                        modalBody.innerHTML = '<p class="text-danger p-3 mb-0">Could not load the form. Please try again.</p>';
+                    });
+            }
+
+            document.querySelectorAll('.js-new-casenote').forEach(function (btn) {
+                btn.addEventListener('click', function (e) {
+                    e.preventDefault();   // don't follow the href — open the modal
+                    loadForm(this.getAttribute('data-create-url'));
+                    getBsModal().show();
+                });
+            });
+
+            // Fresh form and a fresh antiforgery token on every open
+            modalEl.addEventListener('hidden.bs.modal', function () {
+                modalBody.innerHTML = '<div class="text-center text-muted py-5">Loading…</div>';
+            });
+        })();
     </script>
 }
