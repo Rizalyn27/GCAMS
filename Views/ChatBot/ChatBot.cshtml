@@ -79,7 +79,7 @@
                               placeholder="Ask CareBot a question…"
                               aria-label="Your message"></textarea>
                     <button type="button" id="SendBtn" class="btn-send" aria-label="Send message">
-                        <span class="material-symbols-outlined">send</span>
+                        <span class="material-symbols-outlined">➜</span>
                     </button>
                 </div>
 
@@ -186,7 +186,7 @@
                 wrap.className = 'msg msg-bot';
                 wrap.id = 'typing-indicator';
                 wrap.innerHTML = `
-                    <div class="msg-avatar"><span class="material-symbols-outlined">smart_toy</span></div>
+                    <div class="msg-avatar"><span class="material-symbols-outlined"></span></div>
                     <div class="msg-bubble typing"><span></span><span></span><span></span></div>`;
                 chatArea.appendChild(wrap);
                 scrollToEnd();

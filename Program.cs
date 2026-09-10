@@ -76,12 +76,19 @@ app.MapControllerRoute(
     .WithStaticAssets();
 
 
-//For login addmin delete after everything is done
-if (app.Environment.IsDevelopment())
+// Break-glass: make sure at least one administrator can always sign in.
+// Runs in EVERY environment but does nothing unless there is no active admin.
 {
     using var scope = app.Services.CreateScope();
     var context = scope.ServiceProvider.GetRequiredService<AppDbContext>();
-    SeedData.EnsureTestAdmin(context);
+    var logger = scope.ServiceProvider.GetRequiredService<ILoggerFactory>()
+                      .CreateLogger("Bootstrap");
+
+    SeedData.EnsureBootstrapAdmin(
+        context,
+        app.Configuration,
+        logger,
+        app.Environment.IsDevelopment());
 }
 
-app.Run();
+app.Run();  

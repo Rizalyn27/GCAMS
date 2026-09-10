@@ -1,0 +1,779 @@
+﻿/* ==========================================================================
+   Accounts.css — admin account management (Index + Create)
+   Path: wwwroot/css/Accounts/Accounts.css
+
+   Loads after Layout.css. Bootstrap 5 supplies the grid, table, alerts,
+   modals, buttons and form controls; only the GCAMS skin lives here.
+
+   NOTE: plain .css file, so media queries use a SINGLE @.
+   ========================================================================== */
+
+.accounts-page {
+    --brand: #1b6d24;
+    --brand-dark: #175c1e;
+    --brand-soft: #e8f2ea;
+    --ink: #23291f;
+    --muted: #8a938a;
+    --line: #e6ebe4;
+    color: var(--ink);
+    width: 100%;
+}
+
+    .accounts-page * {
+        font-family: 'Inter', 'Sora', sans-serif;
+        box-sizing: border-box;
+    }
+
+    .accounts-page h1 {
+        font-family: 'Manrope', sans-serif;
+    }
+
+    .accounts-page .bi {
+        line-height: 1;
+        vertical-align: -.125em;
+    }
+
+.accounts-narrow {
+    max-width: 760px;
+    margin: 0 auto;
+}
+
+/* ==========================================================================
+   HEADER + FLASH
+   ========================================================================== */
+.accounts-page .flash {
+    border-radius: 11px;
+    font-size: 13.5px;
+    padding: 11px 15px;
+    margin-bottom: 1.25rem;
+    border-width: 1px;
+}
+
+.accounts-page .page-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 16px;
+    flex-wrap: wrap;
+    margin-bottom: 1.25rem;
+}
+
+.accounts-page .page-title {
+    font-size: 1.5rem;
+    font-weight: 700;
+    margin: 0 0 4px;
+}
+
+.accounts-page .page-sub {
+    font-size: 12.5px;
+    color: #5c665a;
+    margin: 0;
+    max-width: 560px;
+    line-height: 1.55;
+}
+
+/* ==========================================================================
+   STATS
+   ========================================================================== */
+.accounts-page .stat-strip {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 12px;
+    margin-bottom: 1.25rem;
+}
+
+.accounts-page .stat {
+    background: #fff;
+    border: 1px solid var(--line);
+    border-radius: 12px;
+    padding: 14px 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+
+.accounts-page .stat-num {
+    font-family: 'Manrope', sans-serif;
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--brand);
+    line-height: 1.1;
+}
+
+.accounts-page .stat-label {
+    font-size: 11.5px;
+    color: var(--muted);
+}
+
+/* ==========================================================================
+   FILTERS  (mirrors the Students page: pill search + pill selects)
+   ========================================================================== */
+.accounts-page .filter-bar {
+    margin-bottom: 1rem;
+}
+
+.accounts-page .search-box {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex: 1 1 260px;
+    min-width: 200px;
+    background: #fff;
+    border: 1px solid #e5eae1;
+    border-radius: 999px;
+    padding: 9px 18px;
+}
+
+    .accounts-page .search-box i {
+        font-size: 14px;
+        color: #9aa396;
+        flex-shrink: 0;
+    }
+
+    .accounts-page .search-box .form-control {
+        background: transparent;
+        border: 0;
+        font-size: 14px;
+        color: var(--ink);
+        min-width: 0;
+        min-height: auto;
+        height: auto;
+        padding: 0;
+    }
+
+        .accounts-page .search-box .form-control::placeholder {
+            color: #9aa396;
+        }
+
+        .accounts-page .search-box .form-control:focus {
+            box-shadow: none;
+        }
+
+    .accounts-page .search-box:focus-within {
+        border-color: var(--brand);
+    }
+
+.accounts-page .filter-select {
+    flex: 0 1 160px;
+    min-width: 140px;
+    width: auto;
+    border: 1px solid #e5eae1;
+    border-radius: 999px;
+    padding: 9px 36px 9px 18px;
+    font-size: 14px;
+    font-weight: 500;
+    color: #3a4a35;
+    background-position: right 14px center;
+    cursor: pointer;
+}
+
+    .accounts-page .filter-select:focus {
+        border-color: var(--brand);
+        box-shadow: none;
+    }
+
+.accounts-page .btn-clear {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 8px 14px;
+    font-size: 13px;
+    font-weight: 600;
+    color: #5c665a;
+    background: #fff;
+    border: 1px solid #e5eae1;
+    border-radius: 999px;
+    cursor: pointer;
+}
+
+    .accounts-page .btn-clear:hover {
+        background: #f3f6f1;
+        color: var(--brand);
+        border-color: var(--brand);
+    }
+
+    .accounts-page .btn-clear[hidden] {
+        display: none;
+    }
+
+/* ==========================================================================
+   SORTING / PAGINATION / EMPTY STATE
+   ========================================================================== */
+.accounts-page .table-scroll {
+    max-height: 620px;
+    overflow-y: auto;
+}
+
+.accounts-page .gcams-table thead th {
+    position: sticky;
+    top: 0;
+    z-index: 2;
+}
+
+    .accounts-page .gcams-table thead th.sortable {
+        cursor: pointer;
+        user-select: none;
+    }
+
+        .accounts-page .gcams-table thead th.sortable:hover {
+            color: var(--brand);
+        }
+
+.accounts-page .sort-icon {
+    margin-left: 5px;
+    font-size: 10px;
+    opacity: .35;
+}
+
+.accounts-page .gcams-table thead th.is-asc,
+.accounts-page .gcams-table thead th.is-desc {
+    color: var(--brand);
+}
+
+    .accounts-page .gcams-table thead th.is-asc .sort-icon,
+    .accounts-page .gcams-table thead th.is-desc .sort-icon {
+        opacity: 1;
+    }
+
+.accounts-page .empty-state {
+    padding: 44px 20px;
+    text-align: center;
+    color: var(--muted);
+    font-size: 14px;
+    border-top: 1px solid #f2f4f1;
+}
+
+    .accounts-page .empty-state i {
+        display: block;
+        font-size: 26px;
+        margin-bottom: 10px;
+        color: #c3ccc0;
+    }
+
+.accounts-page .table-footer {
+    padding: 13px 20px;
+    background: #fafbfa;
+    border-top: 1px solid #eef1ee;
+}
+
+.accounts-page .showing-text {
+    font-size: 13px;
+    color: var(--muted);
+}
+
+.accounts-page .gcams-pagination {
+    --bs-pagination-color: #6c7768;
+    --bs-pagination-bg: transparent;
+    --bs-pagination-border-width: 0;
+    --bs-pagination-border-color: transparent;
+    --bs-pagination-hover-color: var(--ink);
+    --bs-pagination-hover-bg: var(--brand-soft);
+    --bs-pagination-focus-bg: var(--brand-soft);
+    --bs-pagination-focus-box-shadow: none;
+    --bs-pagination-active-bg: var(--brand);
+    --bs-pagination-active-color: #fff;
+    --bs-pagination-active-border-color: var(--brand);
+    --bs-pagination-disabled-bg: transparent;
+    --bs-pagination-disabled-color: #b9c2b6;
+    --bs-pagination-padding-x: .6rem;
+    --bs-pagination-padding-y: .3rem;
+    --bs-pagination-font-size: 13px;
+    gap: 4px;
+    flex-wrap: wrap;
+}
+
+    /* .page-item is in the selector so these outrank Bootstrap's
+       :first-child / :not(:first-child) radius and margin rules. */
+    .accounts-page .gcams-pagination .page-item .page-link {
+        min-width: 32px;
+        height: 32px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 8px;
+        margin-left: 0;
+        font-weight: 500;
+    }
+
+    .accounts-page .gcams-pagination .page-item.active .page-link {
+        font-weight: 700;
+    }
+
+    .accounts-page .gcams-pagination .page-gap {
+        background: transparent;
+    }
+
+/* ==========================================================================
+   FORM CONTROLS
+   ========================================================================== */
+.accounts-page .form-control,
+.accounts-page .form-select {
+    font-size: 14px;
+    border-radius: 9px;
+    border: 1px solid #d8ded4;
+    padding: 8px 12px;
+    min-height: 40px;
+    color: var(--ink);
+    background-color: #fff;
+}
+
+    .accounts-page .form-control:focus,
+    .accounts-page .form-select:focus {
+        border-color: var(--brand);
+        box-shadow: 0 0 0 3px rgba(27, 109, 36, .12);
+    }
+
+.accounts-page .field-label {
+    display: block;
+    font-size: 12.5px;
+    font-weight: 600;
+    color: #46503f;
+    margin-bottom: 5px;
+}
+
+.accounts-page .field-hint {
+    display: block;
+    font-size: 11.5px;
+    color: var(--muted);
+    margin-top: 5px;
+    line-height: 1.5;
+}
+
+.accounts-page .field-error {
+    display: block;
+    font-size: 11.5px;
+    color: #c0392b;
+    margin-top: 3px;
+}
+
+.accounts-page .input-validation-error {
+    border-color: #e0a2a2;
+    background-color: #fffafa;
+}
+
+.accounts-page .validation-summary-valid {
+    display: none;
+}
+
+.accounts-page .info-note {
+    display: flex;
+    gap: 9px;
+    align-items: flex-start;
+    background: #eef4fa;
+    border: 1px solid #cfdff0;
+    color: #38536e;
+    border-radius: 11px;
+    padding: 11px 15px;
+    font-size: 12.5px;
+    line-height: 1.55;
+    margin-top: 1.25rem;
+}
+
+/* ==========================================================================
+   TABLE
+   ========================================================================== */
+.accounts-page .table-card {
+    background: #fff;
+    border: 1px solid var(--line);
+    border-radius: 14px;
+    overflow: hidden;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, .03);
+}
+
+.accounts-page .table {
+    font-size: 13.5px;
+    margin: 0;
+}
+
+    .accounts-page .table thead th {
+        background: #fafbf9;
+        border-bottom: 1px solid var(--line);
+        font-size: 10.5px;
+        font-weight: 700;
+        letter-spacing: .06em;
+        text-transform: uppercase;
+        color: var(--muted);
+        padding: 11px 14px;
+        white-space: nowrap;
+    }
+
+    .accounts-page .table tbody td {
+        padding: 12px 14px;
+        border-bottom: 1px solid #f0f3ee;
+        vertical-align: middle;
+    }
+
+    .accounts-page .table tbody tr:last-child td {
+        border-bottom: 0;
+    }
+
+    .accounts-page .table tbody tr:hover {
+        background: #fafcf9;
+    }
+
+.accounts-page .uname {
+    font-weight: 600;
+    overflow-wrap: anywhere;
+}
+
+.accounts-page .you-tag {
+    display: inline-block;
+    margin-left: 6px;
+    background: var(--brand-soft);
+    color: var(--brand);
+    border-radius: 99px;
+    padding: 1px 8px;
+    font-size: 10px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: .05em;
+}
+
+.accounts-page .muted {
+    color: #a9b2a7;
+}
+
+.accounts-page .role-tag {
+    display: inline-block;
+    border-radius: 99px;
+    padding: 3px 10px;
+    font-size: 11px;
+    font-weight: 600;
+    border: 1px solid transparent;
+}
+
+.accounts-page .role-admin {
+    background: #eef1fb;
+    border-color: #d3daf3;
+    color: #3c4a8a;
+}
+
+.accounts-page .role-counselor {
+    background: var(--brand-soft);
+    border-color: #cfe0d3;
+    color: var(--brand);
+}
+
+.accounts-page .role-student {
+    background: #fdf4e8;
+    border-color: #f0dcc0;
+    color: #8a6222;
+}
+
+.accounts-page .status {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    font-size: 12px;
+    font-weight: 600;
+}
+
+.accounts-page .status-on {
+    color: #256b31;
+}
+
+.accounts-page .status-off {
+    color: #a13b3b;
+}
+
+.accounts-page .pending {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    font-size: 11.5px;
+    font-weight: 600;
+    color: #8a6222;
+}
+
+.accounts-page .empty-row {
+    text-align: center;
+    padding: 34px 16px;
+    color: var(--muted);
+}
+
+    .accounts-page .empty-row i {
+        display: block;
+        font-size: 24px;
+        margin-bottom: 8px;
+        color: #c3cbc0;
+    }
+
+/* ---------- row actions ---------- */
+.accounts-page .row-actions {
+    display: inline-flex;
+    gap: 6px;
+    justify-content: flex-end;
+    flex-wrap: wrap;
+}
+
+.accounts-page .inline-form {
+    display: inline;
+}
+
+.accounts-page .btn-mini {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    background: #fff;
+    border: 1px solid #d7ded2;
+    border-radius: 8px;
+    padding: 5px 11px;
+    font-size: 12px;
+    font-weight: 600;
+    color: #3a4a35;
+    cursor: pointer;
+    white-space: nowrap;
+}
+
+    .accounts-page .btn-mini:hover {
+        background: #f4f7f2;
+    }
+
+    .accounts-page .btn-mini.danger {
+        border-color: #e3d5d5;
+        color: #a13b3b;
+    }
+
+        .accounts-page .btn-mini.danger:hover {
+            background: #fdf3f3;
+            border-color: #dcb9b9;
+        }
+
+    .accounts-page .btn-mini.is-locked {
+        background: #f5f6f3;
+        color: #a9b2a7;
+        cursor: not-allowed;
+    }
+
+.accounts-page .foot-note {
+    margin-top: 14px;
+    font-size: 12px;
+    color: var(--muted);
+    display: flex;
+    align-items: flex-start;
+    gap: 7px;
+    line-height: 1.55;
+}
+
+/* ==========================================================================
+   CARDS + FOOTER (Create page)
+   ========================================================================== */
+.accounts-page .sect-card {
+    border: 1px solid var(--line);
+    border-radius: 14px;
+    overflow: hidden;
+    box-shadow: 0 1px 2px rgba(23, 41, 25, .04);
+    margin-bottom: 1.25rem;
+}
+
+.accounts-page .sect-head {
+    background: #fafbf9;
+    border-bottom: 1px solid var(--line);
+    font-size: 14.5px;
+    font-weight: 600;
+    padding: 13px 18px;
+}
+
+    .accounts-page .sect-head i {
+        color: var(--brand);
+        margin-right: 7px;
+    }
+
+.accounts-page .card-body {
+    padding: 18px;
+}
+
+.accounts-page .form-footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 12px;
+    flex-wrap: wrap;
+    background: #fff;
+    border: 1px solid var(--line);
+    border-radius: 14px;
+    padding: 12px 16px;
+}
+
+.accounts-page .privacy-note {
+    color: var(--muted);
+    font-size: 12px;
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+}
+
+.accounts-page .footer-actions {
+    display: flex;
+    gap: 10px;
+}
+
+/* ==========================================================================
+   BUTTONS
+   ========================================================================== */
+.accounts-page .btn-shell,
+.accounts-page .btn-brand,
+.accounts-modal .btn-shell,
+.accounts-modal .btn-brand,
+.accounts-modal .btn-danger-solid {
+    font-size: 14px;
+    font-weight: 600;
+    padding: 8px 18px;
+    border-radius: 10px;
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    white-space: nowrap;
+}
+
+.accounts-page .btn-shell,
+.accounts-modal .btn-shell {
+    background: #fff;
+    border: 1px solid #d7ded2;
+    color: #3a4a35;
+}
+
+    .accounts-page .btn-shell:hover,
+    .accounts-modal .btn-shell:hover {
+        background: #f4f7f2;
+        color: #24331f;
+    }
+
+.accounts-page .btn-brand,
+.accounts-modal .btn-brand {
+    background: var(--brand, #1b6d24);
+    border: 1px solid var(--brand, #1b6d24);
+    color: #fff;
+}
+
+    .accounts-page .btn-brand:hover,
+    .accounts-modal .btn-brand:hover {
+        background: #175c1e;
+        border-color: #175c1e;
+        color: #fff;
+    }
+
+.accounts-modal .btn-danger-solid {
+    background: #b3453f;
+    border: 1px solid #b3453f;
+    color: #fff;
+}
+
+    .accounts-modal .btn-danger-solid:hover {
+        background: #9b3a35;
+        border-color: #9b3a35;
+        color: #fff;
+    }
+
+/* ==========================================================================
+   MODALS
+   ========================================================================== */
+.accounts-modal .modal-content {
+    border: 1px solid #e6ebe4;
+    border-radius: 14px;
+    font-family: 'Inter', 'Sora', sans-serif;
+    color: #23291f;
+}
+
+.accounts-modal .modal-header {
+    border-bottom: 1px solid #e6ebe4;
+    padding: 14px 18px;
+}
+
+.accounts-modal .modal-title {
+    font-family: 'Manrope', sans-serif;
+    font-size: 1rem;
+    font-weight: 700;
+}
+
+    .accounts-modal .modal-title i {
+        color: #1b6d24;
+        margin-right: 7px;
+    }
+
+.accounts-modal .modal-body {
+    padding: 18px;
+    font-size: 13.5px;
+    line-height: 1.6;
+}
+
+.accounts-modal .modal-lead {
+    margin-bottom: 1rem;
+}
+
+.accounts-modal .modal-footer {
+    border-top: 1px solid #e6ebe4;
+    padding: 12px 18px;
+}
+
+.accounts-modal .field-label {
+    display: block;
+    font-size: 12.5px;
+    font-weight: 600;
+    color: #46503f;
+    margin-bottom: 5px;
+}
+
+.accounts-modal .form-control {
+    font-size: 14px;
+    border-radius: 9px;
+    border: 1px solid #d8ded4;
+    padding: 8px 12px;
+    min-height: 40px;
+}
+
+    .accounts-modal .form-control:focus {
+        border-color: #1b6d24;
+        box-shadow: 0 0 0 3px rgba(27, 109, 36, .12);
+    }
+
+.accounts-modal .field-hint {
+    display: block;
+    font-size: 11.5px;
+    color: #8a938a;
+    margin-top: 5px;
+    line-height: 1.5;
+}
+
+/* ==========================================================================
+   RESPONSIVE
+   ========================================================================== */
+@media (max-width: 767.98px) {
+    .accounts-page .page-head {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+        .accounts-page .page-head .btn {
+            justify-content: center;
+        }
+
+    .accounts-page .stat-strip {
+        grid-template-columns: 1fr;
+    }
+
+    .accounts-page .search-box,
+    .accounts-page .filter-select,
+    .accounts-page .btn-clear {
+        flex: 1 1 100%;
+        margin-left: 0 !important;
+    }
+
+    .accounts-page .table-scroll {
+        max-height: none;
+    }
+
+    .accounts-page .table {
+        font-size: 12.5px;
+        white-space: nowrap;
+    }
+
+    .accounts-page .form-footer {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .accounts-page .footer-actions {
+        justify-content: flex-end;
+    }
+}

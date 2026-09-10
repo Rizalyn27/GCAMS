@@ -1,0 +1,362 @@
+﻿@model GCAMS.ViewModels.MyProfileViewModel
+@{
+    Layout = "_Layout";
+    ViewData["Title"] = "My Profile";
+    ViewData["PageSubtitle"] = "Your account and personal details";
+
+    var initial = string.IsNullOrWhiteSpace(Model.DisplayName)
+        ? "?"
+        : Model.DisplayName.Trim().Substring(0, 1).ToUpper();
+
+    // Repeaters always render at least one blank row so there is a template to clone.
+    var ownNumbers = Model.ContactNumbers.Count > 0
+        ? Model.ContactNumbers
+        : new List<string> { string.Empty };
+    var emergencyNumbers = Model.EmergencyContactNumbers.Count > 0
+        ? Model.EmergencyContactNumbers
+        : new List<string> { string.Empty };
+}
+
+@section Styles {
+    <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <link rel="stylesheet" href="~/css/Users/MyProfile.css" asp-append-version="true" />
+}
+
+<div class="myprofile-page">
+
+    @if (TempData["ProfileSaved"] != null)
+    {
+        <div class="alert alert-success save-toast" role="alert">
+            <i class="bi bi-check-circle-fill"></i> @TempData["ProfileSaved"]
+        </div>
+    }
+
+    <!-- ============ IDENTITY HEADER ============ -->
+    <div class="identity-card">
+        <div class="avatar-circle">@initial</div>
+        <div class="identity-body">
+            <h2 class="identity-name">@Model.DisplayName</h2>
+            <div class="identity-pills">
+                <span class="pill pill-role"><i class="bi bi-person-badge"></i> @Model.Role</span>
+                <span class="pill"><i class="bi bi-hash"></i> @Model.IdentifierLabel: @Model.IdentifierValue</span>
+                <span class="pill"><i class="bi bi-person-circle"></i> @Model.Username</span>
+                <span class="pill @(Model.AccountIsActive ? "pill-active" : "pill-inactive")">
+                    <i class="bi @(Model.AccountIsActive ? "bi-check-circle" : "bi-x-circle")"></i>
+                    @(Model.AccountIsActive ? "Active" : "Inactive")
+                </span>
+            </div>
+        </div>
+        <a asp-controller="Users" asp-action="ChangePass" class="btn btn-shell">
+            <i class="bi bi-key"></i> Change Password
+        </a>
+    </div>
+
+    <!-- ============ LOCKED RECORD DETAILS ============ -->
+    <div class="card sect-card">
+        <div class="card-header sect-head">
+            <span><i class="bi bi-lock-fill"></i> Record Details</span>
+            <span class="head-note">Maintained by the Care Center</span>
+        </div>
+        <div class="card-body">
+            <p class="locked-intro">
+                These details identify your record and cannot be edited here. If anything
+                is wrong, please contact the Care Center so it can be corrected officially.
+            </p>
+            <div class="facts-grid">
+                @foreach (var fact in Model.ReadOnlyFacts)
+                {
+                    <div class="fact">
+                        <span class="fact-key">@fact.Label</span>
+                        <span class="fact-val @(fact.Value == "—" ? "is-empty" : "")">@fact.Value</span>
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+
+    @if (!Model.HasEditableFields)
+    {
+        <div class="card sect-card">
+            <div class="card-body empty-state">
+                <i class="bi bi-shield-lock"></i>
+                <h3>Nothing to edit here</h3>
+                <p>
+                    Administrator accounts don't store personal details such as an email
+                    address or contact number, so there's nothing on this page to change.
+                    You can still update your password at any time.
+                </p>
+                <a asp-controller="Users" asp-action="ChangePass" class="btn btn-brand">
+                    <i class="bi bi-key"></i> Change Password
+                </a>
+            </div>
+        </div>
+    }
+    else
+    {
+        <form asp-action="MyProfile" method="post" novalidate>
+
+            <div asp-validation-summary="ModelOnly" class="alert alert-danger"></div>
+
+            @if (!string.IsNullOrWhiteSpace(Model.LockedFieldNote))
+            {
+                <div class="info-note">
+                    <i class="bi bi-info-circle"></i> <span>@Model.LockedFieldNote</span>
+                </div>
+            }
+
+            <!-- ---------- CONTACT ---------- -->
+            <div class="card sect-card">
+                <div class="card-header sect-head">
+                    <span><i class="bi bi-envelope"></i> Contact Information</span>
+                    <span class="head-note editable-note"><i class="bi bi-pencil"></i> You can edit this</span>
+                </div>
+                <div class="card-body">
+                    <div class="row g-3">
+
+                        @if (Model.ShowEmail)
+                        {
+                            <div class="col-12 col-md-6">
+                                <label asp-for="Email" class="field-label">Email Address</label>
+                                @if (Model.EmailIsEditable)
+                                {
+                                    <input asp-for="Email" class="form-control" placeholder="you@@example.com" />
+                                    <span asp-validation-for="Email" class="field-error"></span>
+                                }
+                                else
+                                {
+                                    <input class="form-control field-locked" value="@Model.Email" readonly tabindex="-1" />
+                                    <span class="field-hint"><i class="bi bi-lock"></i> Locked — this is your login username</span>
+                                }
+                            </div>
+                        }
+
+                        @if (Model.ShowContactNumbers)
+                        {
+                            <div class="col-12 col-md-6">
+                                <label class="field-label">Mobile Number(s)</label>
+                                <div class="repeater" id="own-numbers" data-prefix="ContactNumbers">
+                                    @for (int i = 0; i < ownNumbers.Count; i++)
+                                    {
+                                        <div class="num-row">
+                                            <input name="ContactNumbers[@i]" value="@ownNumbers[i]"
+                                                   class="form-control" placeholder="09XX XXX XXXX" inputmode="tel" />
+                                            <button type="button" class="btn-remove" aria-label="Remove number">
+                                                <i class="bi bi-x-lg"></i>
+                                            </button>
+                                        </div>
+                                        @if (ViewData.ModelState.TryGetValue($"ContactNumbers[{i}]", out var stOwn) && stOwn.Errors.Count > 0)
+                                        {
+                                            <span class="field-error">@stOwn.Errors[0].ErrorMessage</span>
+                                        }
+                                    }
+                                </div>
+                                <button type="button" class="link-btn add-number" data-target="own-numbers">
+                                    <i class="bi bi-plus-lg"></i> Add another number
+                                </button>
+                            </div>
+                        }
+
+                        @if (Model.ShowAddress)
+                        {
+                            <div class="col-12">
+                                <label asp-for="Address" class="field-label">Home Address</label>
+                                <textarea asp-for="Address" class="form-control" rows="2"
+                                          placeholder="House/street, barangay, city"></textarea>
+                                <span asp-validation-for="Address" class="field-error"></span>
+                            </div>
+                        }
+
+                        @if (Model.ShowLivingArrangement)
+                        {
+                            <div class="col-12 col-md-6">
+                                <label asp-for="StayingWith" class="field-label">Living Arrangement</label>
+                                <select asp-for="StayingWith" class="form-select">
+                                    <option value="">Select</option>
+                                    <option value="Parents">With Parents</option>
+                                    <option value="Relatives">Relatives</option>
+                                    <option value="Own Family">Own Family</option>
+                                    <option value="Alone">Alone</option>
+                                </select>
+                                <span asp-validation-for="StayingWith" class="field-error"></span>
+                            </div>
+                        }
+                    </div>
+                </div>
+            </div>
+
+            <!-- ---------- HEALTH ---------- -->
+            @if (Model.ShowHealth)
+            {
+                <div class="card sect-card">
+                    <div class="card-header sect-head">
+                        <span><i class="bi bi-heart-pulse"></i> Health Basics</span>
+                        <span class="head-note editable-note"><i class="bi bi-pencil"></i> You can edit this</span>
+                    </div>
+                    <div class="card-body">
+                        <p class="locked-intro">
+                            Only these three basics are editable here. Counseling and medical
+                            history stay with the Care Center and are not shown on this page.
+                        </p>
+                        <div class="row g-3">
+                            <div class="col-12 col-md-4">
+                                <label asp-for="BloodType" class="field-label">Blood Type</label>
+                                <select asp-for="BloodType" class="form-select">
+                                    <option value="">Unknown</option>
+                                    <option>A+</option>
+                                    <option>A-</option>
+                                    <option>B+</option>
+                                    <option>B-</option>
+                                    <option>AB+</option>
+                                    <option>AB-</option>
+                                    <option>O+</option>
+                                    <option>O-</option>
+                                </select>
+                                <span asp-validation-for="BloodType" class="field-error"></span>
+                            </div>
+                            <div class="col-6 col-md-4">
+                                <label asp-for="Height" class="field-label">Height (cm)</label>
+                                <input asp-for="Height" class="form-control" placeholder="e.g. 165" />
+                                <span asp-validation-for="Height" class="field-error"></span>
+                            </div>
+                            <div class="col-6 col-md-4">
+                                <label asp-for="Weight" class="field-label">Weight (kg)</label>
+                                <input asp-for="Weight" class="form-control" placeholder="e.g. 55" />
+                                <span asp-validation-for="Weight" class="field-error"></span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            }
+
+            <!-- ---------- EMERGENCY CONTACT ---------- -->
+            @if (Model.ShowEmergency)
+            {
+                <div class="card sect-card">
+                    <div class="card-header sect-head">
+                        <span><i class="bi bi-telephone"></i> Emergency Contact</span>
+                        <span class="head-note editable-note"><i class="bi bi-pencil"></i> You can edit this</span>
+                    </div>
+                    <div class="card-body">
+                        <div class="row g-3">
+                            <div class="col-12 col-md-8">
+                                <label asp-for="EmergencyContactPerson" class="field-label">Full Name</label>
+                                <input asp-for="EmergencyContactPerson" class="form-control" />
+                                <span asp-validation-for="EmergencyContactPerson" class="field-error"></span>
+                            </div>
+                            <div class="col-12 col-md-4">
+                                <label asp-for="EmergencyContactAge" class="field-label">Age</label>
+                                <input asp-for="EmergencyContactAge" type="number" min="18" max="120" class="form-control" />
+                                <span asp-validation-for="EmergencyContactAge" class="field-error"></span>
+                            </div>
+
+                            <div class="col-12 col-md-6">
+                                <label class="field-label">Mobile Number(s)</label>
+                                <div class="repeater" id="emergency-numbers" data-prefix="EmergencyContactNumbers">
+                                    @for (int i = 0; i < emergencyNumbers.Count; i++)
+                                    {
+                                        <div class="num-row">
+                                            <input name="EmergencyContactNumbers[@i]" value="@emergencyNumbers[i]"
+                                                   class="form-control" placeholder="09XX XXX XXXX" inputmode="tel" />
+                                            <button type="button" class="btn-remove" aria-label="Remove number">
+                                                <i class="bi bi-x-lg"></i>
+                                            </button>
+                                        </div>
+                                        @if (ViewData.ModelState.TryGetValue($"EmergencyContactNumbers[{i}]", out var stEmg) && stEmg.Errors.Count > 0)
+                                        {
+                                            <span class="field-error">@stEmg.Errors[0].ErrorMessage</span>
+                                        }
+                                    }
+                                </div>
+                                <button type="button" class="link-btn add-number" data-target="emergency-numbers">
+                                    <i class="bi bi-plus-lg"></i> Add another number
+                                </button>
+                            </div>
+
+                            <div class="col-12 col-md-6">
+                                <label asp-for="EmergencyContactOccupation" class="field-label">Occupation</label>
+                                <input asp-for="EmergencyContactOccupation" class="form-control" />
+                                <span asp-validation-for="EmergencyContactOccupation" class="field-error"></span>
+                            </div>
+
+                            <div class="col-12">
+                                <label asp-for="EmergencyContactAddress" class="field-label">Address</label>
+                                <textarea asp-for="EmergencyContactAddress" class="form-control" rows="2"></textarea>
+                                <span asp-validation-for="EmergencyContactAddress" class="field-error"></span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            }
+
+            <!-- ---------- FOOTER ---------- -->
+            <div class="form-footer">
+                <small class="privacy-note">
+                    <i class="bi bi-shield-lock"></i> Changes are recorded in the activity log
+                </small>
+                <div class="footer-actions">
+                    <a asp-controller="Home" asp-action="Index" class="btn btn-shell">Cancel</a>
+                    <button type="submit" class="btn btn-brand"><i class="bi bi-check-lg"></i> Save Changes</button>
+                </div>
+            </div>
+
+        </form>
+    }
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+    <script>
+        (function () {
+            var page = document.querySelector('.myprofile-page');
+            if (!page) { return; }
+
+            // Names must stay contiguous (Prefix[0], Prefix[1], ...) or the model
+            // binder stops at the first gap and drops everything after it.
+            function reindex(box) {
+                var prefix = box.dataset.prefix;
+                Array.prototype.forEach.call(box.querySelectorAll('.num-row'), function (row, i) {
+                    var input = row.querySelector('input');
+                    if (input) { input.name = prefix + '[' + i + ']'; }
+                });
+            }
+
+            page.addEventListener('click', function (e) {
+                var add = e.target.closest('.add-number');
+                if (add) {
+                    e.preventDefault();
+                    var box = document.getElementById(add.dataset.target);
+                    if (!box) { return; }
+                    var rows = box.querySelectorAll('.num-row');
+                    if (!rows.length) { return; }
+                    var clone = rows[rows.length - 1].cloneNode(true);
+                    var field = clone.querySelector('input');
+                    if (field) {
+                        field.value = '';
+                        field.classList.remove('input-validation-error');
+                    }
+                    box.appendChild(clone);
+                    reindex(box);
+                    return;
+                }
+
+                var remove = e.target.closest('.btn-remove');
+                if (remove) {
+                    e.preventDefault();
+                    var row = remove.closest('.num-row');
+                    var owner = row ? row.closest('.repeater') : null;
+                    if (!owner) { return; }
+
+                    if (owner.querySelectorAll('.num-row').length > 1) {
+                        row.remove();
+                    } else {
+                        // Keep one row so there is always something to clone from.
+                        var only = row.querySelector('input');
+                        if (only) { only.value = ''; }
+                    }
+                    reindex(owner);
+                }
+            });
+        })();
+    </script>
+}

@@ -1,0 +1,502 @@
+﻿body {
+}
+/* ==========================================================================
+   MyProfile.css — self-service profile page
+   Path: wwwroot/css/Users/MyProfile.css
+
+   Loads AFTER Layout.css, so this file must not redefine shared topbar
+   classes (.profile-name, .profile-role, .profile-avatar, .notif-*).
+   Bootstrap 5 supplies the grid, cards, alerts, buttons and form controls.
+
+   NOTE: plain .css file, so media queries use a SINGLE @.
+   ========================================================================== */
+
+.myprofile-page {
+    --brand: #1b6d24;
+    --brand-dark: #175c1e;
+    --brand-soft: #e8f2ea;
+    --brand-tint: #f2f7f2;
+    --ink: #23291f;
+    --muted: #8a938a;
+    --line: #e6ebe4;
+    max-width: 1000px;
+    margin: 0 auto;
+    width: 100%;
+    color: var(--ink);
+}
+
+    .myprofile-page * {
+        font-family: 'Inter', 'Sora', sans-serif;
+        box-sizing: border-box;
+    }
+
+    .myprofile-page h2,
+    .myprofile-page h3 {
+        font-family: 'Manrope', sans-serif;
+    }
+
+    .myprofile-page .bi {
+        line-height: 1;
+        vertical-align: -.125em;
+    }
+
+    /* ==========================================================================
+   SAVE CONFIRMATION
+   ========================================================================== */
+    .myprofile-page .save-toast {
+        border: 1px solid #bfe0c6;
+        background: #eef7f0;
+        color: #1f5c2b;
+        border-radius: 11px;
+        font-size: 13.5px;
+        padding: 11px 15px;
+        margin-bottom: 1.25rem;
+    }
+
+    /* ==========================================================================
+   IDENTITY HEADER
+   ========================================================================== */
+    .myprofile-page .identity-card {
+        display: flex;
+        align-items: center;
+        gap: 16px;
+        background: #fff;
+        border: 1px solid var(--line);
+        border-radius: 14px;
+        padding: 18px 20px;
+        margin-bottom: 1.25rem;
+        box-shadow: 0 1px 2px rgba(23, 41, 25, .04);
+    }
+
+    .myprofile-page .avatar-circle {
+        flex: 0 0 auto;
+        width: 58px;
+        height: 58px;
+        border-radius: 50%;
+        background: linear-gradient(180deg, #1d7a2b 0%, #12551f 100%);
+        color: #fff;
+        font-family: 'Manrope', sans-serif;
+        font-size: 24px;
+        font-weight: 700;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .myprofile-page .identity-body {
+        flex: 1 1 auto;
+        min-width: 0;
+    }
+
+    .myprofile-page .identity-name {
+        font-size: 1.3rem;
+        font-weight: 700;
+        margin: 0 0 8px;
+        overflow-wrap: anywhere;
+    }
+
+    .myprofile-page .identity-pills {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 7px;
+    }
+
+    .myprofile-page .pill {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        background: #f4f6f2;
+        border: 1px solid var(--line);
+        border-radius: 99px;
+        padding: 4px 11px;
+        font-size: 11.5px;
+        font-weight: 500;
+        color: #4d5849;
+        overflow-wrap: anywhere;
+    }
+
+    .myprofile-page .pill-role {
+        background: var(--brand-soft);
+        border-color: #cfe0d3;
+        color: var(--brand);
+        font-weight: 600;
+    }
+
+    .myprofile-page .pill-active {
+        background: #eaf6ec;
+        border-color: #c7e3cc;
+        color: #256b31;
+    }
+
+    .myprofile-page .pill-inactive {
+        background: #fdf1f1;
+        border-color: #f0cccc;
+        color: #a13b3b;
+    }
+
+    /* ==========================================================================
+   SECTION CARDS
+   ========================================================================== */
+    .myprofile-page .sect-card {
+        border: 1px solid var(--line);
+        border-radius: 14px;
+        box-shadow: 0 1px 2px rgba(23, 41, 25, .04);
+        overflow: hidden;
+        margin-bottom: 1.25rem;
+    }
+
+    .myprofile-page .sect-head {
+        background: #fafbf9;
+        border-bottom: 1px solid var(--line);
+        font-size: 14.5px;
+        font-weight: 600;
+        padding: 13px 18px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 12px;
+        flex-wrap: wrap;
+    }
+
+        .myprofile-page .sect-head i {
+            color: var(--brand);
+            margin-right: 7px;
+        }
+
+    .myprofile-page .head-note {
+        font-size: 11.5px;
+        font-weight: 500;
+        color: var(--muted);
+    }
+
+    .myprofile-page .editable-note {
+        color: var(--brand);
+    }
+
+        .myprofile-page .editable-note i {
+            margin-right: 5px;
+        }
+
+    .myprofile-page .card-body {
+        padding: 18px;
+    }
+
+    .myprofile-page .locked-intro {
+        font-size: 12.5px;
+        color: #5c665a;
+        line-height: 1.55;
+        margin-bottom: 1rem;
+    }
+
+    /* ==========================================================================
+   LOCKED FACTS GRID
+   ========================================================================== */
+    .myprofile-page .facts-grid {
+        display: grid;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 14px 22px;
+        background: #fafbf9;
+        border: 1px solid var(--line);
+        border-radius: 11px;
+        padding: 16px 18px;
+    }
+
+    .myprofile-page .fact {
+        display: flex;
+        flex-direction: column;
+        gap: 3px;
+        min-width: 0;
+    }
+
+    .myprofile-page .fact-key {
+        font-size: 10.5px;
+        font-weight: 700;
+        letter-spacing: .06em;
+        text-transform: uppercase;
+        color: var(--muted);
+    }
+
+    .myprofile-page .fact-val {
+        font-size: 13.5px;
+        color: var(--ink);
+        overflow-wrap: anywhere;
+    }
+
+        .myprofile-page .fact-val.is-empty {
+            color: #a9b2a7;
+        }
+
+    /* ==========================================================================
+   FIELDS
+   ========================================================================== */
+    .myprofile-page .field-label {
+        display: block;
+        font-size: 12.5px;
+        font-weight: 600;
+        color: #46503f;
+        margin-bottom: 5px;
+    }
+
+    .myprofile-page .form-control,
+    .myprofile-page .form-select {
+        font-size: 14px;
+        border-radius: 9px;
+        border: 1px solid #d8ded4;
+        padding: 9px 12px;
+        min-height: 42px;
+        color: var(--ink);
+        background-color: #fff;
+    }
+
+        .myprofile-page .form-control::placeholder {
+            color: #aab3a7;
+        }
+
+        .myprofile-page .form-control:focus,
+        .myprofile-page .form-select:focus {
+            border-color: var(--brand);
+            box-shadow: 0 0 0 3px rgba(27, 109, 36, .12);
+        }
+
+    .myprofile-page textarea.form-control {
+        min-height: 72px;
+        resize: vertical;
+    }
+
+    /* A locked-but-visible field reads as system supplied, not editable. */
+    .myprofile-page .field-locked {
+        background-color: #f3f5f1;
+        border-color: #dde3d9;
+        color: #6a736a;
+        cursor: default;
+    }
+
+    .myprofile-page .field-hint {
+        display: block;
+        font-size: 11.5px;
+        color: var(--muted);
+        margin-top: 4px;
+    }
+
+    .myprofile-page .field-error {
+        display: block;
+        font-size: 11.5px;
+        color: #c0392b;
+        margin-top: 3px;
+    }
+
+    .myprofile-page .input-validation-error {
+        border-color: #e0a2a2;
+        background-color: #fffafa;
+    }
+
+    .myprofile-page .validation-summary-valid {
+        display: none;
+    }
+
+    .myprofile-page .info-note {
+        display: flex;
+        gap: 9px;
+        align-items: flex-start;
+        background: #eef4fa;
+        border: 1px solid #cfdff0;
+        color: #38536e;
+        border-radius: 11px;
+        padding: 11px 15px;
+        font-size: 12.5px;
+        line-height: 1.5;
+        margin-bottom: 1.25rem;
+    }
+
+    /* ==========================================================================
+   NUMBER REPEATER
+   ========================================================================== */
+    .myprofile-page .num-row {
+        display: flex;
+        gap: 8px;
+        align-items: center;
+        margin-bottom: 8px;
+    }
+
+        .myprofile-page .num-row .form-control {
+            flex: 1 1 auto;
+            min-width: 0;
+        }
+
+    .myprofile-page .btn-remove {
+        flex: 0 0 auto;
+        width: 36px;
+        height: 36px;
+        border-radius: 8px;
+        border: 1px solid #e3d5d5;
+        background: #fff;
+        color: #b06a6a;
+        line-height: 1;
+        cursor: pointer;
+    }
+
+        .myprofile-page .btn-remove:hover {
+            background: #fdf3f3;
+            border-color: #dcb9b9;
+            color: #9b4444;
+        }
+
+    .myprofile-page .link-btn {
+        background: none;
+        border: 0;
+        padding: 0;
+        margin-top: 4px;
+        color: var(--brand);
+        font-size: 13px;
+        font-weight: 600;
+        cursor: pointer;
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+    }
+
+        .myprofile-page .link-btn:hover {
+            color: var(--brand-dark);
+            text-decoration: underline;
+        }
+
+    /* ==========================================================================
+   EMPTY STATE (admin)
+   ========================================================================== */
+    .myprofile-page .empty-state {
+        text-align: center;
+        padding: 34px 20px 30px;
+    }
+
+        .myprofile-page .empty-state i {
+            font-size: 30px;
+            color: #b6c2b4;
+        }
+
+        .myprofile-page .empty-state h3 {
+            font-size: 1.05rem;
+            font-weight: 700;
+            margin: 12px 0 6px;
+        }
+
+        .myprofile-page .empty-state p {
+            font-size: 13px;
+            color: #5c665a;
+            line-height: 1.6;
+            max-width: 470px;
+            margin: 0 auto 18px;
+        }
+
+    /* ==========================================================================
+   BUTTONS + FOOTER
+   ========================================================================== */
+    .myprofile-page .btn-shell,
+    .myprofile-page .btn-brand {
+        font-size: 14px;
+        font-weight: 600;
+        padding: 9px 18px;
+        border-radius: 10px;
+        display: inline-flex;
+        align-items: center;
+        gap: 7px;
+        white-space: nowrap;
+    }
+
+    .myprofile-page .btn-shell {
+        background: #fff;
+        border: 1px solid #d7ded2;
+        color: #3a4a35;
+    }
+
+        .myprofile-page .btn-shell:hover {
+            background: #f4f7f2;
+            color: #24331f;
+        }
+
+    .myprofile-page .btn-brand {
+        background: var(--brand);
+        border: 1px solid var(--brand);
+        color: #fff;
+    }
+
+        .myprofile-page .btn-brand:hover,
+        .myprofile-page .btn-brand:focus {
+            background: var(--brand-dark);
+            border-color: var(--brand-dark);
+            color: #fff;
+        }
+
+    .myprofile-page .form-footer {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 12px;
+        flex-wrap: wrap;
+        background: #fff;
+        border: 1px solid var(--line);
+        border-radius: 14px;
+        padding: 12px 16px;
+    }
+
+    .myprofile-page .privacy-note {
+        color: var(--muted);
+        font-size: 12px;
+        display: inline-flex;
+        align-items: center;
+        gap: 7px;
+    }
+
+    .myprofile-page .footer-actions {
+        display: flex;
+        gap: 10px;
+    }
+
+/* ==========================================================================
+   RESPONSIVE
+   ========================================================================== */
+@media (max-width: 991.98px) {
+    .myprofile-page .facts-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+}
+
+@media (max-width: 767.98px) {
+    .myprofile-page .identity-card {
+        flex-wrap: wrap;
+    }
+
+        .myprofile-page .identity-card .btn-shell {
+            width: 100%;
+            justify-content: center;
+        }
+
+    .myprofile-page .facts-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .myprofile-page .form-footer {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .myprofile-page .footer-actions {
+        justify-content: flex-end;
+    }
+}
+
+@media (max-width: 480px) {
+    .myprofile-page .avatar-circle {
+        width: 48px;
+        height: 48px;
+        font-size: 20px;
+    }
+
+    .myprofile-page .identity-name {
+        font-size: 1.15rem;
+    }
+
+    .myprofile-page .footer-actions .btn {
+        flex: 1 1 auto;
+        justify-content: center;
+    }
+}

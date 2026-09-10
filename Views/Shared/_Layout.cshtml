@@ -40,16 +40,21 @@
                     <li><a asp-controller="Home" asp-action="Index" class="@(currentController == "Home" ? "active" : "")"><i class="fa-solid fa-grip"></i>Dashboard</a></li>
                     <li><a asp-controller="Appointments" asp-action="Create" class="@(currentAction == "Create" ? "active" : "")"><i class="fa-regular fa-calendar-plus"></i>Book Appointment</a></li>
                     <li><a asp-controller="Appointments" asp-action="MyAppointments" class="@(currentAction == "MyAppointments" ? "active" : "")"><i class="fa-regular fa-calendar-check"></i>My Appointments</a></li>
-                    <li><a asp-controller="ChatBot" asp-action="ChatBot">ChatBot</a></li>
-
+                    <li><a asp-controller="ChatBot" asp-action="ChatBot" class="@(currentController == "ChatBot" ? "active" : "")"><i class="fa-solid fa-robot"></i>ChatBot</a></li>
+                    <li><a asp-controller="Users" asp-action="MyProfile" class="@(currentAction == "MyProfile" ? "active" : "")"><i class="fa-regular fa-circle-user"></i>My Profile</a></li>
                 }
                 @if (isAdmin)
                 {
                     <li><a asp-controller="Home" asp-action="Index" class="@(currentController == "Home" ? "active" : "")"><i class="fa-solid fa-grip"></i>Dashboard</a></li>
                     <li><a asp-controller="Students" asp-action="Index" class="@(currentController == "Students" ? "active" : "")"><i class="fa-solid fa-user-graduate"></i>Students</a></li>
                     <li><a asp-controller="Counselors" asp-action="Index" class="@(currentController == "Counselors" ? "active" : "")"><i class="fa-solid fa-user-tie"></i>Counselors</a></li>
-                    <li><a asp-controller="Activity" asp-action="Index" class="@(currentController == "ActivityLogs" ? "active" : "")"><i class="fa-solid fa-clock-rotate-left"></i>Activity Log</a></li>
+                    <li><a asp-controller="Appointments" asp-action="Index" class="@(currentController == "Appointments" ? "active" : "")"><i class="fa-regular fa-calendar-days"></i>Appointments</a></li>
+                    <li><a asp-controller="Announcements" asp-action="Index" class="@(currentController == "Announcements" ? "active" : "")"><i class="fa-solid fa-bullhorn"></i>Announcements</a></li>
+                    <li><a asp-controller="ChatBot" asp-action="ChatBot" class="@(currentController == "ChatBot" ? "active" : "")"><i class="fa-solid fa-robot"></i>ChatBot</a></li>
+                    <li><a asp-controller="Activity" asp-action="Index" class="@(currentController == "Activity" ? "active" : "")"><i class="fa-solid fa-clock-rotate-left"></i>Activity Log</a></li>
+                    <li><a asp-controller="Users" asp-action="Index" class="@(currentController == "Users" && currentAction == "Index" ? "active" : "")"><i class="fa-solid fa-user-shield"></i>Accounts</a></li>
                     <li><a asp-controller="Reports" asp-action="Index" class="@(currentController == "Reports" ? "active" : "")"><i class="fa-solid fa-chart-column"></i>Reports</a></li>
+                    <li><a asp-controller="Users" asp-action="MyProfile" class="@(currentAction == "MyProfile" ? "active" : "")"><i class="fa-regular fa-circle-user"></i>My Profile</a></li>
                 }
                 @if (isCounselor)
                 {
@@ -58,8 +63,9 @@
                     <li><a asp-controller="Appointments" asp-action="Index" class="@(currentController == "Appointments" ? "active" : "")"><i class="fa-regular fa-calendar-days"></i>Appointments</a></li>
                     <li><a asp-controller="Announcements" asp-action="Index" class="@(currentController == "Announcements" ? "active" : "")"><i class="fa-solid fa-bullhorn"></i>Announcements</a></li>
                     <li><a asp-controller="Reports" asp-action="Index" class="@(currentController == "Reports" ? "active" : "")"><i class="fa-solid fa-chart-column"></i>Reports</a></li>
+                    <li><a asp-controller="Users" asp-action="MyProfile" class="@(currentAction == "MyProfile" ? "active" : "")"><i class="fa-regular fa-circle-user"></i>My Profile</a></li>
                 }
-                
+
             </ul>
 
             @if (User.Identity?.IsAuthenticated == true)

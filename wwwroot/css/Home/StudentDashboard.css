@@ -266,12 +266,6 @@
             color: var(--stu-ink);
         }
 
-    .stu-dash .btn-gc:focus-visible,
-    .stu-dash .link-more:focus-visible {
-        outline: 2px solid var(--stu-green);
-        outline-offset: 2px;
-    }
-
     /* ==========================================================================
    STEPS
    ========================================================================== */
@@ -322,15 +316,21 @@
             margin-bottom: 0;
         }
 
+    /* The whole card is an <a>, so the link colour has to be overridden or
+       the heading and body text turn browser-blue. */
     .stu-dash .help-card-link {
         display: block;
         text-decoration: none;
+        color: inherit;
         transition: background .15s, border-color .15s;
     }
 
-        .stu-dash .help-card-link:hover {
+        .stu-dash .help-card-link:hover,
+        .stu-dash .help-card-link:focus {
             background: var(--stu-tint);
             border-color: #cfd8c8;
+            color: inherit;
+            text-decoration: none;
         }
 
     .stu-dash .help-card-urgent {
@@ -379,6 +379,17 @@
         margin: 14px 0 0;
         padding-top: 12px;
         border-top: 1px solid #f0f3ec;
+    }
+
+    /* ==========================================================================
+   FOCUS
+   Grouped here so every keyboard-reachable target is covered in one place.
+   ========================================================================== */
+    .stu-dash .btn-gc:focus-visible,
+    .stu-dash .link-more:focus-visible,
+    .stu-dash .help-card-link:focus-visible {
+        outline: 2px solid var(--stu-green);
+        outline-offset: 2px;
     }
 
     /* ==========================================================================

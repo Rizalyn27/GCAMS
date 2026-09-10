@@ -48,10 +48,7 @@ namespace GCAMS.Models.Counselor
         [Display(Name = "Marital Status")]
         public string MaritalStatus { get; set; } = string.Empty;
 
-        [Required]
-        [Range(0, 20)]
-        [Display(Name = "No. of Children")]
-        public int NumberOfChildren { get; set; }
+      
         // Educational Background
 
         [StringLength(150)]
