@@ -1,0 +1,87 @@
+﻿@model GCAMS.ViewModels.CreateAdminViewModel
+@{
+    Layout = "_Layout";
+    ViewData["Title"] = "New Administrator";
+    ViewData["PageSubtitle"] = "Create an administrator account";
+}
+
+@section Styles {
+    <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <link rel="stylesheet" href="~/css/Accounts/Accounts.css" asp-append-version="true" />
+}
+
+<div class="accounts-page accounts-narrow">
+
+    <div class="page-head">
+        <div>
+            <h1 class="page-title">New Administrator</h1>
+            <p class="page-sub">
+                Administrators can manage students, counselors, reports and accounts.
+            </p>
+        </div>
+        <a asp-action="Index" class="btn btn-shell"><i class="bi bi-arrow-left"></i> Back to accounts</a>
+    </div>
+
+    <form asp-action="Create" method="post" novalidate>
+
+        <div asp-validation-summary="ModelOnly" class="alert alert-danger"></div>
+
+        <div class="card sect-card">
+            <div class="card-header sect-head">
+                <i class="bi bi-person-badge"></i> Account Details
+            </div>
+            <div class="card-body">
+
+                <div class="mb-3">
+                    <label asp-for="Username" class="field-label">Username</label>
+                    <input asp-for="Username" class="form-control" autocomplete="off"
+                           placeholder="e.g. admin_maria" />
+                    <span asp-validation-for="Username" class="field-error"></span>
+                    <span class="field-hint">
+                        4&ndash;30 characters. Letters, numbers, and _ . @@ - are allowed.
+                        This is what they type to sign in, so it cannot be changed later.
+                    </span>
+                </div>
+
+                <div class="row g-3">
+                    <div class="col-12 col-md-6">
+                        <label asp-for="Password" class="field-label">Temporary Password</label>
+                        <input asp-for="Password" class="form-control" autocomplete="new-password" />
+                        <span asp-validation-for="Password" class="field-error"></span>
+                    </div>
+                    <div class="col-12 col-md-6">
+                        <label asp-for="ConfirmPassword" class="field-label">Confirm Password</label>
+                        <input asp-for="ConfirmPassword" class="form-control" autocomplete="new-password" />
+                        <span asp-validation-for="ConfirmPassword" class="field-error"></span>
+                    </div>
+                </div>
+
+                <div class="info-note">
+                    <i class="bi bi-info-circle"></i>
+                    <span>
+                        This password is temporary. The new administrator is forced to choose
+                        their own the first time they sign in, so share it in person or over a
+                        channel you trust &mdash; the system has no email gateway to send it for you.
+                    </span>
+                </div>
+
+            </div>
+        </div>
+
+        <div class="form-footer">
+            <small class="privacy-note">
+                <i class="bi bi-shield-lock"></i> Creating an account is recorded in the activity log
+            </small>
+            <div class="footer-actions">
+                <a asp-action="Index" class="btn btn-shell">Cancel</a>
+                <button type="submit" class="btn btn-brand"><i class="bi bi-check-lg"></i> Create Administrator</button>
+            </div>
+        </div>
+
+    </form>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

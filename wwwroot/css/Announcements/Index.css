@@ -1,0 +1,547 @@
+﻿/* ==========================================================================
+   Index.css — Announcements
+   Path: wwwroot/css/Announcements/Index.css
+
+   Plain .css file — media queries use a SINGLE @. The @@ form only works
+   inside a .cshtml <style> block; in a .css file the rule is dropped.
+   ========================================================================== */
+
+.ann-page {
+    --an-green: #1b6d24;
+    --an-green-dark: #14562a;
+    --an-green-soft: #e6f4ea;
+    --an-ink: #191d18;
+    --an-muted: #717a6d;
+    --an-faint: #a3aa9e;
+    --an-line: #e1e4db;
+    --an-tint: #f2f5ec;
+    max-width: 1140px;
+    margin: 0 auto;
+}
+
+    .ann-page * {
+        font-family: 'Inter', sans-serif;
+        box-sizing: border-box;
+    }
+
+    /* Naming the family here means a missing font shows nothing rather than
+       leaking the ligature name ("campaign") into the page as text. */
+    .ann-page .material-symbols-outlined {
+        font-family: 'Material Symbols Outlined';
+        font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        font-weight: normal;
+        font-style: normal;
+        line-height: 1;
+        letter-spacing: normal;
+        text-transform: none;
+        white-space: nowrap;
+        direction: ltr;
+        vertical-align: middle;
+        -webkit-font-feature-settings: 'liga';
+        -webkit-font-smoothing: antialiased;
+    }
+
+/* ==========================================================================
+   HEADER
+   ========================================================================== */
+.flash-success {
+    display: flex;
+    align-items: center;
+    gap: 9px;
+    margin-bottom: 16px;
+    padding: 12px 16px;
+    font-size: 13px;
+    color: #14562a;
+    background: var(--an-green-soft);
+    border: 1px solid #bfe0c8;
+    border-radius: 12px;
+}
+
+    .flash-success .material-symbols-outlined {
+        font-size: 18px;
+    }
+
+.ann-head {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 16px;
+    flex-wrap: wrap;
+    margin-bottom: 20px;
+}
+
+.ann-page h1 {
+    font-family: 'Manrope', sans-serif;
+    font-size: 26px;
+    font-weight: 700;
+    color: var(--an-ink);
+    margin: 0 0 4px;
+}
+
+.ann-lead {
+    font-size: 13.5px;
+    color: var(--an-muted);
+    margin: 0;
+}
+
+.btn-new {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 10px 18px;
+    font-size: 13.5px;
+    font-weight: 600;
+    color: #fff;
+    background: var(--an-green);
+    border: 1px solid var(--an-green);
+    border-radius: 10px;
+    text-decoration: none;
+    white-space: nowrap;
+    flex-shrink: 0;
+}
+
+    .btn-new:hover {
+        background: var(--an-green-dark);
+        border-color: var(--an-green-dark);
+        color: #fff;
+    }
+
+    .btn-new .material-symbols-outlined {
+        font-size: 18px;
+    }
+
+.btn-quiet {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 9px 18px;
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--an-ink);
+    background: #fff;
+    border: 1px solid var(--an-line);
+    border-radius: 10px;
+    text-decoration: none;
+}
+
+    .btn-quiet:hover {
+        background: var(--an-tint);
+        border-color: #cfd8c8;
+        color: var(--an-ink);
+    }
+
+    .btn-new:focus-visible,
+    .btn-quiet:focus-visible,
+    .link-quiet:focus-visible,
+    .nav-btn:focus-visible,
+    .mini-day:focus-visible {
+        outline: 2px solid var(--an-green);
+        outline-offset: 2px;
+    }
+
+/* ==========================================================================
+   LAYOUT
+   ========================================================================== */
+.ann-layout {
+    display: grid;
+    grid-template-columns: minmax(0, 1.8fr) minmax(280px, 1fr);
+    gap: 20px;
+    align-items: start;
+}
+
+.ann-main {
+    min-width: 0;
+}
+
+/* ==========================================================================
+   LIST
+   ========================================================================== */
+.list-head {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 12px;
+    flex-wrap: wrap;
+    margin-bottom: 14px;
+}
+
+.list-title {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-family: 'Manrope', sans-serif;
+    font-size: 17px;
+    font-weight: 700;
+    color: var(--an-ink);
+    margin: 0;
+}
+
+.count-pill {
+    font-family: 'Inter', sans-serif;
+    font-size: 11px;
+    font-weight: 700;
+    color: var(--an-green);
+    background: var(--an-green-soft);
+    border-radius: 20px;
+    padding: 2px 9px;
+}
+
+.list-sub {
+    font-size: 12.5px;
+    color: var(--an-muted);
+    margin: 3px 0 0;
+}
+
+.link-quiet {
+    display: inline-flex;
+    align-items: center;
+    gap: 2px;
+    font-size: 12.5px;
+    font-weight: 600;
+    color: var(--an-muted);
+    text-decoration: none;
+    white-space: nowrap;
+}
+
+    .link-quiet:hover {
+        color: var(--an-ink);
+        text-decoration: underline;
+    }
+
+    .link-quiet .material-symbols-outlined {
+        font-size: 16px;
+    }
+
+/* ---------- card ---------- */
+.ann-card {
+    padding: 18px 20px;
+    margin-bottom: 14px;
+    background: #fff;
+    border: 1px solid var(--an-line);
+    border-left: 3px solid var(--an-green);
+    border-radius: 12px;
+}
+
+    .ann-card:last-child {
+        margin-bottom: 0;
+    }
+
+.card-top {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 12px;
+    flex-wrap: wrap;
+}
+
+.ann-title {
+    font-family: 'Manrope', sans-serif;
+    font-size: 16px;
+    font-weight: 700;
+    color: var(--an-ink);
+    line-height: 1.35;
+    margin: 0;
+}
+
+.status-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    padding: 3px 11px;
+    font-size: 11.5px;
+    font-weight: 600;
+    color: #0f6b1f;
+    background: var(--an-green-soft);
+    border-radius: 20px;
+    white-space: nowrap;
+    flex-shrink: 0;
+}
+
+    .status-badge .material-symbols-outlined {
+        font-size: 14px;
+    }
+
+.ann-meta {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    flex-wrap: wrap;
+    margin-top: 8px;
+}
+
+.meta-item {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    font-size: 12px;
+    color: var(--an-muted);
+}
+
+    .meta-item .material-symbols-outlined {
+        font-size: 15px;
+        color: var(--an-faint);
+    }
+
+.meta-quiet {
+    color: var(--an-faint);
+}
+
+.ann-message {
+    font-size: 13.5px;
+    line-height: 1.65;
+    color: #41493e;
+    white-space: pre-wrap;
+    margin: 12px 0 0;
+}
+
+/* ==========================================================================
+   SIDE CARD + MINI CALENDAR
+   ========================================================================== */
+.ann-side {
+    position: sticky;
+    top: 82px;
+    min-width: 0;
+}
+
+.side-card {
+    padding: 18px 20px;
+    background: #fff;
+    border: 1px solid var(--an-line);
+    border-radius: 14px;
+}
+
+.side-title {
+    font-family: 'Manrope', sans-serif;
+    font-size: 16px;
+    font-weight: 700;
+    color: var(--an-ink);
+    margin: 0;
+}
+
+.side-sub {
+    font-size: 12.5px;
+    color: var(--an-muted);
+    margin: 3px 0 14px;
+}
+
+.stat-row {
+    display: flex;
+    gap: 22px;
+    padding-bottom: 16px;
+    margin-bottom: 14px;
+    border-bottom: 1px solid #f0f3ec;
+}
+
+.stat-value {
+    font-family: 'Manrope', sans-serif;
+    font-size: 24px;
+    font-weight: 700;
+    line-height: 1.1;
+    color: var(--an-ink);
+}
+
+.stat-label {
+    font-size: 11.5px;
+    color: var(--an-muted);
+    margin-top: 2px;
+}
+
+.mini-nav {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+    margin-bottom: 10px;
+}
+
+.nav-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 28px;
+    height: 28px;
+    flex-shrink: 0;
+    color: var(--an-muted);
+    background: #fff;
+    border: 1px solid var(--an-line);
+    border-radius: 8px;
+    text-decoration: none;
+}
+
+    .nav-btn:hover {
+        background: var(--an-tint);
+        color: var(--an-ink);
+    }
+
+    .nav-btn .material-symbols-outlined {
+        font-size: 17px;
+    }
+
+.mini-month {
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--an-ink);
+}
+
+.mini-grid {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 2px;
+}
+
+.mini-weekday {
+    padding: 4px 0;
+    font-size: 10px;
+    font-weight: 600;
+    color: var(--an-faint);
+    text-align: center;
+}
+
+.mini-day {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 2px;
+    aspect-ratio: 1;
+    min-height: 32px;
+    border-radius: 8px;
+    text-decoration: none;
+}
+
+    .mini-day:hover {
+        background: var(--an-tint);
+    }
+
+.mini-num {
+    font-size: 12px;
+    font-weight: 500;
+    color: var(--an-ink);
+    line-height: 1;
+}
+
+.mini-day.is-outside .mini-num {
+    color: var(--an-faint);
+}
+
+.mini-dot {
+    width: 5px;
+    height: 5px;
+    border-radius: 50%;
+    background: var(--an-green);
+}
+
+.mini-day.is-today {
+    box-shadow: inset 0 0 0 1px var(--an-green);
+}
+
+    .mini-day.is-today .mini-num {
+        color: var(--an-green);
+        font-weight: 700;
+    }
+
+.mini-day.is-selected {
+    background: var(--an-green);
+}
+
+    .mini-day.is-selected .mini-num {
+        color: #fff;
+        font-weight: 700;
+    }
+
+    .mini-day.is-selected .mini-dot {
+        background: #fff;
+    }
+
+.side-foot {
+    font-size: 11.5px;
+    line-height: 1.5;
+    color: var(--an-faint);
+    margin: 14px 0 0;
+    padding-top: 12px;
+    border-top: 1px solid #f0f3ec;
+}
+
+/* ==========================================================================
+   EMPTY STATES
+   ========================================================================== */
+.empty-state {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+    padding: 36px 20px;
+    text-align: center;
+    background: #fff;
+    border: 1px dashed #d7dcd1;
+    border-radius: 12px;
+}
+
+    .empty-state > .material-symbols-outlined {
+        font-size: 30px;
+        color: var(--an-faint);
+    }
+
+.empty-state-lg {
+    padding: 56px 24px;
+}
+
+.empty-title {
+    font-size: 14.5px;
+    font-weight: 700;
+    color: var(--an-ink);
+}
+
+.empty-state p {
+    max-width: 46ch;
+    font-size: 13px;
+    line-height: 1.6;
+    color: var(--an-muted);
+    margin: 0 0 6px;
+}
+
+/* ==========================================================================
+   RESPONSIVE
+   ========================================================================== */
+@media (max-width: 1000px) {
+    .ann-layout {
+        grid-template-columns: 1fr;
+    }
+
+    .ann-side {
+        position: static;
+        order: -1;
+    }
+}
+
+@media (max-width: 560px) {
+    .ann-page h1 {
+        font-size: 22px;
+    }
+
+    .btn-new {
+        width: 100%;
+        justify-content: center;
+    }
+
+    .ann-card {
+        padding: 16px;
+    }
+
+    .empty-state-lg {
+        padding: 36px 16px;
+    }
+}
+
+/* ==========================================================================
+   SCHEDULED (dated ahead of today)
+   ========================================================================== */
+.ann-card.is-scheduled {
+    border-left-color: #3b82f6;
+}
+
+.status-badge.is-scheduled {
+    color: #1f4e79;
+    background: #eaf1fd;
+}

@@ -1,0 +1,133 @@
+﻿@model GCAMS.Models.AnecRecs.AnecRecs
+@{
+    ViewData["Title"] = "Create Anecdotal Record";
+    var returnUrl = ViewBag.ReturnUrl as string;
+
+}
+
+<link rel="stylesheet" href="~/css/CaseNotes/Create.css" asp-append-version="true" />
+
+<div class="cn-wrap">
+    <div class="cn-card">
+
+        <header class="cn-head">
+            <div>
+                <h1 class="cn-title">Create Anecdotal Record</h1>
+                <p class="cn-subtitle">DSOSMNHS Guidance &amp; Counseling Care System</p>
+            </div>
+            <a asp-controller="Students" asp-action="Details" asp-route-id="@ViewBag.StudentsID"
+               class="cn-close" aria-label="Close">&#10005;</a>
+        </header>
+
+        <form asp-action="Create" method="post" id="anecRecordForm">
+            <div asp-validation-summary="ModelOnly" class="cn-summary"></div>
+
+            <input type="hidden" asp-for="StudentsID" />
+            <input type="hidden" name="studentId" value="@ViewBag.StudentsID" />
+            <input type="hidden" name="returnUrl" value="@returnUrl" />
+
+            <!-- ============ OBSERVATION INFO ============ -->
+            <section class="cn-section">
+                <h2 class="cn-section-title">Observation Info</h2>
+
+                <div class="row g-3">
+                    <div class="col-12">
+                        <label asp-for="StuName" class="cn-label">Full Name</label>
+                        <input asp-for="StuName" class="form-control" placeholder="Student's full name" />
+                        <span asp-validation-for="StuName" class="cn-error"></span>
+                    </div>
+
+                    <div class="col-12 col-md-6">
+                        <label asp-for="AnecRecNo" class="cn-label">Record No.</label>
+                        <input asp-for="AnecRecNo" readonly class="form-control is-readonly" />
+                        <span asp-validation-for="AnecRecNo" class="cn-error"></span>
+                    </div>
+
+                    <div class="col-12 col-md-6">
+                        <label asp-for="DateOfObserv" class="cn-label">Date of Observation</label>
+                        <input asp-for="DateOfObserv"
+                               class="form-control"
+                               type="datetime-local"
+                               step="3600"
+                               max="@DateTime.Now.ToString("yyyy-MM-ddTHH:00")" />
+                        <small class="cn-hint">An observation can't be dated in the future.</small>
+                        <span asp-validation-for="DateOfObserv" class="cn-error"></span>
+                    </div>
+
+                    <div class="col-12">
+                        <label asp-for="ObservedBy" class="cn-label">Observed By</label>
+                        <input asp-for="ObservedBy" class="form-control" placeholder="Enter observer's name" />
+                        <span asp-validation-for="ObservedBy" class="cn-error"></span>
+                    </div>
+                </div>
+            </section>
+
+            <!-- ============ OBSERVATION DETAILS ============ -->
+            <section class="cn-section">
+                <h2 class="cn-section-title">Observation Details</h2>
+
+                <div class="row g-3">
+                    <div class="col-12 col-md-6">
+                        <label asp-for="Place" class="cn-label">Place</label>
+                        <input asp-for="Place" class="form-control" placeholder="e.g. Science Laboratory, Hallway B" />
+                        <span asp-validation-for="Place" class="cn-error"></span>
+                    </div>
+
+                    <div class="col-12 col-md-6">
+                        <label asp-for="PeopleInvolved" class="cn-label">People Involved</label>
+                        <input asp-for="PeopleInvolved" class="form-control" placeholder="Names of classmates, staff, or witnesses involved" />
+                        <span asp-validation-for="PeopleInvolved" class="cn-error"></span>
+                    </div>
+
+                    <div class="col-12">
+                        <label asp-for="SceneMood" class="cn-label">Scene / Mood</label>
+                        <input asp-for="SceneMood" class="form-control" placeholder="e.g. Calm, tense, agitated during group work" />
+                        <span asp-validation-for="SceneMood" class="cn-error"></span>
+                    </div>
+                </div>
+            </section>
+
+            <!-- ============ BEHAVIOR & RECOMMENDATIONS ============ -->
+            <section class="cn-section">
+                <h2 class="cn-section-title">Behavior &amp; Recommendations</h2>
+
+                <div class="row g-3">
+                    <div class="col-12">
+                        <label asp-for="StudentBehavior" class="cn-label">Student Behavior</label>
+                        <textarea asp-for="StudentBehavior" class="form-control" rows="3" placeholder="Detailed, objective description of the student's actions and words"></textarea>
+                        <span asp-validation-for="StudentBehavior" class="cn-error"></span>
+                    </div>
+
+                    <div class="col-12">
+                        <label asp-for="ObserverRecs" class="cn-label">Observer Recommendations</label>
+                        <textarea asp-for="ObserverRecs" class="form-control" rows="3" placeholder="Immediate action taken, or recommended next steps"></textarea>
+                        <span asp-validation-for="ObserverRecs" class="cn-error"></span>
+                    </div>
+                </div>
+            </section>
+
+            <!-- ============ FOOTER ============ -->
+            <div class="cn-foot">
+                <small class="cn-privacy"><i class="bi bi-shield-lock"></i> Private to the counseling team • Changes are logged</small>
+                <div class="cn-actions">
+                    @if (!string.IsNullOrEmpty(returnUrl))
+                    {
+                        <a href="@returnUrl" class="btn-cancel">Cancel</a>
+                    }
+                    else
+                    {
+                        <a asp-controller="Students" asp-action="Details"
+                           asp-route-id="@ViewBag.StudentsID" class="btn-cancel">Cancel</a>
+                    }
+                    <button type="submit" class="btn-save">Save Record</button>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}

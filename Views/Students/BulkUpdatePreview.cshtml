@@ -1,0 +1,60 @@
+﻿@model GCAMS.ViewModels.BulkUpdatePreviewViewModel
+
+@{
+    ViewData["Title"] = "Bulk Update Preview";
+}
+
+<div class="content-panel">
+    <h4>Review changes before saving</h4>
+    <p class="text-muted">
+        @Model.FoundCount matched student(s) will be updated.
+        @if (Model.NotFoundCount > 0)
+        {
+            <span class="text-danger">@Model.NotFoundCount row(s) did not match any existing Student ID and will be skipped.</span>
+        }
+    </p>
+
+    <table class="table table-sm">
+        <thead>
+            <tr>
+                <th>Student ID</th>
+                <th>Name</th>
+                <th>Status</th>
+                <th>Changed Fields</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var row in Model.Rows)
+            {
+                <tr class="@(!row.Found ? "table-danger" : row.ChangedFields.Any() ? "" : "table-secondary")">
+                    <td>@row.StuID</td>
+                    <td>@row.StuName</td>
+                    <td>
+                        @if (!row.Found)
+                        {
+                            <span class="text-danger">Not found — skipped</span>
+                        }
+                        else if (!row.ChangedFields.Any())
+                        {
+                            <span class="text-muted">No changes</span>
+                        }
+                        else
+                        {
+                            <span class="text-success">Will update</span>
+                        }
+                    </td>
+                    <td>@string.Join(", ", row.ChangedFields)</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+
+    <form asp-action="BulkUpdateConfirm" method="post">
+        @Html.AntiForgeryToken()
+        <input type="hidden" name="payloadJson" value="@Model.PayloadJson" />
+        <a asp-action="Index" class="btn btn-light">Cancel</a>
+        <button type="submit" class="btn btn-brand" @(Model.FoundCount == 0 ? "disabled" : "")>
+            Confirm &amp; Save Changes
+        </button>
+    </form>
+</div>

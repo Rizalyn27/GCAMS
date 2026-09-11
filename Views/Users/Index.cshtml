@@ -1,0 +1,490 @@
+﻿@model GCAMS.ViewModels.AccountIndexViewModel
+@{
+    Layout = "_Layout";
+    ViewData["Title"] = "Accounts";
+    ViewData["PageSubtitle"] = $"{Model.Accounts.Count} account{(Model.Accounts.Count == 1 ? "" : "s")}";
+}
+
+@section Styles {
+    <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <link rel="stylesheet" href="~/css/Accounts/Accounts.css" asp-append-version="true" />
+}
+
+<div class="accounts-page">
+
+    @if (TempData["AccountMessage"] != null)
+    {
+        <div class="alert alert-success alert-dismissible fade show flash" role="alert">
+            <i class="bi bi-check-circle-fill"></i> @TempData["AccountMessage"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    }
+    @if (TempData["AccountError"] != null)
+    {
+        <div class="alert alert-danger alert-dismissible fade show flash" role="alert">
+            <i class="bi bi-exclamation-triangle-fill"></i> @TempData["AccountError"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    }
+
+    <!-- ================= Header ================= -->
+    <div class="page-head">
+        <div>
+            <h1 class="page-title">Accounts</h1>
+            <p class="page-sub">
+                Student and counselor accounts are created automatically when you add the
+                person. Administrators are created here.
+            </p>
+        </div>
+        <a asp-action="Create" class="btn btn-brand">
+            <i class="bi bi-person-plus"></i> New Administrator
+        </a>
+    </div>
+
+    <!-- ================= Stats ================= -->
+    <div class="stat-strip">
+        <div class="stat">
+            <span class="stat-num">@Model.TotalCount</span>
+            <span class="stat-label">Total accounts</span>
+        </div>
+        <div class="stat">
+            <span class="stat-num">@Model.ActiveCount</span>
+            <span class="stat-label">Active</span>
+        </div>
+        <div class="stat">
+            <span class="stat-num">@Model.AdminCount</span>
+            <span class="stat-label">Active admins</span>
+        </div>
+    </div>
+
+    <!-- ================= Panel ================= -->
+    <div class="content-panel">
+
+        <!-- Filters — all client side, same as the Students page -->
+        <div class="filter-bar d-flex flex-wrap align-items-center gap-2 mb-3">
+            <div class="search-box">
+                <i class="bi bi-search" aria-hidden="true"></i>
+                <input type="search" id="accountSearch" class="form-control border-0 shadow-none p-0"
+                       placeholder="Search by username or name" aria-label="Search by username or name" />
+            </div>
+
+            <select id="roleFilter" class="form-select filter-select" aria-label="Filter by role">
+                <option value="">All Roles</option>
+                @foreach (var role in Model.Accounts.Select(a => a.Role)
+                                .Where(r => !string.IsNullOrWhiteSpace(r))
+                                .Distinct()
+                                .OrderBy(r => r))
+                {
+                    <option value="@role.ToLower()">@role</option>
+                }
+            </select>
+
+            <select id="statusFilter" class="form-select filter-select" aria-label="Filter by status">
+                <option value="">All Status</option>
+                <option value="true">Active</option>
+                <option value="false">Inactive</option>
+            </select>
+
+            <select id="passwordFilter" class="form-select filter-select" aria-label="Filter by password state">
+                <option value="">All Passwords</option>
+                <option value="pending">Must change</option>
+                <option value="set">Set</option>
+            </select>
+
+            <button type="button" class="btn-clear ms-auto" id="clearFilters" hidden>
+                <i class="bi bi-x-lg"></i> Clear filters
+            </button>
+        </div>
+
+        <!-- Table -->
+        <div class="table-card">
+            <div class="table-responsive table-scroll">
+                <table class="table table-hover gcams-table align-middle mb-0" id="accountTable">
+                    <thead>
+                        <tr>
+                            <th scope="col" class="sortable" data-sort="username">
+                                Username <i class="bi bi-arrow-down-up sort-icon"></i>
+                            </th>
+                            <th scope="col" class="sortable" data-sort="name">
+                                Name <i class="bi bi-arrow-down-up sort-icon"></i>
+                            </th>
+                            <th scope="col" class="sortable" data-sort="role">
+                                Role <i class="bi bi-arrow-down-up sort-icon"></i>
+                            </th>
+                            <th scope="col">Status</th>
+                            <th scope="col">Password</th>
+                            <th scope="col" class="th-actions text-end">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var a in Model.Accounts)
+                        {
+                            <tr data-username="@a.Username.ToLower()"
+                                data-name="@(a.LinkedName ?? string.Empty)"
+                                data-role="@a.Role.ToLower()"
+                                data-active="@a.IsActive.ToString().ToLower()"
+                                data-password="@(a.PasswordChange ? "set" : "pending")">
+                                <td data-label="Username">
+                                    <span class="uname">@a.Username</span>
+                                    @if (a.IsSelf)
+                                    {
+                                        <span class="you-tag">you</span>
+                                    }
+                                </td>
+                                <td data-label="Name">
+                                    @if (string.IsNullOrWhiteSpace(a.LinkedName))
+                                    {
+                                        <span class="muted">&mdash;</span>
+                                    }
+                                    else
+                                    {
+                                        @a.LinkedName
+                                    }
+                                </td>
+                                <td data-label="Role">
+                                    <span class="role-tag role-@a.Role.ToLower()">@a.Role</span>
+                                </td>
+                                <td data-label="Status">
+                                    @if (a.IsActive)
+                                    {
+                                        <span class="status status-on"><i class="bi bi-check-circle"></i> Active</span>
+                                    }
+                                    else
+                                    {
+                                        <span class="status status-off"><i class="bi bi-slash-circle"></i> Inactive</span>
+                                    }
+                                </td>
+                                <td data-label="Password">
+                                    @if (a.PasswordChange)
+                                    {
+                                        <span class="muted">Set</span>
+                                    }
+                                    else
+                                    {
+                                        <span class="pending"><i class="bi bi-hourglass-split"></i> Must change</span>
+                                    }
+                                </td>
+                                <td data-label="Actions" class="text-end">
+                                    <div class="row-actions">
+                                        @if (!a.IsSelf)
+                                        {
+                                            <button type="button" class="btn-mini"
+                                                    data-bs-toggle="modal" data-bs-target="#resetModal"
+                                                    data-user-id="@a.UserId" data-username="@a.Username">
+                                                <i class="bi bi-key"></i> Reset password
+                                            </button>
+                                        }
+
+                                        @if (a.LockReason != null)
+                                        {
+                                            <span class="btn-mini is-locked" title="@a.LockReason">
+                                                <i class="bi bi-lock"></i> Locked
+                                            </span>
+                                        }
+                                        else if (a.IsActive)
+                                        {
+                                            <button type="button" class="btn-mini danger"
+                                                    data-bs-toggle="modal" data-bs-target="#deactivateModal"
+                                                    data-user-id="@a.UserId" data-username="@a.Username">
+                                                <i class="bi bi-slash-circle"></i> Deactivate
+                                            </button>
+                                        }
+                                        else
+                                        {
+                                            <form asp-action="SetActive" method="post" class="inline-form">
+                                                @Html.AntiForgeryToken()
+                                                <input type="hidden" name="id" value="@a.UserId" />
+                                                <input type="hidden" name="active" value="true" />
+                                                <button type="submit" class="btn-mini">
+                                                    <i class="bi bi-arrow-counterclockwise"></i> Reactivate
+                                                </button>
+                                            </form>
+                                        }
+                                    </div>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="empty-state d-none" id="emptyState">
+                <i class="bi bi-person-x"></i>
+                <p class="mb-0">No accounts match your filters.</p>
+            </div>
+
+            <div class="table-footer d-flex flex-wrap align-items-center justify-content-between gap-2">
+                <span class="showing-text" id="showingText"></span>
+                <ul class="pagination gcams-pagination mb-0" id="pagination"></ul>
+            </div>
+        </div>
+    </div>
+
+    <p class="foot-note">
+        <i class="bi bi-info-circle"></i>
+        Accounts are deactivated, never deleted, so the activity log and existing
+        records keep pointing at a real account.
+    </p>
+</div>
+
+<!-- ================= Deactivate Modal ================= -->
+<div class="modal fade accounts-modal" id="deactivateModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <form asp-action="SetActive" method="post" class="modal-content">
+            @Html.AntiForgeryToken()
+            <input type="hidden" name="id" id="deactivateUserId" />
+            <input type="hidden" name="active" value="false" />
+            <div class="modal-header">
+                <h5 class="modal-title"><i class="bi bi-slash-circle"></i> Deactivate account</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <p>
+                    <strong id="deactivateUsername"></strong> will no longer be able to sign in.
+                    Their records and activity history stay exactly as they are, and you can
+                    reactivate the account at any time.
+                </p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-shell" data-bs-dismiss="modal">Cancel</button>
+                <button type="submit" class="btn btn-danger-solid">Deactivate</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- ================= Reset Password Modal ================= -->
+<div class="modal fade accounts-modal" id="resetModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <form asp-action="ResetPassword" method="post" class="modal-content">
+            @Html.AntiForgeryToken()
+            <input type="hidden" name="UserId" id="resetUserId" />
+            <div class="modal-header">
+                <h5 class="modal-title"><i class="bi bi-key"></i> Reset password</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <p class="modal-lead">
+                    Set a temporary password for <strong id="resetUsername"></strong>.
+                    They will be asked to choose their own at next sign-in.
+                </p>
+                <label for="NewPassword" class="field-label">Temporary Password</label>
+                <input type="password" name="NewPassword" id="NewPassword" class="form-control"
+                       autocomplete="new-password" required />
+                <span class="field-hint">
+                    At least 8 characters, with an uppercase letter, a lowercase letter,
+                    a number, and a special character (!@@#$%^&amp;*).
+                </span>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-shell" data-bs-dismiss="modal">Cancel</button>
+                <button type="submit" class="btn btn-brand">Reset password</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        (function () {
+            const pageSize = 10;
+            let currentPage = 1;
+            let visibleRows = [];
+            let sortKey = null;
+            let sortAsc = true;
+
+            const table = document.getElementById('accountTable');
+            const tbody = table.querySelector('tbody');
+            const rows = Array.from(tbody.querySelectorAll('tr'));
+            const searchInput = document.getElementById('accountSearch');
+            const roleFilter = document.getElementById('roleFilter');
+            const statusFilter = document.getElementById('statusFilter');
+            const passwordFilter = document.getElementById('passwordFilter');
+            const clearBtn = document.getElementById('clearFilters');
+            const emptyState = document.getElementById('emptyState');
+            const showingText = document.getElementById('showingText');
+            const pagination = document.getElementById('pagination');
+
+            // ---------- filtering ----------
+            function applyFilters() {
+                const query = searchInput.value.toLowerCase().trim();
+                const role = roleFilter.value.toLowerCase();
+                const status = statusFilter.value;
+                const pw = passwordFilter.value;
+
+                visibleRows = rows.filter(function (row) {
+                    const d = row.dataset;
+                    // data-name keeps its original casing for display, so lowercase here
+                    const name = (d.name || '').toLowerCase();
+                    return (!query || (d.username || '').includes(query) || name.includes(query))
+                        && (!role || d.role === role)
+                        && (!status || d.active === status)
+                        && (!pw || d.password === pw);
+                });
+
+                clearBtn.hidden = !(query || role || status || pw);
+
+                currentPage = 1;
+                applySort();
+            }
+
+            // ---------- sorting ----------
+            function applySort() {
+                if (sortKey) {
+                    visibleRows.sort(function (a, b) {
+                        const av = (a.dataset[sortKey] || '');
+                        const bv = (b.dataset[sortKey] || '');
+                        // numeric-aware so ST-2026-9 sorts before ST-2026-10
+                        const cmp = av.localeCompare(bv, undefined, { numeric: true, sensitivity: 'base' });
+                        return sortAsc ? cmp : -cmp;
+                    });
+                }
+                renderPage();
+            }
+
+            document.querySelectorAll('#accountTable th.sortable').forEach(function (th) {
+                th.addEventListener('click', function () {
+                    const key = this.dataset.sort;
+                    sortAsc = (sortKey === key) ? !sortAsc : true;
+                    sortKey = key;
+
+                    document.querySelectorAll('#accountTable th.sortable').forEach(function (other) {
+                        other.classList.remove('is-asc', 'is-desc');
+                        const i = other.querySelector('.sort-icon');
+                        if (i) { i.className = 'bi bi-arrow-down-up sort-icon'; }
+                    });
+
+                    this.classList.add(sortAsc ? 'is-asc' : 'is-desc');
+                    const icon = this.querySelector('.sort-icon');
+                    if (icon) {
+                        icon.className = 'bi sort-icon ' + (sortAsc ? 'bi-sort-down' : 'bi-sort-up');
+                    }
+
+                    currentPage = 1;
+                    applySort();
+                });
+            });
+
+            // ---------- paging ----------
+            function renderPage() {
+                const total = visibleRows.length;
+                const totalPages = Math.max(1, Math.ceil(total / pageSize));
+                if (currentPage > totalPages) currentPage = totalPages;
+
+                const start = (currentPage - 1) * pageSize;
+                const end = start + pageSize;
+
+                rows.forEach(r => r.classList.add('d-none'));
+                visibleRows.forEach(r => tbody.appendChild(r));
+                visibleRows.slice(start, end).forEach(r => r.classList.remove('d-none'));
+
+                emptyState.classList.toggle('d-none', total !== 0);
+
+                showingText.textContent = total === 0
+                    ? 'No accounts found'
+                    : `Showing ${start + 1} - ${Math.min(end, total)} of ${total} account${total !== 1 ? 's' : ''}`;
+
+                renderPagination(total);
+            }
+
+            function pageItem(label, page, { active = false, disabled = false, ariaLabel = null } = {}) {
+                const li = document.createElement('li');
+                li.className = 'page-item' + (active ? ' active' : '') + (disabled ? ' disabled' : '');
+
+                const btn = document.createElement('button');
+                btn.type = 'button';
+                btn.className = 'page-link';
+                btn.innerHTML = label;
+                btn.disabled = disabled;
+                if (ariaLabel) btn.setAttribute('aria-label', ariaLabel);
+                if (!disabled && !active) {
+                    btn.addEventListener('click', function () {
+                        currentPage = page;
+                        renderPage();
+                        table.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                    });
+                }
+
+                li.appendChild(btn);
+                return li;
+            }
+
+            function renderPagination(total) {
+                const totalPages = Math.ceil(total / pageSize);
+                pagination.innerHTML = '';
+                if (totalPages <= 1) return;
+
+                pagination.appendChild(pageItem(
+                    '<i class="bi bi-chevron-left"></i>', currentPage - 1,
+                    { disabled: currentPage === 1, ariaLabel: 'Previous page' }));
+
+                const pages = [];
+                if (totalPages <= 7) {
+                    for (let i = 1; i <= totalPages; i++) pages.push(i);
+                } else {
+                    pages.push(1);
+                    if (currentPage > 3) pages.push('...');
+                    for (let i = Math.max(2, currentPage - 1); i <= Math.min(totalPages - 1, currentPage + 1); i++) pages.push(i);
+                    if (currentPage < totalPages - 2) pages.push('...');
+                    pages.push(totalPages);
+                }
+
+                pages.forEach(function (p) {
+                    if (p === '...') {
+                        const li = document.createElement('li');
+                        li.className = 'page-item disabled';
+                        li.innerHTML = '<span class="page-link page-gap">&hellip;</span>';
+                        pagination.appendChild(li);
+                    } else {
+                        pagination.appendChild(pageItem(p, p, { active: p === currentPage }));
+                    }
+                });
+
+                pagination.appendChild(pageItem(
+                    '<i class="bi bi-chevron-right"></i>', currentPage + 1,
+                    { disabled: currentPage === totalPages, ariaLabel: 'Next page' }));
+            }
+
+            // ---------- modals ----------
+            // Bootstrap fires this before the modal opens; copy the row's data
+            // attributes into the form so one modal serves every row.
+            const deact = document.getElementById('deactivateModal');
+            if (deact) {
+                deact.addEventListener('show.bs.modal', function (e) {
+                    const btn = e.relatedTarget;
+                    if (!btn) return;
+                    document.getElementById('deactivateUserId').value = btn.dataset.userId;
+                    document.getElementById('deactivateUsername').textContent = btn.dataset.username;
+                });
+            }
+
+            const reset = document.getElementById('resetModal');
+            if (reset) {
+                reset.addEventListener('show.bs.modal', function (e) {
+                    const btn = e.relatedTarget;
+                    if (!btn) return;
+                    document.getElementById('resetUserId').value = btn.dataset.userId;
+                    document.getElementById('resetUsername').textContent = btn.dataset.username;
+                    document.getElementById('NewPassword').value = '';
+                });
+            }
+
+            // ---------- wiring ----------
+            searchInput.addEventListener('input', applyFilters);
+            roleFilter.addEventListener('change', applyFilters);
+            statusFilter.addEventListener('change', applyFilters);
+            passwordFilter.addEventListener('change', applyFilters);
+
+            clearBtn.addEventListener('click', function () {
+                searchInput.value = '';
+                roleFilter.value = '';
+                statusFilter.value = '';
+                passwordFilter.value = '';
+                applyFilters();
+            });
+
+            applyFilters();
+        })();
+    </script>
+}

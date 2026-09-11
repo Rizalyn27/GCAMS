@@ -1,0 +1,453 @@
+﻿@model GCAMS.ViewModels.NotificationsIndexViewModel
+@using GCAMS.Models.Notifs
+
+@{
+    ViewData["Title"] = "Notifications";
+
+    // Relative time reads better than a raw stamp for anything recent.
+    Func<DateTime, string> ago = when =>
+    {
+        var span = DateTime.Now - when;
+        if (span.TotalMinutes < 1) return "Just now";
+        if (span.TotalMinutes < 60) return $"{(int)span.TotalMinutes} minute{((int)span.TotalMinutes == 1 ? "" : "s")} ago";
+        if (span.TotalHours < 24) return $"{(int)span.TotalHours} hour{((int)span.TotalHours == 1 ? "" : "s")} ago";
+        if (span.TotalDays < 7) return $"{(int)span.TotalDays} day{((int)span.TotalDays == 1 ? "" : "s")} ago";
+        return when.ToString("MMM d, yyyy");
+    };
+
+    Func<NotificationType, string> icon = t => t switch
+    {
+        NotificationType.Announcement => "campaign",
+        NotificationType.NewAppointment => "event_available",
+        NotificationType.StatusUpdate => "update",
+        _ => "notifications"
+    };
+}
+
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet">
+
+<style>
+    .notif-page {
+        max-width: 780px;
+        margin: 0 auto;
+    }
+
+        .notif-page * {
+            font-family: 'Inter', sans-serif;
+        }
+
+        .notif-page .material-symbols-outlined {
+            font-family: 'Material Symbols Outlined';
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+            line-height: 1;
+            vertical-align: middle;
+            -webkit-font-feature-settings: 'liga';
+        }
+
+        .notif-page .np-head {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            gap: 16px;
+            flex-wrap: wrap;
+            margin-bottom: 18px;
+        }
+
+        .notif-page h1 {
+            font-family: 'Manrope', sans-serif;
+            font-size: 24px;
+            font-weight: 700;
+            color: #191d18;
+            margin: 0 0 4px;
+        }
+
+        .notif-page .np-sub {
+            font-size: 13.5px;
+            color: #717a6d;
+            margin: 0;
+        }
+
+        .notif-page .btn-markall {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 9px 16px;
+            border-radius: 10px;
+            border: 1px solid #cfd8c8;
+            background: #fff;
+            color: #1b6d24;
+            font-size: 13.5px;
+            font-weight: 600;
+            cursor: pointer;
+        }
+
+            .notif-page .btn-markall:hover {
+                background: #f2f5ec;
+            }
+
+            .notif-page .btn-markall .material-symbols-outlined {
+                font-size: 17px;
+            }
+
+        /* ---------- tabs ---------- */
+        .notif-page .np-tabs {
+            display: flex;
+            gap: 24px;
+            border-bottom: 1px solid #e1e4db;
+            margin-bottom: 4px;
+            overflow-x: auto;
+        }
+
+        .notif-page .np-tab {
+            padding: 0 2px 11px;
+            font-size: 14px;
+            font-weight: 600;
+            color: #717a6d;
+            text-decoration: none;
+            white-space: nowrap;
+            border-bottom: 3px solid transparent;
+        }
+
+            .notif-page .np-tab:hover {
+                color: #1b6d24;
+            }
+
+            .notif-page .np-tab.active {
+                color: #1b6d24;
+                border-bottom-color: #1b6d24;
+            }
+
+        .notif-page .np-count {
+            display: inline-block;
+            margin-left: 5px;
+            padding: 1px 7px;
+            font-size: 11px;
+            font-weight: 700;
+            border-radius: 10px;
+            background: #f2f5ec;
+            color: #41493e;
+        }
+
+        .notif-page .np-tab.active .np-count {
+            background: #e6f4ea;
+            color: #1b6d24;
+        }
+
+        /* ---------- items ---------- */
+        .notif-page .np-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 14px;
+            padding: 16px 4px;
+            border-bottom: 1px solid #f0f3ec;
+        }
+
+            .notif-page .np-item:last-child {
+                border-bottom: none;
+            }
+
+            .notif-page .np-item.is-unread {
+                background: #fbfdf8;
+            }
+
+        .notif-page .np-icon {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 36px;
+            height: 36px;
+            border-radius: 10px;
+            flex-shrink: 0;
+            background: #f2f5ec;
+            color: #1b6d24;
+        }
+
+            .notif-page .np-icon .material-symbols-outlined {
+                font-size: 19px;
+            }
+
+        .notif-page .np-item.is-unread .np-icon {
+            background: #e6f4ea;
+        }
+
+        .notif-page .np-body {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .notif-page .np-title {
+            font-size: 14.5px;
+            font-weight: 700;
+            color: #191d18;
+            margin-bottom: 2px;
+        }
+
+        .notif-page .np-tag {
+            display: inline-block;
+            margin-left: 6px;
+            padding: 2px 8px;
+            font-size: 10.5px;
+            font-weight: 700;
+            border-radius: 20px;
+            background: #e6f4ea;
+            color: #1b6d24;
+            vertical-align: middle;
+        }
+
+        .notif-page .np-message {
+            font-size: 13px;
+            line-height: 1.6;
+            color: #41493e;
+            margin: 0 0 5px;
+        }
+
+        .notif-page .np-time {
+            font-size: 11.5px;
+            color: #a3aa9e;
+        }
+
+        .notif-page .np-read-btn {
+            border: none;
+            background: none;
+            padding: 0;
+            cursor: pointer;
+            font-size: 12px;
+            font-weight: 600;
+            color: #1b6d24;
+            white-space: nowrap;
+        }
+
+            .notif-page .np-read-btn:hover {
+                text-decoration: underline;
+            }
+
+        .notif-page .np-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: #1b6d24;
+            flex-shrink: 0;
+            margin-top: 14px;
+        }
+
+        /* ---------- empty + paging ---------- */
+        .notif-page .np-empty {
+            text-align: center;
+            padding: 56px 16px;
+            color: #717a6d;
+            line-height: 1.6;
+        }
+
+            .notif-page .np-empty .material-symbols-outlined {
+                font-size: 38px;
+                color: #c0c9bb;
+                display: block;
+                margin-bottom: 10px;
+            }
+
+        .notif-page .np-empty-title {
+            font-family: 'Manrope', sans-serif;
+            font-size: 16px;
+            font-weight: 700;
+            color: #191d18;
+            margin-bottom: 5px;
+        }
+
+        .notif-page .np-pager {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 12px;
+            margin-top: 20px;
+            padding-top: 16px;
+            border-top: 1px solid #e1e4db;
+            font-size: 13px;
+            color: #717a6d;
+            flex-wrap: wrap;
+        }
+
+            .notif-page .np-pager a {
+                display: inline-flex;
+                align-items: center;
+                gap: 4px;
+                padding: 8px 14px;
+                border-radius: 9px;
+                border: 1px solid #cfd8c8;
+                background: #fff;
+                color: #1b6d24;
+                font-size: 13px;
+                font-weight: 600;
+                text-decoration: none;
+            }
+
+                .notif-page .np-pager a:hover {
+                    background: #f2f5ec;
+                }
+
+            .notif-page .np-pager .np-pager-side {
+                display: flex;
+                gap: 8px;
+            }
+
+    @@media (max-width: 575.98px) {
+        .notif-page .np-head {
+            flex-direction: column;
+        }
+
+        .notif-page .btn-markall {
+            width: 100%;
+            justify-content: center;
+        }
+
+        .notif-page .np-tabs {
+            gap: 16px;
+        }
+    }
+</style>
+
+<div class="notif-page">
+
+    <div class="np-head">
+        <div>
+            <h1>Notifications</h1>
+            <p class="np-sub">
+                @if (Model.UnreadCount > 0)
+                {
+                    <text>@Model.UnreadCount unread of @Model.TotalCount</text>
+                }
+                else
+                {
+                    <text>You're all caught up</text>
+                }
+            </p>
+        </div>
+
+        @if (Model.UnreadCount > 0)
+        {
+            <form asp-action="MarkAllRead" method="post">
+                @Html.AntiForgeryToken()
+                <input type="hidden" name="returnUrl"
+                       value="@Url.Action("Index", "Notifications", new { filter = Model.Filter })" />
+                <button type="submit" class="btn-markall">
+                    <span class="material-symbols-outlined">done_all</span>
+                    Mark all read
+                </button>
+            </form>
+        }
+    </div>
+
+    <div class="np-tabs">
+        <a asp-action="Index" asp-route-filter="all"
+           class="np-tab @(Model.Filter == "all" ? "active" : "")">
+            All
+        </a>
+        <a asp-action="Index" asp-route-filter="unread"
+           class="np-tab @(Model.Filter == "unread" ? "active" : "")">
+            Unread
+            @if (Model.UnreadCount > 0)
+            {
+                <span class="np-count">@Model.UnreadCount</span>
+            }
+        </a>
+        <a asp-action="Index" asp-route-filter="announcement"
+           class="np-tab @(Model.Filter == "announcement" ? "active" : "")">
+            Announcements
+            @if (Model.AnnouncementCount > 0)
+            {
+                <span class="np-count">@Model.AnnouncementCount</span>
+            }
+        </a>
+    </div>
+
+    @if (Model.Items.Any())
+    {
+        foreach (var n in Model.Items)
+        {
+            <div class="np-item @(n.IsRead ? "" : "is-unread")">
+                <span class="np-icon">
+                    <span class="material-symbols-outlined">@icon(n.Type)</span>
+                </span>
+
+                <div class="np-body">
+                    <div class="np-title">
+                        @n.Title
+                        @if (n.Type == NotificationType.Announcement)
+                        {
+                            <span class="np-tag">Announcement</span>
+                        }
+                    </div>
+                    <p class="np-message">@n.Message</p>
+                    <div class="np-time">
+                        @ago(n.CreatedAt) · @n.CreatedAt.ToString("MMM d, yyyy - h:mm tt")
+                    </div>
+                </div>
+
+                @if (!n.IsRead)
+                {
+                    <form asp-action="MarkOneRead" method="post">
+                        @Html.AntiForgeryToken()
+                        <input type="hidden" name="id" value="@n.NotificationId" />
+                        <input type="hidden" name="filter" value="@Model.Filter" />
+                        <input type="hidden" name="page" value="@Model.Page" />
+                        <button type="submit" class="np-read-btn">Mark read</button>
+                    </form>
+                    <span class="np-dot"></span>
+                }
+            </div>
+        }
+
+        @if (Model.TotalPages > 1)
+        {
+            <div class="np-pager">
+                <span>Page @Model.Page of @Model.TotalPages</span>
+                <div class="np-pager-side">
+                    @if (Model.HasPrevious)
+                    {
+                        <a asp-action="Index" asp-route-filter="@Model.Filter"
+                           asp-route-page="@(Model.Page - 1)">Newer</a>
+                    }
+                    @if (Model.HasNext)
+                    {
+                        <a asp-action="Index" asp-route-filter="@Model.Filter"
+                           asp-route-page="@(Model.Page + 1)">Older</a>
+                    }
+                </div>
+            </div>
+        }
+    }
+    else
+    {
+        <div class="np-empty">
+            <span class="material-symbols-outlined">notifications_off</span>
+            <div class="np-empty-title">
+                @switch (Model.Filter)
+                {
+                    case "unread":
+                        <text>Nothing unread</text>
+                        break;
+                    case "announcement":
+                        <text>No announcements yet</text>
+                        break;
+                    default:
+                        <text>No notifications yet</text>
+                        break;
+                }
+            </div>
+            <div>
+                @switch (Model.Filter)
+                {
+                    case "unread":
+                        <text>You've read everything. Nice.</text>
+                        break;
+                    case "announcement":
+                        <text>Posts from the guidance office will show up here.</text>
+                        break;
+                    default:
+                        <text>Updates about your appointments and announcements will appear here.</text>
+                        break;
+                }
+            </div>
+        </div>
+    }
+</div>

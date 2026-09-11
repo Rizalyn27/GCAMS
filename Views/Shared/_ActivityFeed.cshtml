@@ -1,0 +1,272 @@
+﻿@*
+    Announcements + personal notifications, merged into one date-ordered feed.
+    Rendered only from the Student branch of Home/Index.cshtml.
+*@
+
+<style>
+    .feed-section {
+        margin-top: 1.5rem;
+    }
+
+    .feed-head {
+        display: flex;
+        align-items: flex-end;
+        justify-content: space-between;
+        gap: 12px;
+        flex-wrap: wrap;
+        margin-bottom: 14px;
+    }
+
+    .feed-title {
+        font-family: 'Manrope', sans-serif;
+        font-size: 18px;
+        font-weight: 700;
+        color: #191d18;
+        margin: 0;
+    }
+
+    .feed-filters {
+        display: flex;
+        gap: 8px;
+    }
+
+        .feed-filters select,
+        .feed-filters input {
+            padding: 8px 10px;
+            border: 1px solid #e1e4db;
+            border-radius: 8px;
+            font-size: 13px;
+            font-family: 'Inter', sans-serif;
+            color: #41493e;
+            background: #fff;
+        }
+
+    /* ---------- one box per item ---------- */
+    .feed-list {
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+    }
+
+    .feed-item {
+        background: #fff;
+        border: 1px solid #e1e4db;
+        border-left: 3px solid #e1e4db;
+        border-radius: 12px;
+        padding: 14px 16px;
+        transition: box-shadow .15s, border-color .15s;
+    }
+
+        .feed-item:hover {
+            box-shadow: 0 2px 10px rgba(25, 29, 24, 0.06);
+        }
+
+    .feed-item-announcement {
+        border-left-color: #1a7f74;
+    }
+
+    .feed-item-notification {
+        border-left-color: #c99a3a;
+    }
+
+    .feed-item-head {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 10px;
+        margin-bottom: 6px;
+    }
+
+    .feed-item-title {
+        font-family: 'Manrope', sans-serif;
+        font-size: 15px;
+        font-weight: 700;
+        color: #191d18;
+        margin: 0;
+    }
+
+    .feed-tag {
+        font-size: 10px;
+        font-weight: 700;
+        font-family: 'Inter', sans-serif;
+        text-transform: uppercase;
+        letter-spacing: 0.06em;
+        border-radius: 20px;
+        padding: 3px 9px;
+        white-space: nowrap;
+        flex-shrink: 0;
+    }
+
+    .feed-tag-announcement {
+        color: #14655c;
+        background: #e6f2f0;
+    }
+
+    .feed-tag-notification {
+        color: #8a5a00;
+        background: #fdf1d6;
+    }
+
+    .feed-item-meta {
+        font-size: 12px;
+        font-family: 'Inter', sans-serif;
+        color: #717a6d;
+        margin-bottom: 10px;
+    }
+
+    .feed-item-message {
+        font-size: 14px;
+        font-family: 'Inter', sans-serif;
+        color: #41493e;
+        line-height: 1.55;
+        white-space: pre-wrap;
+        margin: 0;
+    }
+
+    .empty-state {
+        background: #fff;
+        border: 1px dashed #e1e4db;
+        border-radius: 12px;
+        text-align: center;
+        color: #a3aa9e;
+        font-size: 14px;
+        font-family: 'Inter', sans-serif;
+        padding: 28px 16px;
+        line-height: 1.6;
+    }
+
+    @@media (max-width: 640px) {
+        .feed-filters {
+            width: 100%;
+        }
+
+            .feed-filters select,
+            .feed-filters input {
+                flex: 1;
+                min-width: 0;
+            }
+    }
+</style>
+
+@{
+    var announcements = ViewBag.AllAnnouncements as List<GCAMS.Models.Announcements.Announcement>
+                        ?? new();
+
+    var notifications = ViewBag.AllNotifications as List<GCAMS.Models.Notifs.Notifs>
+                        ?? new();
+
+    // Merge both sources into ONE list ordered by date. Rendering them as two
+    // separate loops put every announcement above every notification regardless
+    // of when each was posted, which made the feed look unsorted.
+    var feed = announcements
+        .Select(a => new
+        {
+            a.Title,
+            a.Message,
+            a.CreatedAt,
+            Kind = "announcement",
+            Meta = $"Posted by {(a.Counselor?.EmailAddress ?? "—")}"
+                   + (a.UpdatedAt.HasValue
+                        ? $" · edited {a.UpdatedAt.Value:MMM dd, yyyy - h:mm tt}"
+                        : "")
+        })
+        .Concat(notifications.Select(n => new
+        {
+            n.Title,
+            n.Message,
+            n.CreatedAt,
+            Kind = "notification",
+            Meta = "For you"
+        }))
+        .OrderByDescending(x => x.CreatedAt)
+        .ToList();
+}
+
+<div class="feed-section">
+
+    <div class="feed-head">
+        <h2 class="feed-title">Announcements &amp; updates</h2>
+
+        <div class="feed-filters">
+            <label class="visually-hidden" for="typeFilter">Filter by type</label>
+            <select id="typeFilter">
+                <option value="all">All</option>
+                <option value="announcement">Announcements</option>
+                <option value="notification">Notifications</option>
+            </select>
+
+            <label class="visually-hidden" for="dateFilter">Filter by date</label>
+            <input type="date" id="dateFilter" />
+        </div>
+    </div>
+
+    <div id="feedList" class="feed-list">
+        @foreach (var f in feed)
+        {
+            <article class="feed-item feed-item-@f.Kind"
+                     data-type="@f.Kind"
+                     data-date="@f.CreatedAt.ToString("yyyy-MM-dd")">
+
+                <div class="feed-item-head">
+                    <h3 class="feed-item-title">@f.Title</h3>
+                    <span class="feed-tag feed-tag-@f.Kind">
+                        @(f.Kind == "announcement" ? "Announcement" : "Notification")
+                    </span>
+                </div>
+
+                <div class="feed-item-meta">
+                    @f.Meta · @f.CreatedAt.ToString("MMM dd, yyyy - h:mm tt")
+                </div>
+
+                <p class="feed-item-message">@f.Message</p>
+            </article>
+        }
+    </div>
+
+    <div id="emptyState" class="empty-state" style="display:none;">
+        Nothing here yet. Announcements from your counselors and updates about your
+        appointments will show up on this page.
+    </div>
+
+</div>
+
+<script>
+    document.addEventListener("DOMContentLoaded", () => {
+
+        const typeFilter = document.getElementById("typeFilter");
+        const dateFilter = document.getElementById("dateFilter");
+        const items = document.querySelectorAll(".feed-item");
+        const empty = document.getElementById("emptyState");
+
+        function applyFilters() {
+            let visible = 0;
+
+            items.forEach(item => {
+                const matchesType =
+                    typeFilter.value === "all" ||
+                    item.dataset.type === typeFilter.value;
+
+                const matchesDate =
+                    !dateFilter.value ||
+                    item.dataset.date === dateFilter.value;
+
+                if (matchesType && matchesDate) {
+                    item.style.display = "";
+                    visible++;
+                } else {
+                    item.style.display = "none";
+                }
+            });
+
+            empty.style.display = visible === 0 ? "block" : "none";
+        }
+
+        typeFilter.addEventListener("change", applyFilters);
+        dateFilter.addEventListener("change", applyFilters);
+
+        // Run once on load. Without this the empty state never appears for a
+        // student with no announcements and no notifications — they just get a
+        // blank box.
+        applyFilters();
+    });
+</script>

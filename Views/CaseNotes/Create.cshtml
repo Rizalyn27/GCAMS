@@ -1,0 +1,183 @@
+﻿@model GCAMS.Models.CaseNotes.CaseNotes
+@{
+    ViewData["Title"] = "Create Case Note";
+    var returnUrl = ViewBag.ReturnUrl as string;
+
+}
+
+<link rel="stylesheet" href="~/css/CaseNotes/Create.css" asp-append-version="true" />
+
+<div class="cn-wrap">
+    <div class="cn-card">
+
+        <header class="cn-head">
+            <div>
+                <h1 class="cn-title">Create Case Note</h1>
+                <p class="cn-subtitle">DSOSMNHS Guidance &amp; Counseling Care System</p>
+            </div>
+            <a asp-controller="Students" asp-action="Details" asp-route-id="@ViewBag.StudentsID"
+               class="cn-close" aria-label="Close">&#10005;</a>
+        </header>
+
+        <form asp-action="Create" method="post" id="caseNoteForm">
+            <div asp-validation-summary="ModelOnly" class="cn-summary"></div>
+            <input type="hidden" name="studentId" value="@ViewBag.StudentsID" />
+            <input type="hidden" name="returnUrl" value="@returnUrl" />
+
+            <!-- ============ SESSION INFO ============ -->
+            <section class="cn-section">
+                <h2 class="cn-section-title">Session Info</h2>
+
+                <div class="row g-3">
+                    <div class="col-12">
+                        <label class="cn-label" asp-for="FullName">Full Name</label>
+                        <input asp-for="FullName" class="form-control" />
+                        <span asp-validation-for="FullName" class="cn-error"></span>
+                    </div>
+
+                    <div class="col-12 col-md-6">
+                        <label class="cn-label" asp-for="SessionNo">Session No.</label>
+                        <input asp-for="SessionNo" readonly class="form-control is-readonly" />
+                        @if (ViewBag.SessionCount != null)
+                        {
+                            <small class="cn-hint">@ViewBag.SessionCount</small>
+                        }
+                        <span asp-validation-for="SessionNo" class="cn-error"></span>
+                    </div>
+
+                    <div class="col-12 col-md-6">
+                        <label class="cn-label" asp-for="SessionDate">Session Date</label>
+                        <input asp-for="SessionDate" class="form-control" />
+                        <span asp-validation-for="SessionDate" class="cn-error"></span>
+                    </div>
+
+                    <div class="col-12">
+                        <label class="cn-label" asp-for="SessionTopics">Session Topics</label>
+                        <input asp-for="SessionTopics" class="form-control" />
+                        <span asp-validation-for="SessionTopics" class="cn-error"></span>
+                    </div>
+
+                    <div class="col-12">
+                        <label class="cn-label" asp-for="SessionRelevance">Session Relevance</label>
+                        <input asp-for="SessionRelevance" class="form-control" />
+                        <span asp-validation-for="SessionRelevance" class="cn-error"></span>
+                    </div>
+
+                    <div class="col-12">
+                        <label class="cn-label" asp-for="ConcernCategory">Concern Category</label>
+                        <select asp-for="ConcernCategory" class="form-select">
+                            <option value="">— Choose a category —</option>
+                            @foreach (var cat in GCAMS.Models.CaseNotes.CaseNotes.ConcernCategories)
+                            {
+                                <option value="@cat">@cat</option>
+                            }
+                        </select>
+                        <span asp-validation-for="ConcernCategory" class="cn-error"></span>
+                    </div>
+                </div>
+            </section>
+
+            <!-- ============ COUNSELING DETAILS ============ -->
+            <section class="cn-section">
+                <h2 class="cn-section-title">Counseling Details</h2>
+
+                <div class="row g-3">
+                    <div class="col-12">
+                        <label class="cn-label" asp-for="GoalPlan">Goal Plan</label>
+                        <input asp-for="GoalPlan" class="form-control" />
+                        <span asp-validation-for="GoalPlan" class="cn-error"></span>
+                    </div>
+
+                    <div class="col-12">
+                        <label class="cn-label" asp-for="Interventions">Interventions</label>
+                        <input asp-for="Interventions" class="form-control" />
+                        <span asp-validation-for="Interventions" class="cn-error"></span>
+                    </div>
+
+                    <div class="col-12">
+                        <label class="cn-label" asp-for="Observations">Observations</label>
+                        <input asp-for="Observations" class="form-control" />
+                        <span asp-validation-for="Observations" class="cn-error"></span>
+                    </div>
+
+                    <div class="col-12 col-md-6">
+                        <label class="cn-label" asp-for="CounselProgess">Counsel Progress</label>
+                        <input asp-for="CounselProgess" type="text" class="form-control" />
+                        <span asp-validation-for="CounselProgess" class="cn-error"></span>
+                    </div>
+
+                    <div class="col-12 col-md-6">
+                        <label class="cn-label" asp-for="BehaviorStatus">Behavior Status</label>
+                        <input asp-for="BehaviorStatus" type="text" class="form-control" />
+                        <span asp-validation-for="BehaviorStatus" class="cn-error"></span>
+                    </div>
+                </div>
+            </section>
+
+            <!-- ============ FOLLOW-UP & GOALS ============ -->
+            <section class="cn-section">
+                <h2 class="cn-section-title">Follow-Up &amp; Goals</h2>
+
+                <div class="row g-3">
+                    <div class="col-12">
+                        <label class="cn-label" asp-for="FollowUpDate">Follow-up date and time</label>
+                        <input asp-for="FollowUpDate" asp-format="{0:yyyy-MM-ddTHH:00}"
+                               id="fieldFollowUpDate"
+                               class="form-control" type="datetime-local"
+                               step="3600"
+                               min="@DateTime.Now.ToString("yyyy-MM-ddTHH:00")" />
+                        <small class="cn-hint">Available 8–11 AM and 1–4 PM.</small>
+                        <span asp-validation-for="FollowUpDate" class="cn-error"></span>
+                    </div>
+
+                    <div class="col-12">
+                        <label class="cn-label" asp-for="Homework">Homework</label>
+                        <input asp-for="Homework" class="form-control" />
+                        <span asp-validation-for="Homework" class="cn-error"></span>
+                    </div>
+
+                    <div class="col-12">
+                        <label class="cn-label" asp-for="StrengthsChallenges">Strengths / Challenges</label>
+                        <input asp-for="StrengthsChallenges" class="form-control" />
+                        <span asp-validation-for="StrengthsChallenges" class="cn-error"></span>
+                    </div>
+
+                    <div class="col-12">
+                        <label class="cn-label" asp-for="SpecificGoal">Specific Goal</label>
+                        <input asp-for="SpecificGoal" class="form-control" />
+                        <span asp-validation-for="SpecificGoal" class="cn-error"></span>
+                    </div>
+                </div>
+            </section>
+
+            <!-- ============ FOOTER ============ -->
+            <div class="cn-foot">
+                <small class="cn-privacy"><i class="bi bi-shield-lock"></i> Private to the counseling team • Changes are logged</small>
+                <div class="cn-actions">
+                    @if (!string.IsNullOrEmpty(returnUrl))
+                    {
+                        <a href="@returnUrl" class="btn-cancel">Cancel</a>
+                    }
+                    else
+                    {
+                        <a asp-controller="Students" asp-action="Details"
+                           asp-route-id="@ViewBag.StudentsID" class="btn-cancel">Cancel</a>
+                    }
+                    <button type="submit" class="btn-save">Save Case Note</button>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+    <script src="~/js/CaseNotes/casenote-form.js" asp-append-version="true"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            initCaseNoteForm(document);
+        });
+    </script>
+}

@@ -1,0 +1,88 @@
+@model GCAMS.Models.Appointment.Appointments
+
+@{
+    ViewData["Title"] = "Cancel this session";
+    var backAction = User.IsInRole("Student") ? "MyAppointments" : "Index";
+    var dayName = Model.AppointmentDate.ToString("dddd");
+}
+
+@section Styles {
+    <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0&display=block" rel="stylesheet">
+    <link rel="stylesheet" href="~/css/Appointments/Delete.css" asp-append-version="true" />
+}
+
+<div class="cancel-page">
+    <div class="cancel-dialog">
+
+        <header class="dialog-head">
+            <span class="dialog-icon material-symbols-outlined">warning</span>
+            <div>
+                <h1 class="dialog-title">Cancel your @dayName session?</h1>
+                <p class="dialog-sub">
+                    Once you cancel, the time opens up for another student and can't be taken back.
+                </p>
+            </div>
+            <a asp-action="@backAction" class="dialog-close" aria-label="Close and go back">
+                <span class="material-symbols-outlined">close</span>
+            </a>
+        </header>
+
+        <div class="dialog-body">
+
+            <!-- The session being cancelled -->
+            <div class="session-card">
+                <div class="date-chip">
+                    <span class="chip-dow">@Model.AppointmentDate.ToString("ddd").ToUpper()</span>
+                    <span class="chip-day">@Model.AppointmentDate.Day</span>
+                    <span class="chip-mon">@Model.AppointmentDate.ToString("MMM")</span>
+                </div>
+                <div class="session-body">
+                    <div class="session-time">@Model.AppointmentDate.ToString("h:mm tt")</div>
+                    <div class="session-meta">
+                        <span class="status-badge status-@Model.Status">@Model.Status</span>
+                        <span class="meta-text">@Model.AppointmentType</span>
+                    </div>
+                    <div class="session-meta">
+                        <span class="meta-text meta-quiet">@Model.FullName</span>
+                    </div>
+                </div>
+            </div>
+
+            <ul class="consequence-list">
+                <li>
+                    <span class="material-symbols-outlined">event_busy</span>
+                    The @Model.AppointmentDate.ToString("h:mm tt") slot opens up for another student,
+                    so it may be gone if you change your mind.
+                </li>
+                <li>
+                    <span class="material-symbols-outlined">history</span>
+                    You can book a new time whenever you want. Cancelling doesn't count against you.
+                </li>
+            </ul>
+
+            <div class="alt-callout">
+                <span class="material-symbols-outlined">schedule</span>
+                <div>
+                    <div class="alt-title">Just need a different time?</div>
+                    <p class="alt-text">
+                        Change the time instead and you keep your placeSSS nothing is released
+                        until you pick a new slot.
+                    </p>
+                    <a asp-action="Edit" asp-route-appointmentid="@Model.AppointmentID" class="alt-link">
+                        Change the time instead
+                        <span class="material-symbols-outlined">chevron_right</span>
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <form asp-action="Delete" method="post" class="dialog-foot">
+            @Html.AntiForgeryToken()
+            <input type="hidden" asp-for="AppointmentID" />
+
+            <a asp-action="@backAction" class="btn-keep">Keep my session</a>
+            <button type="submit" class="btn-cancel-session">Yes, cancel it</button>
+        </form>
+    </div>
+</div>
