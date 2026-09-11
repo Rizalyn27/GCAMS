@@ -6,6 +6,7 @@ using GCAMS.Models.Students;
 using GCAMS.Models.Users;
 using GCAMS.ViewModels;
 using Konscious.Security.Cryptography;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System.Globalization;
@@ -16,6 +17,7 @@ using System.Text.Json;
 
 namespace GCAMS.Controllers
 {
+    [Authorize(Roles = "Counselor,Admin")]
     [ResponseCache(NoStore = true, Location = ResponseCacheLocation.None)]
     public class StudentsController : Controller
     {
@@ -178,7 +180,7 @@ namespace GCAMS.Controllers
         }
 
         // GET: Students/Edit/5
-        public async Task<IActionResult> Edit(int? id)
+        public async Task<IActionResult> Edit(int? id, string? returnUrl = null)
         {
             if (id == null) return NotFound();
 
@@ -223,13 +225,14 @@ namespace GCAMS.Controllers
                     .ToListAsync(),
             };
 
+            ViewBag.ReturnUrl = returnUrl;
             return View(vm);
         }
 
         // POST: Students/Edit/5
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, StudentFormViewModel vm)
+        public async Task<IActionResult> Edit(int id, StudentFormViewModel vm, string? returnUrl = null)
         {
             if (id != vm.Student.StudentsID) return NotFound();
 
@@ -321,9 +324,12 @@ namespace GCAMS.Controllers
                 });
                 await _context.SaveChangesAsync();
 
+                if (!string.IsNullOrEmpty(returnUrl) && Url.IsLocalUrl(returnUrl))
+                return Redirect(returnUrl);
                 return RedirectToAction(nameof(Index));
             }
 
+            ViewBag.ReturnUrl = returnUrl;
             return View(vm);
         }
 

@@ -107,6 +107,7 @@ namespace GCAMS.Controllers
             return fallbackStartYear;
         }
 
+        [Authorize(Roles = "Admin")]
         private async Task<AdminDashboardViewModel> BuildAdminDashboardAsync()
         {
             var vm = new AdminDashboardViewModel();
@@ -184,6 +185,8 @@ namespace GCAMS.Controllers
             return vm;
         }
 
+
+        [Authorize(Roles = "Counselor")]
 
         private async Task<CounselorDashboardViewModel> BuildCounselorDashboardAsync(
             string? username, string? academicYear, int? month)

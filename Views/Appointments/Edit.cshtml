@@ -4,6 +4,8 @@
     ViewData["Title"] = "Change this session";
     var isStudentEdit = ViewBag.IsStudentEdit == true;
     var cancelAction = User.IsInRole("Student") ? "MyAppointments" : "Index";
+    var returnUrl = ViewBag.ReturnUrl as string;
+
 }
 
     <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
@@ -39,6 +41,7 @@
     </ol>
 
     <form asp-action="Edit" id="appointmentForm" class="booking-grid">
+        <input type="hidden" name="returnUrl" value="@returnUrl" />
 
         <div class="booking-main">
 
@@ -380,9 +383,15 @@
                 <button type="submit" class="btn-send" id="btnSave">
                     <span class="material-symbols-outlined">check</span> Save changes
                 </button>
-                <a asp-action="Details" asp-route-appointmentid="@Model.AppointmentID" class="btn-cancel">
-                    Discard and go back
-                </a>
+                @if (!string.IsNullOrEmpty(returnUrl))
+                {
+                    <a href="@returnUrl" class="btn-cancel">Discard and go back</a>
+                }
+                else
+                {
+                    <a asp-action="Details" asp-route-appointmentid="@Model.AppointmentID"
+                       class="btn-cancel">Discard and go back</a>
+                }
 
                 <p class="summary-fine">
                     Saving releases your old slot and requests the new one. A counselor usually

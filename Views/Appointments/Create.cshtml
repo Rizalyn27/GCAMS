@@ -4,6 +4,7 @@
     ViewData["Title"] = "Book a session";
     var isStudentBooking = ViewBag.IsStudentBooking == true;
     var cancelAction = User.IsInRole("Student") ? "MyAppointments" : "Index";
+    var returnUrl = ViewBag.ReturnUrl as string;
 }
 
 <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
@@ -392,8 +393,16 @@
                 <button type="submit" class="btn-send" id="btnSend">
                     <span class="material-symbols-outlined"></span> Send the request
                 </button>
-                <a asp-action="@cancelAction" class="btn-cancel">Cancel and go back</a>
 
+                <input type="hidden" name="returnUrl" value="@returnUrl" />
+                @if (!string.IsNullOrEmpty(returnUrl))
+                {
+                    <a href="@returnUrl" class="btn-cancel">Cancel and go back</a>
+                }
+                else
+                {
+                    <a asp-action="@cancelAction" class="btn-cancel">Cancel and go back</a>
+                }
                 <p class="summary-fine">
                     Sending a request doesn't confirm it yet. A counselor usually replies
                     within one school day, and you'll see the answer in My Appointments.

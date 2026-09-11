@@ -84,8 +84,10 @@ namespace GCAMS.Controllers
 
         // GET: Announcements/Create
         // The calendar passes the day being viewed, so the form opens on it.
-        public IActionResult Create(DateTime? date)
+        public IActionResult Create(DateTime? date, string? returnUrl = null)
         {
+            ViewBag.ReturnUrl = returnUrl;
+
             return View(new Announcement
             {
                 AnnouncementDate = date ?? DateTime.Today
@@ -95,9 +97,15 @@ namespace GCAMS.Controllers
         // POST: Announcements/Create
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Title,Message,AnnouncementDate")] Announcement announcement)
+        public async Task<IActionResult> Create(
+            [Bind("Title,Message,AnnouncementDate")] Announcement announcement,
+            string? returnUrl = null)
         {
-            if (!ModelState.IsValid) return View(announcement);
+            if (!ModelState.IsValid)
+            {
+                ViewBag.ReturnUrl = returnUrl;
+                return View(announcement);
+            }
 
             announcement.CounselorID = await GetCurrentCounselorIdAsync();
             announcement.CreatedAt = DateTime.Now;   // written now; AnnouncementDate comes from the form
@@ -149,6 +157,9 @@ namespace GCAMS.Controllers
             }
 
             TempData["Success"] = $"Announcement sent to {sentCount} student(s).";
+
+            if (!string.IsNullOrEmpty(returnUrl) && Url.IsLocalUrl(returnUrl))
+                return Redirect(returnUrl);
 
             // Land back on the day the announcement is for, so it's visible straight away.
             return RedirectToAction(nameof(Index), new

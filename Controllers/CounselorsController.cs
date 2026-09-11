@@ -2,6 +2,7 @@
 using GCAMS.Models.ActivityLogs;
 using GCAMS.Models.Counselor;
 using GCAMS.Models.Users;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
@@ -14,6 +15,8 @@ using static GCAMS.Models.Counselor.Counselor;
 
 namespace GCAMS.Controllers
 {
+    [Authorize(Roles = "Admin")]
+
     public class CounselorsController : Controller
     {
         // Our connection to the database (Entity Framework Core).
@@ -28,6 +31,8 @@ namespace GCAMS.Controllers
         // GET: Counselors
         // Shows the list of all counselors.
         // ===================================================================
+        [Authorize(Roles = "Admin")]
+
         public async Task<IActionResult> Index()
         {
             return View(await _context.Counselors.ToListAsync());
@@ -37,6 +42,8 @@ namespace GCAMS.Controllers
         // GET: Counselors/Details/5
         // Shows the full profile of ONE counselor (5 = their ID from the URL).
         // ===================================================================
+        [Authorize(Roles = "Admin")]
+
         public async Task<IActionResult> Details(int? id)
         {
             if (id == null) return NotFound();
@@ -65,6 +72,8 @@ namespace GCAMS.Controllers
         // ===================================================================
         [HttpPost]
         [ValidateAntiForgeryToken]
+        [Authorize(Roles = "Admin")]
+
         public async Task<IActionResult> Create(Counselor counselor)
         {
             if (ModelState.IsValid)
@@ -126,6 +135,8 @@ namespace GCAMS.Controllers
         // GET: Counselors/Edit/5
         // Shows the edit form for an existing counselor, pre-filled with their data.
         // ===================================================================
+        [Authorize(Roles = "Admin")]
+
         public async Task<IActionResult> Edit(int? id)
         {
             if (id == null) return NotFound();
@@ -143,9 +154,11 @@ namespace GCAMS.Controllers
         // POST: Counselors/Edit/5
         // Runs when the user submits changes on the Edit form.
         // ===================================================================
-        [HttpPost]
+        
         [ValidateAntiForgeryToken]
         [HttpPost]
+        [Authorize(Roles = "Admin")]
+
         public async Task<IActionResult> Edit(int id, Counselor counselor)
         {
             if (id != counselor.CounselorID) return NotFound();

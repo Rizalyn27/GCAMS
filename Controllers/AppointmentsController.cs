@@ -105,8 +105,9 @@ public class AppointmentsController : Controller
     }
 
     // Anyone logged in can book — Student, Counselor, or Admin
-    public async Task<IActionResult> Create(bool force = false)
+    public async Task<IActionResult> Create(bool force = false, string? returnUrl = null)
     {
+        ViewBag.ReturnUrl = returnUrl;
         if (User.IsInRole("Student"))
         {
             var student = await _context.Students
@@ -146,7 +147,9 @@ public class AppointmentsController : Controller
 
     [HttpPost]
     [ValidateAntiForgeryToken]
-    public async Task<IActionResult> Create([Bind("FullName,Email,ContactNumber,AppointmentDate,AppointmentType,Notes,StudentsID")] Appointments appointments)
+    public async Task<IActionResult> Create(
+        [Bind("FullName,Email,ContactNumber,AppointmentDate,AppointmentType,Notes,StudentsID")] Appointments appointments,
+        string? returnUrl = null)
     {
         GCAMS.Models.Students.Students? student = null;
 
@@ -175,7 +178,10 @@ public class AppointmentsController : Controller
 
         if (!IsWithinWorkingHours(appointments.AppointmentDate))
         {
-            ModelState.AddModelError("AppointmentDate", "Appointments must be booked between 8–11 AM or 1–4 PM.");
+            ModelState.AddModelError("AppointmentDate",
+                "Appointments must be booked between 8–11 AM or 1–4 PM.");
+
+            ViewBag.ReturnUrl = returnUrl;
             return View(appointments);
         }
 
@@ -186,6 +192,7 @@ public class AppointmentsController : Controller
         if (!User.IsInRole("Student"))
             appointments.CounselorID = await GetCurrentCounselorIdAsync();
 
+        // This student already has something on this day
         var hasConflict = await _context.Appointments.AnyAsync(a =>
             a.StudentsID == appointments.StudentsID &&
             a.AppointmentDate.Date == appointments.AppointmentDate.Date &&
@@ -194,11 +201,14 @@ public class AppointmentsController : Controller
 
         if (hasConflict)
         {
-            ModelState.AddModelError("", "This student already has an appointment scheduled on this date.");
+            ModelState.AddModelError("",
+                "This student already has an appointment scheduled on this date.");
+
+            ViewBag.ReturnUrl = returnUrl;
             return View(appointments);
         }
 
-        // NEW — the exact hour slot on this day is already taken by someone else
+        // Someone else already holds this exact hour
         var slotTaken = await _context.Appointments.AnyAsync(a =>
             a.AppointmentDate == appointments.AppointmentDate &&
             a.Status != "Cancelled" &&
@@ -206,7 +216,10 @@ public class AppointmentsController : Controller
 
         if (slotTaken)
         {
-            ModelState.AddModelError("AppointmentDate", "This time slot is already booked. Please choose a different hour.");
+            ModelState.AddModelError("AppointmentDate",
+                "This time slot is already booked. Please choose a different hour.");
+
+            ViewBag.ReturnUrl = returnUrl;
             return View(appointments);
         }
 
@@ -255,16 +268,24 @@ public class AppointmentsController : Controller
                 }
             }
 
+            // Came from somewhere specific (a dashboard, a report) — go back there.
+            // IsLocalUrl blocks an attacker from turning this into an open redirect.
+            if (!string.IsNullOrEmpty(returnUrl) && Url.IsLocalUrl(returnUrl))
+                return Redirect(returnUrl);
+
             if (User.IsInRole("Student"))
                 return RedirectToAction(nameof(Details), new { appointmentid = appointments.AppointmentID });
 
             return RedirectToAction(nameof(Index));
         }
 
+        // Something failed validation — show the form again with the errors,
+        // rather than redirecting and losing what they typed.
+        ViewBag.ReturnUrl = returnUrl;
         return View(appointments);
     }
 
-    public async Task<IActionResult> Edit(int? appointmentid)
+    public async Task<IActionResult> Edit(int? appointmentid, string? returnUrl = null)
     {
         if (appointmentid == null) return NotFound();
 
@@ -287,13 +308,15 @@ public class AppointmentsController : Controller
         }
 
         ViewBag.IsStudentEdit = User.IsInRole("Student");
+        ViewBag.ReturnUrl = returnUrl;
         return View(appointment);
     }
 
     [HttpPost]
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> Edit(int appointmentid,
-        [Bind("AppointmentID,FullName,Email,AppointmentDate,AppointmentType,Notes,StudentsID")] Appointments posted)
+        [Bind("AppointmentID,FullName,Email,AppointmentDate,AppointmentType,Notes,StudentsID")] Appointments posted,
+        string? returnUrl = null)
     {
         if (appointmentid != posted.AppointmentID) return NotFound();
 
@@ -335,6 +358,7 @@ public class AppointmentsController : Controller
         {
             ModelState.AddModelError("AppointmentDate", "Appointments must be booked between 8–11 AM or 1–4 PM.");
             ViewBag.IsStudentEdit = isStudent;
+            ViewBag.ReturnUrl = returnUrl;
             return View(posted);
         }
 
@@ -343,6 +367,7 @@ public class AppointmentsController : Controller
         if (!ModelState.IsValid)
         {
             ViewBag.IsStudentEdit = isStudent;
+            ViewBag.ReturnUrl = returnUrl;
             return View(posted);
         }
 
@@ -366,11 +391,14 @@ public class AppointmentsController : Controller
             throw;
         }
 
+        if (!string.IsNullOrEmpty(returnUrl) && Url.IsLocalUrl(returnUrl))
+            return Redirect(returnUrl);
+
         return RedirectToAction(isStudent ? nameof(MyAppointments) : nameof(Index));
     }
 
     [Authorize(Roles = "Student")]
-    public async Task<IActionResult> Delete(int? appointmentid)
+    public async Task<IActionResult> Delete(int? appointmentid, string? returnUrl = null)
     {
         if (appointmentid == null) return NotFound();
 
@@ -393,13 +421,14 @@ public class AppointmentsController : Controller
             }
         }
 
+        ViewBag.ReturnUrl = returnUrl;
         return View(appointments);
     }
 
     [HttpPost, ActionName("Delete")]
     [Authorize(Roles = "Student")]
     [ValidateAntiForgeryToken]
-    public async Task<IActionResult> DeleteConfirmed(int? appointmentid)
+    public async Task<IActionResult> DeleteConfirmed(int? appointmentid, string? returnUrl = null)
     {
         var appointments = await _context.Appointments.FindAsync(appointmentid);
         if (appointments == null) return NotFound();
@@ -415,10 +444,13 @@ public class AppointmentsController : Controller
             if (appointments.Status != "Pending" && appointments.Status != "Confirmed")
             {
                 TempData["Error"] = "This appointment can no longer be cancelled.";
+                if (!string.IsNullOrEmpty(returnUrl) && Url.IsLocalUrl(returnUrl))
+                    return Redirect(returnUrl);
+
                 return RedirectToAction(nameof(MyAppointments));
             }
 
-            appointments.Status = "Cancelled";
+        appointments.Status = "Cancelled";
             appointments.UpdatedAt = DateTime.Now;
             await _context.SaveChangesAsync();
 
@@ -493,6 +525,10 @@ public class AppointmentsController : Controller
 
         _context.Appointments.Remove(appointments);
         await _context.SaveChangesAsync();
+
+        if (!string.IsNullOrEmpty(returnUrl) && Url.IsLocalUrl(returnUrl))
+            return Redirect(returnUrl);
+
         return RedirectToAction(nameof(Index));
     }
 

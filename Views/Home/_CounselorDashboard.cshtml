@@ -2,6 +2,8 @@
 
 @{
     ViewData["Title"] = "Dashboard";
+    var returnUrl = ViewBag.ReturnUrl as string;
+
 
     var now = DateTime.Now;
     var hour = now.Hour;
@@ -25,6 +27,7 @@
 
     var sessionWord = Model.SessionsTodayCount == 1 ? "session" : "sessions";
     var followUpWord = Model.FlaggedCases.Count == 1 ? "follow-up that's" : "follow-ups that are";
+
 }
 
     <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
@@ -215,9 +218,11 @@
                                     <div class="slot-actions">
                                         @if (appt.StudentsID.HasValue)
                                         {
-                                            <a class="btn-slot"
-                                               asp-controller="CaseNotes" asp-action="Create"
-                                               asp-route-studentId="@appt.StudentsID">Log session</a>
+                                            <a asp-controller="CaseNotes" asp-action="Create"
+                                               asp-route-studentId="@appt.StudentsID"
+                                               asp-route-returnUrl="@Url.Action("Index", "Reports", new { tab = "followup" })">
+                                                Log session
+                                            </a>
                                         }
                                         <button type="button" class="row-action"
                                                 onclick="gcamsSetStatus(@appt.AppointmentId, 'Completed', this)">
@@ -300,6 +305,7 @@
                 <p class="panel-sub">How many sessions you held each month</p>
 
                 <form method="get" asp-action="Index" class="filter-bar">
+                    <input type="hidden" name="returnUrl" value="@returnUrl" />
                     <div class="filter-field">
                         <label for="ay-select">Academic year</label>
                         <select id="ay-select" name="academicYear">
@@ -422,7 +428,7 @@
                     }
                 </datalist>
 
-                <a class="quick-action" asp-controller="Announcements" asp-action="Create">
+                <a class="quick-action" asp-controller="Announcements" asp-action="Create" asp-route-returnUrl="@Url.Action("Index", "Home")">
                     <span class="material-symbols-outlined"></span> Post an announcement
                 </a>
             </div>
@@ -509,7 +515,7 @@
                     <div class="obs-empty">
                         <span class="material-symbols-outlined"></span>
                         <div class="obs-empty-title">No observations yet this year</div>
-                        <a class="btn-solid" asp-controller="AnecRecs" asp-action="Create">Record your first observation</a>
+                        <a class="btn-solid" asp-controller="AnecRecs" asp-action="Create" asp-route-returnUrl="@Url.Action("Index", "Home")">Record your first observation</a>
                     </div>
                 }
             </div>

@@ -8,6 +8,8 @@ using GCAMS.Data;
 using System.Threading.Tasks;
 
 [Authorize]
+[Authorize(Roles = "Counselor,Admin")]
+
 public class CaseNotesController : Controller
 {
     private readonly AppDbContext _context;
@@ -39,7 +41,7 @@ public class CaseNotesController : Controller
     }
 
     // GET: CaseNotes/Create?studentId=5
-    public async Task<IActionResult> Create(int? studentId)
+    public async Task<IActionResult> Create(int? studentId, string? returnUrl = null)
     {
         var casenotes = new CaseNotes();
 
@@ -56,6 +58,7 @@ public class CaseNotesController : Controller
 
         ModelState.Remove("SessionNo");
         ViewBag.StudentsID = studentId;
+        ViewBag.ReturnUrl = returnUrl;
         return View(casenotes);
     }
 
@@ -66,7 +69,7 @@ public class CaseNotesController : Controller
     [HttpPost]
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> Create(
-    [Bind("CasenoteId,StudentsID,FullName,SessionNo,SessionDate,SessionTopics,SessionRelevance,GoalPlan,Interventions,Observations,CounselProgess,BehaviorStatus,Homework,StrengthsChallenges,SpecificGoal,FollowUpDate,,ConcernCategory")] CaseNotes casenotes, int? studentId)
+    [Bind("CasenoteId,StudentsID,FullName,SessionNo,SessionDate,SessionTopics,SessionRelevance,GoalPlan,Interventions,Observations,CounselProgess,BehaviorStatus,Homework,StrengthsChallenges,SpecificGoal,FollowUpDate,,ConcernCategory")] CaseNotes casenotes, int? studentId, string? returnUrl = null)
     {
         if (studentId.HasValue) casenotes.StudentsID = studentId.Value;
 
@@ -130,6 +133,9 @@ public class CaseNotesController : Controller
                 }
             }
 
+            if (!string.IsNullOrEmpty(returnUrl) && Url.IsLocalUrl(returnUrl))
+                return Redirect(returnUrl);
+
             if (studentId.HasValue)
                 return RedirectToAction("Details", "Students", new { id = studentId });
 
@@ -137,6 +143,7 @@ public class CaseNotesController : Controller
         }
 
         ViewBag.StudentsID = studentId;
+        ViewBag.ReturnUrl = returnUrl;
         return View(casenotes);
     }
 

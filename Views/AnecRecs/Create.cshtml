@@ -1,6 +1,8 @@
 ﻿@model GCAMS.Models.AnecRecs.AnecRecs
 @{
     ViewData["Title"] = "Create Anecdotal Record";
+    var returnUrl = ViewBag.ReturnUrl as string;
+
 }
 
 <link rel="stylesheet" href="~/css/CaseNotes/Create.css" asp-append-version="true" />
@@ -22,6 +24,7 @@
 
             <input type="hidden" asp-for="StudentsID" />
             <input type="hidden" name="studentId" value="@ViewBag.StudentsID" />
+            <input type="hidden" name="returnUrl" value="@returnUrl" />
 
             <!-- ============ OBSERVATION INFO ============ -->
             <section class="cn-section">
@@ -107,8 +110,15 @@
             <div class="cn-foot">
                 <small class="cn-privacy"><i class="bi bi-shield-lock"></i> Private to the counseling team • Changes are logged</small>
                 <div class="cn-actions">
-                    <a asp-controller="Students" asp-action="Details" asp-route-id="@ViewBag.StudentsID"
-                       class="btn-cancel">Cancel</a>
+                    @if (!string.IsNullOrEmpty(returnUrl))
+                    {
+                        <a href="@returnUrl" class="btn-cancel">Cancel</a>
+                    }
+                    else
+                    {
+                        <a asp-controller="Students" asp-action="Details"
+                           asp-route-id="@ViewBag.StudentsID" class="btn-cancel">Cancel</a>
+                    }
                     <button type="submit" class="btn-save">Save Record</button>
                 </div>
             </div>

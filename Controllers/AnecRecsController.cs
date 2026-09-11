@@ -1,8 +1,10 @@
 ﻿using GCAMS.Data;
 using GCAMS.Models.ActivityLogs;
+using GCAMS.Models.ActivityLogs;
 using GCAMS.Models.AnecRecs;
 using GCAMS.Models.CaseNotes;
 using GCAMS.Models.Students;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
@@ -10,10 +12,11 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using GCAMS.Models.ActivityLogs;
 
 namespace GCAMS.Controllers
 {
+    [Authorize(Roles = "Counselor,Admin")]
+
     public class AnecRecsController : Controller
     {
         private readonly AppDbContext _context;
@@ -42,7 +45,7 @@ namespace GCAMS.Controllers
         }
 
         // GET: AnecRecs/Create
-        public async Task<IActionResult> Create(int? studentId)
+        public async Task<IActionResult> Create(int? studentId, string? returnUrl = null)
         {
             var anecrecs = new AnecRecs();
 
@@ -59,6 +62,7 @@ namespace GCAMS.Controllers
 
             ModelState.Remove("AnecRecNo");
             ViewBag.StudentsID = studentId;
+            ViewBag.ReturnUrl = returnUrl;
             return View(anecrecs);
         }
 
@@ -68,7 +72,7 @@ namespace GCAMS.Controllers
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create(
-         [Bind("AnecRecsId,StudentsID,StuName,DateOfObserv,ObservedBy,Place,PeopleInvolved,SceneMood,StudentBehavior,ObserverRecs")] AnecRecs anecRecs, int? studentId)
+         [Bind("AnecRecsId,StudentsID,StuName,DateOfObserv,ObservedBy,Place,PeopleInvolved,SceneMood,StudentBehavior,ObserverRecs")] AnecRecs anecRecs, int? studentId, string? returnUrl = null)
         {
             // fallback: only needed if the hidden field somehow didn't post
             if (anecRecs.StudentsID == 0 && studentId.HasValue)
@@ -78,6 +82,7 @@ namespace GCAMS.Controllers
             {
                 ModelState.AddModelError("", "No student was specified for this record.");
                 ViewBag.StudentsID = studentId;
+                ViewBag.ReturnUrl = returnUrl;
                 return View(anecRecs);
             }
 
@@ -96,10 +101,14 @@ namespace GCAMS.Controllers
 
                 await _context.SaveChangesAsync();
 
+                if (!string.IsNullOrEmpty(returnUrl) && Url.IsLocalUrl(returnUrl))
+                    return Redirect(returnUrl);
+
                 return RedirectToAction("Details", "Students", new { id = anecRecs.StudentsID });
             }
 
             ViewBag.StudentsID = studentId;
+            ViewBag.ReturnUrl = returnUrl;
             return View(anecRecs);
         }
 

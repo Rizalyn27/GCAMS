@@ -103,13 +103,14 @@
                     <div class="btn-row">
                         <a class="btn-gc btn-gc-outline"
                            asp-controller="Appointments" asp-action="Edit"
-                           asp-route-appointmentid="@appt.AppointmentId">
-                            <span class="material-symbols-outlined">schedule</span>
+                           asp-route-appointmentid="@appt.AppointmentId"
+                           asp-route-returnUrl="@Url.Action("Index", "Home")">
                             Change the time
                         </a>
                         <a class="btn-gc btn-gc-outline btn-gc-quiet"
                            asp-controller="Appointments" asp-action="Delete"
-                           asp-route-appointmentid="@appt.AppointmentId">
+                           asp-route-appointmentid="@appt.AppointmentId"
+                           asp-route-returnUrl="@Url.Action("Index", "Home")">
                             Cancel this session
                         </a>
                         <a class="btn-gc btn-gc-primary"
@@ -131,7 +132,8 @@
 
                     <div class="btn-row">
                         <a class="btn-gc btn-gc-primary"
-                           asp-controller="Appointments" asp-action="Create">
+                           asp-controller="Appointments" asp-action="Create"
+                           asp-route-returnUrl="@Url.Action("Index", "Home")">
                             Book an appointment
                         </a>
                         <a class="btn-gc btn-gc-outline"
