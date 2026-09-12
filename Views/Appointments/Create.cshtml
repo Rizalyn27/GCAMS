@@ -1,24 +1,23 @@
 ﻿@model GCAMS.Models.Appointment.Appointments
 
 @{
-    ViewData["Title"] = "Book a session";
+    ViewData["Title"] = "";
     var isStudentBooking = ViewBag.IsStudentBooking == true;
     var cancelAction = User.IsInRole("Student") ? "MyAppointments" : "Index";
     var returnUrl = ViewBag.ReturnUrl as string;
 }
 
 <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
-<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700;0,1&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
 <link rel="stylesheet" href="~/css/Appointments/Create.css" asp-append-version="true" />
-
 
 @section Breadcrumb {
     <a asp-action="@cancelAction" class="back-chevron" title="Back">
-        <span class="material-symbols-outlined"></span>
+        <i class="bi bi-arrow-left"></i>
     </a>
     <nav class="breadcrumb-nav">
         <a asp-action="@cancelAction">Appointments</a>
-        <span class="material-symbols-outlined breadcrumb-sep"></span>
+        <i class="bi bi-chevron-right breadcrumb-sep"></i>
         <span class="current">Book a session</span>
     </nav>
 }
@@ -26,7 +25,6 @@
 <div class="booking">
 
     <header class="booking-head">
-        <h1>Book a session</h1>
         <p class="booking-lead">
             Choose a time, tell your counselor what you want to talk about, and send your
             request. It only takes about a minute, and you can change it later.
@@ -53,7 +51,7 @@
             {
                 <section class="card">
                     <h2 class="card-title">
-                        <span class="material-symbols-outlined">search</span>
+                        <i class="bi bi-search"></i>
                         Student lookup
                     </h2>
                     <p class="card-sub">Enter the school-issued ID to fill in the details automatically.</p>
@@ -70,7 +68,7 @@
 
             <section class="card">
                 <h2 class="card-title">
-                    <span class="material-symbols-outlined"></span>
+                    <i class="bi bi-person"></i>
                     @(isStudentBooking ? "Booking as" : "Client")
                 </h2>
 
@@ -135,7 +133,7 @@
             <section class="card" id="when-card">
                 <div class="card-head">
                     <h2 class="card-title">
-                        <span class="material-symbols-outlined"></span>
+                        <i class="bi bi-calendar4"></i>
                         When works for you?
                         <span class="pill-needed">Needed</span>
                     </h2>
@@ -148,14 +146,14 @@
 
                 <div class="slot-group" id="slotMorning">
                     <div class="slot-heading">
-                        <span class="material-symbols-outlined"></span> Morning
+                        <i class="bi bi-sunrise"></i> Morning
                     </div>
                     <div class="slot-row" data-slots="morning"></div>
                 </div>
 
                 <div class="slot-group" id="slotAfternoon">
                     <div class="slot-heading">
-                        <span class="material-symbols-outlined"></span> Afternoon
+                        <i class="bi bi-sun"></i> Afternoon
                     </div>
                     <div class="slot-row" data-slots="afternoon"></div>
                 </div>
@@ -177,7 +175,7 @@
             <section class="card" id="about-card">
                 <div class="card-head">
                     <h2 class="card-title">
-                        <span class="material-symbols-outlined"></span>
+                        <i class="bi bi-chat-left-text"></i>
                         What would you like to talk about?
                         <span class="pill-needed">Needed</span>
                     </h2>
@@ -189,12 +187,12 @@
 
                 <div class="type-group">
                     <div class="type-group-title">
-                        <span class="material-symbols-outlined"></span> School and future
+                        <i class="bi bi-mortarboard"></i> School and future
                     </div>
                     <div class="type-grid">
                         <label class="type-card">
                             <input type="radio" asp-for="AppointmentType" id="type-academic" value="Academic Concern" />
-                            <span class="type-icon material-symbols-outlined"></span>
+                            <span class="type-icon"><i class="bi bi-book"></i></span>
                             <span class="type-body">
                                 <span class="type-name">Academic Concern</span>
                                 <span class="type-desc">Grades, homework, or a subject you're struggling with</span>
@@ -204,7 +202,7 @@
 
                         <label class="type-card">
                             <input type="radio" asp-for="AppointmentType" id="type-behavioral" value="Behavioral Concern" />
-                            <span class="type-icon material-symbols-outlined"></span>
+                            <span class="type-icon"><i class="bi bi-flag"></i></span>
                             <span class="type-body">
                                 <span class="type-name">Behavioral Concern</span>
                                 <span class="type-desc">Something about your behavior at school you'd like to talk about</span>
@@ -214,7 +212,7 @@
 
                         <label class="type-card">
                             <input type="radio" asp-for="AppointmentType" id="type-career" value="Career Guidance" />
-                            <span class="type-icon material-symbols-outlined"></span>
+                            <span class="type-icon"><i class="bi bi-compass"></i></span>
                             <span class="type-body">
                                 <span class="type-name">Career Guidance</span>
                                 <span class="type-desc">Questions about your future, career, or college plans</span>
@@ -226,12 +224,12 @@
 
                 <div class="type-group">
                     <div class="type-group-title">
-                        <span class="material-symbols-outlined"></span> Personal and relationships
+                        <i class="bi bi-heart"></i> Personal and relationships
                     </div>
                     <div class="type-grid">
                         <label class="type-card">
                             <input type="radio" asp-for="AppointmentType" id="type-personal" value="Personal/Emotional Concern" />
-                            <span class="type-icon material-symbols-outlined"></span>
+                            <span class="type-icon"><i class="bi bi-emoji-smile"></i></span>
                             <span class="type-body">
                                 <span class="type-name">Personal/Emotional Concern</span>
                                 <span class="type-desc">Stress, worries, feelings, or something bothering you</span>
@@ -241,7 +239,7 @@
 
                         <label class="type-card">
                             <input type="radio" asp-for="AppointmentType" id="type-peer" value="Peer Relationship" />
-                            <span class="type-icon material-symbols-outlined"></span>
+                            <span class="type-icon"><i class="bi bi-people"></i></span>
                             <span class="type-body">
                                 <span class="type-name">Peer Relationship</span>
                                 <span class="type-desc">Problems with friends, classmates, or feeling left out</span>
@@ -251,7 +249,7 @@
 
                         <label class="type-card">
                             <input type="radio" asp-for="AppointmentType" id="type-family" value="Family-Related Concern" />
-                            <span class="type-icon material-symbols-outlined"></span>
+                            <span class="type-icon"><i class="bi bi-house-heart"></i></span>
                             <span class="type-body">
                                 <span class="type-name">Family-Related Concern</span>
                                 <span class="type-desc">Something happening at home or with your family</span>
@@ -261,7 +259,7 @@
 
                         <label class="type-card">
                             <input type="radio" asp-for="AppointmentType" id="type-health" value="Health/Physical Concern" />
-                            <span class="type-icon material-symbols-outlined"></span>
+                            <span class="type-icon"><i class="bi bi-heart-pulse"></i></span>
                             <span class="type-body">
                                 <span class="type-name">Health/Physical Concern</span>
                                 <span class="type-desc">Sleep, eating, energy, or a health concern affecting school</span>
@@ -273,12 +271,12 @@
 
                 <div class="type-group">
                     <div class="type-group-title">
-                        <span class="material-symbols-outlined"></span> Safety and other
+                        <i class="bi bi-shield"></i> Safety and other
                     </div>
                     <div class="type-grid">
                         <label class="type-card">
                             <input type="radio" asp-for="AppointmentType" id="type-bullying" value="Bullying Report" />
-                            <span class="type-icon material-symbols-outlined"></span>
+                            <span class="type-icon"><i class="bi bi-shield-exclamation"></i></span>
                             <span class="type-body">
                                 <span class="type-name">Bullying Report</span>
                                 <span class="type-desc">Something hurtful happening to you or someone you know</span>
@@ -288,7 +286,7 @@
 
                         <label class="type-card type-card-urgent">
                             <input type="radio" asp-for="AppointmentType" id="type-crisis" value="Crisis/Urgent Concern" />
-                            <span class="type-icon material-symbols-outlined"></span>
+                            <span class="type-icon"><i class="bi bi-exclamation-triangle"></i></span>
                             <span class="type-body">
                                 <span class="type-name">Crisis/Urgent Concern</span>
                                 <span class="type-desc">You need help with something urgent or serious</span>
@@ -298,7 +296,7 @@
 
                         <label class="type-card">
                             <input type="radio" asp-for="AppointmentType" id="type-followup" value="Follow-up Session" />
-                            <span class="type-icon material-symbols-outlined"></span>
+                            <span class="type-icon"><i class="bi bi-arrow-repeat"></i></span>
                             <span class="type-body">
                                 <span class="type-name">Follow-up Session</span>
                                 <span class="type-desc">Continue a conversation from a previous counseling session</span>
@@ -308,7 +306,7 @@
 
                         <label class="type-card">
                             <input type="radio" asp-for="AppointmentType" id="type-other" value="Other" />
-                            <span class="type-icon material-symbols-outlined"></span>
+                            <span class="type-icon"><i class="bi bi-three-dots"></i></span>
                             <span class="type-body">
                                 <span class="type-name">Other</span>
                                 <span class="type-desc">Not sure which option fits? That's okay — choose this one</span>
@@ -321,7 +319,7 @@
                 <span asp-validation-for="AppointmentType" class="field-error"></span>
 
                 <div class="urgent-note" id="urgentNote" hidden>
-                    <span class="material-symbols-outlined">emergency</span>
+                    <i class="bi bi-exclamation-triangle-fill"></i>
                     <div>
                         If you need help today, don't wait for this request to be confirmed —
                         walk in to the Guidance Office during school hours and tell any staff
@@ -333,7 +331,7 @@
             <section class="card">
                 <div class="card-head">
                     <h2 class="card-title">
-                        <span class="material-symbols-outlined"></span>
+                        <i class="bi bi-pencil-square"></i>
                         Anything you want your counselor to know first?
                         <span class="pill-optional">Optional</span>
                     </h2>
@@ -348,7 +346,7 @@
                 </div>
 
                 <div class="privacy-strip">
-                    <span class="material-symbols-outlined"></span>
+                    <i class="bi bi-lock"></i>
                     Only your counselor reads this. It isn't shown to your teachers,
                     your classmates, or your parents.
                 </div>
@@ -362,7 +360,7 @@
                 <p class="card-sub">Check this before you send it</p>
 
                 <div class="summary-row">
-                    <span class="material-symbols-outlined"></span>
+                    <i class="bi bi-calendar4"></i>
                     <div>
                         <div class="summary-label">Day and time</div>
                         <div class="summary-value is-empty" id="summaryWhen">Not chosen yet</div>
@@ -370,7 +368,7 @@
                 </div>
 
                 <div class="summary-row">
-                    <span class="material-symbols-outlined"></span>
+                    <i class="bi bi-chat-left-text"></i>
                     <div>
                         <div class="summary-label">About</div>
                         <div class="summary-value is-empty" id="summaryAbout">Not chosen yet</div>
@@ -378,7 +376,7 @@
                 </div>
 
                 <div class="summary-row">
-                    <span class="material-symbols-outlined"></span>
+                    <i class="bi bi-geo-alt"></i>
                     <div>
                         <div class="summary-label">Where</div>
                         <div class="summary-value">Guidance Office</div>
@@ -386,12 +384,12 @@
                 </div>
 
                 <div class="summary-warn" id="summaryWarn">
-                    <span class="material-symbols-outlined"></span>
+                    <i class="bi bi-exclamation-triangle"></i>
                     <span id="summaryWarnText">Still needed: a day and time, and what it's about.</span>
                 </div>
 
                 <button type="submit" class="btn-send" id="btnSend">
-                    <span class="material-symbols-outlined"></span> Send the request
+                    <i class="bi bi-send"></i> Send the request
                 </button>
 
                 <input type="hidden" name="returnUrl" value="@returnUrl" />
