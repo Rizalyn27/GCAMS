@@ -3,12 +3,10 @@
 @{
     ViewData["Title"] = "Dashboard";
 
-    // Greeting — derived from the signed-in user and the clock, no model change.
     var hour = DateTime.Now.Hour;
     var partOfDay = hour < 12 ? "morning" : hour < 18 ? "afternoon" : "evening";
     var displayName = User.Identity?.Name ?? "there";
 
-    // Monday-first week, so index 0 of WeeklyAppointmentCounts lines up with Monday.
     var today = DateTime.Today;
     var mondayOffset = ((int)today.DayOfWeek + 6) % 7;
     var weekStart = today.AddDays(-mondayOffset);
@@ -28,11 +26,10 @@
     Func<int, int> share = count => totalUsers == 0 ? 0 : (int)Math.Round(100.0 * count / totalUsers);
 }
 
-
-    <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="~/css/Home/AdminDashboard.css" asp-append-version="true" />
-
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+@* _Layout loads Font Awesome, not Bootstrap Icons — so this stays here. *@
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+<link rel="stylesheet" href="~/css/Home/AdminDashboard.css" asp-append-version="true" />
 
 <div class="admin-dash">
 
@@ -48,20 +45,18 @@
 
         <div class="stat-card">
             <div class="stat-label">
-                <span class="material-symbols-outlined"> </span>
-                Active students
+                <i class="bi bi-people me-2"></i>Active students
             </div>
             <div class="stat-value">@Model.TotalActiveStudents.ToString("N0")</div>
             <div class="stat-note">@(Model.TotalActiveStudents == 0 ? "No student records yet" : "Currently enrolled and not archived")</div>
             <a asp-controller="Students" asp-action="Index" class="stat-action">
-                Manage students <span class="material-symbols-outlined"></span>
+                Manage students <i class="bi bi-chevron-right ms-1"></i>
             </a>
         </div>
 
         <div class="stat-card @(Model.ActiveCounselors == 0 ? "stat-card-attention" : "")">
             <div class="stat-label">
-                <span class="material-symbols-outlined"></span>
-                Active counselors
+                <i class="bi bi-person me-2"></i>Active counselors
             </div>
             <div class="stat-value">@Model.ActiveCounselors.ToString("N0")</div>
             @if (Model.ActiveCounselors == 0)
@@ -74,19 +69,18 @@
             }
             <a asp-controller="Counselors" asp-action="@(Model.ActiveCounselors == 0 ? "Create" : "Index")" class="stat-action">
                 @(Model.ActiveCounselors == 0 ? "Add the first counselor" : "Manage counselors")
-                <span class="material-symbols-outlined"></span>
+                <i class="bi bi-chevron-right ms-1"></i>
             </a>
         </div>
 
         <div class="stat-card">
             <div class="stat-label">
-                <span class="material-symbols-outlined"></span>
-                Sessions this week
+                <i class="bi bi-calendar4 me-2"></i>Sessions this week
             </div>
             <div class="stat-value">@Model.AppointmentsThisWeek.ToString("N0")</div>
             <div class="stat-note">@weekStart.ToString("d MMM") – @weekEnd.ToString("d MMM")</div>
             <a asp-controller="Appointments" asp-action="Index" class="stat-action">
-                Open the calendar <span class="material-symbols-outlined"></span>
+                Open the calendar <i class="bi bi-chevron-right ms-1"></i>
             </a>
         </div>
 
@@ -99,9 +93,9 @@
 
             <div class="panel">
                 <div class="section-title">
-                    This week's schedule
+                    <span>This week's schedule</span>
                     <a asp-controller="Appointments" asp-action="Index" class="row-action">
-                        Open the calendar <span class="material-symbols-outlined"></span>
+                        Open the calendar <i class="bi bi-chevron-right ms-1"></i>
                     </a>
                 </div>
                 <p class="panel-sub">
@@ -128,7 +122,6 @@
                                 {
                                     @count
                                     <text> </text>
-
                                     @(count == 1 ? "session" : "sessions")
                                 }
                                 else if (isWeekend)
@@ -147,9 +140,9 @@
 
             <div class="panel">
                 <div class="section-title">
-                    Recent activity
+                    <span>Recent activity</span>
                     <a asp-controller="Activity" asp-action="Index" class="row-action">
-                        Full log <span class="material-symbols-outlined"></span>
+                        Full log <i class="bi bi-chevron-right ms-1"></i>
                     </a>
                 </div>
 
@@ -158,7 +151,7 @@
                     foreach (var item in Model.RecentActivity)
                     {
                         <div class="activity-item">
-                            <span class="activity-icon material-symbols-outlined"></span>
+                            <span class="activity-icon"><i class="bi bi-clock-history"></i></span>
                             <div>
                                 <div class="activity-text">@item.Text</div>
                                 <div class="activity-time">@item.Timestamp.ToString("MMM d, h:mm tt")</div>
@@ -177,39 +170,37 @@
         <!-- ===================== RIGHT COLUMN ===================== -->
         <div class="dash-col">
 
-            @* Account and record administration only. Case notes, anecdotal
-               records and announcements are counselor work, not offered here. *@
             <div class="panel">
-                <div class="section-title">Start a task</div>
+                <div class="section-title"><span>Start a task</span></div>
                 <p class="panel-sub">The four things admins do most</p>
 
                 <div class="quick-actions">
                     <a class="quick-action" asp-controller="Students" asp-action="Create">
-                        <span class="qa-icon material-symbols-outlined"></span>
+                        <span class="qa-icon"><i class="bi bi-plus-lg"></i></span>
                         <span class="qa-text">Add a student</span>
-                        <span class="material-symbols-outlined qa-chevron"></span>
+                        <i class="bi bi-chevron-right qa-chevron"></i>
                     </a>
                     <a class="quick-action" asp-controller="Counselors" asp-action="Create">
-                        <span class="qa-icon material-symbols-outlined"></span>
+                        <span class="qa-icon"><i class="bi bi-person-plus"></i></span>
                         <span class="qa-text">Add a counselor</span>
-                        <span class="material-symbols-outlined qa-chevron"></span>
+                        <i class="bi bi-chevron-right qa-chevron"></i>
                     </a>
                     <a class="quick-action" asp-controller="Students" asp-action="Index">
-                        <span class="qa-icon material-symbols-outlined"></span>
+                        <span class="qa-icon"><i class="bi bi-upload"></i></span>
                         <span class="qa-text">Import students from Excel</span>
-                        <span class="material-symbols-outlined qa-chevron"></span>
+                        <i class="bi bi-chevron-right qa-chevron"></i>
                     </a>
                     <a class="quick-action" asp-controller="Activity" asp-action="Index">
-                        <span class="qa-icon material-symbols-outlined"></span>
+                        <span class="qa-icon"><i class="bi bi-arrow-repeat"></i></span>
                         <span class="qa-text">Review the activity log</span>
-                        <span class="material-symbols-outlined qa-chevron"></span>
+                        <i class="bi bi-chevron-right qa-chevron"></i>
                     </a>
                 </div>
             </div>
 
             <div class="panel">
                 <div class="section-title">
-                    Waiting to sign in
+                    <span>Waiting to sign in</span>
                     @if (Model.PendingSetupAccounts.Any())
                     {
                         <span class="count-pill">@Model.PendingSetupAccounts.Count</span>
@@ -238,7 +229,7 @@
             </div>
 
             <div class="panel">
-                <div class="section-title">Who's in the system</div>
+                <div class="section-title"><span>Who's in the system</span></div>
                 <p class="panel-sub">@totalUsers.ToString("N0") @(totalUsers == 1 ? "account" : "accounts") in total</p>
 
                 <div class="dist-row">

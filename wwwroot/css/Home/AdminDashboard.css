@@ -4,6 +4,9 @@
 
    Plain .css file — media queries use a SINGLE @. The @@ form only belongs
    inside a .cshtml <style> block; in a .css file it silently kills the rule.
+
+   Icons are Bootstrap Icons (.bi). Spacing comes from Bootstrap utility
+   classes in the markup (me-2 / ms-1), so flex gaps on those rows are 0.
    ========================================================================== */
 
 .admin-dash {
@@ -23,10 +26,93 @@
         font-family: 'Inter', sans-serif;
     }
 
-    .admin-dash .material-symbols-outlined {
-        font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
-        vertical-align: middle;
+    /* Icons inherit the text size so they can never outgrow their label. */
+    /* Icons follow the text size, thin and gray by default */
+    .admin-dash .bi {
+        display: inline-block;
+        font-size: 1em;
+        line-height: 1;
+        vertical-align: -.09em;
+        color: var(--dash-faint);
     }
+
+    .admin-dash .stat-label {
+        display: flex;
+        align-items: center;
+        gap: 0;
+        font-size: 13px;
+        color: var(--dash-muted);
+        margin-bottom: 6px;
+    }
+
+    .admin-dash .stat-action {
+        display: inline-flex;
+        align-items: center;
+        gap: 0;
+        margin-top: auto;
+        padding-top: 14px;
+        font-size: 12.5px;
+        font-weight: 600;
+        color: var(--dash-green);
+        text-decoration: none;
+    }
+
+        .admin-dash .stat-action .bi,
+        .admin-dash .row-action .bi {
+            font-size: .9em;
+            color: inherit;
+        }
+
+    .admin-dash .row-action {
+        display: inline-flex;
+        align-items: center;
+        gap: 0;
+        font-size: 12.5px;
+        font-weight: 600;
+        color: var(--dash-green);
+        text-decoration: none;
+        white-space: nowrap;
+    }
+
+    /* Light gray circle, thin gray icon — matches the reference */
+    .admin-dash .qa-icon {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 34px;
+        height: 34px;
+        flex-shrink: 0;
+        background: #f5f7f2;
+        border-radius: 50%;
+    }
+
+        .admin-dash .qa-icon .bi {
+            font-size: 15px;
+            color: #9aa394;
+            vertical-align: 0;
+        }
+
+    .admin-dash .qa-chevron {
+        font-size: 13px;
+        flex-shrink: 0;
+    }
+
+    .admin-dash .activity-icon {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 28px;
+        height: 28px;
+        flex-shrink: 0;
+        background: #f5f7f2;
+        border-radius: 50%;
+    }
+
+        .admin-dash .activity-icon .bi {
+            font-size: 13px;
+            color: #9aa394;
+            vertical-align: 0;
+        }
 
     /* ==========================================================================
    HEADER
@@ -76,14 +162,13 @@
     .admin-dash .stat-label {
         display: flex;
         align-items: center;
-        gap: 7px;
+        gap: 0; /* spacing comes from me-2 */
         font-size: 13px;
         color: var(--dash-muted);
         margin-bottom: 6px;
     }
 
-        .admin-dash .stat-label .material-symbols-outlined {
-            font-size: 17px;
+        .admin-dash .stat-label .bi {
             color: var(--dash-faint);
         }
 
@@ -109,7 +194,7 @@
     .admin-dash .stat-action {
         display: inline-flex;
         align-items: center;
-        gap: 2px;
+        gap: 0;
         margin-top: auto;
         padding-top: 14px;
         font-size: 12.5px;
@@ -117,10 +202,6 @@
         color: var(--dash-green);
         text-decoration: none;
     }
-
-        .admin-dash .stat-action .material-symbols-outlined {
-            font-size: 16px;
-        }
 
         .admin-dash .stat-action:hover {
             text-decoration: underline;
@@ -161,6 +242,16 @@
         color: var(--dash-ink);
     }
 
+        .admin-dash .section-title > span:first-child {
+            display: inline-flex;
+            align-items: center;
+            min-width: 0;
+        }
+
+        .admin-dash .section-title .bi {
+            color: var(--dash-green);
+        }
+
         .admin-dash .section-title .count-pill {
             font-family: 'Inter', sans-serif;
             font-size: 11px;
@@ -180,17 +271,13 @@
     .admin-dash .row-action {
         display: inline-flex;
         align-items: center;
-        gap: 2px;
+        gap: 0;
         font-size: 12.5px;
         font-weight: 600;
         color: var(--dash-green);
         text-decoration: none;
         white-space: nowrap;
     }
-
-        .admin-dash .row-action .material-symbols-outlined {
-            font-size: 16px;
-        }
 
         .admin-dash .row-action:hover {
             text-decoration: underline;
@@ -310,11 +397,15 @@
         width: 34px;
         height: 34px;
         flex-shrink: 0;
-        font-size: 19px;
         color: var(--dash-green);
         background: var(--dash-green-soft);
         border-radius: 50%;
     }
+
+        .admin-dash .qa-icon .bi {
+            font-size: 16px;
+            vertical-align: 0;
+        }
 
     .admin-dash .qa-text {
         flex: 1;
@@ -322,8 +413,9 @@
     }
 
     .admin-dash .qa-chevron {
-        font-size: 18px;
+        font-size: 14px;
         color: var(--dash-faint);
+        flex-shrink: 0;
     }
 
     /* ==========================================================================
@@ -348,11 +440,15 @@
         width: 28px;
         height: 28px;
         flex-shrink: 0;
-        font-size: 16px;
         color: var(--dash-green);
         background: var(--dash-green-soft);
         border-radius: 50%;
     }
+
+        .admin-dash .activity-icon .bi {
+            font-size: 14px;
+            vertical-align: 0;
+        }
 
     .admin-dash .activity-text {
         font-size: 13px;
@@ -458,6 +554,10 @@
         color: var(--dash-ink);
         margin-bottom: 6px;
     }
+
+        .admin-dash .dist-labels .bi {
+            color: var(--dash-faint);
+        }
 
     .admin-dash .dist-figures {
         display: inline-flex;
