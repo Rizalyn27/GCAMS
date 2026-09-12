@@ -41,7 +41,6 @@
                     <li><a asp-controller="Appointments" asp-action="Create" class="@(currentAction == "Create" ? "active" : "")"><i class="fa-regular fa-calendar-plus"></i>Book Appointment</a></li>
                     <li><a asp-controller="Appointments" asp-action="MyAppointments" class="@(currentAction == "MyAppointments" ? "active" : "")"><i class="fa-regular fa-calendar-check"></i>My Appointments</a></li>
                     <li><a asp-controller="ChatBot" asp-action="ChatBot" class="@(currentController == "ChatBot" ? "active" : "")"><i class="fa-solid fa-robot"></i>ChatBot</a></li>
-                    <li><a asp-controller="Users" asp-action="MyProfile" class="@(currentAction == "MyProfile" ? "active" : "")"><i class="fa-regular fa-circle-user"></i>My Profile</a></li>
                 }
                 @if (isAdmin)
                 {
@@ -54,7 +53,6 @@
                     <li><a asp-controller="Activity" asp-action="Index" class="@(currentController == "Activity" ? "active" : "")"><i class="fa-solid fa-clock-rotate-left"></i>Activity Log</a></li>
                     <li><a asp-controller="Users" asp-action="Index" class="@(currentController == "Users" && currentAction == "Index" ? "active" : "")"><i class="fa-solid fa-user-shield"></i>Accounts</a></li>
                     <li><a asp-controller="Reports" asp-action="Index" class="@(currentController == "Reports" ? "active" : "")"><i class="fa-solid fa-chart-column"></i>Reports</a></li>
-                    <li><a asp-controller="Users" asp-action="MyProfile" class="@(currentAction == "MyProfile" ? "active" : "")"><i class="fa-regular fa-circle-user"></i>My Profile</a></li>
                 }
                 @if (isCounselor)
                 {
@@ -63,20 +61,8 @@
                     <li><a asp-controller="Appointments" asp-action="Index" class="@(currentController == "Appointments" ? "active" : "")"><i class="fa-regular fa-calendar-days"></i>Appointments</a></li>
                     <li><a asp-controller="Announcements" asp-action="Index" class="@(currentController == "Announcements" ? "active" : "")"><i class="fa-solid fa-bullhorn"></i>Announcements</a></li>
                     <li><a asp-controller="Reports" asp-action="Index" class="@(currentController == "Reports" ? "active" : "")"><i class="fa-solid fa-chart-column"></i>Reports</a></li>
-                    <li><a asp-controller="Users" asp-action="MyProfile" class="@(currentAction == "MyProfile" ? "active" : "")"><i class="fa-regular fa-circle-user"></i>My Profile</a></li>
                 }
-
             </ul>
-
-            @if (User.Identity?.IsAuthenticated == true)
-            {
-                <div class="sidebar-footer">
-                    <form asp-controller="Users" asp-action="Logout" method="post">
-                        @Html.AntiForgeryToken()
-                        <button type="submit"><i class="fa-solid fa-arrow-right-from-bracket"></i>Logout</button>
-                    </form>
-                </div>
-            }
         </aside>
 
         <div class="sidebar-overlay" id="sidebarOverlay"></div>
@@ -134,11 +120,28 @@
                             </div>
                         </div>
 
-                        <div class="topbar-profile">
-                            <div class="profile-avatar">@(User.Identity?.Name?.Trim().Substring(0, 1).ToUpper() ?? "U")</div>
-                            <div>
-                                <div class="profile-name">@User.Identity?.Name</div>
-                                <div class="profile-role">@roleLabel</div>
+                        <!-- ============ PROFILE MENU ============ -->
+                        <div class="profile-menu" id="profileMenu">
+                            <button type="button" class="topbar-profile" id="profileTrigger"
+                                    aria-haspopup="true" aria-expanded="false" aria-controls="profileDropdown">
+                                <span class="profile-avatar">@(User.Identity?.Name?.Trim().Substring(0, 1).ToUpper() ?? "U")</span>
+                                <span class="profile-meta">
+                                    <span class="profile-name">@User.Identity?.Name</span>
+                                    <span class="profile-role">@roleLabel</span>
+                                </span>
+                                <i class="fa-solid fa-chevron-down profile-caret"></i>
+                            </button>
+
+                            <div class="profile-dropdown" id="profileDropdown" role="menu" aria-labelledby="profileTrigger">
+                                <a class="profile-dropdown-item" role="menuitem" asp-controller="Users" asp-action="MyProfile">
+                                    <i class="fa-regular fa-user"></i><span>My Profile</span>
+                                </a>
+                                <form asp-controller="Users" asp-action="Logout" method="post" class="profile-dropdown-form">
+                                    @Html.AntiForgeryToken()
+                                    <button type="submit" class="profile-dropdown-item" role="menuitem">
+                                        <i class="fa-solid fa-arrow-right-from-bracket"></i><span>Sign out</span>
+                                    </button>
+                                </form>
                             </div>
                         </div>
                     </div>
@@ -181,6 +184,42 @@
 
     @if (User.Identity?.IsAuthenticated == true)
     {
+        <!-- ============ PROFILE DROPDOWN ============ -->
+        <script>
+            (function () {
+                var menu = document.getElementById('profileMenu');
+                var trigger = document.getElementById('profileTrigger');
+                if (!menu || !trigger) { return; }
+
+                function closeProfileMenu() {
+                    menu.classList.remove('open');
+                    trigger.setAttribute('aria-expanded', 'false');
+                }
+
+                trigger.addEventListener('click', function (e) {
+                    e.preventDefault();
+                    e.stopPropagation();
+
+                    var willOpen = !menu.classList.contains('open');
+                    menu.classList.toggle('open', willOpen);
+                    trigger.setAttribute('aria-expanded', willOpen ? 'true' : 'false');
+
+                    // Only one panel open at a time
+                    var notif = document.getElementById('notif-dropdown');
+                    if (willOpen && notif) { notif.style.display = 'none'; }
+                });
+
+                document.addEventListener('click', function (e) {
+                    if (!menu.contains(e.target)) { closeProfileMenu(); }
+                });
+
+                document.addEventListener('keydown', function (e) {
+                    if (e.key === 'Escape') { closeProfileMenu(); }
+                });
+            })();
+        </script>
+
+        <!-- ============ NOTIFICATIONS ============ -->
         <script>
             const bell = document.getElementById('notif-bell');
             const dropdown = document.getElementById('notif-dropdown');
@@ -303,8 +342,10 @@
                 fetchNotifications();
             });
 
-            bell.addEventListener('click', () => {
+            bell.addEventListener('click', e => {
+                e.stopPropagation();
                 dropdown.style.display = dropdown.style.display === 'block' ? 'none' : 'block';
+                document.getElementById('profileMenu')?.classList.remove('open');
             });
 
             document.addEventListener('click', e => {
@@ -320,4 +361,5 @@
 
     @await RenderSectionAsync("Scripts", required: false)
 </body>
+</html>
 </html>
