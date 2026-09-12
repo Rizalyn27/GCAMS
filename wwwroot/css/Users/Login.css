@@ -88,43 +88,45 @@ body {
 
 .brand-school {
     display: block;
-    font-size: clamp(14px, 1.5vw, 16px);
+    font-size: clamp(13px, 1.3vw, 15px);
     font-weight: 700;
-    line-height: 1.28;
+    line-height: 1.3;
     letter-spacing: -.01em;
 }
 
 .brand-unit {
     display: block;
-    margin-top: 3px;
-    font-size: clamp(11px, 1.2vw, 13px);
-    font-weight: 500;
-    letter-spacing: .12em;
-    color: rgba(255, 255, 255, .82);
+    margin-top: 2px;
+    font-size: clamp(11px, 1.1vw, 12.5px);
+    font-weight: 400;
+    letter-spacing: .04em;
+    color: rgba(255, 255, 255, .78);
 }
 
 .brand-copy {
     position: relative;
     z-index: 1;
-    margin-top: clamp(28px, 9vh, 96px);
-    max-width: 30ch;
+    margin: clamp(40px, 12vh, 110px) 0 auto; /* sits in the upper third */
+    max-width: none;
+    text-align: left;
 }
 
 .brand-tagline {
     margin: 0;
-    font-size: clamp(26px, 3.2vw, 40px);
+    font-size: clamp(24px, 2.6vw, 32px);
     font-style: italic;
     font-weight: 700;
-    line-height: 1.16;
+    line-height: 1.22;
     letter-spacing: -.02em;
+    max-width: 18ch; /* breaks after "one" — matches the reference */
 }
 
 .brand-sub {
-    margin: clamp(16px, 2.5vw, 26px) 0 0;
-    max-width: 42ch;
-    font-size: clamp(14px, 1.25vw, 16.5px);
-    line-height: 1.62;
-    color: rgba(255, 255, 255, .86);
+    margin: clamp(14px, 1.8vw, 20px) 0 0;
+    max-width: 46ch;
+    font-size: clamp(14px, 1.1vw, 15.5px);
+    line-height: 1.6;
+    color: rgba(255, 255, 255, .82);
 }
 
 /* =========================================================
@@ -411,21 +413,18 @@ body {
 
 /* Tablet & phone: brand panel becomes a compact header band */
 @media (max-width: 991.98px) {
-    .auth-shell {
-        min-height: 0;
-    }
-
     .brand-panel {
         padding: 20px 22px 22px;
     }
 
     .brand-copy {
-        margin-top: 18px;
+        margin: 18px 0 0;
         max-width: none;
     }
 
     .brand-tagline {
         font-size: 22px;
+        max-width: none;
     }
 
     .brand-sub {
