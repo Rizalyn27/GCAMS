@@ -7,13 +7,14 @@
 <link rel="stylesheet" href="~/css/Students/Edit.css" asp-append-version="true" />
 
 @section Breadcrumb {
-    <div class="breadcrumb-nav">
-        <a asp-controller="Students" asp-action="Index">Students</a>
-        <span class="sep">/</span>
-        <a asp-controller="Students" asp-action="Index">Student Management</a>
-        <span class="sep">/</span>
+    <a asp-action="Index" class="back-chevron" title="Back"><i class="bi bi-arrow-left"></i></a>
+    <nav class="breadcrumb-nav">
+        <a asp-action="Index">Students</a>
+        <i class="bi bi-chevron-right sep"></i>
+        <a asp-action="Index">Student Management</a>
+        <i class="bi bi-chevron-right sep"></i>
         <span class="current">Edit Record</span>
-    </div>
+    </nav>
 }
 
 <div class="edit-page">
