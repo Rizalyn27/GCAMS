@@ -1,3 +1,82 @@
-﻿<h2>Access Denied</h2>
-<p>You don't have permission to view this page.</p>
-<a asp-controller="Home" asp-action="Index">Go back</a>
+﻿@{
+    ViewData["Title"] = "Access denied";
+
+    var isStudent = User.IsInRole("Student");
+    var isAdmin = User.IsInRole("Admin");
+    var isCounselor = User.IsInRole("Counselor");
+
+    var roleLabel = isStudent ? "Student"
+                  : isAdmin ? "Administrator"
+                  : isCounselor ? "Counselor"
+                  : "Signed out";
+}
+
+@section Styles {
+    <link rel="stylesheet" href="~/css/Home/AccessDenied.css" asp-append-version="true" />
+}
+
+<div class="denied">
+
+    <div class="denied-card">
+
+        <div class="denied-icon" aria-hidden="true">
+            <i class="bi bi-shield-lock"></i>
+        </div>
+
+        <h1>You don't have access to that page</h1>
+
+        <p class="denied-lead">
+            @if (User.Identity?.IsAuthenticated == true)
+            {
+                <text>
+                    You don't have access to that page.
+                </text>
+            }
+            else
+            {
+                <text>
+                    You need to sign in before you can open that page.
+                </text>
+            }
+        </p>
+
+        @if (User.Identity?.IsAuthenticated == true)
+        {
+            <div class="denied-actions">
+                <a asp-controller="Home" asp-action="Index" class="btn-denied btn-denied-primary">
+                    <i class="bi bi-house" aria-hidden="true"></i>
+                    Back to dashboard
+                </a>
+
+                @if (isStudent)
+                {
+                    <a asp-controller="Appointments" asp-action="MyAppointments" class="btn-denied btn-denied-ghost">
+                        My appointments
+                    </a>
+                }
+                else
+                {
+                    <a asp-controller="Students" asp-action="Index" class="btn-denied btn-denied-ghost">
+                        Student records
+                    </a>
+                }
+            </div>
+
+            <p class="denied-foot">
+                If you think you should have access to this page, ask an administrator
+                to check your account role.
+            </p>
+        }
+        else
+        {
+            <div class="denied-actions">
+                <a asp-controller="Users" asp-action="Login" class="btn-denied btn-denied-primary">
+                    <i class="bi bi-box-arrow-in-right" aria-hidden="true"></i>
+                    Sign in
+                </a>
+            </div>
+        }
+
+    </div>
+
+</div>

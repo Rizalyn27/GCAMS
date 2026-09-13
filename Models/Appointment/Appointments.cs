@@ -57,6 +57,11 @@ namespace GCAMS.Models.Appointment
         public int? CounselorID { get; set; }
         [ForeignKey(nameof(CounselorID))]
         public Counselor.Counselor? Counselor { get; set; }
+
+        public int? CasenoteId { get; set; }
+
+        [ForeignKey("CasenoteId")]
+        public CaseNotes.CaseNotes? SourceCaseNote { get; set; }
     }
 
     public class FutureDateAttribute : ValidationAttribute

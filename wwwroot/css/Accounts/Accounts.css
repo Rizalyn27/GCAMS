@@ -1,5 +1,5 @@
 ﻿/* ==========================================================================
-   Accounts.css — admin account management (Index + Create)
+   Accounts.css — admin account management (Index + modals)
    Path: wwwroot/css/Accounts/Accounts.css
 
    Loads after Layout.css. Bootstrap 5 supplies the grid, table, alerts,
@@ -17,6 +17,8 @@
     --line: #e6ebe4;
     color: var(--ink);
     width: 100%;
+    max-width: 1180px;
+    margin-inline: auto; /* centers the page in the layout body */
 }
 
     .accounts-page * {
@@ -556,7 +558,7 @@
 }
 
 /* ==========================================================================
-   CARDS + FOOTER (Create page)
+   CARDS + FOOTER (standalone form pages)
    ========================================================================== */
 .accounts-page .sect-card {
     border: 1px solid var(--line);
@@ -641,8 +643,8 @@
 
 .accounts-page .btn-brand,
 .accounts-modal .btn-brand {
-    background: var(--brand, #1b6d24);
-    border: 1px solid var(--brand, #1b6d24);
+    background: #1b6d24;
+    border: 1px solid #1b6d24;
     color: #fff;
 }
 
@@ -666,7 +668,7 @@
     }
 
 /* ==========================================================================
-   MODALS
+   MODALS — shared base
    ========================================================================== */
 .accounts-modal .modal-content {
     border: 1px solid #e6ebe4;
@@ -722,6 +724,10 @@
     min-height: 40px;
 }
 
+    .accounts-modal .form-control::placeholder {
+        color: #a8b0a8;
+    }
+
     .accounts-modal .form-control:focus {
         border-color: #1b6d24;
         box-shadow: 0 0 0 3px rgba(27, 109, 36, .12);
@@ -733,6 +739,159 @@
     color: #8a938a;
     margin-top: 5px;
     line-height: 1.5;
+}
+
+.accounts-modal .field-error {
+    display: block;
+    font-size: 11.5px;
+    color: #c0392b;
+    margin-top: 3px;
+}
+
+/* ==========================================================================
+   NEW ADMINISTRATOR MODAL
+   Placed after the base modal rules so these win.
+   ========================================================================== */
+.accounts-modal .modal-lg {
+    max-width: 560px;
+}
+
+/* borderless header, badge on the left */
+.accounts-modal .modal-header-lead {
+    display: flex;
+    align-items: flex-start;
+    gap: 13px;
+    padding: 20px 22px 4px;
+    border-bottom: 0;
+}
+
+.accounts-modal .modal-badge {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 38px;
+    height: 38px;
+    flex-shrink: 0;
+    font-size: 17px;
+    color: #1b6d24;
+    background: #e8f2ea;
+    border-radius: 11px;
+}
+
+.accounts-modal .modal-heading {
+    flex: 1;
+    min-width: 0;
+}
+
+.accounts-modal .modal-caption {
+    margin: 3px 0 0;
+    font-size: 12.5px;
+    line-height: 1.5;
+    color: #8a938a;
+}
+
+.accounts-modal .modal-header-lead .btn-close {
+    width: 28px;
+    height: 28px;
+    margin: 0;
+    padding: 0;
+    flex-shrink: 0;
+    opacity: .35;
+}
+
+    .accounts-modal .modal-header-lead .btn-close:hover {
+        opacity: .75;
+    }
+
+.accounts-modal .modal-header-lead + .modal-body {
+    padding: 18px 22px;
+}
+
+.accounts-modal .modal-errors:not(:empty) {
+    padding: 11px 14px;
+    margin-bottom: 16px;
+    font-size: 12.5px;
+    color: #93000a;
+    background: #fdeceb;
+    border: 1px solid #f3c9c5;
+    border-radius: 10px;
+}
+
+.accounts-modal .modal-errors ul {
+    margin: 0;
+    padding-left: 17px;
+}
+
+/* ---------- password field with eye toggle ---------- */
+.accounts-modal .pw-wrap {
+    position: relative;
+}
+
+    .accounts-modal .pw-wrap .form-control {
+        padding-right: 42px;
+    }
+
+.accounts-modal .pw-toggle {
+    position: absolute;
+    top: 50%;
+    right: 6px;
+    transform: translateY(-50%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 30px;
+    height: 30px;
+    padding: 0;
+    font-size: 14px;
+    color: #9aa396;
+    background: none;
+    border: 0;
+    border-radius: 7px;
+    cursor: pointer;
+}
+
+    .accounts-modal .pw-toggle:hover {
+        color: #46503f;
+        background: #f3f6f1;
+    }
+
+    .accounts-modal .pw-toggle:focus-visible {
+        outline: 2px solid #1b6d24;
+        outline-offset: 1px;
+    }
+
+/* ---------- inline notes ---------- */
+.accounts-modal .modal-note {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    margin-top: 16px;
+    padding: 12px 14px;
+    font-size: 12px;
+    line-height: 1.55;
+    color: #46503f;
+    background: #f5f7f3;
+    border-radius: 10px;
+}
+
+    .accounts-modal .modal-note i {
+        flex-shrink: 0;
+        margin-top: 2px;
+        font-size: 14px;
+        color: #9aa396;
+    }
+
+.accounts-modal .modal-note-quiet {
+    color: #8a938a;
+    background: transparent;
+    border: 1px solid #eef1ee;
+}
+
+/* ---------- borderless footer, single action ---------- */
+.accounts-modal .modal-footer-plain {
+    justify-content: flex-end;
+    padding: 4px 22px 20px;
+    border-top: 0;
 }
 
 /* ==========================================================================
@@ -776,4 +935,29 @@
     .accounts-page .footer-actions {
         justify-content: flex-end;
     }
+}
+
+@media (max-width: 575.98px) {
+    .accounts-modal .modal-header-lead {
+        padding: 16px 18px 4px;
+    }
+
+    .accounts-modal .modal-badge {
+        width: 32px;
+        height: 32px;
+        font-size: 15px;
+    }
+
+    .accounts-modal .modal-header-lead + .modal-body {
+        padding: 16px 18px;
+    }
+
+    .accounts-modal .modal-footer-plain {
+        padding: 4px 18px 16px;
+    }
+
+        .accounts-modal .modal-footer-plain .btn {
+            width: 100%;
+            justify-content: center;
+        }
 }

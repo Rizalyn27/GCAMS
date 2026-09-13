@@ -26,7 +26,7 @@
 
             <header class="chat-head">
                 <div class="bot-avatar">
-                    <span class="material-symbols-outlined"></span>
+                    <i class="bi bi-robot"></i>
                 </div>
                 <div>
                     <div class="bot-name">CareBot</div>
@@ -38,7 +38,7 @@
             </header>
 
             <div class="chat-disclaimer">
-                <span class="material-symbols-outlined"></span>
+                <i class="bi bi-info-circle"></i>
                 <span>
                     CareBot is not a counselor. It can explain how things work and help you
                     book, but it can't give advice about what you're going through. For that,
@@ -51,7 +51,7 @@
 
                 <div class="msg msg-bot">
                     <div class="msg-avatar">
-                        <span class="material-symbols-outlined"></span>
+                        <i class="bi bi-robot"></i>
                     </div>
                     <div class="msg-bubble">
                         <p>Hi! I'm CareBot, the Care Center's assistant.</p>
@@ -79,7 +79,7 @@
                               placeholder="Ask CareBot a question…"
                               aria-label="Your message"></textarea>
                     <button type="button" id="SendBtn" class="btn-send" aria-label="Send message">
-                        <span class="material-symbols-outlined">➜</span>
+                        <i class="bi bi-send"></i>.
                     </button>
                 </div>
 
@@ -98,12 +98,12 @@
                 </p>
 
                 <ul class="cap-list">
-                    <li class="can"><span class="material-symbols-outlined"></span> Explain how booking works, step by step</li>
-                    <li class="can"><span class="material-symbols-outlined"></span> Tell you office hours and room numbers</li>
-                    <li class="can"><span class="material-symbols-outlined"></span> Explain who can see your records</li>
-                    <li class="can"><span class="material-symbols-outlined"></span> Point you to the right person to talk to</li>
-                    <li class="cant"><span class="material-symbols-outlined"></span> It can't give counseling or personal advice</li>
-                    <li class="cant"><span class="material-symbols-outlined"></span> It can't see your appointments or your notes</li>
+                    <li class="can"><i class="bi bi-check-lg"></i> Explain how booking works, step by step</li>
+                    <li class="can"><i class="bi bi-check-lg"></i> Tell you office hours and room numbers</li>
+                    <li class="can"><i class="bi bi-check-lg"></i> Explain who can see your records</li>
+                    <li class="can"><i class="bi bi-check-lg"></i> Point you to the right person to talk to</li>
+                    <li class="cant"><i class="bi bi-x-lg"></i> It can't give counseling or personal advice</li>
+                    <li class="cant"><i class="bi bi-x-lg"></i> It can't see your appointments or your notes</li>
                 </ul>
             </section>
 
@@ -113,7 +113,7 @@
 
                 <div class="help-card help-card-urgent">
                     <div class="help-head">
-                        <span class="material-symbols-outlined"></span>
+                        <i class="bi bi-heart"></i>
                         I need help today
                     </div>
                     <p class="help-text">
@@ -124,7 +124,7 @@
 
                 <a class="help-card help-link" asp-controller="Appointments" asp-action="Create">
                     <div class="help-head">
-                        <span class="material-symbols-outlined"></span>
+                        <i class="bi bi-calendar-plus"></i>
                         Book a session
                     </div>
                     <p class="help-text">Pick a time with a counselor</p>
@@ -132,7 +132,7 @@
 
                 <a class="help-card help-link" asp-controller="Appointments" asp-action="MyAppointments">
                     <div class="help-head">
-                        <span class="material-symbols-outlined"></span>
+                        <i class="bi bi-calendar-check"></i>
                         My sessions
                     </div>
                     <p class="help-text">What you've booked and already attended</p>
@@ -159,7 +159,7 @@
                 if (role === 'bot') {
                     const avatar = document.createElement('div');
                     avatar.className = 'msg-avatar';
-                    avatar.innerHTML = '<span class="material-symbols-outlined"></span>';
+                    avatar.innerHTML = '<i class="bi bi-robot"></i>';
                     wrap.appendChild(avatar);
                 }
 
@@ -177,6 +177,7 @@
 
                 wrap.appendChild(bubble);
                 chatArea.appendChild(wrap);
+                chatArea.scrollTop = chatArea.scrollHeight;
                 scrollToEnd();
                 return wrap;
             }
@@ -186,7 +187,7 @@
                 wrap.className = 'msg msg-bot';
                 wrap.id = 'typing-indicator';
                 wrap.innerHTML = `
-                    <div class="msg-avatar"><span class="material-symbols-outlined"></span></div>
+                    <div class="msg-avatar"><i class="bi bi-robot"></i></div>
                     <div class="msg-bubble typing"><span></span><span></span><span></span></div>`;
                 chatArea.appendChild(wrap);
                 scrollToEnd();

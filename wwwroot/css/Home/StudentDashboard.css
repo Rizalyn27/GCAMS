@@ -28,7 +28,7 @@
 
     /* Naming the family here means a missing font shows nothing rather than
        leaking the ligature name ("lock", "warning") into the page as text. */
-    .stu-dash .material-symbols-outlined {
+   /* .stu-dash .material-symbols-outlined {
         font-family: 'Material Symbols Outlined';
         font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
         font-weight: normal;
@@ -41,8 +41,12 @@
         vertical-align: middle;
         -webkit-font-feature-settings: 'liga';
         -webkit-font-smoothing: antialiased;
+    }*/
+    .cns-dash .fa-solid,
+    .cns-dash .fa-regular {
+        font-size: 0.95em;
+        vertical-align: -0.05em;
     }
-
     /* ==========================================================================
    HEADER
    ========================================================================== */

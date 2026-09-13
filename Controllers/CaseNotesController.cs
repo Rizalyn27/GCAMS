@@ -119,6 +119,7 @@ public class CaseNotesController : Controller
                         {
                             StudentsID = casenotes.StudentsID,
                             CounselorID = casenotes.CounselorID,
+                            CasenoteId = casenotes.CasenoteId,
                             FullName = student?.StuName ?? casenotes.FullName,
                             Email = student?.Email ?? "",
                             AppointmentDate = followUpDate,

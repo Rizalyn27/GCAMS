@@ -1,44 +1,51 @@
 ﻿@model GCAMS.Models.Counselor.Counselor
 @{
-    ViewData["Title"] = "";
+    ViewData["Title"] = "Edit Record";
 }
 
-<link rel="stylesheet" href="~/css/Counselors/Edit.css" asp-append-version="true" />
+@section Styles {
+    <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <link rel="stylesheet" href="~/css/Counselors/Edit.css" asp-append-version="true" />
+}
 
 @section Breadcrumb {
+    <a asp-controller="Counselors" asp-action="Index" class="back-chevron" title="Back">
+        <i class="bi bi-arrow-left"></i>
+    </a>
     <div class="breadcrumb-nav">
-        <a asp-controller="Counselors" asp-action="Index"><i class="bi bi-arrow-left"></i></a>
         <a asp-controller="Counselors" asp-action="Index">Counselors</a>
-        <span class="sep">/</span>
+        <i class="bi bi-chevron-right sep"></i>
         <a asp-controller="Counselors" asp-action="Details" asp-route-id="@Model.CounselorID">Counselor Profile</a>
-        <span class="sep">/</span>
-        <span class="current">Edit Profile</span>
+        <i class="bi bi-chevron-right sep"></i>
+        <span class="current">Edit Record</span>
     </div>
 }
 
 <div class="counselor-edit">
 
-   
+    <div asp-validation-summary="ModelOnly" class="wiz-errors"></div>
 
-    <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
-
-    <form asp-action="Edit" method="post" id="counselorForm">
+    <form asp-action="Edit" method="post" id="counselorForm" novalidate>
         <input type="hidden" asp-for="CounselorID" />
 
-        <div class="profile-grid">
+        <div class="wizard-grid">
 
-            <!-- ============ LEFT: SECTION NAV ============ -->
-            <aside class="profile-aside">
-                <nav class="section-card" aria-label="Profile sections">
-                    <a href="#personal" class="section-item is-active">
-                        <i class="bi bi-person-badge"></i><span>Personal Information</span>
-                    </a>
-                    <a href="#professional" class="section-item">
-                        <i class="bi bi-patch-check"></i><span>Professional Background</span>
-                    </a>
-                    <a href="#employment" class="section-item">
-                        <i class="bi bi-briefcase"></i><span>Employment</span>
-                    </a>
+            <!-- ============ LEFT: STEP NAV ============ -->
+            <aside class="wizard-aside">
+                <nav class="step-card" aria-label="Form sections">
+                    <button type="button" class="step-item is-active" data-goto="1">
+                        <span class="step-num">1</span><span class="step-text">Personal Information</span>
+                    </button>
+                    <button type="button" class="step-item" data-goto="2">
+                        <span class="step-num">2</span><span class="step-text">Professional</span>
+                    </button>
+                    <button type="button" class="step-item" data-goto="3">
+                        <span class="step-num">3</span><span class="step-text">Employment</span>
+                    </button>
+                    <button type="button" class="step-item" data-goto="4">
+                        <span class="step-num">4</span><span class="step-text">Review &amp; Submit</span>
+                    </button>
                 </nav>
 
                 <div class="completion-card">
@@ -52,30 +59,24 @@
                 </div>
             </aside>
 
-            <!-- ============ RIGHT: FORM CARDS ============ -->
-            <div class="profile-body">
+            <!-- ============ RIGHT: STEP PANELS ============ -->
+            <div class="wizard-body">
 
-                <!-- Personal Information -->
-                <section class="profile-section" id="personal">
-                    <header class="section-head">
-                        <h2><i class="bi bi-person-badge"></i> Personal Information</h2>
-                        <p>Basic identity details used across counseling records and schedules.</p>
+                <!-- ---------- STEP 1 ---------- -->
+                <section class="form-step is-active" data-step="1">
+                    <header class="step-head">
+                        <h2>Personal Information</h2>
+                        <p>Basic demographic and identification details of the counselor.</p>
                     </header>
 
                     <div class="form-grid">
-                        <div class="field full-width">
-                            <label class="field-label" asp-for="CounselorName">Full Name</label>
-                            <input asp-for="CounselorName" class="form-control" placeholder="e.g. Imee Flores Bolante" />
+                        <div class="field full-width" data-label="Full Name">
+                            <label class="field-label" asp-for="CounselorName">Full Name <span class="req">*</span></label>
+                            <input asp-for="CounselorName" class="form-control" placeholder="Enter full name" />
                             <span asp-validation-for="CounselorName" class="field-error"></span>
                         </div>
 
-                        <div class="field">
-                            <label class="field-label" asp-for="EmployeeNumber">Employee Number</label>
-                            <input asp-for="EmployeeNumber" class="form-control is-identifier" placeholder="EMP-2024-001" />
-                            <span asp-validation-for="EmployeeNumber" class="field-error"></span>
-                        </div>
-
-                        <div class="field">
+                        <div class="field" data-label="Gender">
                             <label class="field-label" asp-for="Gender">Gender</label>
                             <select asp-for="Gender" class="form-select">
                                 <option value="">Select</option>
@@ -85,19 +86,25 @@
                             <span asp-validation-for="Gender" class="field-error"></span>
                         </div>
 
-                        <div class="field">
-                            <label class="field-label" asp-for="BirthDate">Date of Birth</label>
+                        <div class="field" data-label="Birth Date">
+                            <label class="field-label" asp-for="BirthDate">Birth Date</label>
                             <input asp-for="BirthDate" type="date" class="form-control" />
                             <span asp-validation-for="BirthDate" class="field-error"></span>
                         </div>
 
-                        <div class="field">
+                        <div class="field" data-label="Employee Number">
+                            <label class="field-label" asp-for="EmployeeNumber">Employee Number</label>
+                            <input asp-for="EmployeeNumber" class="form-control is-identifier" placeholder="e.g. EMP-2024-001" />
+                            <span asp-validation-for="EmployeeNumber" class="field-error"></span>
+                        </div>
+
+                        <div class="field" data-label="Email Address">
                             <label class="field-label" asp-for="EmailAddress">Email Address</label>
-                            <input asp-for="EmailAddress" class="form-control" placeholder="name@carecenter.edu.ph" />
+                            <input asp-for="EmailAddress" class="form-control" placeholder="counselor@@school.edu.ph" />
                             <span asp-validation-for="EmailAddress" class="field-error"></span>
                         </div>
 
-                        <div class="field">
+                        <div class="field full-width" data-label="Marital Status">
                             <label class="field-label" asp-for="MaritalStatus">Marital Status</label>
                             <select asp-for="MaritalStatus" class="form-select">
                                 <option value="">Select</option>
@@ -109,13 +116,20 @@
                             <span asp-validation-for="MaritalStatus" class="field-error"></span>
                         </div>
 
-                        <div class="field full-width">
-                            <label class="field-label">Contact Numbers</label>
-                            <div id="counselor-contacts" class="contact-list">
-                                @* CounselorContactNumber has Number only — no Label field on the model *@
+                        <div class="field full-width" data-label="Address">
+                            <label class="field-label" asp-for="Address">Address</label>
+                            <textarea asp-for="Address" class="form-control" rows="2"
+                                      placeholder="Residential address..."></textarea>
+                            <span asp-validation-for="Address" class="field-error"></span>
+                        </div>
+
+                        <div class="field full-width" data-contact-group="Contact Numbers">
+                            <label class="field-label">Contact Number</label>
+                            @* CounselorContactNumber has Number only — no Label field on the model *@
+                            <div id="counselor-contacts" class="repeat-list">
                                 @for (int i = 0; i < Model.ContactNumbers.Count; i++)
                                 {
-                                    <div class="contact-row">
+                                    <div class="repeat-row">
                                         <input name="ContactNumbers[@i].Number"
                                                value="@Model.ContactNumbers[i].Number"
                                                class="form-control contact-number" placeholder="+63 917 123 4567" />
@@ -125,58 +139,59 @@
                                     </div>
                                 }
                             </div>
-                            <button type="button" class="btn-add-line" data-add-contact="counselor-contacts" data-prefix="ContactNumbers">
-                                <i class="bi bi-plus-lg"></i> Add another number
+                            <button type="button" class="btn-add-line"
+                                    data-add-contact="counselor-contacts" data-prefix="ContactNumbers">
+                                + Add another number
                             </button>
                         </div>
-
-                        <div class="field full-width">
-                            <label class="field-label" asp-for="Address">Home Address</label>
-                            <textarea asp-for="Address" class="form-control" rows="3" placeholder="Full residential address details..."></textarea>
-                            <span asp-validation-for="Address" class="field-error"></span>
-                        </div>
                     </div>
+
+                    <footer class="step-foot">
+                        <span class="step-count">Step 1 of 4</span>
+                        <div class="step-actions">
+                            <button type="button" class="btn-next" data-next>Next</button>
+                        </div>
+                    </footer>
                 </section>
 
-                <!-- Professional Background -->
-                <section class="profile-section" id="professional">
-                    <header class="section-head">
-                        <h2><i class="bi bi-patch-check"></i> Professional Background</h2>
+                <!-- ---------- STEP 2 ---------- -->
+                <section class="form-step" data-step="2">
+                    <header class="step-head">
+                        <h2>Professional Background</h2>
                         <p>Education, licensure and experience on file for this counselor.</p>
                     </header>
 
                     <div class="form-grid">
-                        <div class="field">
+                        <div class="field" data-label="College">
                             <label class="field-label" asp-for="College">College</label>
                             <input asp-for="College" class="form-control" />
                             <span asp-validation-for="College" class="field-error"></span>
                         </div>
 
-                        <div class="field">
+                        <div class="field" data-label="Course">
                             <label class="field-label" asp-for="CollegeCourse">Course</label>
                             <input asp-for="CollegeCourse" class="form-control" />
                             <span asp-validation-for="CollegeCourse" class="field-error"></span>
                         </div>
 
-                        <div class="field">
+                        <div class="field" data-label="Post Graduate Studies">
                             <label class="field-label" asp-for="PostGraduateStudies">Post Graduate Studies</label>
                             <input asp-for="PostGraduateStudies" class="form-control" />
                             <span asp-validation-for="PostGraduateStudies" class="field-error"></span>
                         </div>
 
-                        <div class="field">
+                        <div class="field" data-label="Post Graduate Course">
                             <label class="field-label" asp-for="PostGraduateCourse">Post Graduate Course</label>
                             <input asp-for="PostGraduateCourse" class="form-control" />
                             <span asp-validation-for="PostGraduateCourse" class="field-error"></span>
                         </div>
 
-                        <!-- PRC licences: same repeater pattern as contact numbers -->
-                        <div class="field full-width">
+                        <div class="field full-width" data-license-group="PRC Licenses">
                             <label class="field-label">PRC Licenses</label>
-                            <div id="license-rows" class="contact-list">
+                            <div id="license-rows" class="repeat-list">
                                 @for (int i = 0; i < Model.Licenses.Count; i++)
                                 {
-                                    <div class="license-row">
+                                    <div class="repeat-row license-row">
                                         <input name="Licenses[@i].LicenseType"
                                                value="@Model.Licenses[i].LicenseType"
                                                class="form-control license-type" placeholder="e.g. LCN-2024-552" />
@@ -186,40 +201,61 @@
                                     </div>
                                 }
                             </div>
-                            <button type="button" class="btn-add-line" data-add-license="license-rows" data-prefix="Licenses">
-                                <i class="bi bi-plus-lg"></i> Add another license
+                            <button type="button" class="btn-add-line"
+                                    data-add-license="license-rows" data-prefix="Licenses">
+                                + Add License
                             </button>
                         </div>
 
-                        <div class="field full-width">
+                        @* The model stores WorkExperience as one text field. These three
+                           boxes are a builder — they append a formatted line to it. *@
+                        <div class="field full-width" data-label="Work Experience">
                             <label class="field-label" asp-for="WorkExperience">Work Experience</label>
-                            <textarea asp-for="WorkExperience" class="form-control" rows="3" placeholder="Previous roles, years of service, specialisations..."></textarea>
+                            <p class="field-note">Previous positions held, most recent first. Leave blank if this is their first post.</p>
+
+                            <div class="exp-builder">
+                                <input type="text" id="expRole" class="form-control" placeholder="Position / role" />
+                                <input type="text" id="expOrg" class="form-control" placeholder="Organization / school" />
+                                <input type="text" id="expYears" class="form-control exp-years" placeholder="e.g. 2018-2021" />
+                                <button type="button" class="btn-add-exp" id="btnAddExp">+ Add</button>
+                            </div>
+
+                            <textarea asp-for="WorkExperience" class="form-control exp-box" rows="4"
+                                      placeholder="e.g.&#10;Guidance Counselor — ABC High School (2018-2021)&#10;Teacher — XYZ Elementary (2015-2018)"></textarea>
                             <span asp-validation-for="WorkExperience" class="field-error"></span>
                         </div>
 
-                        <div class="field full-width">
-                            <label class="field-label" asp-for="WorkSchool">Work / School</label>
+                        <div class="field full-width" data-label="Work / School">
+                            <label class="field-label" asp-for="WorkSchool">Work/School</label>
                             <input asp-for="WorkSchool" class="form-control" />
                             <span asp-validation-for="WorkSchool" class="field-error"></span>
                         </div>
                     </div>
+
+                    <footer class="step-foot">
+                        <span class="step-count">Step 2 of 4</span>
+                        <div class="step-actions">
+                            <button type="button" class="btn-back" data-prev>Back</button>
+                            <button type="button" class="btn-next" data-next>Next</button>
+                        </div>
+                    </footer>
                 </section>
 
-                <!-- Employment Details -->
-                <section class="profile-section" id="employment">
-                    <header class="section-head">
-                        <h2><i class="bi bi-briefcase"></i> Employment Details</h2>
+                <!-- ---------- STEP 3 ---------- -->
+                <section class="form-step" data-step="3">
+                    <header class="step-head">
+                        <h2>Employment Details</h2>
                         <p>Role and standing within the Care Center.</p>
                     </header>
 
                     <div class="form-grid">
-                        <div class="field">
+                        <div class="field" data-label="Position">
                             <label class="field-label" asp-for="Position">Position</label>
-                            <input asp-for="Position" class="form-control" placeholder="e.g. Guidance Counselor" />
+                            <input asp-for="Position" class="form-control" placeholder="e.g. Guidance Counselor I" />
                             <span asp-validation-for="Position" class="field-error"></span>
                         </div>
 
-                        <div class="field">
+                        <div class="field" data-label="Employment Status">
                             <label class="field-label" asp-for="EmploymentStatus">Employment Status</label>
                             <select asp-for="EmploymentStatus" class="form-select">
                                 <option value="">Select</option>
@@ -231,16 +267,45 @@
                             <span asp-validation-for="EmploymentStatus" class="field-error"></span>
                         </div>
                     </div>
+
+                    <footer class="step-foot">
+                        <span class="step-count">Step 3 of 4</span>
+                        <div class="step-actions">
+                            <button type="button" class="btn-back" data-prev>Back</button>
+                            <button type="button" class="btn-next" data-next>Next</button>
+                        </div>
+                    </footer>
                 </section>
 
-                <!-- Footer -->
-                <div class="profile-foot">
-                    <small class="privacy-note"><i class="bi bi-shield-lock"></i> Privacy protected • Changes are logged</small>
-                    <div class="foot-actions">
-                        <a asp-action="Index" class="btn-cancel">Cancel</a>
-                        <button type="submit" class="btn-save"><i class="bi bi-check2"></i> Save Changes</button>
+                <!-- ---------- STEP 4 ---------- -->
+                <section class="form-step" data-step="4">
+                    <header class="step-head">
+                        <h2>Review &amp; Submit</h2>
+                        <p>Check every section before submitting. Click <em>Edit</em> to jump back and make changes.</p>
+                    </header>
+
+                    <div id="reviewPanel" class="review-panel"><!-- built by JS --></div>
+
+                    <div class="confirm-row">
+                        <input class="form-check-input" type="checkbox" id="confirmAccurate" />
+                        <label class="form-check-label" for="confirmAccurate">
+                            I confirm the information above is accurate to the best of my knowledge.
+                        </label>
                     </div>
-                </div>
+                    <div class="field-error" id="confirmError"></div>
+
+                    <footer class="step-foot">
+                        <span class="step-count">
+                            Step 4 of 4
+                            <span class="privacy-note"><i class="bi bi-shield-lock"></i> Privacy protected &bull; Changes are logged</span>
+                        </span>
+                        <div class="step-actions">
+                            <button type="button" class="btn-back" data-prev>Back</button>
+                            <a asp-action="Index" class="btn-cancel">Cancel</a>
+                            <button type="submit" class="btn-save"><i class="bi bi-check2"></i> Save Changes</button>
+                        </div>
+                    </footer>
+                </section>
 
             </div>
         </div>
@@ -259,41 +324,52 @@
             var form = document.getElementById("counselorForm");
             if (!form) return;
 
-            var links = Array.prototype.slice.call(form.querySelectorAll(".section-item"));
-            var sections = Array.prototype.slice.call(form.querySelectorAll(".profile-section"));
+            var steps = Array.prototype.slice.call(form.querySelectorAll(".form-step"));
+            var navItems = Array.prototype.slice.call(form.querySelectorAll(".step-item"));
+            var TOTAL = steps.length;
+            var current = 1;
 
-            /* ---------- scroll spy ---------- */
-            if ("IntersectionObserver" in window) {
-                var observer = new IntersectionObserver(function (entries) {
-                    entries.forEach(function (entry) {
-                        if (!entry.isIntersecting) return;
-                        links.forEach(function (l) { l.classList.remove("is-active"); });
-                        var active = form.querySelector('.section-item[href="#' + entry.target.id + '"]');
-                        if (active) {
-                            active.classList.add("is-active");
-                            active.scrollIntoView({ behavior: "smooth", inline: "center", block: "nearest" });
-                        }
-                    });
-                }, { threshold: 0.25 });
-                sections.forEach(function (s) { observer.observe(s); });
+            /* ---------- step navigation ---------- */
+            function showStep(n) {
+                if (n < 1) n = 1;
+                if (n > TOTAL) n = TOTAL;
+                current = n;
+
+                steps.forEach(function (s) {
+                    s.classList.toggle("is-active", Number(s.dataset.step) === n);
+                });
+
+                navItems.forEach(function (b) {
+                    var i = Number(b.dataset.goto);
+                    b.classList.toggle("is-active", i === n);
+                    b.classList.toggle("is-done", i < n);
+                });
+
+                if (n === TOTAL) buildReview();
+
+                var page = document.querySelector(".counselor-edit");
+                if (page) page.scrollIntoView({ behavior: "smooth", block: "start" });
             }
 
-            links.forEach(function (link) {
-                link.addEventListener("click", function (e) {
-                    e.preventDefault();
-                    var target = document.querySelector(link.getAttribute("href"));
-                    if (target) target.scrollIntoView({ behavior: "smooth", block: "start" });
-                });
+            form.addEventListener("click", function (e) {
+                if (e.target.closest("[data-next]")) { showStep(current + 1); }
+                else if (e.target.closest("[data-prev]")) { showStep(current - 1); }
+                else {
+                    var jump = e.target.closest(".step-item");
+                    if (jump) showStep(Number(jump.dataset.goto));
+                }
             });
 
             /* ---------- completion meter ---------- */
             var bar = document.getElementById("completionBar");
             var valueEl = document.getElementById("completionValue");
+            var BUILDER_IDS = ["expRole", "expOrg", "expYears"];
 
             function updateCompletion() {
                 var all = Array.prototype.slice.call(
-                    form.querySelectorAll("input:not([type=hidden]), select, textarea")
-                );
+                    form.querySelectorAll("input:not([type=hidden]):not([type=checkbox]), select, textarea")
+                ).filter(function (el) { return BUILDER_IDS.indexOf(el.id) === -1; });
+
                 if (!all.length) return;
                 var filled = all.filter(function (el) { return String(el.value || "").trim() !== ""; }).length;
                 var pct = Math.round((filled / all.length) * 100);
@@ -303,6 +379,32 @@
 
             form.addEventListener("input", updateCompletion);
             form.addEventListener("change", updateCompletion);
+
+            /* ---------- work-experience line builder ----------
+               The model stores WorkExperience as a single text field, so the
+               three boxes just compose a line and append it to that field. */
+            var addExp = document.getElementById("btnAddExp");
+            if (addExp) {
+                addExp.addEventListener("click", function () {
+                    var role = document.getElementById("expRole");
+                    var org = document.getElementById("expOrg");
+                    var years = document.getElementById("expYears");
+                    var box = form.querySelector(".exp-box");
+                    if (!box) return;
+
+                    var r = role.value.trim(), o = org.value.trim(), y = years.value.trim();
+                    if (!r && !o) { role.focus(); return; }
+
+                    var line = r;
+                    if (o) line += " — " + o;
+                    if (y) line += " (" + y + ")";
+
+                    box.value = box.value.trim() ? box.value.trim() + "\n" + line : line;
+                    role.value = org.value = years.value = "";
+                    role.focus();
+                    updateCompletion();
+                });
+            }
 
             /* ---------- repeating rows: contacts + licenses ---------- */
             // After a removal the indexes must stay contiguous, or the model
@@ -323,12 +425,12 @@
                     var cContainer = document.getElementById(addContact.dataset.addContact);
                     if (!cContainer) return;
                     var cPrefix = addContact.dataset.prefix;
-                    var cIndex = cContainer.querySelectorAll(".contact-row").length;
+                    var cIndex = cContainer.querySelectorAll(".repeat-row").length;
 
                     var cRow = document.createElement("div");
-                    cRow.className = "contact-row";
+                    cRow.className = "repeat-row";
                     cRow.innerHTML =
-                        '<input name="' + cPrefix + '[' + cIndex + '].Number" class="form-control contact-number" placeholder="Number" />' +
+                        '<input name="' + cPrefix + '[' + cIndex + '].Number" class="form-control contact-number" placeholder="+63 917 123 4567" />' +
                         '<button type="button" class="btn-remove remove-contact" title="Remove number"><i class="bi bi-trash3"></i></button>';
                     cContainer.appendChild(cRow);
                     updateCompletion();
@@ -344,7 +446,7 @@
                     var lIndex = lContainer.querySelectorAll(".license-row").length;
 
                     var lRow = document.createElement("div");
-                    lRow.className = "license-row";
+                    lRow.className = "repeat-row license-row";
                     lRow.innerHTML =
                         '<input name="' + lPrefix + '[' + lIndex + '].LicenseType" class="form-control license-type" placeholder="License number" />' +
                         '<button type="button" class="btn-remove remove-license" title="Remove license"><i class="bi bi-trash3"></i></button>';
@@ -356,10 +458,10 @@
                 /* remove a contact */
                 var rmContact = e.target.closest(".remove-contact");
                 if (rmContact) {
-                    var cList = rmContact.closest(".contact-list");
-                    var cRow2 = rmContact.closest(".contact-row");
+                    var cList = rmContact.closest(".repeat-list");
+                    var cRow2 = rmContact.closest(".repeat-row");
                     if (cRow2) cRow2.remove();
-                    if (cList) reindex(cList, ".contact-row");
+                    if (cList) reindex(cList, ".repeat-row");
                     updateCompletion();
                     return;
                 }
@@ -367,13 +469,106 @@
                 /* remove a license */
                 var rmLicense = e.target.closest(".remove-license");
                 if (rmLicense) {
-                    var lList = rmLicense.closest(".contact-list");
+                    var lList = rmLicense.closest(".repeat-list");
                     var lRow2 = rmLicense.closest(".license-row");
                     if (lRow2) lRow2.remove();
                     if (lList) reindex(lList, ".license-row");
                     updateCompletion();
                 }
             });
+
+            /* ---------- review builder ---------- */
+            function readValue(el) {
+                if (!el) return "";
+                if (el.tagName === "SELECT") {
+                    var o = el.options[el.selectedIndex];
+                    return o && o.value ? o.text.trim() : "";
+                }
+                return String(el.value || "").trim();
+            }
+
+            function buildReview() {
+                var panel = document.getElementById("reviewPanel");
+                if (!panel) return;
+                panel.innerHTML = "";
+
+                steps.forEach(function (step) {
+                    var n = Number(step.dataset.step);
+                    if (n === TOTAL) return;
+
+                    var titleEl = step.querySelector(".step-head h2");
+                    var block = document.createElement("div");
+                    block.className = "review-block";
+
+                    var head = document.createElement("div");
+                    head.className = "review-head";
+                    head.innerHTML = '<span>' + (titleEl ? titleEl.textContent.trim() : "Section " + n) + '</span>';
+
+                    var edit = document.createElement("button");
+                    edit.type = "button";
+                    edit.className = "review-edit";
+                    edit.textContent = "Edit";
+                    edit.addEventListener("click", function () { showStep(n); });
+                    head.appendChild(edit);
+                    block.appendChild(head);
+
+                    var body = document.createElement("div");
+                    body.className = "review-body";
+
+                    step.querySelectorAll("[data-label], [data-contact-group], [data-license-group]").forEach(function (holder) {
+                        var label, value;
+
+                        if (holder.hasAttribute("data-contact-group")) {
+                            label = holder.getAttribute("data-contact-group");
+                            value = Array.prototype.slice.call(holder.querySelectorAll(".contact-number"))
+                                .map(function (i) { return i.value.trim(); })
+                                .filter(Boolean).join(", ");
+                        } else if (holder.hasAttribute("data-license-group")) {
+                            label = holder.getAttribute("data-license-group");
+                            value = Array.prototype.slice.call(holder.querySelectorAll(".license-type"))
+                                .map(function (i) { return i.value.trim(); })
+                                .filter(Boolean).join(", ");
+                        } else {
+                            label = holder.getAttribute("data-label");
+                            value = readValue(holder.querySelector("input:not([id^=exp]), select, textarea"));
+                        }
+
+                        var item = document.createElement("div");
+                        item.className = "review-item";
+                        item.innerHTML =
+                            '<div class="review-label"></div>' +
+                            (value ? '<div class="review-value"></div>' : '<div class="review-value is-empty">Not provided</div>');
+                        item.querySelector(".review-label").textContent = label;
+                        if (value) item.querySelector(".review-value").textContent = value;
+                        body.appendChild(item);
+                    });
+
+                    block.appendChild(body);
+                    panel.appendChild(block);
+                });
+            }
+
+            /* ---------- submit guard ---------- */
+            form.addEventListener("submit", function (e) {
+                var box = document.getElementById("confirmAccurate");
+                var err = document.getElementById("confirmError");
+                if (box && !box.checked) {
+                    e.preventDefault();
+                    if (err) err.textContent = "Please confirm the information is accurate before saving.";
+                    showStep(TOTAL);
+                    return;
+                }
+                if (err) err.textContent = "";
+            });
+
+            /* ---------- land on the first step with a server-side error ---------- */
+            var firstBad = form.querySelector(".field-validation-error, .input-validation-error");
+            if (firstBad) {
+                var owner = firstBad.closest(".form-step");
+                showStep(owner ? Number(owner.dataset.step) : 1);
+            } else {
+                showStep(1);
+            }
 
             updateCompletion();
         })();

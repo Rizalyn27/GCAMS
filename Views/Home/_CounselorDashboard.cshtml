@@ -79,7 +79,9 @@
 
         <div class="stat-card">
             <div class="stat-label">
-                <span class="material-symbols-outlined"></span>
+                <span class="material-symbols-outlined">
+                    <i class="bi bi-calendar-check"></i>
+                </span>
                 Sessions today
             </div>
             <div class="stat-value">@Model.SessionsTodayCount</div>
@@ -100,14 +102,14 @@
             @if (Model.SessionsTodayCount > 0)
             {
                 <a href="#todays-schedule" class="stat-action">
-                    Open today <span class="material-symbols-outlined"></span>
+                    Open today <span class="material-symbols-outlined"><i class="bi bi-arrow-right"></i></span>
                 </a>
             }
         </div>
 
         <div class="stat-card @(Model.PendingRequestsCount > 0 ? "stat-card-attention" : "")">
             <div class="stat-label">
-                <span class="material-symbols-outlined"></span>
+                <span class="material-symbols-outlined"><i class="bi bi-bell"></i></span>
                 Requests to answer
             </div>
             <div class="stat-value">@Model.PendingRequestsCount</div>
@@ -117,14 +119,14 @@
             @if (Model.PendingRequestsCount > 0)
             {
                 <a asp-controller="Appointments" asp-action="Index" class="stat-action">
-                    Review requests <span class="material-symbols-outlined"></span>
+                    Review requests <i class="bi bi-arrow-right"></i>
                 </a>
             }
         </div>
 
         <div class="stat-card @(Model.FlaggedCases.Any() ? "stat-card-attention" : "")">
             <div class="stat-label">
-                <span class="material-symbols-outlined"></span>
+                <span class="material-symbols-outlined"><i class="fa-solid fa-triangle-exclamation"></i></span>
                 Follow-ups overdue
             </div>
             <div class="stat-value">@Model.FlaggedCases.Count</div>
@@ -145,7 +147,7 @@
             @if (Model.FlaggedCases.Any())
             {
                 <a href="#flagged-followups" class="stat-action">
-                    See follow-ups <span class="material-symbols-outlined"></span>
+                    See follow-ups <span class="material-symbols-outlined"><i class="bi bi-arrow-right"></i></span>
                 </a>
             }
         </div>
@@ -165,7 +167,7 @@
                         <span class="count-pill">@Model.TodaysAppointments.Count</span>
                     </span>
                     <a asp-controller="Appointments" asp-action="Index" class="row-link">
-                        Open the calendar <span class="material-symbols-outlined"></span>
+                        Open the calendar <i class="bi bi-arrow-right"></i>
                     </a>
                 </div>
                 <p class="panel-sub">@now.ToString("dddd, d MMMM")</p>
@@ -429,7 +431,7 @@
                 </datalist>
 
                 <a class="quick-action" asp-controller="Announcements" asp-action="Create" asp-route-returnUrl="@Url.Action("Index", "Home")">
-                    <span class="material-symbols-outlined"></span> Post an announcement
+                    <span class="material-symbols-outlined"><i class="bi bi-megaphone"></i></span> Post an announcement
                 </a>
             </div>
 
@@ -513,7 +515,7 @@
                 else
                 {
                     <div class="obs-empty">
-                        <span class="material-symbols-outlined"></span>
+                        <span class="material-symbols-outlined"><i class="fa-regular fa-clipboard"></i></span>
                         <div class="obs-empty-title">No observations yet this year</div>
                         <a class="btn-solid" asp-controller="AnecRecs" asp-action="Create" asp-route-returnUrl="@Url.Action("Index", "Home")">Record your first observation</a>
                     </div>

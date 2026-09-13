@@ -37,9 +37,10 @@
                 person. Administrators are created here.
             </p>
         </div>
-        <a asp-action="Create" class="btn btn-brand">
+        <button type="button" class="btn btn-brand"
+                data-bs-toggle="modal" data-bs-target="#createAdminModal">
             <i class="bi bi-person-plus"></i> New Administrator
-        </a>
+        </button>
     </div>
 
     <!-- ================= Stats ================= -->
@@ -249,6 +250,97 @@
             <div class="modal-footer">
                 <button type="button" class="btn btn-shell" data-bs-dismiss="modal">Cancel</button>
                 <button type="submit" class="btn btn-danger-solid">Deactivate</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- ================= New Administrator Modal ================= -->
+@* The page model is AccountIndexViewModel, which has no Username/Password
+   properties, so asp-validation-for can't be used here. Html.ValidationMessage
+   looks ModelState up by string name instead, which works across models. *@
+<div class="modal fade accounts-modal" id="createAdminModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-lg">
+        <form asp-action="Create" method="post" class="modal-content" id="createAdminForm">
+            @Html.AntiForgeryToken()
+
+            <div class="modal-header modal-header-lead">
+                <span class="modal-badge"><i class="bi bi-person-vcard"></i></span>
+                <div class="modal-heading">
+                    <h5 class="modal-title">New Administrator</h5>
+                    <p class="modal-caption">Administrators can manage students, counselors, reports and accounts.</p>
+                </div>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+
+            <div class="modal-body">
+
+                <div asp-validation-summary="ModelOnly" class="modal-errors"></div>
+
+                <div class="mb-3">
+                    <label for="Username" class="field-label">Username</label>
+                    <input type="text" name="Username" id="Username" class="form-control"
+                           placeholder="e.g. admin_maria" autocomplete="off"
+                           autocapitalize="none" spellcheck="false" required />
+                    <span class="field-hint">
+                        4&ndash;30 characters. Letters, numbers, and _ . @@ - are allowed. This is what
+                        they type to sign in, so it cannot be changed later.
+                    </span>
+                    @Html.ValidationMessage("Username", new { @class = "field-error" })
+                </div>
+
+                <div class="row g-3">
+                    <div class="col-12 col-md-6">
+                        <label for="Password" class="field-label">Temporary Password</label>
+                        <div class="pw-wrap">
+                            <input type="password" name="Password" id="Password" class="form-control"
+                                   placeholder="Create a new password"
+                                   autocomplete="new-password" required />
+                            <button type="button" class="pw-toggle" data-pw-target="Password"
+                                    aria-label="Show password">
+                                <i class="bi bi-eye"></i>
+                            </button>
+                        </div>
+                        @Html.ValidationMessage("Password", new { @class = "field-error" })
+                    </div>
+                    <div class="col-12 col-md-6">
+                        <label for="ConfirmPassword" class="field-label">Confirm Password</label>
+                        <div class="pw-wrap">
+                            <input type="password" name="ConfirmPassword" id="ConfirmPassword" class="form-control"
+                                   placeholder="Create a new password"
+                                   autocomplete="new-password" required />
+                            <button type="button" class="pw-toggle" data-pw-target="ConfirmPassword"
+                                    aria-label="Show password">
+                                <i class="bi bi-eye"></i>
+                            </button>
+                        </div>
+                        @Html.ValidationMessage("ConfirmPassword", new { @class = "field-error" })
+                        <span class="field-error" id="pwMatchError"></span>
+                    </div>
+                </div>
+
+                <div class="modal-note">
+                    <i class="bi bi-info-circle"></i>
+                    <span>
+                        This password is temporary. The new administrator is forced to choose their own
+                        the first time they sign in, so share it in person or over a channel you trust
+                         the system has no email gateway to send it for you.
+                    </span>
+                </div>
+
+                <div class="modal-note modal-note-quiet">
+                    <i class="bi bi-lock"></i>
+                    <span>
+                        Only administrators can create new admin accounts. Creating an account is
+                        recorded in the activity log.
+                    </span>
+                </div>
+            </div>
+
+            <div class="modal-footer modal-footer-plain">
+                <button type="submit" class="btn btn-brand">
+                    <i class="bi bi-check-lg"></i> Create Administrator
+                </button>
             </div>
         </form>
     </div>
@@ -468,6 +560,53 @@
                     document.getElementById('resetUsername').textContent = btn.dataset.username;
                     document.getElementById('NewPassword').value = '';
                 });
+            }
+
+            // ---------- new administrator modal ----------
+            const createForm = document.getElementById('createAdminForm');
+            if (createForm) {
+                const pw = document.getElementById('Password');
+                const confirmPw = document.getElementById('ConfirmPassword');
+                const matchError = document.getElementById('pwMatchError');
+
+                createForm.addEventListener('submit', function (e) {
+                    if (pw.value !== confirmPw.value) {
+                        e.preventDefault();
+                        matchError.textContent = 'The two passwords do not match.';
+                        confirmPw.focus();
+                    }
+                });
+                        // Show / hide password
+        createForm.querySelectorAll('.pw-toggle').forEach(function (btn) {
+            btn.addEventListener('click', function () {
+                const input = document.getElementById(this.dataset.pwTarget);
+                const hidden = input.type === 'password';
+                input.type = hidden ? 'text' : 'password';
+                this.querySelector('i').className = hidden ? 'bi bi-eye-slash' : 'bi bi-eye';
+                this.setAttribute('aria-label', hidden ? 'Hide password' : 'Show password');
+                input.focus();
+            });
+        });
+
+                confirmPw.addEventListener('input', function () { matchError.textContent = ''; });
+
+               
+                        // Clear the form each time the modal opens
+        document.getElementById('createAdminModal')
+            .addEventListener('show.bs.modal', function () {
+                createForm.reset();
+                matchError.textContent = '';
+                createForm.querySelectorAll('.pw-toggle').forEach(function (btn) {
+                    document.getElementById(btn.dataset.pwTarget).type = 'password';
+                    btn.querySelector('i').className = 'bi bi-eye';
+                });
+            });
+
+                // If the server sent back validation errors, reopen the modal.
+                // ASP.NET only adds .field-validation-error when a message is present.
+                if (createForm.querySelector('.field-validation-error, .modal-errors li')) {
+                    new bootstrap.Modal(document.getElementById('createAdminModal')).show();
+                }
             }
 
             // ---------- wiring ----------

@@ -6,7 +6,9 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.EntityFrameworkCore;
 
+
 var builder = WebApplication.CreateBuilder(args);
+Console.WriteLine("CONN: " + builder.Configuration.GetConnectionString("DefaultConnection"));
 
 // Add services to the container.
 builder.Services.AddHostedService<AppointmentStatusService>();

@@ -508,6 +508,14 @@
         color: var(--cb-green);
     }
 
+    .carebot .cap-list .can .bi {
+        color: #1b6d24;
+    }
+
+    .carebot .cap-list .cant .bi {
+        color: #b04b3a;
+    }
+
     .cap-list .cant {
         color: var(--cb-muted);
     }
@@ -586,15 +594,28 @@
         grid-template-columns: 1fr;
     }
 
+    /* Keep a bounded panel on mobile too — 'height: auto' let it grow with
+       the conversation, so the chat area never had anything to scroll inside. */
     .chat-panel {
+        height: calc(100vh - 190px);
+        min-height: 420px;
+        max-height: 640px;
+    }
+
+    /* flex:1 fills the panel; the explicit height fought with it and lost. */
+    .chat-area {
         height: auto;
         min-height: 0;
     }
 
-    .chat-area {
-        height: 55vh;
-        min-height: 340px;
+    @supports (height: 100dvh) {
+        @media (max-width: 1050px) {
+            .chat-panel {
+                height: calc(100dvh - 190px);
+            }
+        }
     }
+
 }
 
 @media (max-width: 640px) {

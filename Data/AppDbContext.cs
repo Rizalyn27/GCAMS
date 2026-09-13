@@ -9,6 +9,9 @@ using GCAMS.Models.Students;
 using GCAMS.Models.Users;
 using Microsoft.EntityFrameworkCore;
 using static GCAMS.Models.Counselor.Counselor;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Design;
+using Microsoft.Extensions.Configuration;
 
 
 
@@ -127,7 +130,7 @@ namespace GCAMS.Data
                 .HasOne(a => a.Student)
                 .WithMany()
                 .HasForeignKey(a => a.StudentsID)
-                .OnDelete(DeleteBehavior.Cascade);
+                .OnDelete(DeleteBehavior.Restrict);
 
             // StudentContactNumber
             modelBuilder.Entity<StudentContactNumber>()
@@ -141,14 +144,14 @@ namespace GCAMS.Data
                 .HasOne(ar => ar.Student)
                 .WithMany()
                 .HasForeignKey(ar => ar.StudentsID)
-                .OnDelete(DeleteBehavior.Cascade);
+                .OnDelete(DeleteBehavior.Restrict);
 
             // CaseNotes
             modelBuilder.Entity<CaseNotes>()
                 .HasOne(cn => cn.Student)
                 .WithMany()
                 .HasForeignKey(cn => cn.StudentsID)
-                .OnDelete(DeleteBehavior.Cascade);
+                .OnDelete(DeleteBehavior.Restrict);
 
             // FamilyContactNumber
             modelBuilder.Entity<FamilyContactNumber>()

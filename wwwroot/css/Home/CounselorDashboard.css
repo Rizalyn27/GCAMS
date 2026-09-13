@@ -29,7 +29,7 @@
 
     /* Naming the family here means a missing font shows nothing rather than
        leaking the ligature name ("warning", "schedule") into the page as text. */
-    .cns-dash .material-symbols-outlined {
+    /*.cns-dash .material-symbols-outlined {
         font-family: 'Material Symbols Outlined';
         font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
         font-weight: normal;
@@ -42,6 +42,24 @@
         vertical-align: middle;
         -webkit-font-feature-settings: 'liga';
         -webkit-font-smoothing: antialiased;
+    }*/
+
+    /* The wildcard rule above forces Inter onto everything, including icon
+   elements. Font Awesome needs its own family or the glyph renders as a
+   box, so put it back. */
+    .cns-dash .fa-solid,
+    .cns-dash .fa-regular,
+    .cns-dash .fa-brands,
+    .cns-dash i[class*="fa-"] {
+        font-family: "Font Awesome 6 Free", "Font Awesome 6 Brands" !important;
+    }
+
+    .cns-dash .fa-solid {
+        font-weight: 900;
+    }
+
+    .cns-dash .fa-regular {
+        font-weight: 400;
     }
 
     /* ==========================================================================
