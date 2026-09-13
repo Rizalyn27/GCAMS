@@ -1,7 +1,9 @@
 using GCAMS.Data;
 using GCAMS.Services;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.DataProtection;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -19,6 +21,28 @@ builder.Services.AddDbContext<AppDbContext>(options =>
 //
 OfficeOpenXml.ExcelPackage.License.SetNonCommercialOrganization("GCAMS Capstone Project");
 
+// The host terminates SSL at its proxy, so the app receives a plain HTTP
+// request even when the browser is on HTTPS. These headers carry the original
+// scheme through, which is what makes UseHttpsRedirection and the secure
+// cookie policy behave correctly once deployed.
+builder.Services.Configure<ForwardedHeadersOptions>(options =>
+{
+    options.ForwardedHeaders =
+        ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto;
+
+    // Shared hosting doesn't give us a fixed proxy address to whitelist.
+    options.KnownNetworks.Clear();
+    options.KnownProxies.Clear();
+});
+
+// Auth cookies are encrypted with a key that lives in memory by default. The
+// app pool recycles on idle, the key is lost, and everyone is silently signed
+// out. Writing the keys to disk keeps sessions alive across restarts.
+builder.Services.AddDataProtection()
+    .PersistKeysToFileSystem(
+        new DirectoryInfo(Path.Combine(builder.Environment.ContentRootPath, "dp-keys")))
+    .SetApplicationName("GCAMS");
+
 builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
     .AddCookie(options =>
     {
@@ -29,13 +53,16 @@ builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationSc
 
         //For Cookies
         options.Cookie.HttpOnly = true;
-        options.Cookie.SecurePolicy = CookieSecurePolicy.Always;
+        options.Cookie.SecurePolicy = CookieSecurePolicy.SameAsRequest;
         options.Cookie.SameSite = SameSiteMode.Strict;
     });
 
 
 
 var app = builder.Build();
+
+// Must come first — everything after it needs the corrected scheme.
+app.UseForwardedHeaders();
 
 // Configure the HTTP request pipeline.
 if (!app.Environment.IsDevelopment())
@@ -96,4 +123,4 @@ app.MapControllerRoute(
         app.Environment.IsDevelopment());
 }
 
-app.Run();  
+app.Run();
